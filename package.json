@@ -1,0 +1,70 @@
+{
+  "name": "@ahrndee/apollo-mobx-connector",
+  "version": "0.1.0",
+  "description": "Utility classes and methods to transform ApolloGraphQL results into observable Domain Models",
+  "author": "ahrnee <ahrndee@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/ahrnee/apollo-mobx-connector",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahrnee/apollo-mobx-connector"
+  },
+  "scripts": {
+    "prepublishOnly": "rm -f dist/src/package.json dist/src/README.md  && cp package.json README.md dist/src/",
+    "test": "jest",
+    "build": "tsc --build --verbose",
+    "rebuild": "tsc --build --force --verbose",
+    "publish": "todo"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist/src"
+  },
+  "peerDependencies": {
+    "graphql-tag": "^2.10.3"
+  },
+  "dependencies": {
+    "@apollo/client": "3.0.0-beta.50",
+    "@apollo/react-hooks": "^4.0.0-beta.1",
+    "@types/react": "16.9.35",
+    "@wry/equality": "^0.1.11",
+    "debug": "^4.1.1",
+    "graphql": "^15.0.0",
+    "mobx": "^5.15.0",
+    "mobx-react-lite": "^1.5.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.0",
+    "@babel/preset-env": "^7.10.0",
+    "@babel/preset-typescript": "^7.9.0",
+    "@graphql-codegen/core": "^1.14.0",
+    "@graphql-codegen/plugin-helpers": "1.14.0",
+    "@graphql-codegen/typescript": "^1.14.0",
+    "@graphql-codegen/visitor-plugin-common": "1.14.0",
+    "@types/jest": "^25.2.3",
+    "babel-jest": "^26.0.1",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^23.0.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.2.0",
+    "jest": "^26.0.1",
+    "path": "^0.12.7",
+    "ts-jest": "^26.0.0",
+    "ts-node": "~7.0.0",
+    "tslib": "2.0.0",
+    "typescript": "^3.9.3"
+  },
+  "sideEffects": false,
+  "main": "dist/apollo-mobx-connector/src/index.js",
+  "typings": "dist/apollo-mobx-connector/src/index.d.ts",
+  "typescript": {
+    "definition": "dist/apollo-mobx-connector/src/index.d.ts"
+  }
+}
