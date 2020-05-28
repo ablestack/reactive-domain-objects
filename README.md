@@ -44,3 +44,4 @@ TBD
 
 - TBD
 - Expect non collection properties to be not null or undefined
+- Presidence: PathMap, TypeMap, Interfaces

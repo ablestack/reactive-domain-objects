@@ -26,16 +26,39 @@ export interface IGraphSyncOptions {
 
 export interface IPropertySyncOptions<S extends object, D extends object> {
   ignore?: boolean;
-  syncFactory: ISyncableDomainObjectFactory<S, D>;
+  syncFactory?: ISyncableDomainObjectFactory<S, D>;
+}
+
+export interface IMakeKey<S> {
+  (soureItem: S): string;
+}
+
+export interface IMakeDomainObject<S, D> {
+  (sourceObject: S): D;
 }
 
 export interface ISyncableDomainObjectFactory<S extends object, D extends object> {
-  makeKey: (soureItem: S) => string;
-  makeDomainObject: (sourceObject: S) => D;
+  makeKey: IMakeKey<S>;
+  makeDomainObject: IMakeDomainObject<S, D>;
+}
+
+export function IsISyncableDomainObjectFactory(o: any): o is ISyncableDomainObjectFactory<any, any> {
+  return o && o.makeKey && typeof o.makeKey === 'function' && o.makeDomainObject && typeof o.makeDomainObject === 'function';
+}
+
+export interface ISyncableCollection<T> {
+  getKeys: () => string[];
+  getItem: (key: string) => T;
+  setItem: (key: string, value: T) => void;
+  deleteItem: (key: string) => void;
+}
+
+export function IsISyncableCollection(o: any) {
+  return o && o.getKeys && typeof o.getKeys === 'function' && o.getItem && typeof o.getItem === 'function' && o.setItem && typeof o.setItem === 'function' && o.deleteItem && typeof o.deleteItem === 'function';
 }
 
 export interface ISynchronizeState<S extends object> {
-  ({ sourceObject, graphSynchronizer }: { sourceObject: S | null | undefined; graphSynchronizer: IGraphSynchronizer }): void;
+  ({ sourceObject, graphSynchronizer }: { sourceObject: S | null | undefined; graphSynchronizer: IGraphSynchronizer }): boolean;
 }
 
 export interface IStateEqual<S extends object> {
