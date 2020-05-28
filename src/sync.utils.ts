@@ -1,11 +1,7 @@
-import { Logger } from '.';
 import _ from 'lodash';
+import { Logger } from './logger';
 
 const logger = Logger.make('SyncUtils');
-
-//
-//
-//
 
 /** */
 function synchronizeCollection<S, T>({

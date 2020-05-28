@@ -1,6 +1,6 @@
 import { ObservableQuery, ApolloClient } from '@apollo/client';
 import uuid from 'uuid';
-import { Logger } from '.';
+import { Logger } from './logger';
 
 const logger = Logger.make('ViewModelSyncUtils');
 
@@ -65,13 +65,13 @@ export class QueryWatcher<Q> {
     this._watchedQuery.resetLastResults();
 
     this._watchedQuerySubscription = this._watchedQuery.subscribe(
-      next => {
+      (next) => {
         logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
         if (next.data) {
           this._handleDataChange(next.data);
         }
       },
-      error => {
+      (error) => {
         logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
       },
       () => {

@@ -1,5 +1,5 @@
-import { deepEqual } from 'mobx/lib/utils/eq';
 import equal from '@wry/equality';
+import { deepEqual } from 'mobx/lib/utils/eq';
 
 export interface IEqualsComparer<T> {
   (a: T, b: T): boolean;
@@ -14,11 +14,15 @@ function identityComparer(a: any, b: any): boolean {
 }
 
 function structuralComparer(a: any, b: any): boolean {
-  return deepEqual(a, b);
+  // Todo
+  // return deepEqual(a, b);
+  return false;
 }
 
 function shallowComparer(a: any, b: any): boolean {
-  return deepEqual(a, b, 1);
+  // TODO
+  //return deepEqual(a, b, 1);
+  return false;
 }
 
 function defaultComparer(a: any, b: any): boolean {

@@ -1,6 +1,7 @@
 import { runInAction } from 'mobx';
-import { comparers, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, Logger, SyncUtils, IEqualityComparer, IsICustomEqualityDomainObject } from '.';
+import { comparers, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, SyncUtils, IEqualityComparer, IsICustomEqualityDomainObject } from '.';
 import { IsICustomSyncDomainObject, JavaScriptDefaultTypes, IsISyncableDomainObjectFactory, IMakeKey, IMakeDomainObject, IsISyncableCollection, ISyncableCollection } from './types';
+import { Logger } from './logger';
 
 const logger = Logger.make('GraphSynchronizer');
 

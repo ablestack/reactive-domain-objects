@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
-import { SyncableCollection, ISyncableObject, SyncUtils } from '.';
+import { SyncableCollection } from '.';
+import { GraphSynchronizer } from './graphSynchronizer';
 
 // Define Test Source Data Types
 type Publisher = { id: string; name: string };
@@ -21,8 +22,7 @@ const mockWatchedQueryResult: MockWatchedQueryResult = {
 };
 
 // Define Test Domain Model objects
-class PublisherDM implements ISyncableObject<Publisher> {
-  public lastSourceData: Publisher;
+class PublisherDM {
   @observable public id: string;
   @observable public name: string;
 
@@ -31,8 +31,7 @@ class PublisherDM implements ISyncableObject<Publisher> {
   */
 }
 
-class BookDM implements ISyncableObject<Book> {
-  public lastSourceData: Book;
+class BookDM {
   @observable public id: string;
   @observable public title: string;
   @observable public pages: number;
@@ -43,12 +42,11 @@ class BookDM implements ISyncableObject<Book> {
   */
 }
 
-class AuthorDM implements ISyncableObject<Author> {
-  public lastSourceData: Author;
+class AuthorDM {
   @observable public id$: string;
   @observable public name$: string;
   @observable public age$: number;
-  public books: SyncableCollection<Book, string, BookDM>;
+  public books: SyncableCollection<Book, BookDM> = new SyncableCollection({ makeItemKey: (book: Book) => book.id, makeItem: (book: Book) => new BookDM() });
 
   /*
     Any other domain-specific properties and methods here
@@ -61,6 +59,8 @@ test('auto synchronize updates properties as expected', () => {
   const authorDM = new AuthorDM();
   expect(authorDM.id$).toBeUndefined();
 
-  SyncUtils.autoSynchronize({ rootSourceData: mockWatchedQueryResult.author, rootSyncableObject: authorDM, options: { appendPrefixToObservableProperties: '$' } });
+  const graphSynchronizer = new GraphSynchronizer({ appendPrefixToObservableProperties: '$' });
+  graphSynchronizer.synchronize({ rootDomainObject: authorDM, rootsourceObject: mockWatchedQueryResult.author });
+
   expect(authorDM.id$).toEqual(mockWatchedQueryResult.author.id);
 });

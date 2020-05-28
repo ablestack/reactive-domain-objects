@@ -1,20 +1,21 @@
 import { observable, computed, action } from 'mobx';
-import { Logger, ISyncableDomainObject, ISyncableDomainObjectFactory } from '.';
+import { ISyncableDomainObjectFactory, ICustomEqualityDomainObject, ICustomSyncDomainObject } from '.';
+import { ISyncableCollection } from './types';
+import { Logger } from './logger';
 
 const logger = Logger.make('SyncableCollection');
 
-export class SyncableCollection<S extends object, K, D extends ISyncableDomainObject<S>> implements ISyncableDomainObjectFactory<S, D> {
-  private _sourceCollection: Iterable<S>;
-  private _getItemKey: (soureItem: S) => K;
-  private _createItem: (sourceItem: S) => D;
+export class SyncableCollection<S extends object, D extends object> implements ISyncableDomainObjectFactory<S, D>, ISyncableCollection<D> {
+  private _makeItemKey: (soureItem: S) => string;
+  private _makeItem: (sourceItem: S) => D;
 
-  @observable.shallow private _map$: Map<K, D>;
+  @observable.shallow private _map$: Map<string, D>;
 
   @computed public get size$(): number {
     return this._map$.size;
   }
 
-  @computed public get map$(): Map<K, D> {
+  @computed public get map$(): Map<string, D> {
     return this._map$;
   }
 
@@ -26,12 +27,38 @@ export class SyncableCollection<S extends object, K, D extends ISyncableDomainOb
     return this._array$;
   }
 
-  constructor({ getItemKey, createItem }: { getItemKey: (soureItem: S) => K; createItem: (sourceItem: S) => D }) {
-    this._getItemKey = getItemKey;
-    this._createItem = createItem;
-    this._map$ = new Map<K, D>();
+  constructor({ makeItemKey, makeItem }: { makeItemKey: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
+    this._makeItemKey = makeItemKey;
+    this._makeItem = makeItem;
+    this._map$ = new Map<string, D>();
   }
 
-  public makeKey: (soureItem: S) => string;
-  public makeDomainObject: (sourceItem: S) => D;
+  // -----------------------------------
+  // ISyncableDomainObjectFactory
+  // -----------------------------------
+  public makeKey = (soureItem: S) => {
+    return this._makeItemKey(soureItem);
+  };
+
+  public makeDomainObject = (sourceItem: S) => {
+    return this._makeItem(sourceItem);
+  };
+
+  // -----------------------------------
+  // ISyncableCollection
+  // -----------------------------------
+  public getKeys = () => {
+    return Array.from(this._map$.keys());
+  };
+  public getItem = (key: string) => {
+    return this._map$.get(key);
+  };
+
+  public setItem = (key: string, value: D) => {
+    this._map$.set(key, value);
+  };
+
+  public deleteItem = (key: string) => {
+    this._map$.delete(key);
+  };
 }
