@@ -76,22 +76,32 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         continue;
       }
 
-      this.synchronizeObjectProperty({ sourceObject, sourcePropKey, domainObject, domainPropKey });
+      this.trySynchronizeProperty({ sourceParentObject: sourceObject, sourcePropKey, domainParentObject: domainObject, domainPropKey });
 
       this.popSourceObjectKeyOffStack();
     }
   }
 
   /** */
-  private synchronizeObjectProperty({ sourceObject, sourcePropKey, domainObject, domainPropKey }: { sourceObject: object; sourcePropKey: string; domainObject: object; domainPropKey: string }) {
+  private trySynchronizeProperty({
+    sourceParentObject,
+    sourcePropKey,
+    domainParentObject,
+    domainPropKey,
+  }: {
+    sourceParentObject: object;
+    sourcePropKey: string;
+    domainParentObject: object;
+    domainPropKey: string;
+  }): boolean {
     // get values needed for merging
-    const sourcePropVal = sourceObject[sourcePropKey];
+    const sourcePropVal = sourceParentObject[sourcePropKey];
     const sourcePropType = toString.call(sourcePropVal) as JavaScriptDefaultTypes;
 
-    const domainPropVal = domainObject[domainPropKey];
+    const domainPropVal = domainParentObject[domainPropKey];
     const domainPropType = toString.call(domainPropVal) as JavaScriptDefaultTypes;
 
-    logger.trace(`synchronizeObjectProperty - enter`, { sourceObject, sourcePropKey, sourcePropVal, sourcePropType, domainObject, domainPropKey, domainPropVal, domainPropType });
+    logger.trace(`synchronizeProperty - enter`, { sourceObject: sourceParentObject, sourcePropKey, sourcePropVal, sourcePropType, domainObject: domainParentObject, domainPropKey, domainPropVal, domainPropType });
 
     //
     switch (sourcePropType) {
@@ -103,20 +113,21 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourcePropType}', Domain type: ${domainPropType}`);
         if (sourcePropVal !== domainPropVal) {
           logger.trace(`primitive value found in domainPropKey ${domainPropKey}. Setting from old value to new value`, domainPropVal, sourcePropVal);
-          domainObject[domainPropKey] = sourcePropVal;
+          domainParentObject[domainPropKey] = sourcePropVal;
+          return true;
         }
-        return;
+        break;
       }
       case '[object Object]': {
         if (domainPropType !== '[object Object]')
           throw Error(`Object source types can only be transformed to Object destination types, and must not be null. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
-        this.synchronizeObjectState({ key: domainPropKey, sourceObject: sourcePropVal, domainObject: domainPropVal });
-        return;
+        return this.trySynchronizeObjectState({ key: domainPropKey, sourceObject: sourcePropVal, domainObject: domainPropVal });
       }
       case '[object Array]': {
         if (domainPropType === '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
         if (domainPropType === '[object Map]') {
-          // TODO
+          const domainPropMap: Map<string, any> = domainPropVal;
+          this.synchronizeMap(sourcePropVal, domainPropMap);
         }
         if (domainPropType === '[object Set]') {
           // TODO
@@ -128,10 +139,20 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     logger.trace(`Skipping item ${sourcePropKey}. Unable to reconcile synchronization for types - source: (${sourcePropKey}, ${sourcePropType}), domain: (${domainPropKey}, ${domainPropType})`);
+    return false;
   }
 
   /** */
-  private synchronizeObjectState<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainObject }: { key: string; sourceObject: S; domainObject: D; options?: IGraphSyncOptions }) {
+  private trySynchronizeObjectState<S extends Record<string, any>, D extends Record<string, any>>({
+    key,
+    sourceObject,
+    domainObject,
+  }: {
+    key: string;
+    sourceObject: S;
+    domainObject: D;
+    options?: IGraphSyncOptions;
+  }): boolean {
     const sourceObjectPath = this.getSourceObjectPath();
     const lastSourceObject = this._sourceObjectMap.get(key);
 
@@ -139,7 +160,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const isInSync = IsICustomEqualityDomainObject(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this.defaultEqualityComparer(sourceObject, lastSourceObject);
     if (isInSync) {
       logger.trace(`synchronizeObjectState - ${sourceObjectPath} - already in sync. Skipping`);
-      return;
+      return false;
     }
 
     // Synchronize
@@ -150,55 +171,50 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       logger.trace(`synchronizeObjectState - ${sourceObjectPath} - no custom state synchronizer found. Using autoSync`);
       this.autoSynchronizeObjectState({ key, sourceObject: sourceObject, domainObject: domainObject });
     }
+
+    return true;
   }
 
-  /** */
-  private synchronizeCollectionState<S extends Iterable<any>, D extends object, C extends ISyncableCollection<S, D>>({
-    key,
-    sourceCollection,
-    domainCollection,
-    options,
-  }: {
-    key: string;
-    sourceCollection: S;
-    domainCollection: C;
-  }) {
-    let changed = false;
-    const sourceKeys = new Array<string>();
+  private synchronizeMap<S>(sourcePropVal: Iterable<S>, domainPropMap: Map<string, any>) {
+    SyncUtils.synchronizeCollection({
+      sourceCollection: sourcePropVal,
+      getTargetCollectionKeys: () => Array.from(domainPropMap.keys()),
+      makeItemKey: (sourceItem) => 'todo',
+      getItem: (key) => domainPropMap.get(key),
+      setItem: (key, value) => domainPropMap.set(key, value),
+      deleteItem: (key) => domainPropMap.delete(key),
+      makeItem: (key) => 'todo',
+      trySyncProperty: ({ sourceItemKey, targetItemKey }) =>
+        this.trySynchronizeProperty({ sourceParentObject: sourcePropVal, sourcePropKey: sourceItemKey, domainParentObject: domainPropMap, domainPropKey: targetItemKey }),
+    });
+  }
 
-    for (const sourceItem of sourceCollection) {
-      const sourceKey = domainCollection.getItemKey(sourceItem);
-      sourceKeys.push(sourceKey);
+  private synchronizeSet<S>(sourcePropVal: Iterable<S>, domainPropMap: Set<string, any>) {
+    SyncUtils.synchronizeCollection({
+      sourceCollection: sourcePropVal,
+      getTargetCollectionKeys: () => Array.from(domainPropMap.keys()),
+      makeItemKey: (sourceItem) => 'todo',
+      getItem: (key) => domainPropMap.get(key),
+      setItem: (key, value) => domainPropMap.set(key, value),
+      deleteItem: (key) => domainPropMap.delete(key),
+      makeItem: (key) => 'todo',
+      trySyncProperty: ({ sourceItemKey, targetItemKey }) =>
+        this.trySynchronizeProperty({ sourceParentObject: sourcePropVal, sourcePropKey: sourceItemKey, domainParentObject: domainPropMap, domainPropKey: targetItemKey }),
+    });
+  }
 
-      const destinationItem = domainCollection.get(sourceKey);
-
-      // Source item not present in destination
-      if (!destinationItem) {
-        domainCollection.set(sourceKey, domainCollection.createItem(sourceItem));
-        changed = true;
-        continue;
-      }
-
-      // If source item present in destination but not equal
-      if (!this.isObjectStateInSync(sourceItem, destinationItem)) {
-        logger.trace('patchMap - items not equal, updating');
-        synchronizeState(sourceItem, destinationItem);
-        changed = true;
-        continue;
-      }
-    }
-
-    // If destination item missing from source - remove from destination
-    const destinationInstanceIds = Array.from(domainCollection.keys());
-    const instanceIdsInDestinationOnly = _.difference(destinationInstanceIds, sourceKeys);
-    if (instanceIdsInDestinationOnly.length > 0) {
-      instanceIdsInDestinationOnly.forEach((itemId) => {
-        domainCollection.delete(itemId);
-      });
-      changed = true;
-    }
-
-    return changed;
+  private synchronizeArray<S>(sourcePropVal: Iterable<S>, domainPropMap: Array<string>) {
+    SyncUtils.synchronizeCollection({
+      sourceCollection: sourcePropVal,
+      getTargetCollectionKeys: () => Array.from(domainPropMap.keys()),
+      makeItemKey: (sourceItem) => 'todo',
+      getItem: (key) => domainPropMap.get(key),
+      setItem: (key, value) => domainPropMap.set(key, value),
+      deleteItem: (key) => domainPropMap.delete(key),
+      makeItem: (key) => 'todo',
+      trySyncProperty: ({ sourceItemKey, targetItemKey }) =>
+        this.trySynchronizeProperty({ sourceParentObject: sourcePropVal, sourcePropKey: sourceItemKey, domainParentObject: domainPropMap, domainPropKey: targetItemKey }),
+    });
   }
 
   // ------------------------------------------------------------------------------------------------------------------
