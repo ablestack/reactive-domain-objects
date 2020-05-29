@@ -3,9 +3,10 @@ import { MockWatchedQueryResult } from '.';
 export const mockWatchedQueryResult: MockWatchedQueryResult = {
   library: {
     name: 'city-library',
+    city: 'niceville',
     authors: [
       {
-        id: 'author-1',
+        id: 'author-js',
         name: 'john smith',
         age: 50,
         books: [
@@ -22,7 +23,7 @@ export const mockWatchedQueryResult: MockWatchedQueryResult = {
         ],
       },
       {
-        id: 'author-1',
+        id: 'author-jf',
         name: 'jane foo',
         age: 50,
         books: [
@@ -39,7 +40,7 @@ export const mockWatchedQueryResult: MockWatchedQueryResult = {
         ],
       },
       {
-        id: 'author-1',
+        id: 'author-ss',
         name: 'shari s',
         age: 50,
         books: [

@@ -20,8 +20,18 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
   defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
   globalPropertyNameTransformations?: IGlobalPropertyNameTransformation;
-  pathMap?: Map<string, IPropertySyncOptions<any, any>>;
-  typeMap?: Map<string, IPropertySyncOptions<any, any>>;
+  pathMap?: Array<IPathMap>;
+  typeMap?: Array<ITypeMap>;
+}
+
+export interface IPathMap {
+  path: string;
+  options: IPropertySyncOptions<any, any>;
+}
+
+export interface ITypeMap {
+  typeName: string;
+  options: IPropertySyncOptions<any, any>;
 }
 
 export interface IGlobalPropertyNameTransformation {
@@ -31,7 +41,7 @@ export interface IGlobalPropertyNameTransformation {
 
 export interface IPropertySyncOptions<S extends object, D extends object> {
   ignore?: boolean;
-  syncFactory?: ISyncableDomainObjectFactory<S, D>;
+  domainObjectCreation?: IDomainObjectFactory<S, D>;
 }
 
 export interface IMakeKey<S> {
@@ -42,13 +52,13 @@ export interface IMakeDomainObject<S, D> {
   (sourceObject: S): D;
 }
 
-export interface ISyncableDomainObjectFactory<S extends object, D extends object> {
+export interface IDomainObjectFactory<S extends object, D extends object> {
   makeKey: IMakeKey<S>;
-  makeDomainObject: IMakeDomainObject<S, D>;
+  makeItem: IMakeDomainObject<S, D>;
 }
 
-export function IsISyncableDomainObjectFactory(o: any): o is ISyncableDomainObjectFactory<any, any> {
-  return o && o.makeKey && typeof o.makeKey === 'function' && o.makeDomainObject && typeof o.makeDomainObject === 'function';
+export function IsIDomainObjectFactory(o: any): o is IDomainObjectFactory<any, any> {
+  return o && o.makeKey && typeof o.makeKey === 'function' && o.makeItem && typeof o.makeItem === 'function';
 }
 
 export interface ISyncableCollection<T> {

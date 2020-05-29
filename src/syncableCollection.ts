@@ -1,12 +1,12 @@
 import { observable, computed, action } from 'mobx';
-import { ISyncableDomainObjectFactory, ICustomEqualityDomainObject, ICustomSyncDomainObject } from '.';
+import { IDomainObjectFactory, ICustomEqualityDomainObject, ICustomSyncDomainObject } from '.';
 import { ISyncableCollection } from './types';
 import { Logger } from './logger';
 
 const logger = Logger.make('SyncableCollection');
 
-export class SyncableCollection<S extends object, D extends object> implements ISyncableDomainObjectFactory<S, D>, ISyncableCollection<D> {
-  private _makeItemKey: (soureItem: S) => string;
+export class SyncableCollection<S extends object, D extends object> implements IDomainObjectFactory<S, D>, ISyncableCollection<D> {
+  private _makeKey: (soureItem: S) => string;
   private _makeItem: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
@@ -27,20 +27,20 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._array$;
   }
 
-  constructor({ makeItemKey, makeItem }: { makeItemKey: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
-    this._makeItemKey = makeItemKey;
+  constructor({ makeKey, makeItem }: { makeKey: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
+    this._makeKey = makeKey;
     this._makeItem = makeItem;
     this._map$ = new Map<string, D>();
   }
 
   // -----------------------------------
-  // ISyncableDomainObjectFactory
+  // IDomainObjectFactory
   // -----------------------------------
   public makeKey = (soureItem: S) => {
-    return this._makeItemKey(soureItem);
+    return this._makeKey(soureItem);
   };
 
-  public makeDomainObject = (sourceItem: S) => {
+  public makeItem = (sourceItem: S) => {
     return this._makeItem(sourceItem);
   };
 

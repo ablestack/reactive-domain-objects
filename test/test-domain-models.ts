@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 import { SyncableCollection } from '../src';
-import { Book } from '.';
+import { Book, Author } from '.';
 
 // Define Test Domain Model objects
 export class PublisherDomainModel {
@@ -25,9 +25,9 @@ export class BookDomainModel {
 
 export class AuthorDomainModel {
   public id: string = '';
-  public name$: string = '';
-  public age$: number = 0;
-  public books: SyncableCollection<Book, BookDomainModel> = new SyncableCollection({ makeItemKey: (book: Book) => book.id, makeItem: (book: Book) => new BookDomainModel() });
+  @observable public name$: string = '';
+  @observable public age$: number = 0;
+  @observable public books = new Array<BookDomainModel>();
 
   /*
       Any other domain-specific properties and methods here
@@ -35,10 +35,9 @@ export class AuthorDomainModel {
 }
 
 export class LibraryDomainModel {
-  public id: string = '';
-  public name$: string = '';
-  public age$: number = 0;
-  public books: SyncableCollection<Book, BookDomainModel> = new SyncableCollection({ makeItemKey: (book: Book) => book.id, makeItem: (book: Book) => new BookDomainModel() });
+  public name: string = '';
+  @observable public city$: string = '';
+  public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({ makeKey: (author: Author) => author.id, makeItem: (book: Author) => new AuthorDomainModel() });
 
   /*
       Any other domain-specific properties and methods here

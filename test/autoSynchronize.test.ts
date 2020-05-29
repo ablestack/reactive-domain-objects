@@ -1,7 +1,8 @@
 import { observable } from 'mobx';
 import { SyncableCollection, GraphSynchronizer } from '../src';
 import { Logger } from '../src/logger';
-import { AuthorDomainModel, mockWatchedQueryResult } from '.';
+import { AuthorDomainModel, mockWatchedQueryResult, LibraryDomainModel, BookDomainModel } from '.';
+import { Book } from './test-types';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 
@@ -10,33 +11,37 @@ const logger = Logger.make('autoSynchronize.test.ts');
 // --------------------------------------------------------------
 
 test('auto synchronize updates properties as expected', () => {
-  const authorDomainModel = new AuthorDomainModel();
-  expect(authorDomainModel.id).toBeFalsy();
-  expect(authorDomainModel.name$).toBeFalsy();
-  expect(authorDomainModel.books.size$).toBeFalsy();
+  const libraryDomainModel = new LibraryDomainModel();
 
-  const graphSynchronizer = new GraphSynchronizer({ globalPropertyNameTransformations: { tryStandardPostfix: '$' } });
-  graphSynchronizer.synchronize({ rootDomainObject: authorDomainModel, rootsourceObject: mockWatchedQueryResult.author });
+  expect(libraryDomainModel.name).toBeFalsy();
+  expect(libraryDomainModel.city$).toBeFalsy();
+  expect(libraryDomainModel.authors.size$).toBeFalsy();
 
-  expect(authorDomainModel.id).not.toBeFalsy();
-  expect(authorDomainModel.name$).not.toBeFalsy();
-  expect(authorDomainModel.books.size$).not.toBeFalsy();
+  const graphSynchronizer = new GraphSynchronizer({
+    pathMap: [{ path: 'library.author.book', options: { domainObjectCreation: { makeKey: (author: Book) => author.id, makeItem: (book: Book) => new BookDomainModel() } } }],
+    globalPropertyNameTransformations: { tryStandardPostfix: '$' },
+  });
+  graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedQueryResult.library });
 
-  expect(authorDomainModel.id).toEqual(mockWatchedQueryResult.author.id);
-  expect(authorDomainModel.age$).toEqual(mockWatchedQueryResult.author.age);
-  expect(authorDomainModel.books.size$).toEqual(2);
+  expect(libraryDomainModel.name).not.toBeFalsy();
+  expect(libraryDomainModel.city$).not.toBeFalsy();
+  expect(libraryDomainModel.authors.size$).not.toBeFalsy();
 
-  expect(authorDomainModel.books.array$[0].id).toEqual(mockWatchedQueryResult.author.books[0].id);
-  expect(authorDomainModel.books.array$[0].title$).toEqual(mockWatchedQueryResult.author.books[0].title);
-  expect(authorDomainModel.books.array$[0].publisher).toBeDefined();
-  expect(authorDomainModel.books.array$[0].publisher.id).toEqual(mockWatchedQueryResult.author.books[0].publisher.id);
-  expect(authorDomainModel.books.array$[0].publisher.name$).toEqual(mockWatchedQueryResult.author.books[0].publisher.name);
+  expect(libraryDomainModel.name).toEqual(mockWatchedQueryResult.library.name);
+  expect(libraryDomainModel.city$).toEqual(mockWatchedQueryResult.library.city);
+  expect(libraryDomainModel.authors.size$).toEqual(3);
+
+  expect(libraryDomainModel.authors.array$[0].books[0].id).toEqual(mockWatchedQueryResult.library.authors[0].books[0].id);
+  expect(libraryDomainModel.authors.array$[0].books[0].title$).toEqual(mockWatchedQueryResult.library.authors[0].books[0].title);
+  expect(libraryDomainModel.authors.array$[0].books[0].publisher).toBeDefined();
+  expect(libraryDomainModel.authors.array$[0].books[0].publisher.id).toEqual(mockWatchedQueryResult.library.authors[0].books[0].publisher.id);
+  expect(libraryDomainModel.authors.array$[0].books[0].publisher.name$).toEqual(mockWatchedQueryResult.library.authors[0].books[0].publisher.name);
 });
 
 //
 //
 //
-test.only('performance', () => {
+test('performance', () => {
   // Setup
   const iterations = 10000;
   const authorDomainModel = new AuthorDomainModel();
@@ -46,7 +51,7 @@ test.only('performance', () => {
 
   // Execute
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.synchronize({ rootDomainObject: authorDomainModel, rootsourceObject: mockWatchedQueryResult.author });
+    graphSynchronizer.synchronize({ rootDomainObject: authorDomainModel, rootsourceObject: mockWatchedQueryResult.library.authors[0] });
   }
 
   // Assess
