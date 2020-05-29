@@ -63,4 +63,7 @@ test('auto synchronize updates properties as expected', () => {
   graphSynchronizer.synchronize({ rootDomainObject: authorDM, rootsourceObject: mockWatchedQueryResult.author });
 
   expect(authorDM.id$).toEqual(mockWatchedQueryResult.author.id);
+  expect(authorDM.age$).toEqual(mockWatchedQueryResult.author.age);
+  expect(authorDM.books.size$).toEqual(2);
+  expect(authorDM.books.array$[0].id).toEqual(mockWatchedQueryResult.author.books[0].id);
 });

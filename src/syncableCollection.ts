@@ -54,7 +54,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._map$.get(key);
   };
 
-  public setItem = (key: string, value: D) => {
+  public upsertItem = (key: string, value: D) => {
     this._map$.set(key, value);
   };
 

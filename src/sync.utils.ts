@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Logger } from './logger';
+import { IMakeKey } from '.';
 
 const logger = Logger.make('SyncUtils');
 
@@ -9,7 +10,7 @@ function synchronizeCollection<S, T>({
   getTargetCollectionKeys,
   makeItemKey,
   getItem,
-  setItem,
+  upsertItem,
   deleteItem,
   makeItem,
   trySyncProperty,
@@ -18,10 +19,10 @@ function synchronizeCollection<S, T>({
   getTargetCollectionKeys: () => string[];
   makeItemKey: (sourceItem: S) => string;
   getItem: (key: string) => T;
-  setItem: (key: string, value: T) => void;
+  upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
   makeItem: (s) => T;
-  trySyncProperty: ({ sourceItemKey, targetItemKey }: { sourceItemKey: string; targetItemKey: string }) => boolean;
+  trySyncProperty: ({ sourceItemVal, targetItemKey }: { sourceItemVal: S; targetItemKey: string }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
@@ -32,14 +33,20 @@ function synchronizeCollection<S, T>({
 
     const targetItem = getItem(key);
 
+    //
     // Source item not present in destination
+    //
     if (!targetItem) {
-      setItem(key, makeItem(sourceItem));
-      changed = true;
-      continue;
+      const madeItem = makeItem(sourceItem);
+      logger.trace(`Adding item ${key} to collection`, madeItem);
+      upsertItem(key, madeItem);
     }
 
-    changed = trySyncProperty({ sourceItemKey: key, targetItemKey: key });
+    //
+    // Sync Item
+    //
+    logger.trace(`Syncing item ${key} in collection`, sourceItem);
+    changed = trySyncProperty({ sourceItemVal: sourceItem, targetItemKey: key });
     continue;
   }
 

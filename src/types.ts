@@ -49,12 +49,12 @@ export function IsISyncableDomainObjectFactory(o: any): o is ISyncableDomainObje
 export interface ISyncableCollection<T> {
   getKeys: () => string[];
   getItem: (key: string) => T;
-  setItem: (key: string, value: T) => void;
+  upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
 }
 
 export function IsISyncableCollection(o: any) {
-  return o && o.getKeys && typeof o.getKeys === 'function' && o.getItem && typeof o.getItem === 'function' && o.setItem && typeof o.setItem === 'function' && o.deleteItem && typeof o.deleteItem === 'function';
+  return o && o.getKeys && typeof o.getKeys === 'function' && o.getItem && typeof o.getItem === 'function' && o.upsertItem && typeof o.upsertItem === 'function' && o.deleteItem && typeof o.deleteItem === 'function';
 }
 
 export interface ISynchronizeState<S extends object> {
