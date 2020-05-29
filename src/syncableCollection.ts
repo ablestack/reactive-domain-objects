@@ -50,6 +50,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
   public getKeys = () => {
     return Array.from(this._map$.keys());
   };
+
   public getItem = (key: string) => {
     return this._map$.get(key);
   };

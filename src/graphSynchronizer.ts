@@ -1,6 +1,6 @@
 import { runInAction } from 'mobx';
 import { comparers, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, SyncUtils, IEqualityComparer, IsICustomEqualityDomainObject, CollectionUtils } from '.';
-import { IsICustomSyncDomainObject, JavaScriptDefaultTypes, IsISyncableDomainObjectFactory, IMakeKey, IMakeDomainObject, IsISyncableCollection, ISyncableCollection } from './types';
+import { IsICustomSyncDomainObject, JavaScriptDefaultTypes, IsISyncableDomainObjectFactory, IMakeKey, IMakeDomainObject, IsISyncableCollection, ISyncableCollection, IGlobalPropertyNameTransformation } from './types';
 import { Logger } from './logger';
 
 const logger = Logger.make('GraphSynchronizer');
@@ -16,7 +16,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
-  private _appendPrefixToObservableProperties: string | undefined;
+  private _globalPropertyNameTransformations: IGlobalPropertyNameTransformation | undefined;
   private _pathMap: Map<string, IPropertySyncOptions<any, any>>;
   private _typeMap: Map<string, IPropertySyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
@@ -52,7 +52,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   constructor(options?: IGraphSyncOptions) {
     this._defaultEqualityComparer = options?.defaultEqualityChecker || comparers.apollo;
-    this._appendPrefixToObservableProperties = options?.appendPrefixToObservableProperties;
+    this._globalPropertyNameTransformations = options?.globalPropertyNameTransformations;
     this._pathMap = options?.pathMap || new Map<string, IPropertySyncOptions<any, any>>();
     this._typeMap = options?.typeMap || new Map<string, IPropertySyncOptions<any, any>>();
   }
@@ -68,14 +68,17 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Loop properties
     for (const sourcePropKey of Object.keys(sourceObject)) {
       // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-      let domainPropKey = sourcePropKey;
-      if (!(domainPropKey in domainObject) && this._appendPrefixToObservableProperties) {
-        domainPropKey = `${sourcePropKey}${this._appendPrefixToObservableProperties}`;
+      let domainPropKey = this._globalPropertyNameTransformations?.makePropertyName ? this._globalPropertyNameTransformations?.makePropertyName(sourcePropKey) : sourcePropKey;
+      if (!(domainPropKey in domainObject) && this._globalPropertyNameTransformations?.tryStandardPostfix) {
+        const domainPropKeyWithPostfix = `${domainPropKey}${this._globalPropertyNameTransformations.tryStandardPostfix}`;
+        logger.trace(`domainPropKey '${domainPropKey}' not found in domainObject. Trying '${domainPropKeyWithPostfix}' `);
+        console.log(' -------> ', domainObject);
+        domainPropKey = domainPropKeyWithPostfix;
       }
 
       // Check to see if key exists
       if (!(domainPropKey in domainObject)) {
-        logger.trace(`domainPropKey ${domainPropKey} not found in syncable object. Skipping property`);
+        logger.trace(`domainPropKey '${domainPropKey}' not found in domainObject. Skipping property`);
         continue;
       }
 
@@ -112,7 +115,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const domainPropVal = getDomainProperty(domainPropKey);
     const domainPropType = toString.call(domainPropVal) as JavaScriptDefaultTypes;
 
-    logger.trace(`synchronizeProperty - enter`, { sourcePropVal, sourcePropType, domainPropKey, domainPropVal, domainPropType });
+    logger.trace(`synchronizeProperty (${domainPropKey}) - enter`, { sourcePropVal, domainPropVal });
 
     //
     switch (sourcePropType) {

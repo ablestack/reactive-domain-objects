@@ -7,7 +7,7 @@ const logger = Logger.make('ViewModelSyncUtils');
 export class QueryWatcher<Q> {
   private _watchedQuery: ObservableQuery<Q> | undefined;
   private _watchedQuerySubscription: ZenObservable.Subscription | undefined;
-  private _active: boolean;
+  private _active: boolean = false;
   private _name: string;
   private _makeObservableQuery: (apolloClient: ApolloClient<object>) => Promise<ObservableQuery<Q>>;
   private _handleDataChange: (queryResult: Q | null | undefined) => void;
@@ -32,7 +32,7 @@ export class QueryWatcher<Q> {
     makeObservableQuery: (apolloClient: ApolloClient<object>) => Promise<ObservableQuery<Q>>;
     onAfterInitialized?: (apolloClient: ApolloClient<object>) => void;
     onAfterStart?: (apolloClient: ApolloClient<object>) => void;
-    onDataChange: (queryResult: Q) => void;
+    onDataChange: (queryResult: Q | null | undefined) => void;
     onAfterStop?: (apolloClient: ApolloClient<object>) => void;
   }) {
     this._name = name;

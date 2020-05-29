@@ -23,8 +23,8 @@ const mockWatchedQueryResult: MockWatchedQueryResult = {
 
 // Define Test Domain Model objects
 class PublisherDM {
-  @observable public id: string;
-  @observable public name: string;
+  public id: string = '';
+  @observable public name$: string = '';
 
   /*
     Any other domain-specific properties and methods here
@@ -32,10 +32,10 @@ class PublisherDM {
 }
 
 class BookDM {
-  @observable public id: string;
-  @observable public title: string;
-  @observable public pages: number;
-  @observable public publisher: PublisherDM;
+  public id: string = '';
+  @observable public title$: string = '';
+  @observable public pages$: number = 0;
+  public publisher: PublisherDM = new PublisherDM();
 
   /*
     Any other domain-specific properties and methods here
@@ -43,9 +43,9 @@ class BookDM {
 }
 
 class AuthorDM {
-  @observable public id$: string;
-  @observable public name$: string;
-  @observable public age$: number;
+  public id: string = '';
+  public name$: string = '';
+  public age$: number = 0;
   public books: SyncableCollection<Book, BookDM> = new SyncableCollection({ makeItemKey: (book: Book) => book.id, makeItem: (book: Book) => new BookDM() });
 
   /*
@@ -57,13 +57,24 @@ test('auto synchronize updates properties as expected', () => {
   console.log('starting test: auto synchronize updates properties as expected');
 
   const authorDM = new AuthorDM();
-  expect(authorDM.id$).toBeUndefined();
+  expect(authorDM.id).toBeFalsy();
+  expect(authorDM.name$).toBeFalsy();
+  expect(authorDM.books.size$).toBeFalsy();
 
-  const graphSynchronizer = new GraphSynchronizer({ appendPrefixToObservableProperties: '$' });
+  const graphSynchronizer = new GraphSynchronizer({ globalPropertyNameTransformations: { tryStandardPostfix: '$' } });
   graphSynchronizer.synchronize({ rootDomainObject: authorDM, rootsourceObject: mockWatchedQueryResult.author });
 
-  expect(authorDM.id$).toEqual(mockWatchedQueryResult.author.id);
+  expect(authorDM.id).not.toBeFalsy();
+  expect(authorDM.name$).not.toBeFalsy();
+  expect(authorDM.books.size$).not.toBeFalsy();
+
+  expect(authorDM.id).toEqual(mockWatchedQueryResult.author.id);
   expect(authorDM.age$).toEqual(mockWatchedQueryResult.author.age);
   expect(authorDM.books.size$).toEqual(2);
+
   expect(authorDM.books.array$[0].id).toEqual(mockWatchedQueryResult.author.books[0].id);
+  expect(authorDM.books.array$[0].title$).toEqual(mockWatchedQueryResult.author.books[0].title);
+  expect(authorDM.books.array$[0].publisher).toBeDefined();
+  expect(authorDM.books.array$[0].publisher.id).toEqual(mockWatchedQueryResult.author.books[0].publisher.id);
+  expect(authorDM.books.array$[0].publisher.name$).toEqual(mockWatchedQueryResult.author.books[0].publisher.name);
 });

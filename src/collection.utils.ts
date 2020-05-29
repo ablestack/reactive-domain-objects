@@ -30,7 +30,10 @@ const _Set = {
     }
     collection.add(value);
   },
-  deleteItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => collection.delete(Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key)),
+  deleteItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => {
+    const item = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
+    if (item) collection.delete(item);
+  },
 };
 
 const _Record = {

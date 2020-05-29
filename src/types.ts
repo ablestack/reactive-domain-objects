@@ -19,9 +19,14 @@ export interface IGraphSynchronizer {
 
 export interface IGraphSyncOptions {
   defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
-  appendPrefixToObservableProperties?: string;
+  globalPropertyNameTransformations?: IGlobalPropertyNameTransformation;
   pathMap?: Map<string, IPropertySyncOptions<any, any>>;
   typeMap?: Map<string, IPropertySyncOptions<any, any>>;
+}
+
+export interface IGlobalPropertyNameTransformation {
+  tryStandardPostfix?: string;
+  makePropertyName?: (sourcePropertyName) => string;
 }
 
 export interface IPropertySyncOptions<S extends object, D extends object> {
@@ -48,7 +53,7 @@ export function IsISyncableDomainObjectFactory(o: any): o is ISyncableDomainObje
 
 export interface ISyncableCollection<T> {
   getKeys: () => string[];
-  getItem: (key: string) => T;
+  getItem: (key: string) => T | null | undefined;
   upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
 }
