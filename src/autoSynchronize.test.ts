@@ -1,6 +1,13 @@
 import { observable } from 'mobx';
 import { SyncableCollection } from '.';
 import { GraphSynchronizer } from './graphSynchronizer';
+import { Logger } from './logger';
+
+const logger = Logger.make('autoSynchronize.test.ts');
+
+// --------------------------------------------------------------
+// DEFINE TYPES AND CONSTS
+// --------------------------------------------------------------
 
 // Define Test Source Data Types
 type Publisher = { id: string; name: string };
@@ -53,8 +60,18 @@ class AuthorDM {
   */
 }
 
+// --------------------------------------------------------------
+// GLOBAL SETUP
+// --------------------------------------------------------------
+
+// --------------------------------------------------------------
+// TESTS
+// --------------------------------------------------------------
+
 test('auto synchronize updates properties as expected', () => {
-  console.log('starting test: auto synchronize updates properties as expected');
+  console.log(process.env.LOG_LEVEL);
+
+  logger.info('starting test: auto synchronize updates properties as expected');
 
   const authorDM = new AuthorDM();
   expect(authorDM.id).toBeFalsy();

@@ -72,7 +72,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       if (!(domainPropKey in domainObject) && this._globalPropertyNameTransformations?.tryStandardPostfix) {
         const domainPropKeyWithPostfix = `${domainPropKey}${this._globalPropertyNameTransformations.tryStandardPostfix}`;
         logger.trace(`domainPropKey '${domainPropKey}' not found in domainObject. Trying '${domainPropKeyWithPostfix}' `);
-        console.log(' -------> ', domainObject);
         domainPropKey = domainPropKeyWithPostfix;
       }
 

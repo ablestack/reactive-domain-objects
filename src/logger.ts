@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 import debug from 'debug';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export interface ILogger {
   error(msg: string, ...logObjects: any[]): void;
@@ -15,12 +18,16 @@ export interface ILoggerFactory {
 
 class DefaultLogger implements ILogger {
   private _logger: debug.Debugger;
+  private _appLogLevel: number;
 
   constructor(namespace: string) {
     this._logger = debug(`apollo-mobx-connector.${namespace}`);
+    this._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
   }
 
   private log(logLevel: number, msg: string, ...logObjects: any[]): void {
+    if (logLevel > this._appLogLevel) return;
+
     if (logLevel === 1) console.error(msg, logObjects);
     else if (logLevel === 2) console.warn(msg, logObjects);
     else console.log(msg, logObjects);

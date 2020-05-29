@@ -46,3 +46,4 @@ TBD
 - Expect non collection properties to be not null or undefined
 - Presidence: PathMap, TypeMap, Interfaces
 - Requires properties are initialized. Use strict compile option
+- LOG_LEVEL .env
