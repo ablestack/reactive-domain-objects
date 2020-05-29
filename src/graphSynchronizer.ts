@@ -27,34 +27,47 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
   private _globalPropertyNameTransformations: IGlobalPropertyNameTransformation | undefined;
-  private _pathMap: Map<string, IPropertySyncOptions<any, any>>;
-  private _typeMap: Map<string, IPropertySyncOptions<any, any>>;
+  private _sourcePathMap: Map<string, IPropertySyncOptions<any, any>>;
+  private _sourceTypeMap: Map<string, IPropertySyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
+  private _sourceNodeKeyChain = new Array<string>();
   private _sourceObjectKeyChain = new Array<string>();
 
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
-  private pushSourceObjectKeyOnStack(key: string) {
-    this._sourceObjectKeyChain.push(key);
+  private pushSourceNodeKeyOnStack(key: string, sourceNodeType: JsonNodeType) {
+    this._sourceNodeKeyChain.push(key);
+    if (sourceNodeType === 'objectProperty') this._sourceObjectKeyChain.push(key);
   }
 
-  private popSourceObjectKeyOffStack() {
-    this._sourceObjectKeyChain.pop();
+  private popSourceNodeKeyOffStack(sourceNodeType: JsonNodeType) {
+    this._sourceNodeKeyChain.pop();
+    if (sourceNodeType === 'objectProperty') this._sourceObjectKeyChain.pop();
   }
 
+  // NodePath is used for persisting previous source state. It is unique per node, but dynamic (thus not predictable)
+  private getSourceNodePath(): string {
+    return this._sourceNodeKeyChain.join('.');
+  }
+
+  // ObjectPath is used for configuration generated options. It is the node path, with the collection keys skipped. It is static, but  not unique per node
   private getSourceObjectPath(): string {
-    return this._sourceObjectKeyChain.join('.');
+    return this._sourceNodeKeyChain.join('.');
+  }
+
+  private getLastSourceObject(): string {
+    return this._sourceObjectMap.get(this.getSourceNodePath());
   }
 
   private getPathMapSyncOptions(): IPropertySyncOptions<any, any> | undefined {
     const currentPath = this.getSourceObjectPath();
-    return this._pathMap.get(currentPath);
+    return this._sourcePathMap.get(currentPath);
   }
 
   private getTypeMapSyncOptions(): IPropertySyncOptions<any, any> | undefined {
     const currentPath = this.getSourceObjectPath();
-    return this._typeMap.get(currentPath);
+    return this._sourceTypeMap.get(currentPath);
   }
 
   // ------------------------------------------------------------------------------------------------------------------
@@ -63,18 +76,18 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   constructor(options?: IGraphSyncOptions) {
     this._defaultEqualityComparer = options?.defaultEqualityChecker || comparers.apollo;
     this._globalPropertyNameTransformations = options?.globalPropertyNameTransformations;
-    this._pathMap = new Map<string, IPropertySyncOptions<any, any>>();
-    this._typeMap = new Map<string, IPropertySyncOptions<any, any>>();
+    this._sourcePathMap = new Map<string, IPropertySyncOptions<any, any>>();
+    this._sourceTypeMap = new Map<string, IPropertySyncOptions<any, any>>();
 
-    if (options?.pathMap) {
-      options?.pathMap.forEach((pathMapItem) => {
-        this._pathMap.set(pathMapItem.path, pathMapItem.options);
+    if (options?.sourcePathMap) {
+      options?.sourcePathMap.forEach((sourcePathMapItem) => {
+        this._sourcePathMap.set(sourcePathMapItem.path, sourcePathMapItem.options);
       });
     }
 
-    if (options?.typeMap) {
-      options?.typeMap.forEach((pathMapItem) => {
-        this._pathMap.set(pathMapItem.typeName, pathMapItem.options);
+    if (options?.sourceTypeMap) {
+      options?.sourceTypeMap.forEach((sourcePathMapItem) => {
+        this._sourcePathMap.set(sourcePathMapItem.typeName, sourcePathMapItem.options);
       });
     }
   }
@@ -133,7 +146,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     getDomainNode: (key: string) => any;
     upsertDomainNode: (key: string, value: any) => void;
   }): boolean {
-    this.pushSourceObjectKeyOnStack(sourceNodeKey);
+    this.pushSourceNodeKeyOnStack(sourceNodeKey, sourceNodeType);
 
     // setup
     let changed = false;
@@ -175,7 +188,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       }
     }
 
-    this.popSourceObjectKeyOffStack();
+    this.popSourceNodeKeyOffStack(sourceNodeType);
     return changed;
   }
 
@@ -195,12 +208,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): boolean {
     if (domainPropType === '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
 
-    const pathMapOptions = this.getPathMapSyncOptions();
-    const typeMapOptions = this.getPathMapSyncOptions();
+    const sourcePathMapOptions = this.getPathMapSyncOptions();
+    const sourceTypeMapOptions = this.getPathMapSyncOptions();
     const typeOptions = IsIDomainObjectFactory(domainPropVal) ? { makeKey: domainPropVal.makeKey, makeItem: domainPropVal.makeItem } : { makeKey: undefined, makeItem: undefined };
 
-    let makeKey: IMakeKey<any> | undefined = pathMapOptions?.domainObjectCreation?.makeKey || typeMapOptions?.domainObjectCreation?.makeKey || typeOptions.makeKey;
-    let makeItem: IMakeDomainObject<any, any> | undefined = pathMapOptions?.domainObjectCreation?.makeItem || typeMapOptions?.domainObjectCreation?.makeItem || typeOptions.makeItem;
+    let makeKey: IMakeKey<any> | undefined = sourcePathMapOptions?.domainObjectCreation?.makeKey || sourceTypeMapOptions?.domainObjectCreation?.makeKey || typeOptions.makeKey;
+    let makeItem: IMakeDomainObject<any, any> | undefined = sourcePathMapOptions?.domainObjectCreation?.makeItem || sourceTypeMapOptions?.domainObjectCreation?.makeItem || typeOptions.makeItem;
 
     if (!makeKey) {
       logger.warn(`synchronizeSourceArray - unable to synchronize, could not find 'makeKey' function in options or type. Path: ${this.getSourceObjectPath()}, type: ${domainPropType}`);
@@ -243,7 +256,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): boolean {
     let changed = false;
     const sourceObjectPath = this.getSourceObjectPath();
-    const lastSourceObject = this._sourceObjectMap.get(key);
+    const lastSourceObject = this.getLastSourceObject();
 
     // Check if already in sync
     const isInSync = IsICustomEqualityDomainObject(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);

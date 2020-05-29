@@ -22,8 +22,8 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
   defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
   globalPropertyNameTransformations?: IGlobalPropertyNameTransformation;
-  pathMap?: Array<IPathMap>;
-  typeMap?: Array<ITypeMap>;
+  sourcePathMap?: Array<IPathMap>;
+  sourceTypeMap?: Array<ITypeMap>;
 }
 
 export interface IPathMap {
