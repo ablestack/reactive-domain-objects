@@ -13,7 +13,7 @@ function synchronizeCollection<S, T>({
   upsertItem,
   deleteItem,
   makeItem,
-  trySyncProperty,
+  trySyncElement,
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionKeys: () => string[];
@@ -22,7 +22,7 @@ function synchronizeCollection<S, T>({
   upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
   makeItem: (s) => T;
-  trySyncProperty: ({ sourceItemVal, targetItemKey }: { sourceItemVal: S; targetItemKey: string }) => boolean;
+  trySyncElement: ({ sourceNodeVal, targetItemKey }: { sourceNodeVal: S; targetItemKey: string }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
@@ -46,7 +46,7 @@ function synchronizeCollection<S, T>({
     // Sync Item
     //
     logger.trace(`Syncing item ${key} in collection`, sourceItem);
-    changed = trySyncProperty({ sourceItemVal: sourceItem, targetItemKey: key });
+    changed = trySyncElement({ sourceNodeVal: sourceItem, targetItemKey: key });
     continue;
   }
 

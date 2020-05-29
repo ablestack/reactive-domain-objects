@@ -41,7 +41,7 @@ test('auto synchronize updates properties as expected', () => {
 //
 //
 //
-test('performance', () => {
+test.skip('performance', () => {
   // Setup
   const iterations = 10000;
   const authorDomainModel = new AuthorDomainModel();

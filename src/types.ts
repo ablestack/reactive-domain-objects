@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-export type JavaScriptDefaultTypes =
+export type JavaScriptBuiltInType =
   | '[object Array]'
   | '[object Boolean]'
   | '[object Date]'
@@ -12,6 +12,8 @@ export type JavaScriptDefaultTypes =
   | '[object Set]'
   | '[object String]'
   | '[object Undefined]';
+
+export type JsonNodeType = 'objectProperty' | 'arrayElement';
 
 export interface IGraphSynchronizer {
   synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainObject }: { rootsourceObject: S; rootDomainObject: D });

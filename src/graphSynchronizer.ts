@@ -1,7 +1,17 @@
 import { runInAction } from 'mobx';
-import { comparers, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, SyncUtils, IEqualityComparer, IsICustomEqualityDomainObject, CollectionUtils } from '.';
-import { IsICustomSyncDomainObject, JavaScriptDefaultTypes, IsIDomainObjectFactory, IMakeKey, IMakeDomainObject, IsISyncableCollection, ISyncableCollection, IGlobalPropertyNameTransformation, IPathMap } from './types';
+import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, IsICustomEqualityDomainObject, SyncUtils } from '.';
 import { Logger } from './logger';
+import {
+  IGlobalPropertyNameTransformation,
+  IMakeDomainObject,
+  IMakeKey,
+  IsICustomSyncDomainObject,
+  IsIDomainObjectFactory,
+  IsISyncableCollection,
+  ISyncableCollection,
+  JavaScriptBuiltInType,
+  JsonNodeType,
+} from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -74,7 +84,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
 
   /** */
-  private synchronizeObjectProperties<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainObject }: { key: string; sourceObject: S; domainObject: D }): boolean {
+  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainObject }: { key: string; sourceObject: S; domainObject: D }): boolean {
     let changed = false;
 
     // Loop properties
@@ -94,11 +104,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       }
 
       changed ==
-        this.trySynchronizeProperty({
-          sourcePropVal: sourceObject[sourcePropKey],
-          domainPropKey,
-          getDomainProperty: (key) => CollectionUtils.Record.getItem({ collection: domainObject, key }),
-          upsertDomainProperty: (key, value) => CollectionUtils.Record.upsertItem({ collection: domainObject, key, value }),
+        this.trySynchronizeNode({
+          sourceNodeType: 'objectProperty',
+          sourceNodeKey: sourcePropKey,
+          sourceNodeVal: sourceObject[sourcePropKey],
+          domainNodeKey: domainPropKey,
+          getDomainNode: (key) => CollectionUtils.Record.getItem({ collection: domainObject, key }),
+          upsertDomainNode: (key, value) => CollectionUtils.Record.upsertItem({ collection: domainObject, key, value }),
         }) || changed;
     }
 
@@ -106,27 +118,31 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   /** */
-  private trySynchronizeProperty({
-    sourcePropVal,
-    domainPropKey,
-    getDomainProperty,
-    upsertDomainProperty,
+  private trySynchronizeNode({
+    sourceNodeType,
+    sourceNodeKey,
+    sourceNodeVal,
+    domainNodeKey,
+    getDomainNode,
+    upsertDomainNode,
   }: {
-    sourcePropVal: any;
-    domainPropKey: string;
-    getDomainProperty: (key: string) => any;
-    upsertDomainProperty: (key: string, value: any) => void;
+    sourceNodeType: JsonNodeType;
+    sourceNodeKey: string;
+    sourceNodeVal: any;
+    domainNodeKey: string;
+    getDomainNode: (key: string) => any;
+    upsertDomainNode: (key: string, value: any) => void;
   }): boolean {
-    this.pushSourceObjectKeyOnStack(domainPropKey);
+    this.pushSourceObjectKeyOnStack(sourceNodeKey);
 
     // setup
     let changed = false;
-    const sourcePropType = toString.call(sourcePropVal) as JavaScriptDefaultTypes;
+    const sourcePropType = toString.call(sourceNodeVal) as JavaScriptBuiltInType;
 
-    const domainPropVal = getDomainProperty(domainPropKey);
-    const domainPropType = toString.call(domainPropVal) as JavaScriptDefaultTypes;
+    const domainPropVal = getDomainNode(domainNodeKey);
+    const domainPropType = toString.call(domainPropVal) as JavaScriptBuiltInType;
 
-    logger.trace(`synchronizeProperty (${domainPropKey}) - enter`, { sourcePropVal, domainPropVal });
+    logger.trace(`synchronizeProperty (${domainNodeKey}) - enter`, { sourceNodeVal, domainPropVal });
 
     //
     switch (sourcePropType) {
@@ -136,25 +152,25 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       case '[object String]': {
         if (sourcePropType !== domainPropType && domainPropType !== '[object Undefined]')
           throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourcePropType}', Domain type: ${domainPropType}`);
-        if (sourcePropVal !== domainPropVal) {
-          logger.trace(`primitive value found in domainPropKey ${domainPropKey}. Setting from old value to new value`, domainPropVal, sourcePropVal);
-          upsertDomainProperty(domainPropKey, sourcePropVal);
+        if (sourceNodeVal !== domainPropVal) {
+          logger.trace(`primitive value found in domainPropKey ${domainNodeKey}. Setting from old value to new value`, domainPropVal, sourceNodeVal);
+          upsertDomainNode(domainNodeKey, sourceNodeVal);
           changed = true;
         }
         break;
       }
       case '[object Object]': {
         if (domainPropType !== '[object Object]')
-          throw Error(`[${domainPropKey}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
-        changed = this.trySynchronizeObjectState({ key: domainPropKey, sourceObject: sourcePropVal, domainObject: domainPropVal });
+          throw Error(`[${domainNodeKey}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
+        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainPropVal });
         break;
       }
       case '[object Array]': {
-        changed = this.synchronizeSourceArray({ domainPropType, sourcePropType, domainPropVal, sourcePropVal });
+        changed = this.synchronizeSourceArray({ sourceNodeKey, domainPropType, sourcePropType, domainPropVal, sourceCollection: sourceNodeVal });
         break;
       }
       default: {
-        logger.trace(`Skipping item ${domainPropKey}. Unable to reconcile synchronization for types - sourcePropType: ${sourcePropType}), domainPropType: ${domainPropType}`);
+        logger.trace(`Skipping item ${domainNodeKey}. Unable to reconcile synchronization for types - sourcePropType: ${sourcePropType}), domainPropType: ${domainPropType}`);
         break;
       }
     }
@@ -164,7 +180,19 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   /** */
-  private synchronizeSourceArray({ domainPropType, sourcePropType, domainPropVal, sourcePropVal }: { domainPropType: string; sourcePropType: string; domainPropVal: any; sourcePropVal: any }): boolean {
+  private synchronizeSourceArray({
+    sourceNodeKey,
+    domainPropType,
+    sourcePropType,
+    domainPropVal,
+    sourceCollection,
+  }: {
+    sourceNodeKey: string;
+    domainPropType: string;
+    sourcePropType: string;
+    domainPropVal: any;
+    sourceCollection: any;
+  }): boolean {
     if (domainPropType === '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
 
     const pathMapOptions = this.getPathMapSyncOptions();
@@ -175,12 +203,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     let makeItem: IMakeDomainObject<any, any> | undefined = pathMapOptions?.domainObjectCreation?.makeItem || typeMapOptions?.domainObjectCreation?.makeItem || typeOptions.makeItem;
 
     if (!makeKey) {
-      logger.trace(`synchronizeSourceArray - unable to synchronize, could not find 'makeKey' function in options or type. Path: ${this.getSourceObjectPath()}, type: ${domainPropType}`);
+      logger.warn(`synchronizeSourceArray - unable to synchronize, could not find 'makeKey' function in options or type. Path: ${this.getSourceObjectPath()}, type: ${domainPropType}`);
       return false;
     }
 
     if (!makeItem) {
-      logger.trace(`synchronizeSourceArray - unable to synchronize, could not find 'makeItem' function in options or type. Path: ${this.getSourceObjectPath()}, type: ${domainPropType}`);
+      logger.warn(`synchronizeSourceArray - unable to synchronize, could not find 'makeItem' function in options or type. Path: ${this.getSourceObjectPath()}, type: ${domainPropType}`);
       return false;
     }
 
@@ -188,14 +216,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Execute the sync based on type
     //
     if (IsISyncableCollection(domainPropVal)) {
-      return this.synchronizeISyncableCollection({ sourcePropVal, domainPropCollection: domainPropVal as ISyncableCollection<any>, makeKey, makeItem });
+      return this.synchronizeISyncableCollection({ sourceNodeKey, sourceCollection, domainPropCollection: domainPropVal as ISyncableCollection<any>, makeKey, makeItem });
     } else if (domainPropType === '[object Map]') {
-      return this.synchronizeDomainMap({ sourcePropVal, domainPropCollection: domainPropVal as Map<string, any>, makeKey, makeItem });
+      return this.synchronizeDomainMap({ sourceNodeKey, sourceCollection, domainPropCollection: domainPropVal as Map<string, any>, makeKey, makeItem });
     } else if (domainPropType === '[object Set]') {
-      return this.synchronizeDomainSet({ sourcePropVal, domainPropCollection: domainPropVal as Set<any>, makeKey, makeItem });
+      return this.synchronizeDomainSet({ sourceNodeKey, sourceCollection, domainPropCollection: domainPropVal as Set<any>, makeKey, makeItem });
       return false;
     } else if (domainPropType === '[object Array]') {
-      return this.synchronizeDomainArray({ sourcePropVal, domainPropCollection: domainPropVal as Array<any>, makeKey, makeItem });
+      return this.synchronizeDomainArray({ sourceNodeKey, sourceCollection, domainPropCollection: domainPropVal as Array<any>, makeKey, makeItem });
       return false;
     }
 
@@ -226,7 +254,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         changed = domainObject.synchronizeState({ sourceObject, graphSynchronizer: this });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceObjectPath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.synchronizeObjectProperties({ key, sourceObject: sourceObject, domainObject: domainObject });
+        changed = this.trySynchronizeObject({ key, sourceObject: sourceObject, domainObject: domainObject });
       }
     } else {
       logger.trace(`synchronizeObjectState - ${sourceObjectPath} - already in sync. Skipping`);
@@ -236,117 +264,133 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   private synchronizeISyncableCollection<S>({
-    sourcePropVal,
+    sourceNodeKey,
+    sourceCollection,
     domainPropCollection,
     makeKey,
     makeItem,
   }: {
-    sourcePropVal: Iterable<S>;
+    sourceNodeKey: string;
+    sourceCollection: Iterable<S>;
     domainPropCollection: ISyncableCollection<any>;
     makeKey: IMakeKey<S>;
     makeItem: IMakeDomainObject<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
-      sourceCollection: sourcePropVal,
+      sourceCollection,
       getTargetCollectionKeys: domainPropCollection.getKeys,
       makeKey: makeKey,
       getItem: (key) => domainPropCollection.getItem(key),
       upsertItem: (key, value) => domainPropCollection.upsertItem(key, value),
       deleteItem: (key) => domainPropCollection.deleteItem(key),
       makeItem: makeItem,
-      trySyncProperty: ({ sourceItemVal, targetItemKey }) =>
-        this.trySynchronizeProperty({
-          sourcePropVal: sourceItemVal,
-          domainPropKey: targetItemKey,
-          getDomainProperty: (key) => domainPropCollection.getItem(key),
-          upsertDomainProperty: (key, value) => domainPropCollection.upsertItem(key, value),
+      trySyncElement: ({ sourceNodeVal, targetItemKey }) =>
+        this.trySynchronizeNode({
+          sourceNodeType: 'arrayElement',
+          sourceNodeKey,
+          sourceNodeVal,
+          domainNodeKey: targetItemKey,
+          getDomainNode: (key) => domainPropCollection.getItem(key),
+          upsertDomainNode: (key, value) => domainPropCollection.upsertItem(key, value),
         }),
     });
   }
 
   private synchronizeDomainMap<S>({
-    sourcePropVal,
+    sourceNodeKey,
+    sourceCollection,
     domainPropCollection,
     makeKey,
     makeItem,
   }: {
-    sourcePropVal: Iterable<S>;
+    sourceNodeKey: string;
+    sourceCollection: Iterable<S>;
     domainPropCollection: Map<string, S>;
     makeKey: IMakeKey<S>;
     makeItem: IMakeDomainObject<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
-      sourceCollection: sourcePropVal,
+      sourceCollection,
       getTargetCollectionKeys: () => Array.from(domainPropCollection.keys()),
       makeKey: makeKey,
       getItem: (key) => domainPropCollection.get(key),
       upsertItem: (key, value) => domainPropCollection.set(key, value),
       deleteItem: (key) => domainPropCollection.delete(key),
       makeItem: makeItem,
-      trySyncProperty: ({ sourceItemVal, targetItemKey }) =>
-        this.trySynchronizeProperty({
-          sourcePropVal: sourceItemVal,
-          domainPropKey: targetItemKey,
-          getDomainProperty: (key) => domainPropCollection.get(key),
-          upsertDomainProperty: (key, value) => domainPropCollection.set(key, value),
+      trySyncElement: ({ sourceNodeVal: sourceCollection, targetItemKey }) =>
+        this.trySynchronizeNode({
+          sourceNodeType: 'arrayElement',
+          sourceNodeKey,
+          sourceNodeVal: sourceCollection,
+          domainNodeKey: targetItemKey,
+          getDomainNode: (key) => domainPropCollection.get(key),
+          upsertDomainNode: (key, value) => domainPropCollection.set(key, value),
         }),
     });
   }
 
   private synchronizeDomainSet<S>({
-    sourcePropVal,
+    sourceNodeKey,
+    sourceCollection,
     domainPropCollection,
     makeKey,
     makeItem,
   }: {
-    sourcePropVal: Iterable<S>;
+    sourceNodeKey: string;
+    sourceCollection: Iterable<S>;
     domainPropCollection: Set<S>;
     makeKey: IMakeKey<S>;
     makeItem: IMakeDomainObject<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
-      sourceCollection: sourcePropVal,
+      sourceCollection,
       getTargetCollectionKeys: () => CollectionUtils.Set.getKeys({ collection: domainPropCollection, makeKey }),
       makeKey: makeKey,
       getItem: (key) => CollectionUtils.Set.getItem({ collection: domainPropCollection, makeKey, key }),
       upsertItem: (key, value) => CollectionUtils.Set.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
       deleteItem: (key) => CollectionUtils.Set.deleteItem({ collection: domainPropCollection, makeKey, key }),
       makeItem: makeItem,
-      trySyncProperty: ({ sourceItemVal, targetItemKey }) =>
-        this.trySynchronizeProperty({
-          sourcePropVal: sourceItemVal,
-          domainPropKey: targetItemKey,
-          getDomainProperty: (key) => CollectionUtils.Set.getItem({ collection: domainPropCollection, makeKey, key }),
-          upsertDomainProperty: (key, value) => CollectionUtils.Set.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
+      trySyncElement: ({ sourceNodeVal: sourceCollection, targetItemKey }) =>
+        this.trySynchronizeNode({
+          sourceNodeType: 'arrayElement',
+          sourceNodeKey,
+          sourceNodeVal: sourceCollection,
+          domainNodeKey: targetItemKey,
+          getDomainNode: (key) => CollectionUtils.Set.getItem({ collection: domainPropCollection, makeKey, key }),
+          upsertDomainNode: (key, value) => CollectionUtils.Set.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
         }),
     });
   }
 
   private synchronizeDomainArray<S>({
-    sourcePropVal,
+    sourceNodeKey,
+    sourceCollection,
     domainPropCollection,
     makeKey,
     makeItem,
   }: {
-    sourcePropVal: Iterable<S>;
+    sourceNodeKey: string;
+    sourceCollection: Iterable<S>;
     domainPropCollection: Array<any>;
     makeKey: IMakeKey<S>;
     makeItem: IMakeDomainObject<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
-      sourceCollection: sourcePropVal,
+      sourceCollection,
       getTargetCollectionKeys: () => CollectionUtils.Array.getKeys({ collection: domainPropCollection, makeKey }),
       makeKey: makeKey,
       getItem: (key) => CollectionUtils.Array.getItem({ collection: domainPropCollection, makeKey, key }),
       upsertItem: (key, value) => CollectionUtils.Array.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
       deleteItem: (key) => CollectionUtils.Array.deleteItem({ collection: domainPropCollection, makeKey, key }),
       makeItem: makeItem,
-      trySyncProperty: ({ sourceItemVal, targetItemKey }) =>
-        this.trySynchronizeProperty({
-          sourcePropVal: sourceItemVal,
-          domainPropKey: targetItemKey,
-          getDomainProperty: (key) => CollectionUtils.Array.getItem({ collection: domainPropCollection, makeKey, key }),
-          upsertDomainProperty: (key, value) => CollectionUtils.Array.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
+      trySyncElement: ({ sourceNodeVal: sourceCollection, targetItemKey }) =>
+        this.trySynchronizeNode({
+          sourceNodeType: 'arrayElement',
+          sourceNodeKey,
+          sourceNodeVal: sourceCollection,
+          domainNodeKey: targetItemKey,
+          getDomainNode: (key) => CollectionUtils.Array.getItem({ collection: domainPropCollection, makeKey, key }),
+          upsertDomainNode: (key, value) => CollectionUtils.Array.upsertItem({ collection: domainPropCollection, makeKey, key, value }),
         }),
     });
   }
@@ -363,8 +407,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     logger.trace('synchronize - entering action', { rootsourceObject, rootSyncableObject: rootDomainObject });
-    runInAction('synchronizeObjectProperties', () => {
-      this.synchronizeObjectProperties({ key: 'root', sourceObject: rootsourceObject, domainObject: rootDomainObject });
+    runInAction('trySynchronizeObject', () => {
+      this.trySynchronizeObject({ key: 'root', sourceObject: rootsourceObject, domainObject: rootDomainObject });
     });
     logger.trace('synchronize - action completed', { rootsourceObject, rootSyncableObject: rootDomainObject });
   }
