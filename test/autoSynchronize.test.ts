@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 import { SyncableCollection, GraphSynchronizer } from '../src';
 import { Logger } from '../src/logger';
-import { AuthorDM, mockWatchedQueryResult } from '.';
+import { AuthorDomainModel, mockWatchedQueryResult } from '.';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 
@@ -10,27 +10,27 @@ const logger = Logger.make('autoSynchronize.test.ts');
 // --------------------------------------------------------------
 
 test('auto synchronize updates properties as expected', () => {
-  const authorDM = new AuthorDM();
-  expect(authorDM.id).toBeFalsy();
-  expect(authorDM.name$).toBeFalsy();
-  expect(authorDM.books.size$).toBeFalsy();
+  const authorDomainModel = new AuthorDomainModel();
+  expect(authorDomainModel.id).toBeFalsy();
+  expect(authorDomainModel.name$).toBeFalsy();
+  expect(authorDomainModel.books.size$).toBeFalsy();
 
   const graphSynchronizer = new GraphSynchronizer({ globalPropertyNameTransformations: { tryStandardPostfix: '$' } });
-  graphSynchronizer.synchronize({ rootDomainObject: authorDM, rootsourceObject: mockWatchedQueryResult.author });
+  graphSynchronizer.synchronize({ rootDomainObject: authorDomainModel, rootsourceObject: mockWatchedQueryResult.author });
 
-  expect(authorDM.id).not.toBeFalsy();
-  expect(authorDM.name$).not.toBeFalsy();
-  expect(authorDM.books.size$).not.toBeFalsy();
+  expect(authorDomainModel.id).not.toBeFalsy();
+  expect(authorDomainModel.name$).not.toBeFalsy();
+  expect(authorDomainModel.books.size$).not.toBeFalsy();
 
-  expect(authorDM.id).toEqual(mockWatchedQueryResult.author.id);
-  expect(authorDM.age$).toEqual(mockWatchedQueryResult.author.age);
-  expect(authorDM.books.size$).toEqual(2);
+  expect(authorDomainModel.id).toEqual(mockWatchedQueryResult.author.id);
+  expect(authorDomainModel.age$).toEqual(mockWatchedQueryResult.author.age);
+  expect(authorDomainModel.books.size$).toEqual(2);
 
-  expect(authorDM.books.array$[0].id).toEqual(mockWatchedQueryResult.author.books[0].id);
-  expect(authorDM.books.array$[0].title$).toEqual(mockWatchedQueryResult.author.books[0].title);
-  expect(authorDM.books.array$[0].publisher).toBeDefined();
-  expect(authorDM.books.array$[0].publisher.id).toEqual(mockWatchedQueryResult.author.books[0].publisher.id);
-  expect(authorDM.books.array$[0].publisher.name$).toEqual(mockWatchedQueryResult.author.books[0].publisher.name);
+  expect(authorDomainModel.books.array$[0].id).toEqual(mockWatchedQueryResult.author.books[0].id);
+  expect(authorDomainModel.books.array$[0].title$).toEqual(mockWatchedQueryResult.author.books[0].title);
+  expect(authorDomainModel.books.array$[0].publisher).toBeDefined();
+  expect(authorDomainModel.books.array$[0].publisher.id).toEqual(mockWatchedQueryResult.author.books[0].publisher.id);
+  expect(authorDomainModel.books.array$[0].publisher.name$).toEqual(mockWatchedQueryResult.author.books[0].publisher.name);
 });
 
 //
@@ -39,14 +39,14 @@ test('auto synchronize updates properties as expected', () => {
 test.only('performance', () => {
   // Setup
   const iterations = 10000;
-  const authorDM = new AuthorDM();
+  const authorDomainModel = new AuthorDomainModel();
   const graphSynchronizer = new GraphSynchronizer({ globalPropertyNameTransformations: { tryStandardPostfix: '$' } });
 
   const startTime = performance.now();
 
   // Execute
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.synchronize({ rootDomainObject: authorDM, rootsourceObject: mockWatchedQueryResult.author });
+    graphSynchronizer.synchronize({ rootDomainObject: authorDomainModel, rootsourceObject: mockWatchedQueryResult.author });
   }
 
   // Assess
