@@ -18,7 +18,20 @@ test('auto synchronize updates properties as expected', () => {
   expect(libraryDomainModel.authors.size$).toBeFalsy();
 
   const graphSynchronizer = new GraphSynchronizer({
-    pathMap: [{ path: 'library.author.book', options: { domainObjectCreation: { makeKey: (author: Book) => author.id, makeItem: (book: Book) => new BookDomainModel() } } }],
+    sourcePathMap: [
+      {
+        path: 'authors.books',
+        options: {
+          domainObjectCreation: {
+            makeKey: (author: Book) => {
+              console.log(` makeKey ------------>`, author);
+              return author.id;
+            },
+            makeItem: (book: Book) => new BookDomainModel(),
+          },
+        },
+      },
+    ],
     globalPropertyNameTransformations: { tryStandardPostfix: '$' },
   });
   graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedQueryResult.library });

@@ -46,8 +46,8 @@ export interface IPropertySyncOptions<S extends object, D extends object> {
   domainObjectCreation?: IDomainObjectFactory<S, D>;
 }
 
-export interface IMakeKey<S> {
-  (soureItem: S): string;
+export interface IMakeKey<T> {
+  (item: T): string;
 }
 
 export interface IMakeDomainObject<S, D> {
@@ -55,6 +55,7 @@ export interface IMakeDomainObject<S, D> {
 }
 
 export interface IDomainObjectFactory<S extends object, D extends object> {
+  makeKey: IMakeKey<S>;
   makeKey: IMakeKey<S>;
   makeItem: IMakeDomainObject<S, D>;
 }

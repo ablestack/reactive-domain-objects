@@ -6,7 +6,11 @@ const logger = Logger.make('CollectionUtils');
 
 const _Array = {
   getKeys: <T>({ collection, makeKey }: { collection: Array<T>; makeKey: IMakeKey<T> }) => collection.map((item) => makeKey(item)),
-  getItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) => collection.find((item) => makeKey(item) === key),
+  getItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) =>
+    collection.find((item) => {
+      console.log(` -------> makeKey: ${makeKey(item)}, key: ${key}`);
+      return makeKey(item) === key;
+    }),
   upsertItem: <T>({ collection, makeKey, key, value }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string; value: T }) => {
     const existingItemIndex = collection.findIndex((item) => makeKey(item) === key);
     if (existingItemIndex) {
@@ -22,7 +26,7 @@ const _Array = {
 
 const _Set = {
   getKeys: <T>({ collection, makeKey }: { collection: Set<T>; makeKey: IMakeKey<T> }) => Array.from(collection.values()).map((domainItem) => makeKey(domainItem)),
-  getItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key),
+  getItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => Array.from(collection.values()).find((domainItem) => makeKey(domainItem) == key),
   upsertItem: <T>({ collection, makeKey, key, value }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string; value: T }) => {
     const existingItem = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
     if (existingItem) {

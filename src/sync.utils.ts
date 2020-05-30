@@ -22,7 +22,7 @@ function synchronizeCollection<S, T>({
   upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
   makeItem: (s) => T;
-  trySyncElement: ({ sourceNodeVal, targetItemKey }: { sourceNodeVal: S; targetItemKey: string }) => boolean;
+  trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
@@ -46,7 +46,7 @@ function synchronizeCollection<S, T>({
     // Sync Item
     //
     logger.trace(`Syncing item ${key} in collection`, sourceItem);
-    changed = trySyncElement({ sourceNodeVal: sourceItem, targetItemKey: key });
+    changed = trySyncElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key });
     continue;
   }
 
