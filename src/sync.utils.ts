@@ -8,7 +8,8 @@ const logger = Logger.make('SyncUtils');
 function synchronizeCollection<S, T>({
   sourceCollection,
   getTargetCollectionKeys,
-  makeKey,
+  makeKeyFromSourceElement,
+  makeKeyFromTargetElement,
   getItem,
   upsertItem,
   deleteItem,
@@ -17,7 +18,8 @@ function synchronizeCollection<S, T>({
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionKeys: () => string[];
-  makeKey: (sourceItem: S) => string;
+  makeKeyFromSourceElement: (sourceItem: S) => string;
+  makeKeyFromTargetElement?: (targetItem: T) => string;
   getItem: (key: string) => T;
   upsertItem: (key: string, value: T) => void;
   deleteItem: (key: string) => void;
@@ -28,7 +30,7 @@ function synchronizeCollection<S, T>({
   const sourceKeys = new Array<string>();
 
   for (const sourceItem of sourceCollection) {
-    const key = makeKey(sourceItem);
+    const key = makeKeyFromSourceElement(sourceItem);
     sourceKeys.push(key);
 
     const targetItem = getItem(key);

@@ -47,3 +47,13 @@ TBD
 - Presidence: PathMap, TypeMap, Interfaces
 - Requires properties are initialized. Use strict TypeScript compile option
 - LOG_LEVEL .env
+
+### Terminology
+
+- Element: an item of a collection
+- Node: An Property of an Object, or an Element of a collection
+- Source: Json source data
+- Domain: JavaScript Target Objects
+- Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
+- makeKeyFromDomainItem needs to be specified for any Domain Array or Set collections
+- Domain Array and Set collections are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)

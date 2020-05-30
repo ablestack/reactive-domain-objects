@@ -23,9 +23,13 @@ test('auto synchronize updates properties as expected', () => {
         path: 'authors.books',
         options: {
           domainObjectCreation: {
-            makeKey: (author: Book) => {
-              console.log(` makeKey ------------>`, author);
-              return author.id;
+            makeKeyFromSourceElement: (book: Book) => {
+              console.log(` makeKeyFromSourceElement ------------>`, book);
+              return book.id;
+            },
+            makeKeyFromDomainItem: (book: BookDomainModel) => {
+              console.log(` makeKeyFromDomainItem ------------>`, book);
+              return book.id;
             },
             makeItem: (book: Book) => new BookDomainModel(),
           },

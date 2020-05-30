@@ -27,8 +27,8 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._array$;
   }
 
-  constructor({ makeKey, makeItem }: { makeKey: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
-    this._makeKey = makeKey;
+  constructor({ makeKeyFromSourceElement, makeItem }: { makeKeyFromSourceElement: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
+    this._makeKey = makeKeyFromSourceElement;
     this._makeItem = makeItem;
     this._map$ = new Map<string, D>();
   }
@@ -36,7 +36,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
   // -----------------------------------
   // IDomainObjectFactory
   // -----------------------------------
-  public makeKey = (soureItem: S) => {
+  public makeKeyFromSourceElement = (soureItem: S) => {
     return this._makeKey(soureItem);
   };
 

@@ -55,13 +55,13 @@ export interface IMakeDomainObject<S, D> {
 }
 
 export interface IDomainObjectFactory<S extends object, D extends object> {
-  makeKey: IMakeKey<S>;
-  makeKey: IMakeKey<S>;
+  makeKeyFromSourceElement: IMakeKey<S>;
+  makeKeyFromDomainItem?: IMakeKey<D>;
   makeItem: IMakeDomainObject<S, D>;
 }
 
 export function IsIDomainObjectFactory(o: any): o is IDomainObjectFactory<any, any> {
-  return o && o.makeKey && typeof o.makeKey === 'function' && o.makeItem && typeof o.makeItem === 'function';
+  return o && o.makeKeyFromSourceElement && typeof o.makeKeyFromSourceElement === 'function' && o.makeItem && typeof o.makeItem === 'function';
 }
 
 export interface ISyncableCollection<T> {
