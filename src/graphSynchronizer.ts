@@ -125,7 +125,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeKey: sourcePropKey,
           sourceNodeVal: sourceObject[sourcePropKey],
           domainNodeKey: domainPropKey,
-          getDomainNode: (key) => CollectionUtils.Record.getItem({ collection: domainObject, key }),
+          domainNodeVal: domainObject[domainPropKey],
           updateDomainNode: (key, value) => CollectionUtils.Record.updateItem({ collection: domainObject, key, value }),
         }) || changed;
     }
@@ -139,14 +139,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceNodeKey,
     sourceNodeVal,
     domainNodeKey,
-    getDomainNode,
+    domainNodeVal,
     updateDomainNode,
   }: {
     sourceNodeType: JsonNodeType;
     sourceNodeKey: string;
     sourceNodeVal: any;
     domainNodeKey: string;
-    getDomainNode: (key: string) => any;
+    domainNodeVal: any;
     updateDomainNode: (key: string, value: any) => void;
   }): boolean {
     this.addSourceNodeToPath(sourceNodeKey, sourceNodeType);
@@ -154,11 +154,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // setup
     let changed = false;
     const sourcePropType = toString.call(sourceNodeVal) as JavaScriptBuiltInType;
+    const domainPropType = toString.call(domainNodeVal) as JavaScriptBuiltInType;
 
-    const domainPropVal = getDomainNode(domainNodeKey);
-    const domainPropType = toString.call(domainPropVal) as JavaScriptBuiltInType;
-
-    logger.trace(`synchronizeProperty (${domainNodeKey}) - enter`, { sourceNodeVal, domainPropVal });
+    logger.trace(`synchronizeProperty (${domainNodeKey}) - enter`, { sourceNodeVal, domainNodeVal });
 
     //
     switch (sourcePropType) {
@@ -168,8 +166,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       case '[object String]': {
         if (sourcePropType !== domainPropType && domainPropType !== '[object Undefined]')
           throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourcePropType}', Domain type: ${domainPropType}`);
-        if (sourceNodeVal !== domainPropVal) {
-          logger.trace(`primitive value found in domainPropKey ${domainNodeKey}. Setting from old value to new value`, domainPropVal, sourceNodeVal);
+        if (sourceNodeVal !== domainNodeVal) {
+          logger.trace(`primitive value found in domainPropKey ${domainNodeKey}. Setting from old value to new value`, domainNodeVal, sourceNodeVal);
           updateDomainNode(domainNodeKey, sourceNodeVal);
           changed = true;
         }
@@ -177,14 +175,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       }
       case '[object Object]': {
         if (domainPropType !== '[object Object]') {
-          console.log(' --------->', { key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainPropVal });
           throw Error(`[${this.getSourceNodePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourcePropType}', Domain type: ${domainPropType} `);
         }
-        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainPropVal });
+        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainNodeVal });
         break;
       }
       case '[object Array]': {
-        changed = this.synchronizeSourceArray({ domainPropType, sourcePropType, domainPropVal, sourceCollection: sourceNodeVal });
+        changed = this.synchronizeSourceArray({ domainPropType, sourcePropType, domainPropVal: domainNodeVal, sourceCollection: sourceNodeVal });
         break;
       }
       default: {
@@ -319,13 +316,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => domainPropCollection.insertItemToTargetCollection(key, value),
       deleteItemFromTargetCollection: (key) => domainPropCollection.deleteItemFromTargetCollection(key),
       makeTargetCollectionItemFromSourceItem: makeTargetCollectionItemFromSourceItem,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }) =>
+      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeType: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
           domainNodeKey: targetElementKey,
-          getDomainNode: (key) => domainPropCollection.getItemFromTargetCollection(key),
+          domainNodeVal: targetElementVal,
           updateDomainNode: (key, value) => domainPropCollection.updateItemInTargetCollection(key, value),
         }),
     });
@@ -350,13 +347,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => domainPropCollection.set(key, value),
       deleteItemFromTargetCollection: (key) => domainPropCollection.delete(key),
       makeTargetCollectionItemFromSourceItem: makeTargetCollectionItemFromSourceItem,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }) =>
+      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeType: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
           domainNodeKey: targetElementKey,
-          getDomainNode: (key) => domainPropCollection.get(key),
+          domainNodeVal: targetElementVal,
           updateDomainNode: (key, value) => domainPropCollection.set(key, value),
         }),
     });
@@ -383,13 +380,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => CollectionUtils.Set.insertItem({ collection: domainPropCollection, key, value }),
       deleteItemFromTargetCollection: (key) => CollectionUtils.Set.deleteItem({ collection: domainPropCollection, makeKey: makeKeyFromDomainItem, key }),
       makeTargetCollectionItemFromSourceItem: makeTargetCollectionItemFromSourceItem,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }) =>
+      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeType: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
           domainNodeKey: targetElementKey,
-          getDomainNode: (key) => CollectionUtils.Set.getItem({ collection: domainPropCollection, makeKey: makeKeyFromDomainItem, key }),
+          domainNodeVal: targetElementVal,
           updateDomainNode: (key, value) => CollectionUtils.Set.updateItem({ collection: domainPropCollection, makeKey: makeKeyFromDomainItem, value }),
         }),
     });
@@ -416,13 +413,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => CollectionUtils.Array.insertItem({ collection: domainPropCollection, key, value }),
       deleteItemFromTargetCollection: (key) => CollectionUtils.Array.deleteItem({ collection: domainPropCollection, makeKey: makeKeyFromDomainItem, key }),
       makeTargetCollectionItemFromSourceItem: makeTargetCollectionItemFromSourceItem,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }) =>
+      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeType: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
           domainNodeKey: targetElementKey,
-          getDomainNode: (key) => CollectionUtils.Array.getItem({ collection: domainPropCollection, makeKey: makeKeyFromDomainItem, key }),
+          domainNodeVal: targetElementVal,
           updateDomainNode: (key, value) => CollectionUtils.Array.insertItem({ collection: domainPropCollection, key, value }),
         }),
     });

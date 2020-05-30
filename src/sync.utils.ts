@@ -24,7 +24,7 @@ function synchronizeCollection<S, T>({
   insertItemToTargetCollection: (key: string, value: T) => void;
   deleteItemFromTargetCollection: (key: string) => void;
   makeTargetCollectionItemFromSourceItem: (s) => T;
-  trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string }) => boolean;
+  trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
@@ -33,22 +33,22 @@ function synchronizeCollection<S, T>({
     const key = makeKeyFromSourceElement(sourceItem);
     sourceKeys.push(key);
 
-    const targetItem = getItemFromTargetCollection(key);
+    let targetItem = getItemFromTargetCollection(key);
 
     //
     // Source item not present in destination
     //
     if (!targetItem) {
-      const madeItem = makeTargetCollectionItemFromSourceItem(sourceItem);
-      logger.trace(`Adding item ${key} to collection`, madeItem);
-      insertItemToTargetCollection(key, madeItem);
+      targetItem = makeTargetCollectionItemFromSourceItem(sourceItem);
+      logger.trace(`Adding item ${key} to collection`, targetItem);
+      insertItemToTargetCollection(key, targetItem);
     }
 
     //
     // Sync Item
     //
     logger.trace(`Syncing item ${key} in collection`, sourceItem);
-    changed = trySyncElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key });
+    changed = trySyncElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem });
     continue;
   }
 

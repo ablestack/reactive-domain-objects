@@ -8,7 +8,6 @@ const _Array = {
   getKeys: <T>({ collection, makeKey }: { collection: Array<T>; makeKey: IMakeKey<T> }) => collection.map((item) => makeKey(item)),
   getItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) =>
     collection.find((item) => {
-      console.log(` -------> makeKey: ${makeKey(item)}, key: ${key}`);
       return makeKey(item) === key;
     }),
   insertItem: <T>({ collection, key, value }: { collection: Array<T>; key: string; value: T }) => {
