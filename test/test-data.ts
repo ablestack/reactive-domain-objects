@@ -4,6 +4,8 @@ export const mockWatchedQueryResult: MockWatchedQueryResult = {
   library: {
     name: 'city-library',
     city: 'niceville',
+    capacity: 100,
+    code: 'ncl-1',
     authors: [
       {
         id: 'author-js',
