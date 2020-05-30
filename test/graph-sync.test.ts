@@ -31,7 +31,7 @@ test('auto synchronize updates properties as expected', () => {
               console.log(` makeKeyFromDomainItem ------------>`, book);
               return book.id;
             },
-            makeItem: (book: Book) => new BookDomainModel(),
+            makeTargetCollectionItemFromSourceItem: (book: Book) => new BookDomainModel(),
           },
         },
       },

@@ -37,7 +37,10 @@ export class AuthorDomainModel {
 export class LibraryDomainModel {
   public name: string = '';
   @observable public city$: string = '';
-  public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({ makeKeyFromSourceElement: (author: Author) => author.id, makeItem: (book: Author) => new AuthorDomainModel() });
+  public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({
+    makeKeyFromSourceElement: (author: Author) => author.id,
+    makeTargetCollectionItemFromSourceItem: (book: Author) => new AuthorDomainModel(),
+  });
 
   /*
       Any other domain-specific properties and methods here

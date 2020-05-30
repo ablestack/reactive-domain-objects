@@ -10,20 +10,20 @@ function synchronizeCollection<S, T>({
   getTargetCollectionKeys,
   makeKeyFromSourceElement,
   makeKeyFromTargetElement,
-  getItem,
-  upsertItem,
-  deleteItem,
-  makeItem,
+  getItemFromTargetCollection,
+  insertItemToTargetCollection,
+  deleteItemFromTargetCollection,
+  makeTargetCollectionItemFromSourceItem,
   trySyncElement,
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionKeys: () => string[];
   makeKeyFromSourceElement: (sourceItem: S) => string;
   makeKeyFromTargetElement?: (targetItem: T) => string;
-  getItem: (key: string) => T;
-  upsertItem: (key: string, value: T) => void;
-  deleteItem: (key: string) => void;
-  makeItem: (s) => T;
+  getItemFromTargetCollection: (key: string) => T;
+  insertItemToTargetCollection: (key: string, value: T) => void;
+  deleteItemFromTargetCollection: (key: string) => void;
+  makeTargetCollectionItemFromSourceItem: (s) => T;
   trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string }) => boolean;
 }) {
   let changed = false;
@@ -33,15 +33,15 @@ function synchronizeCollection<S, T>({
     const key = makeKeyFromSourceElement(sourceItem);
     sourceKeys.push(key);
 
-    const targetItem = getItem(key);
+    const targetItem = getItemFromTargetCollection(key);
 
     //
     // Source item not present in destination
     //
     if (!targetItem) {
-      const madeItem = makeItem(sourceItem);
+      const madeItem = makeTargetCollectionItemFromSourceItem(sourceItem);
       logger.trace(`Adding item ${key} to collection`, madeItem);
-      upsertItem(key, madeItem);
+      insertItemToTargetCollection(key, madeItem);
     }
 
     //
@@ -57,7 +57,7 @@ function synchronizeCollection<S, T>({
   const instanceIdsInDestinationOnly = _.difference(destinationInstanceIds, sourceKeys);
   if (instanceIdsInDestinationOnly.length > 0) {
     instanceIdsInDestinationOnly.forEach((itemId) => {
-      deleteItem(itemId);
+      deleteItemFromTargetCollection(itemId);
     });
     changed = true;
   }

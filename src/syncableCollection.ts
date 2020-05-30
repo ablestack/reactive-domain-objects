@@ -27,9 +27,9 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._array$;
   }
 
-  constructor({ makeKeyFromSourceElement, makeItem }: { makeKeyFromSourceElement: (soureItem: S) => string; makeItem: (sourceItem: S) => D }) {
+  constructor({ makeKeyFromSourceElement, makeTargetCollectionItemFromSourceItem }: { makeKeyFromSourceElement: (soureItem: S) => string; makeTargetCollectionItemFromSourceItem: (sourceItem: S) => D }) {
     this._makeKey = makeKeyFromSourceElement;
-    this._makeItem = makeItem;
+    this._makeItem = makeTargetCollectionItemFromSourceItem;
     this._map$ = new Map<string, D>();
   }
 
@@ -40,7 +40,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._makeKey(soureItem);
   };
 
-  public makeItem = (sourceItem: S) => {
+  public makeTargetCollectionItemFromSourceItem = (sourceItem: S) => {
     return this._makeItem(sourceItem);
   };
 
@@ -51,15 +51,19 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return Array.from(this._map$.keys());
   };
 
-  public getItem = (key: string) => {
+  public getItemFromTargetCollection = (key: string) => {
     return this._map$.get(key);
   };
 
-  public upsertItem = (key: string, value: D) => {
+  public insertItemToTargetCollection = (key: string, value: D) => {
     this._map$.set(key, value);
   };
 
-  public deleteItem = (key: string) => {
+  public updateItemInTargetCollection = (key: string, value: D) => {
+    this._map$.set(key, value);
+  };
+
+  public deleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
   };
 }

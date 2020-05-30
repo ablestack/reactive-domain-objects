@@ -5,38 +5,45 @@ import { IMakeKey } from '.';
 const logger = Logger.make('CollectionUtils');
 
 const _Array = {
-  getKeys: <T>({ collection, makeKeyFromDomainItem }: { collection: Array<T>; makeKeyFromDomainItem: IMakeKey<T> }) => collection.map((item) => makeKeyFromDomainItem(item)),
-  getItem: <T>({ collection, makeKeyFromDomainItem, key }: { collection: Array<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string }) =>
+  getKeys: <T>({ collection, makeKey }: { collection: Array<T>; makeKey: IMakeKey<T> }) => collection.map((item) => makeKey(item)),
+  getItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) =>
     collection.find((item) => {
-      console.log(` -------> makeKeyFromDomainItem: ${makeKeyFromDomainItem(item)}, key: ${key}`);
-      return makeKeyFromDomainItem(item) === key;
+      console.log(` -------> makeKey: ${makeKey(item)}, key: ${key}`);
+      return makeKey(item) === key;
     }),
-  upsertItem: <T>({ collection, makeKeyFromDomainItem, key, value }: { collection: Array<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string; value: T }) => {
-    const existingItemIndex = collection.findIndex((item) => makeKeyFromDomainItem(item) === key);
+  insertItem: <T>({ collection, key, value }: { collection: Array<T>; key: string; value: T }) => {
+    collection.push(value);
+  },
+  updateItem: <T>({ collection, makeKey, value }: { collection: Array<T>; makeKey: IMakeKey<T>; value: T }) => {
+    const key = makeKey(value);
+    const existingItemIndex = collection.findIndex((item) => makeKey(item) === key);
     if (existingItemIndex) {
       collection.splice(existingItemIndex, 1, value);
-    } else collection.push(value);
+    }
   },
-  deleteItem: <T>({ collection, makeKeyFromDomainItem, key }: { collection: Array<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string }) =>
+  deleteItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) =>
     collection.splice(
-      collection.findIndex((item) => makeKeyFromDomainItem(item) === key),
+      collection.findIndex((item) => makeKey(item) === key),
       1,
     ),
 };
 
 const _Set = {
-  getKeys: <T>({ collection, makeKeyFromDomainItem }: { collection: Set<T>; makeKeyFromDomainItem: IMakeKey<T> }) => Array.from(collection.values()).map((domainItem) => makeKeyFromDomainItem(domainItem)),
-  getItem: <T>({ collection, makeKeyFromDomainItem, key }: { collection: Set<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string }) =>
-    Array.from(collection.values()).find((domainItem) => makeKeyFromDomainItem(domainItem) == key),
-  upsertItem: <T>({ collection, makeKeyFromDomainItem, key, value }: { collection: Set<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string; value: T }) => {
-    const existingItem = Array.from(collection.values()).find((domainItem) => makeKeyFromDomainItem(domainItem) === key);
+  getKeys: <T>({ collection, makeKey }: { collection: Set<T>; makeKey: IMakeKey<T> }) => Array.from(collection.values()).map((domainItem) => makeKey(domainItem)),
+  getItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => Array.from(collection.values()).find((domainItem) => makeKey(domainItem) == key),
+  insertItem: <T>({ collection, key, value }: { collection: Set<T>; key: string; value: T }) => {
+    collection.add(value);
+  },
+  updateItem: <T>({ collection, makeKey, value }: { collection: Set<T>; makeKey: IMakeKey<T>; value: T }) => {
+    const key = makeKey(value);
+    const existingItem = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
     if (existingItem) {
       collection.delete(existingItem);
     }
     collection.add(value);
   },
-  deleteItem: <T>({ collection, makeKeyFromDomainItem, key }: { collection: Set<T>; makeKeyFromDomainItem: IMakeKey<T>; key: string }) => {
-    const item = Array.from(collection.values()).find((domainItem) => makeKeyFromDomainItem(domainItem) === key);
+  deleteItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => {
+    const item = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
     if (item) collection.delete(item);
   },
 };
@@ -44,7 +51,10 @@ const _Set = {
 const _Record = {
   getKeys: <T>({ collection }: { collection: Record<string, TextDecodeOptions> }) => Object.keys(collection),
   getItem: <T>({ collection, key }: { collection: Record<string, T>; key: string }) => collection[key],
-  upsertItem: <T>({ collection, key, value }: { collection: Record<string, T>; key: string; value: T }) => {
+  insertItem: <T>({ collection, key, value }: { collection: Record<string, T>; key: string; value: T }) => {
+    collection[key] = value;
+  },
+  updateItem: <T>({ collection, key, value }: { collection: Record<string, T>; key: string; value: T }) => {
     collection[key] = value;
   },
   deleteItem: <T>({ collection, key }: { collection: Record<string, T>; key: string }) => {

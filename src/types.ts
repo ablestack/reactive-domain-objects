@@ -57,22 +57,33 @@ export interface IMakeDomainObject<S, D> {
 export interface IDomainObjectFactory<S extends object, D extends object> {
   makeKeyFromSourceElement: IMakeKey<S>;
   makeKeyFromDomainItem?: IMakeKey<D>;
-  makeItem: IMakeDomainObject<S, D>;
+  makeTargetCollectionItemFromSourceItem: IMakeDomainObject<S, D>;
 }
 
 export function IsIDomainObjectFactory(o: any): o is IDomainObjectFactory<any, any> {
-  return o && o.makeKeyFromSourceElement && typeof o.makeKeyFromSourceElement === 'function' && o.makeItem && typeof o.makeItem === 'function';
+  return o && o.makeKeyFromSourceElement && typeof o.makeKeyFromSourceElement === 'function' && o.makeTargetCollectionItemFromSourceItem && typeof o.makeTargetCollectionItemFromSourceItem === 'function';
 }
 
 export interface ISyncableCollection<T> {
   getKeys: () => string[];
-  getItem: (key: string) => T | null | undefined;
-  upsertItem: (key: string, value: T) => void;
-  deleteItem: (key: string) => void;
+  getItemFromTargetCollection: (key: string) => T | null | undefined;
+  insertItemToTargetCollection: (key: string, value: T) => void;
+  updateItemInTargetCollection: (key: string, value: T) => void;
+  deleteItemFromTargetCollection: (key: string) => void;
 }
 
 export function IsISyncableCollection(o: any) {
-  return o && o.getKeys && typeof o.getKeys === 'function' && o.getItem && typeof o.getItem === 'function' && o.upsertItem && typeof o.upsertItem === 'function' && o.deleteItem && typeof o.deleteItem === 'function';
+  return (
+    o &&
+    o.getKeys &&
+    typeof o.getKeys === 'function' &&
+    o.getItemFromTargetCollection &&
+    typeof o.getItemFromTargetCollection === 'function' &&
+    o.insertItemToTargetCollection &&
+    typeof o.insertItemToTargetCollection === 'function' &&
+    o.deleteItemFromTargetCollection &&
+    typeof o.deleteItemFromTargetCollection === 'function'
+  );
 }
 
 export interface ISynchronizeState<S extends object> {
