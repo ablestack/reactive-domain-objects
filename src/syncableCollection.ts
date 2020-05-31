@@ -44,6 +44,10 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._makeItem(sourceItem);
   };
 
+  [Symbol.iterator](): Iterator<D> {
+    return this.array$[Symbol.iterator]();
+  }
+
   // -----------------------------------
   // ISyncableCollection
   // -----------------------------------

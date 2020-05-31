@@ -61,7 +61,15 @@ const _Record = {
   },
 };
 
+function isIterable(obj) {
+  // checks for null and undefined
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === 'function';
+}
+
 //
 //
 //
-export const CollectionUtils = { Array: _Array, Set: _Set, Record: _Record };
+export const CollectionUtils = { Array: _Array, Set: _Set, Record: _Record, isIterable };

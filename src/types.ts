@@ -13,7 +13,13 @@ export type JavaScriptBuiltInType =
   | '[object String]'
   | '[object Undefined]';
 
-export type JsonNodeType = 'objectProperty' | 'arrayElement';
+export type JsonNodeKind = 'objectProperty' | 'arrayElement';
+
+export type SourceNodeType = 'Primitive' | 'Array' | 'Object';
+export type SourceNodeTypeInfo = { type: SourceNodeType | undefined; builtInType: JavaScriptBuiltInType };
+
+export type DomainNodeType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
+export type DomainNodeTypeInfo = { type: DomainNodeType | undefined; builtInType: JavaScriptBuiltInType };
 
 export interface IGraphSynchronizer {
   synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainObject }: { rootsourceObject: S; rootDomainObject: D });
@@ -64,7 +70,7 @@ export function IsIDomainObjectFactory(o: any): o is IDomainObjectFactory<any, a
   return o && o.makeKeyFromSourceElement && typeof o.makeKeyFromSourceElement === 'function' && o.makeTargetCollectionItemFromSourceItem && typeof o.makeTargetCollectionItemFromSourceItem === 'function';
 }
 
-export interface ISyncableCollection<T> {
+export interface ISyncableCollection<T> extends Iterable<T> {
   getKeys: () => string[];
   getItemFromTargetCollection: (key: string) => T | null | undefined;
   insertItemToTargetCollection: (key: string, value: T) => void;

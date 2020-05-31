@@ -57,3 +57,4 @@ TBD
 - Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
 - makeKeyFromDomainItem needs to be specified for any Domain Array or Set collections
 - Domain Array and Set collections are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)
+- Public Properties, Getters/Setters, Observables all supported

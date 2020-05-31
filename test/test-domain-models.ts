@@ -2,14 +2,19 @@ import { observable, computed } from 'mobx';
 import { SyncableCollection } from '../src';
 import { Book, Author } from '.';
 
-// Define Test Domain Model objects
+// -----------------------------------
+// LIBRARY GRAPH - TEST DOMAIN MODELS
+// -----------------------------------
+
+/**
+ *
+ *
+ * @export
+ * @class PublisherDomainModel
+ */
 export class PublisherDomainModel {
   public id: string = '';
   public name$: string = '';
-
-  /*
-    Any other domain-specific properties and methods here
-  */
 }
 
 export class BookDomainModel {
@@ -18,11 +23,15 @@ export class BookDomainModel {
   public pages$: number = 0;
   public publisher: PublisherDomainModel = new PublisherDomainModel();
 
-  /*
-      Any other domain-specific properties and methods here
-    */
+  /* Any other domain-specific properties and methods here */
 }
 
+/**
+ *
+ *
+ * @export
+ * @class AuthorDomainModel
+ */
 export class AuthorDomainModel {
   public id: string = '';
 
@@ -44,11 +53,15 @@ export class AuthorDomainModel {
 
   public books = new Array<BookDomainModel>();
 
-  /*
-      Any other domain-specific properties and methods here
-  */
+  /* Any other domain-specific properties and methods here */
 }
 
+/**
+ *
+ *
+ * @export
+ * @class LibraryDomainModel
+ */
 export class LibraryDomainModel {
   // Using public variable
   public name: string = '';
@@ -79,7 +92,31 @@ export class LibraryDomainModel {
     makeTargetCollectionItemFromSourceItem: (book: Author) => new AuthorDomainModel(),
   });
 
-  /*
-      Any other domain-specific properties and methods here
-    */
+  /* Any other domain-specific properties and methods here */
+}
+
+// ------------------------------------------------
+// ALL COLLECTION TYPES GRAPH - TEST DOMAIN MODELS
+// ------------------------------------------------
+export class AllCollectionTypesWithObjectsDomainModel {
+  public arrayOfObjects = new Array<SimpleObjectDomainModel>();
+
+  public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
+
+  public setOfObjects = new Set<SimpleObjectDomainModel>();
+
+  public customCollectionOfObjects = new SyncableCollection({
+    makeKeyFromSourceElement: (o: SimpleObjectDomainModel) => o.id,
+    makeTargetCollectionItemFromSourceItem: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+  });
+}
+
+export class AllCollectionTypesWithPrimitivesDomainModel {
+  public arrayOfNumbers = new Array<Number>();
+  public mapOfNumbers = new Map<string, number>();
+  public setOfNumbers = new Set<number>();
+}
+
+export class SimpleObjectDomainModel {
+  public id = '';
 }
