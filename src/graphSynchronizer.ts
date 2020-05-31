@@ -350,8 +350,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // If types are primitive, provide default methods, else try and get from configuration
     //
     if (collectionElementType === 'primitive' || collectionElementType === 'empty') {
-      makeKeyFromSourceElement = (primitive) => primitive;
-      makeKeyFromDomainItem = (primitive) => primitive;
+      makeKeyFromSourceElement = (primitive) => primitive.toString();
+      makeKeyFromDomainItem = (primitive) => primitive.toString();
       makeTargetCollectionItemFromSourceItem = (primitive) => primitive;
     } else {
       const sourcePathMapOptions = this.getPathMapSyncOptions();

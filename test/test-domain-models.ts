@@ -100,11 +100,8 @@ export class LibraryDomainModel {
 // ------------------------------------------------
 export class AllCollectionTypesWithObjectsDomainModel {
   public arrayOfObjects = new Array<SimpleObjectDomainModel>();
-
   public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
-
   public setOfObjects = new Set<SimpleObjectDomainModel>();
-
   public customCollectionOfObjects = new SyncableCollection({
     makeKeyFromSourceElement: (o: SimpleObjectDomainModel) => o.id,
     makeTargetCollectionItemFromSourceItem: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
@@ -112,6 +109,19 @@ export class AllCollectionTypesWithObjectsDomainModel {
 }
 
 export class AllCollectionTypesWithPrimitivesDomainModel {
+  public arrayOfNumbers = new Array<Number>();
+  public mapOfNumbers = new Map<string, number>();
+  public setOfNumbers = new Set<number>();
+}
+
+export class AllCollectionTypesDomainModel {
+  public arrayOfObjects = new Array<SimpleObjectDomainModel>();
+  public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
+  public setOfObjects = new Set<SimpleObjectDomainModel>();
+  public customCollectionOfObjects = new SyncableCollection({
+    makeKeyFromSourceElement: (o: SimpleObjectDomainModel) => o.id,
+    makeTargetCollectionItemFromSourceItem: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+  });
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();

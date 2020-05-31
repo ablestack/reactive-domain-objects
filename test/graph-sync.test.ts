@@ -3,7 +3,7 @@ import { GraphSynchronizer } from '../src';
 import { Logger } from '../src/logger';
 import { Book, SimpleObject } from './test-types';
 import _ from 'lodash';
-import { SimpleObjectDomainModel, AllCollectionTypesWithPrimitivesDomainModel } from './test-domain-models';
+import { SimpleObjectDomainModel, AllCollectionTypesWithPrimitivesDomainModel, AllCollectionTypesDomainModel } from './test-domain-models';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 const PERF_TEST_ITERATION_COUNT_MS = 1000;
@@ -226,6 +226,130 @@ test('auto synchronize all primitive collection types', () => {
   expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
 });
 
-// Undefined /null values test
-// Add collection items
-// Remove Collection items
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+test('auto synchronize collection additions', () => {
+  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+
+  // SETUP
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+
+  // POSTURE VERIFICATION
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(3);
+
+  // EXECUTE
+  // Mutate data
+  const allCollectionSourceModelWithEdits = _.cloneDeep(mockWatchedAllCollectionsQueryResult);
+  allCollectionSourceModelWithEdits.data.arrayOfNumbers.push(4);
+  allCollectionSourceModelWithEdits.data.mapOfNumbers.push(4);
+  allCollectionSourceModelWithEdits.data.setOfNumbers.push(4);
+  allCollectionSourceModelWithEdits.data.arrayOfObjects.push({ id: '4' });
+  allCollectionSourceModelWithEdits.data.mapOfObjects.push({ id: '4' });
+  allCollectionSourceModelWithEdits.data.setOfObjects.push({ id: '4' });
+  allCollectionSourceModelWithEdits.data.customCollectionOfObjects.push({ id: '4' });
+
+  // RESULTS VERIFICATION
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(4);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(4);
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+test('auto synchronize collection removals', () => {
+  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+
+  // SETUP
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+
+  // POSTURE VERIFICATION
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(3);
+
+  // EXECUTE
+  // Mutate data
+  const allCollectionSourceModelWithEdits = _.cloneDeep(mockWatchedAllCollectionsQueryResult);
+  allCollectionSourceModelWithEdits.data.arrayOfNumbers.pop();
+  allCollectionSourceModelWithEdits.data.mapOfNumbers.pop();
+  allCollectionSourceModelWithEdits.data.setOfNumbers.pop();
+  allCollectionSourceModelWithEdits.data.arrayOfObjects.pop();
+  allCollectionSourceModelWithEdits.data.mapOfObjects.pop();
+  allCollectionSourceModelWithEdits.data.setOfObjects.pop();
+  allCollectionSourceModelWithEdits.data.customCollectionOfObjects.pop();
+
+  // RESULTS VERIFICATION
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(2);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(2);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(2);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(2);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(2);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(2);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(2);
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+test('auto synchronize collection element edit', () => {
+  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+
+  // SETUP
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+
+  // POSTURE VERIFICATION
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(3);
+
+  // EXECUTE
+  // Mutate data
+  const allCollectionSourceModelWithEdits = _.cloneDeep(mockWatchedAllCollectionsQueryResult);
+  allCollectionSourceModelWithEdits.data.arrayOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.mapOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.setOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.arrayOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.mapOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.setOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.customCollectionOfObjects[0].id = '4';
+
+  // RESULTS VERIFICATION
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesDomainModel.setOfNumbers.has(4)).toBeTruthy();
+  expect(allCollectionTypesDomainModel.setOfNumbers.has(1)).not.toBeTruthy();
+  expect(allCollectionTypesDomainModel.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
+  expect(allCollectionTypesDomainModel.mapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesDomainModel.mapOfObjects.get('1')).toBeUndefined();
+  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
+  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+});
