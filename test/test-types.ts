@@ -12,16 +12,16 @@ export type MockWatchedLibraryQueryResult = { library: Library };
 // -----------------------------------
 export type SimpleObject = { id: string };
 export type AllCollections = {
-  arrayOfNumbers: number[];
-  arrayOfObjects: SimpleObject[];
+  arrayOfNumbers: (number | undefined | null)[];
+  arrayOfObjects: (SimpleObject | undefined | null)[];
 
-  mapOfNumbers: number[];
-  mapOfObjects: SimpleObject[];
+  mapOfNumbers: (number | undefined | null)[];
+  mapOfObjects: (SimpleObject | undefined | null)[];
 
-  setOfNumbers: number[];
-  setOfObjects: SimpleObject[];
+  setOfNumbers: (number | undefined | null)[];
+  setOfObjects: (SimpleObject | undefined | null)[];
 
-  customCollectionOfNumbers: number[];
-  customCollectionOfObjects: SimpleObject[];
+  customCollectionOfNumbers: (number | undefined | null)[];
+  customCollectionOfObjects: (SimpleObject | undefined | null)[];
 };
 export type MockWatchedAllCollectionsQueryResult = { data: AllCollections };

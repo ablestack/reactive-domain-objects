@@ -353,3 +353,49 @@ test('auto synchronize collection element edit', () => {
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
 });
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+test('auto synchronize collection element - handle null value edits', () => {
+  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+
+  // SETUP
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+
+  // POSTURE VERIFICATION
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size$).toEqual(3);
+
+  // EXECUTE
+  // Mutate data
+  const allCollectionSourceModelWithEdits = _.cloneDeep(mockWatchedAllCollectionsQueryResult);
+  allCollectionSourceModelWithEdits.data.arrayOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.mapOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.setOfNumbers[0] = 4;
+  allCollectionSourceModelWithEdits.data.arrayOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.mapOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.setOfObjects[0].id = '4';
+  allCollectionSourceModelWithEdits.data.customCollectionOfObjects[0].id = '4';
+
+  // RESULTS VERIFICATION
+  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
+  expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesDomainModel.setOfNumbers.has(4)).toBeTruthy();
+  expect(allCollectionTypesDomainModel.setOfNumbers.has(1)).not.toBeTruthy();
+  expect(allCollectionTypesDomainModel.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
+  expect(allCollectionTypesDomainModel.mapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesDomainModel.mapOfObjects.get('1')).toBeUndefined();
+  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
+  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+});

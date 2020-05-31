@@ -30,6 +30,8 @@ function synchronizeCollection<S, T>({
   const sourceKeys = new Array<string>();
 
   for (const sourceItem of sourceCollection) {
+    if (sourceItem === null || sourceItem === undefined) continue;
+
     const key = makeKeyFromSourceElement(sourceItem);
     sourceKeys.push(key);
 

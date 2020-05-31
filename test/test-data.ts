@@ -71,13 +71,13 @@ export const mockWatchedLibraryGraphQueryResult: MockWatchedLibraryQueryResult =
 // -----------------------------------
 export const mockWatchedAllCollectionsQueryResult: MockWatchedAllCollectionsQueryResult = {
   data: {
-    arrayOfNumbers: [1, 2, 3],
-    arrayOfObjects: [{ id: '1' }, { id: '2' }, { id: '3' }],
-    mapOfNumbers: [1, 2, 3],
-    mapOfObjects: [{ id: '1' }, { id: '2' }, { id: '3' }],
-    setOfNumbers: [1, 2, 3],
-    setOfObjects: [{ id: '1' }, { id: '2' }, { id: '3' }],
-    customCollectionOfNumbers: [1, 2, 3],
-    customCollectionOfObjects: [{ id: '1' }, { id: '2' }, { id: '3' }],
+    arrayOfNumbers: [1, 2, undefined, null, 3],
+    arrayOfObjects: [{ id: '1' }, { id: '2' }, null, undefined, { id: '3' }],
+    mapOfNumbers: [1, 2, undefined, null, 3],
+    mapOfObjects: [{ id: '1' }, { id: '2' }, null, undefined, { id: '3' }],
+    setOfNumbers: [1, 2, undefined, null, 3],
+    setOfObjects: [{ id: '1' }, { id: '2' }, null, undefined, { id: '3' }],
+    customCollectionOfNumbers: [1, 2, undefined, null, 3],
+    customCollectionOfObjects: [{ id: '1' }, { id: '2' }, null, undefined, { id: '3' }],
   },
 };
