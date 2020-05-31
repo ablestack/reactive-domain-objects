@@ -5,7 +5,7 @@ import { Book, Author } from '.';
 // Define Test Domain Model objects
 export class PublisherDomainModel {
   public id: string = '';
-  @observable public name$: string = '';
+  public name$: string = '';
 
   /*
     Any other domain-specific properties and methods here
@@ -14,8 +14,8 @@ export class PublisherDomainModel {
 
 export class BookDomainModel {
   public id: string = '';
-  @observable public title$: string = '';
-  @observable public pages$: number = 0;
+  public title$: string = '';
+  public pages$: number = 0;
   public publisher: PublisherDomainModel = new PublisherDomainModel();
 
   /*
@@ -26,25 +26,23 @@ export class BookDomainModel {
 export class AuthorDomainModel {
   public id: string = '';
 
-  @observable private _name$: string = '';
-  @computed public get name$(): string {
+  private _name$: string = '';
+  public get name$(): string {
     return this._name$;
   }
-  public set name$(val: string) {
-    console.log(` AUTHOR SET NAME$ -----------------------> ${val} `);
-    this._name$ = val;
+  public set name$(value: string) {
+    this._name$ = value;
   }
 
-  @observable private _age$: number = 0;
-  @computed public get age$(): number {
+  private _age$: number = 0;
+  public get age$(): number {
     return this._age$;
   }
-  public set age$(val: number) {
-    console.log(` AUTHOR SET AGE$ -----------------------> ${val} `);
-    this._age$ = val;
+  public set age$(value: number) {
+    this._age$ = value;
   }
 
-  @observable public books = new Array<BookDomainModel>();
+  public books = new Array<BookDomainModel>();
 
   /*
       Any other domain-specific properties and methods here
@@ -55,17 +53,16 @@ export class LibraryDomainModel {
   // Using public variable
   public name: string = '';
 
-  // Using Observable
-  @observable public city$: string = '';
+  // Using Observable $ naming convention
+  public city$: string = '';
 
-  // Using Observable with Getter/Setter
-  @observable private _code$: string = '';
-  @computed public get code$(): string {
+  // Using Observable $ naming convention with Getter/Setter
+  private _code$: string = '';
+  public get code$(): string {
     return this._code$;
   }
-  public set code$(val: string) {
-    console.log(` LIBRARY SET CODE -----------------------> ${val} `);
-    this._code$ = val;
+  public set code$(value: string) {
+    this._code$ = value;
   }
 
   // Using Getter/Setter
@@ -73,9 +70,8 @@ export class LibraryDomainModel {
   public get capacity(): number {
     return this._capacity;
   }
-  public set capacity(val: number) {
-    console.log(` LIBRARY SET CAPACITY -----------------------> ${val} `);
-    this._capacity = val;
+  public set capacity(value: number) {
+    this._capacity = value;
   }
 
   public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({

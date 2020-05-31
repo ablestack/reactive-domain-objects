@@ -95,20 +95,19 @@ test('achieves more than 500 full synchronizations a second on a medium sized gr
   expect(totalTimeMs).toBeLessThan(PERF_TEST_MAX_TIME_MS);
 });
 
-test.only('auto synchronize only updated properties where source data changed', () => {
+test('auto synchronize only updated properties where source data changed', () => {
   const libraryDomainModel = new LibraryDomainModel();
   const graphSynchronizer = makePreconfiguredGraphSynchronizer();
 
   // Initial data load
   graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedQueryResult.library });
-  console.log(' --------------------------------------------------------------------------------------------------------- ');
 
   // Add method spies
-  // const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
-  // const library_capacity_spy = jest.spyOn(libraryDomainModel, 'capacity', 'set');
+  const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
+  const library_capacity_spy = jest.spyOn(libraryDomainModel, 'capacity', 'set');
 
-  // const authors_0_age_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
-  // const authors_0_name_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
+  const authors_0_age_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
+  const authors_0_name_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
 
   // Mutate data
   const libraryWithEdits = _.cloneDeep(mockWatchedQueryResult.library);
@@ -120,9 +119,9 @@ test.only('auto synchronize only updated properties where source data changed', 
   graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: libraryWithEdits });
 
   // RESULTS VERIFICATION
-  // expect(library_code_spy).toHaveBeenCalled();
-  // expect(library_capacity_spy).not.toHaveBeenCalled();
+  expect(library_code_spy).toHaveBeenCalled();
+  expect(library_capacity_spy).not.toHaveBeenCalled();
 
-  // expect(authors_0_age_spy).toHaveBeenCalled();
-  // expect(authors_0_name_spy).not.toHaveBeenCalled();
+  expect(authors_0_age_spy).toHaveBeenCalled();
+  expect(authors_0_name_spy).not.toHaveBeenCalled();
 });
