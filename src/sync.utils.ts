@@ -8,22 +8,20 @@ const logger = Logger.make('SyncUtils');
 function synchronizeCollection<S, T>({
   sourceCollection,
   getTargetCollectionKeys,
-  makeKeyFromSourceElement,
-  makeKeyFromTargetElement,
+  makeKeyFromSourceNode,
+  makeDomainModel,
   getItemFromTargetCollection,
   insertItemToTargetCollection,
   deleteItemFromTargetCollection,
-  makeTargetCollectionItemFromSourceItem,
   trySyncElement,
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionKeys: () => string[];
-  makeKeyFromSourceElement: (sourceItem: S) => string;
-  makeKeyFromTargetElement?: (targetItem: T) => string;
+  makeKeyFromSourceNode: (sourceItem: S) => string;
+  makeDomainModel: (s) => T;
   getItemFromTargetCollection: (key: string) => T;
   insertItemToTargetCollection: (key: string, value: T) => void;
   deleteItemFromTargetCollection: (key: string) => void;
-  makeTargetCollectionItemFromSourceItem: (s) => T;
   trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
 }) {
   let changed = false;
@@ -31,8 +29,7 @@ function synchronizeCollection<S, T>({
 
   for (const sourceItem of sourceCollection) {
     if (sourceItem === null || sourceItem === undefined) continue;
-
-    const key = makeKeyFromSourceElement(sourceItem);
+    const key = makeKeyFromSourceNode(sourceItem);
     sourceKeys.push(key);
 
     let targetItem = getItemFromTargetCollection(key);
@@ -41,7 +38,7 @@ function synchronizeCollection<S, T>({
     // Source item not present in destination
     //
     if (!targetItem) {
-      targetItem = makeTargetCollectionItemFromSourceItem(sourceItem);
+      targetItem = makeDomainModel(sourceItem);
       logger.trace(`Adding item ${key} to collection`, targetItem);
       insertItemToTargetCollection(key, targetItem);
     }

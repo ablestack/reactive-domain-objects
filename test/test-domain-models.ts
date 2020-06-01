@@ -1,6 +1,6 @@
-import { observable, computed } from 'mobx';
+import { Author } from '.';
 import { SyncableCollection } from '../src';
-import { Book, Author } from '.';
+import { SimpleObject } from './test-types';
 
 // -----------------------------------
 // LIBRARY GRAPH - TEST DOMAIN MODELS
@@ -88,8 +88,9 @@ export class LibraryDomainModel {
   }
 
   public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({
-    makeKeyFromSourceElement: (author: Author) => author.id,
-    makeTargetCollectionItemFromSourceItem: (book: Author) => new AuthorDomainModel(),
+    makeKeyFromSourceNode: (author: Author) => author.id,
+    makeKeyFromDomainNode: (author: AuthorDomainModel) => author.id,
+    makeDomainObject: (book: Author) => new AuthorDomainModel(),
   });
 
   /* Any other domain-specific properties and methods here */
@@ -103,8 +104,9 @@ export class AllCollectionTypesWithObjectsDomainModel {
   public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
   public setOfObjects = new Set<SimpleObjectDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeKeyFromSourceElement: (o: SimpleObjectDomainModel) => o.id,
-    makeTargetCollectionItemFromSourceItem: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+    makeKeyFromSourceNode: (o: SimpleObject) => o.id,
+    makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
+    makeDomainObject: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
   });
 }
 
@@ -119,8 +121,9 @@ export class AllCollectionTypesDomainModel {
   public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
   public setOfObjects = new Set<SimpleObjectDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeKeyFromSourceElement: (o: SimpleObjectDomainModel) => o.id,
-    makeTargetCollectionItemFromSourceItem: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+    makeKeyFromSourceNode: (o: SimpleObject) => o.id,
+    makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
+    makeDomainObject: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
   });
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();

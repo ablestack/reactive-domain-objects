@@ -25,6 +25,7 @@ const _Array = {
       collection.findIndex((item) => makeKey(item) === key),
       1,
     ),
+  clear: <T>({ collection }: { collection: Array<T> }) => collection.splice(0, collection.length),
 };
 
 const _Set = {
