@@ -1,14 +1,14 @@
 import { runInAction } from 'mobx';
-import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, IsICustomEqualityDomainObject, SyncUtils } from '.';
+import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, IsICustomEqualityDomainModel, SyncUtils } from '.';
 import { Logger } from './logger';
 import {
   DomainNodeType,
   DomainNodeTypeInfo,
   IGlobalPropertyNameTransformation,
-  IMakeDomainObject,
+  IMakeDomainModel,
   IMakeKey,
-  IsICustomSyncDomainObject,
-  IsIDomainObjectFactory,
+  IsICustomSyncDomainModel,
+  IsIDomainModelFactory,
   IsISyncableCollection,
   ISyncableCollection,
   JavaScriptBuiltInType,
@@ -91,22 +91,22 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainObject }: { key: string; sourceObject: S; domainObject: D }): boolean {
+  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainModel }: { key: string; sourceObject: S; domainModel: D }): boolean {
     let changed = false;
 
     // Loop properties
     for (const sourcePropKey of Object.keys(sourceObject)) {
       // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
       let domainPropKey = this._globalOptions?.makePropertyName ? this._globalOptions?.makePropertyName(sourcePropKey) : sourcePropKey;
-      if (!(domainPropKey in domainObject) && this._globalOptions?.tryStandardPostfix) {
+      if (!(domainPropKey in domainModel) && this._globalOptions?.tryStandardPostfix) {
         const domainPropKeyWithPostfix = `${domainPropKey}${this._globalOptions.tryStandardPostfix}`;
-        logger.trace(`domainPropKey '${domainPropKey}' not found in domainObject. Trying '${domainPropKeyWithPostfix}' `);
+        logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Trying '${domainPropKeyWithPostfix}' `);
         domainPropKey = domainPropKeyWithPostfix;
       }
 
       // Check to see if key exists
-      if (!(domainPropKey in domainObject)) {
-        logger.trace(`domainPropKey '${domainPropKey}' not found in domainObject. Skipping property`);
+      if (!(domainPropKey in domainModel)) {
+        logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Skipping property`);
         continue;
       }
 
@@ -116,8 +116,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeKey: sourcePropKey,
           sourceNodeVal: sourceObject[sourcePropKey],
           domainNodeKey: domainPropKey,
-          domainNodeVal: domainObject[domainPropKey],
-          updateDomainNode: (key, value) => CollectionUtils.Record.updateItem({ collection: domainObject, key, value }),
+          domainNodeVal: domainModel[domainPropKey],
+          updateDomainNode: (key, value) => CollectionUtils.Record.updateItem({ collection: domainModel, key, value }),
         }) || changed;
     }
 
@@ -232,7 +232,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
             `[${this.getSourceNodePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourceNodeTypeInfo}', Domain type: ${domainNodeTypeInfo} `,
           );
         }
-        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainNodeVal });
+        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainModel: domainNodeVal });
         break;
       }
       case 'Array': {
@@ -279,12 +279,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         },
       );
       throw new Error(
-        `Could not find 'makeKeyFromSourceNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainObjectFactory on the contained type`,
+        `Could not find 'makeKeyFromSourceNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
       );
     }
     if (sourceCollection.length > 0 && !makeDomainModel) {
       throw new Error(
-        `Could not find 'makeDomainModel' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainObjectFactory on the contained type`,
+        `Could not find 'makeDomainModel' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
       );
     }
 
@@ -328,7 +328,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (sourceCollection.length > 0 && !makeKeyFromDomainNode)
         throw new Error(
-          `Could not find 'makeKeyFromDomainNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainObjectFactory on the contained type`,
+          `Could not find 'makeKeyFromDomainNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
       if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
         logger.warn(
@@ -357,7 +357,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (sourceCollection.length > 0 && !makeKeyFromDomainNode)
         throw new Error(
-          `Could not find 'makeKeyFromDomainNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainObjectFactory on the contained type`,
+          `Could not find 'makeKeyFromDomainNode' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
       if (sourceCollection.length > 100)
         logger.warn(
@@ -382,7 +382,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: any }) {
     let makeKeyFromSourceNode: IMakeKey<any> | undefined;
     let makeKeyFromDomainNode: IMakeKey<any> | undefined;
-    let makeDomainModel: IMakeDomainObject<any, any> | undefined;
+    let makeDomainModel: IMakeDomainModel<any, any> | undefined;
 
     const collectionElementType = this.getCollectionElementType({ sourceCollection, domainCollection });
 
@@ -395,7 +395,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       makeDomainModel = (primitive) => primitive;
     } else {
       const targetOptions = this.getMatchingOptions({ sourceCollection, domainCollection });
-      const typeOptions = IsIDomainObjectFactory({ sourceCollection, domainCollection })
+      const typeOptions = IsIDomainModelFactory(domainCollection)
         ? {
             makeKeyFromSourceNode: domainCollection.makeKeyFromSourceNode,
             makeKeyFromDomainNode: domainCollection.makeKeyFromDomainNode,
@@ -404,13 +404,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         : { makeKeyFromSourceNode: undefined, makeKeyFromDomainNode: domainCollection.makeKeyFromDomainNode, makeDomainModel: undefined };
 
       // GET CONFIG ITEM: makeKeyFromSourceNode
-      makeKeyFromSourceNode = targetOptions?.domainObjectCreation?.makeKeyFromSourceNode || typeOptions.makeKeyFromSourceNode;
+      makeKeyFromSourceNode = targetOptions?.domainModelCreation?.makeKeyFromSourceNode || typeOptions.makeKeyFromSourceNode;
 
       // GET CONFIG ITEM: makeKeyFromDomainNode
-      makeKeyFromDomainNode = targetOptions?.domainObjectCreation?.makeKeyFromDomainNode || typeOptions.makeKeyFromDomainNode;
+      makeKeyFromDomainNode = targetOptions?.domainModelCreation?.makeKeyFromDomainNode || typeOptions.makeKeyFromDomainNode;
 
       // GET CONFIG ITEM: makeDomainModel
-      makeDomainModel = targetOptions?.domainObjectCreation?.makeDomainModel || targetOptions?.domainObjectCreation?.makeDomainModel || typeOptions.makeDomainModel;
+      makeDomainModel = targetOptions?.domainModelCreation?.makeDomainModel || targetOptions?.domainModelCreation?.makeDomainModel || typeOptions.makeDomainModel;
     }
 
     return { makeKeyFromSourceNode, makeKeyFromDomainNode, makeDomainModel };
@@ -463,11 +463,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private trySynchronizeObjectState<S extends Record<string, any>, D extends Record<string, any>>({
     key,
     sourceObject,
-    domainObject,
+    domainModel,
   }: {
     key: string;
     sourceObject: S;
-    domainObject: D;
+    domainModel: D;
     options?: IGraphSyncOptions;
   }): boolean {
     let changed = false;
@@ -475,15 +475,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const lastSourceObject = this.getLastSourceObject();
 
     // Check if already in sync
-    const isInSync = IsICustomEqualityDomainObject(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+    const isInSync = IsICustomEqualityDomainModel(domainModel) ? domainModel.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
     if (!isInSync) {
       // Synchronize
-      if (IsICustomSyncDomainObject(domainObject)) {
+      if (IsICustomSyncDomainModel(domainModel)) {
         logger.trace(`synchronizeObjectState - ${sourceObjectPath} - custom state synchronizer found. Using to sync`);
-        changed = domainObject.synchronizeState({ sourceObject, graphSynchronizer: this });
+        changed = domainModel.synchronizeState({ sourceObject, graphSynchronizer: this });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceObjectPath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.trySynchronizeObject({ key, sourceObject: sourceObject, domainObject: domainObject });
+        changed = this.trySynchronizeObject({ key, sourceObject: sourceObject, domainModel: domainModel });
       }
     } else {
       logger.trace(`synchronizeObjectState - ${sourceObjectPath} - already in sync. Skipping`);
@@ -504,7 +504,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: ISyncableCollection<any>;
     makeKeyFromSourceNode: IMakeKey<S>;
-    makeDomainModel: IMakeDomainObject<any, any>;
+    makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -538,7 +538,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: Map<string, S>;
     makeKeyFromSourceNode: IMakeKey<S>;
-    makeDomainModel: IMakeDomainObject<any, any>;
+    makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -574,7 +574,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     domainNodeCollection: Set<S>;
     makeKeyFromSourceNode: IMakeKey<S>;
     makeKeyFromDomainNode: IMakeKey<S>;
-    makeDomainModel: IMakeDomainObject<any, any>;
+    makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -610,7 +610,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     domainNodeCollection: Array<any>;
     makeKeyFromSourceNode: IMakeKey<S>;
     makeKeyFromDomainNode: IMakeKey<S>;
-    makeDomainModel: IMakeDomainObject<any, any>;
+    makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -639,16 +639,16 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainObject }: { rootsourceObject: S; rootDomainObject: D }) {
-    if (!rootsourceObject || !rootDomainObject) {
-      logger.warn('synchronize - sourceObject or domainObject was null. Exiting', { rootsourceObject, rootSyncableObject: rootDomainObject });
+  public synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainModel }: { rootsourceObject: S; rootDomainModel: D }) {
+    if (!rootsourceObject || !rootDomainModel) {
+      logger.warn('synchronize - sourceObject or domainModel was null. Exiting', { rootsourceObject, rootSyncableObject: rootDomainModel });
       return;
     }
 
-    logger.trace('synchronize - entering action', { rootsourceObject, rootSyncableObject: rootDomainObject });
+    logger.trace('synchronize - entering action', { rootsourceObject, rootSyncableObject: rootDomainModel });
     runInAction('trySynchronizeObject', () => {
-      this.trySynchronizeObject({ key: 'root', sourceObject: rootsourceObject, domainObject: rootDomainObject });
+      this.trySynchronizeObject({ key: 'root', sourceObject: rootsourceObject, domainModel: rootDomainModel });
     });
-    logger.trace('synchronize - action completed', { rootsourceObject, rootSyncableObject: rootDomainObject });
+    logger.trace('synchronize - action completed', { rootsourceObject, rootSyncableObject: rootDomainModel });
   }
 }

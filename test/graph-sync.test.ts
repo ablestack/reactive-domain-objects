@@ -19,7 +19,7 @@ function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
       {
         selector: { path: 'authors.books' },
 
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (book: Book) => book.id,
           makeKeyFromDomainNode: (book: BookDomainModel) => book.id,
           makeDomainModel: (book: Book) => new BookDomainModel(),
@@ -34,7 +34,7 @@ function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
 // TEST
 // --------------------------------------------------------------
 
-test.only('Synchronize updates complex domain graph as expected', () => {
+test('Synchronize updates complex domain graph as expected', () => {
   const libraryDomainModel = new LibraryDomainModel();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
@@ -44,7 +44,7 @@ test.only('Synchronize updates complex domain graph as expected', () => {
   expect(libraryDomainModel.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
+  graphSynchronizer.synchronize({ rootDomainModel: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
 
   // RESULTS VERIFICATION
   expect(libraryDomainModel.name).not.toBeFalsy();
@@ -80,7 +80,7 @@ test('achieves more than 500 full synchronizations a second on a medium sized gr
   const startTime = performance.now();
 
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
+    graphSynchronizer.synchronize({ rootDomainModel: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
   }
 
   const finishTime = performance.now();
@@ -103,7 +103,7 @@ test('Synchronize only updated properties where source data changed', () => {
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // Initial data load
-  graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
+  graphSynchronizer.synchronize({ rootDomainModel: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
 
   // Add method spies
   const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
@@ -119,7 +119,7 @@ test('Synchronize only updated properties where source data changed', () => {
 
   // EXECUTE
   // update
-  graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: libraryWithEdits });
+  graphSynchronizer.synchronize({ rootDomainModel: libraryDomainModel, rootsourceObject: libraryWithEdits });
 
   // RESULTS VERIFICATION
   expect(library_code_spy).toHaveBeenCalled();
@@ -138,7 +138,7 @@ function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
     targetedOptions: [
       {
         selector: { matcher: (node) => node.__type === 'Book' },
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (book: Book) => book.id,
           makeKeyFromDomainNode: (book: BookDomainModel) => book.id,
           makeDomainModel: (book: Book) => new BookDomainModel(),
@@ -160,7 +160,7 @@ test('Synchronize using selector config', () => {
   expect(libraryDomainModel.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainObject: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
+  graphSynchronizer.synchronize({ rootDomainModel: libraryDomainModel, rootsourceObject: mockWatchedLibraryGraphQueryResult.library });
 
   // RESULTS VERIFICATION
   expect(libraryDomainModel.authors.array$[0].books.length).toEqual(mockWatchedLibraryGraphQueryResult.library.authors[0].books.length);
@@ -176,7 +176,7 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
     targetedOptions: [
       {
         selector: { path: 'arrayOfObjects' },
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (o: SimpleObject) => o.id,
           makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
           makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
@@ -184,7 +184,7 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
       },
       {
         selector: { path: 'mapOfObjects' },
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (o: SimpleObject) => o.id,
           makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
           makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
@@ -192,7 +192,7 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
       },
       {
         selector: { path: 'setOfObjects' },
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (o: SimpleObject) => o.id,
           makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
           makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
@@ -200,7 +200,7 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
       },
       {
         selector: { path: 'customCollectionOfObjects' },
-        domainObjectCreation: {
+        domainModelCreation: {
           makeKeyFromSourceNode: (o: SimpleObject) => o.id,
           makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
           makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
@@ -225,7 +225,7 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
@@ -247,7 +247,7 @@ test('Synchronize all primitive collection types', () => {
   expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -263,7 +263,7 @@ test('Synchronize collection additions', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -286,7 +286,7 @@ test('Synchronize collection additions', () => {
   allCollectionSourceModelWithEdits.data.customCollectionOfObjects.push({ id: '4' });
 
   // RESULTS VERIFICATION
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(4);
   expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(4);
@@ -304,7 +304,7 @@ test('Synchronize collection removals', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -327,7 +327,7 @@ test('Synchronize collection removals', () => {
   allCollectionSourceModelWithEdits.data.customCollectionOfObjects.pop();
 
   // RESULTS VERIFICATION
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(2);
   expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(2);
   expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(2);
@@ -345,7 +345,7 @@ test('Synchronize collection element edit', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -368,7 +368,7 @@ test('Synchronize collection element edit', () => {
   allCollectionSourceModelWithEdits.data.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
   expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
   expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
   expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();
@@ -391,7 +391,7 @@ test('Synchronize collection element - handle null value edits', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: mockWatchedAllCollectionsQueryResult.data });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -414,7 +414,7 @@ test('Synchronize collection element - handle null value edits', () => {
   allCollectionSourceModelWithEdits.data.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.synchronize({ rootDomainObject: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
+  graphSynchronizer.synchronize({ rootDomainModel: allCollectionTypesDomainModel, rootsourceObject: allCollectionSourceModelWithEdits.data });
   expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
   expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
   expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();

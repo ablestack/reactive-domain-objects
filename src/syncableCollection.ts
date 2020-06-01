@@ -1,15 +1,15 @@
 import { observable, computed, action } from 'mobx';
-import { IDomainObjectFactory, ICustomEqualityDomainObject, ICustomSyncDomainObject } from '.';
+import { IDomainModelFactory, ICustomEqualityDomainModel, ICustomSyncDomainModel } from '.';
 import { ISyncableCollection } from './types';
 import { Logger } from './logger';
 import { CollectionUtils } from './collection.utils';
 
 const logger = Logger.make('SyncableCollection');
 
-export class SyncableCollection<S extends object, D extends object> implements IDomainObjectFactory<S, D>, ISyncableCollection<D> {
+export class SyncableCollection<S extends object, D extends object> implements IDomainModelFactory<S, D>, ISyncableCollection<D> {
   private _makeKeyFromSourceNode: (node: S) => string;
   private _makeKeyFromDomainNode: (node: D) => string;
-  private _makeDomainObject: (sourceItem: S) => D;
+  private _makeDomainModel: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
 
@@ -29,27 +29,31 @@ export class SyncableCollection<S extends object, D extends object> implements I
   constructor({
     makeKeyFromSourceNode,
     makeKeyFromDomainNode,
-    makeDomainObject,
+    makeDomainModel,
   }: {
     makeKeyFromSourceNode: (sourceNode: S) => string;
     makeKeyFromDomainNode: (domainNode: D) => string;
-    makeDomainObject: (sourceNode: S) => D;
+    makeDomainModel: (sourceNode: S) => D;
   }) {
     this._makeKeyFromSourceNode = makeKeyFromSourceNode;
     this._makeKeyFromDomainNode = makeKeyFromDomainNode;
-    this._makeDomainObject = makeDomainObject;
+    this._makeDomainModel = makeDomainModel;
     this._map$ = new Map<string, D>();
   }
 
   // -----------------------------------
-  // IDomainObjectFactory
+  // IDomainModelFactory
   // -----------------------------------
-  public makeKeyFromSourceNode = (soureItem: S) => {
-    return this._makeKeyFromSourceNode(soureItem);
+  public makeKeyFromSourceNode = (sourceNode: S) => {
+    return this._makeKeyFromSourceNode(sourceNode);
+  };
+
+  public makeKeyFromDomainNode = (domainNode: D) => {
+    return this._makeKeyFromDomainNode(domainNode);
   };
 
   public makeDomainModel = (sourceItem: S) => {
-    return this._makeDomainObject(sourceItem);
+    return this._makeDomainModel(sourceItem);
   };
 
   [Symbol.iterator](): Iterator<D> {

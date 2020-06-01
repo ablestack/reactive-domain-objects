@@ -24,7 +24,7 @@ export type DomainNodeType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableC
 export type DomainNodeTypeInfo = { type: DomainNodeType | undefined; builtInType: JavaScriptBuiltInType };
 
 export interface IGraphSynchronizer {
-  synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainObject }: { rootsourceObject: S; rootDomainObject: D });
+  synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainModel }: { rootsourceObject: S; rootDomainModel: D });
 }
 
 export interface IGraphSyncOptions {
@@ -41,7 +41,7 @@ export interface IGlobalPropertyNameTransformation {
 export interface IPropertySyncOptions<S extends object, D extends object> {
   selector: INodeSelector<S>;
   ignore?: boolean;
-  domainObjectCreation?: IDomainObjectFactory<S, D>;
+  domainModelCreation?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSelector<S> {
@@ -53,17 +53,17 @@ export interface IMakeKey<T> {
   (item: T): string;
 }
 
-export interface IMakeDomainObject<S, D> {
+export interface IMakeDomainModel<S, D> {
   (sourceObject: S): D;
 }
 
-export interface IDomainObjectFactory<S extends object, D extends object> {
+export interface IDomainModelFactory<S extends object, D extends object> {
   makeKeyFromSourceNode: IMakeKey<S>;
-  makeKeyFromDomainNode?: IMakeKey<D>;
-  makeDomainModel: IMakeDomainObject<S, D>;
+  makeKeyFromDomainNode: IMakeKey<D>;
+  makeDomainModel: IMakeDomainModel<S, D>;
 }
 
-export function IsIDomainObjectFactory(o: any): o is IDomainObjectFactory<any, any> {
+export function IsIDomainModelFactory(o: any): o is IDomainModelFactory<any, any> {
   return (
     o &&
     o.makeKeyFromSourceNode &&
@@ -107,19 +107,19 @@ export interface IStateEqual<S extends object> {
   (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined): boolean;
 }
 
-export interface ICustomSyncDomainObject<S extends object> {
+export interface ICustomSyncDomainModel<S extends object> {
   synchronizeState: ISynchronizeState<S>;
 }
 
-export function IsICustomSyncDomainObject(o: any): o is ICustomSyncDomainObject<any> {
+export function IsICustomSyncDomainModel(o: any): o is ICustomSyncDomainModel<any> {
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
 }
 
-export interface ICustomEqualityDomainObject<S extends object> {
+export interface ICustomEqualityDomainModel<S extends object> {
   isStateEqual: IStateEqual<S>;
 }
 
-export function IsICustomEqualityDomainObject(o: any): o is ICustomEqualityDomainObject<any> {
+export function IsICustomEqualityDomainModel(o: any): o is ICustomEqualityDomainModel<any> {
   return o && o.isStateEqual && typeof o.isStateEqual === 'function';
 }
 
