@@ -24,7 +24,7 @@ export type DomainNodeType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableC
 export type DomainNodeTypeInfo = { type: DomainNodeType | undefined; builtInType: JavaScriptBuiltInType };
 
 export interface IGraphSynchronizer {
-  synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainModel }: { rootsourceObject: S; rootDomainModel: D });
+  synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D });
 }
 
 export interface IGraphSyncOptions {

@@ -639,16 +639,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootsourceObject, rootDomainModel }: { rootsourceObject: S; rootDomainModel: D }) {
-    if (!rootsourceObject || !rootDomainModel) {
-      logger.warn('synchronize - sourceObject or domainModel was null. Exiting', { rootsourceObject, rootSyncableObject: rootDomainModel });
+  public synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D }) {
+    if (!rootSourceNode || !rootDomainNode) {
+      logger.warn('synchronize - sourceObject or domainModel was null. Exiting', { rootSourceNode, rootSyncableObject: rootDomainNode });
       return;
     }
 
-    logger.trace('synchronize - entering action', { rootsourceObject, rootSyncableObject: rootDomainModel });
-    runInAction('trySynchronizeObject', () => {
-      this.trySynchronizeObject({ key: 'root', sourceObject: rootsourceObject, domainModel: rootDomainModel });
-    });
-    logger.trace('synchronize - action completed', { rootsourceObject, rootSyncableObject: rootDomainModel });
+    logger.trace('synchronize - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    this.trySynchronizeObject({ key: 'root', sourceObject: rootSourceNode, domainModel: rootDomainNode });
+    logger.trace('synchronize - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
   }
 }

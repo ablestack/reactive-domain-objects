@@ -1,13 +1,13 @@
 {
-  "name": "@ahrndee/apollo-mobx-connector",
+  "name": "@shallyware/reactive-domain-graphs",
   "version": "0.1.0",
   "description": "Utility classes and methods to transform ApolloGraphQL results into observable Domain Models",
   "author": "ahrnee <ahrndee@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/ahrnee/apollo-mobx-connector",
+  "homepage": "https://github.com/jamshally/reactive-domain-graphs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ahrnee/apollo-mobx-connector"
+    "url": "git+https://github.com/jamshally/reactive-domain-graphs"
   },
   "scripts": {
     "prepublishOnly": "rm -f dist/src/package.json dist/src/README.md  && cp package.json README.md dist/src/",
