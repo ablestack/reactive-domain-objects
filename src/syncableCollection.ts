@@ -67,7 +67,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return Array.from(this._map$.keys());
   };
 
-  public getItemFromTargetCollection = (key: string) => {
+  public tryGetItemFromTargetCollection = (key: string) => {
     return this._map$.get(key);
   };
 
@@ -81,7 +81,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
     CollectionUtils.Array.insertItem<D>({ collection: this._array$!, key, value });
   };
 
-  public deleteItemFromTargetCollection = (key: string) => {
+  public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
     CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeKeyFromDomainNode });
   };

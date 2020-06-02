@@ -1,4 +1,4 @@
-import { Library, AllCollections, Foo } from '.';
+import { Library, AllCollections, Foo, PropNameTestRoot } from '.';
 
 // -----------------------------------
 // FOO BAR GRAPH - TEST SOURCE MODEL
@@ -99,5 +99,13 @@ export const allCollections_Uno: AllCollections = {
   setOfNumbers: [1],
   setOfObjects: [{ id: '1', __type: 'setOfObjectsObject' }],
   customCollectionOfNumbers: [1],
-  customCollectionOfObjects: [{ id: '1', __type: 'customCollectinOfObjectsObject' }],
+  customCollectionOfObjects: [{ id: '1', __type: 'customCollectionOfObjectsObject' }],
+};
+
+// -----------------------------------
+// LIBRARY GRAPH - PROP NAME TEST MODEL
+// -----------------------------------
+export const propNameTestRootModel: PropNameTestRoot = {
+  mapOfDefaultIdDomainModel: [{ id: '1' }],
+  mapOfDefaultId$DomainModel: [{ id: '1' }],
 };

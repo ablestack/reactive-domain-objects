@@ -17,22 +17,8 @@ function makePreconfiguredFooGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
     targetedOptions: [
-      {
-        selector: { path: 'arrayOfBar' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (sourceNode: Bar) => sourceNode.id,
-          makeKeyFromDomainNode: (domainNode: BarDomainModel) => domainNode.id,
-          makeDomainModel: (sourceNode: Bar) => new BarDomainModel(),
-        },
-      },
-      {
-        selector: { path: 'mapOfBar' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (sourceNode: Bar) => sourceNode.id,
-          makeKeyFromDomainNode: (domainNode: BarDomainModel) => domainNode.id,
-          makeDomainModel: (sourceNode: Bar) => new BarDomainModel(),
-        },
-      },
+      { selector: { path: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
+      { selector: { path: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
     ],
   });
 }
@@ -67,17 +53,7 @@ test('Synchronize updates complex domain graph as expected', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedOptions: [
-      {
-        selector: { path: 'authors.books' },
-
-        domainModelCreation: {
-          makeKeyFromSourceNode: (book: Book) => book.id,
-          makeKeyFromDomainNode: (book: BookDomainModel) => book.id,
-          makeDomainModel: (book: Book) => new BookDomainModel(),
-        },
-      },
-    ],
+    targetedOptions: [{ selector: { path: 'authors.books' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalOptions: { tryStandardPostfix: '$' },
   });
 }
@@ -187,16 +163,7 @@ test('Synchronize only updated properties where source data changed', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedOptions: [
-      {
-        selector: { matcher: (node) => node && node.__type === 'Book' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (book: Book) => book.id,
-          makeKeyFromDomainNode: (book: BookDomainModel) => book.id,
-          makeDomainModel: (book: Book) => new BookDomainModel(),
-        },
-      },
-    ],
+    targetedOptions: [{ selector: { matcher: (node) => node && node.__type === 'Book' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalOptions: { tryStandardPostfix: '$' },
   });
 }
@@ -228,35 +195,19 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
     targetedOptions: [
       {
         selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-          makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
-          makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
-        },
+        domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel() },
       },
       {
         selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-          makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
-          makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
-        },
+        domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel() },
       },
       {
         selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-          makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
-          makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
-        },
+        domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel() },
       },
       {
-        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectinOfObjectsObject' },
-        domainModelCreation: {
-          makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-          makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
-          makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel(),
-        },
+        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
+        domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleObjectDomainModel() },
       },
     ],
     globalOptions: { tryStandardPostfix: '$' },
@@ -521,3 +472,38 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
 });
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+
+// test('Synchronize only updated properties where source data changed', () => {
+//   const libraryDomainModel = new LibraryDomainModel();
+//   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
+
+//   // Initial data load
+//   graphSynchronizer.synchronize({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+
+//   // Add method spies
+//   const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
+//   const library_capacity_spy = jest.spyOn(libraryDomainModel, 'capacity', 'set');
+
+//   const authors_0_age_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
+//   const authors_0_name_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
+
+//   // Mutate data
+//   const libraryWithEdits = _.cloneDeep(librarySourceJSON);
+//   libraryWithEdits.code = libraryWithEdits.code + ' - changed';
+//   libraryWithEdits.authors[0].age = libraryWithEdits.authors[0].age + 2;
+
+//   // EXECUTE
+//   // update
+//   graphSynchronizer.synchronize({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
+
+//   // RESULTS VERIFICATION
+//   expect(library_code_spy).toHaveBeenCalled();
+//   expect(library_capacity_spy).not.toHaveBeenCalled();
+
+//   expect(authors_0_age_spy).toHaveBeenCalled();
+//   expect(authors_0_name_spy).not.toHaveBeenCalled();
+// });

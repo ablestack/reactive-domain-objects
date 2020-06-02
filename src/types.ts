@@ -58,8 +58,8 @@ export interface IMakeDomainModel<S, D> {
 }
 
 export interface IDomainModelFactory<S extends object, D extends object> {
-  makeKeyFromSourceNode: IMakeKey<S>;
-  makeKeyFromDomainNode: IMakeKey<D>;
+  makeKeyFromSourceNode?: IMakeKey<S>;
+  makeKeyFromDomainNode?: IMakeKey<D>;
   makeDomainModel: IMakeDomainModel<S, D>;
 }
 
@@ -78,10 +78,10 @@ export function IsIDomainModelFactory(o: any): o is IDomainModelFactory<any, any
 export interface ISyncableCollection<T> extends Iterable<T> {
   readonly size: number;
   getKeys: () => string[];
-  getItemFromTargetCollection: (key: string) => T | null | undefined;
+  tryGetItemFromTargetCollection: (key: string) => T | null | undefined;
   insertItemToTargetCollection: (key: string, value: T) => void;
   updateItemInTargetCollection: (key: string, value: T) => void;
-  deleteItemFromTargetCollection: (key: string) => void;
+  tryDeleteItemFromTargetCollection: (key: string) => void;
   clear: () => void;
 }
 
@@ -90,12 +90,12 @@ export function IsISyncableCollection(o: any) {
     o &&
     o.getKeys &&
     typeof o.getKeys === 'function' &&
-    o.getItemFromTargetCollection &&
-    typeof o.getItemFromTargetCollection === 'function' &&
+    o.tryGetItemFromTargetCollection &&
+    typeof o.tryGetItemFromTargetCollection === 'function' &&
     o.insertItemToTargetCollection &&
     typeof o.insertItemToTargetCollection === 'function' &&
-    o.deleteItemFromTargetCollection &&
-    typeof o.deleteItemFromTargetCollection === 'function'
+    o.tryDeleteItemFromTargetCollection &&
+    typeof o.tryDeleteItemFromTargetCollection === 'function'
   );
 }
 

@@ -29,3 +29,9 @@ export type AllCollections = {
   customCollectionOfNumbers: (number | undefined | null)[];
   customCollectionOfObjects: (SimpleObject | undefined | null)[];
 };
+
+// -----------------------------------
+// LIBRARY GRAPH - TEST SOURCE TYPES
+// -----------------------------------
+export type PropNameTestRoot = { mapOfDefaultIdDomainModel: DefaultIdObject[]; mapOfDefaultId$DomainModel: DefaultIdObject[] };
+export type DefaultIdObject = { id: string };

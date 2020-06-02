@@ -156,3 +156,25 @@ export class AllCollectionTypesDomainModel {
 export class SimpleObjectDomainModel {
   public id = '';
 }
+
+// -----------------------------------
+// LIBRARY GRAPH - PROP NAME TEST MODEL
+// -----------------------------------
+export class PropNameTestRootDomainModel {
+  public mapOfDefaultIdDomainModel = new Map<string, DefaultIdDomainModel>();
+  public mapOfDefaultId$DomainModel = new Map<string, DefaultId$DomainModel>();
+}
+
+export class DefaultIdDomainModel {
+  private _id: string = '';
+  public get id(): string {
+    return this.id;
+  }
+}
+
+export class DefaultId$DomainModel {
+  private _id$: string = '';
+  public get id$(): string {
+    return this.id$;
+  }
+}
