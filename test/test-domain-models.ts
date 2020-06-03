@@ -111,8 +111,8 @@ export class LibraryDomainModel {
   }
 
   public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({
-    makeKeyFromSourceNode: (author: Author) => author.id,
-    makeKeyFromDomainNode: (author: AuthorDomainModel) => author.id,
+    makeDomainNodeKeyFromSourceNode: (author: Author) => author.id,
+    makeDomainNodeKeyFromDomainModel: (author: AuthorDomainModel) => author.id,
     makeDomainModel: (book: Author) => new AuthorDomainModel(),
   });
 
@@ -127,8 +127,8 @@ export class AllCollectionTypesWithObjectsDomainModel {
   public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
   public setOfObjects = new Set<SimpleObjectDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
+    makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
+    makeDomainNodeKeyFromDomainModel: (o: SimpleObjectDomainModel) => o.id,
     makeDomainModel: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
   });
 }
@@ -144,8 +144,8 @@ export class AllCollectionTypesDomainModel {
   public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
   public setOfObjects = new Set<SimpleObjectDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeKeyFromDomainNode: (o: SimpleObjectDomainModel) => o.id,
+    makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
+    makeDomainNodeKeyFromDomainModel: (o: SimpleObjectDomainModel) => o.id,
     makeDomainModel: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
   });
   public arrayOfNumbers = new Array<Number>();

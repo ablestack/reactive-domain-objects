@@ -7,8 +7,8 @@ import { CollectionUtils } from './collection.utils';
 const logger = Logger.make('SyncableCollection');
 
 export class SyncableCollection<S extends object, D extends object> implements IDomainModelFactory<S, D>, ISyncableCollection<D> {
-  private _makeKeyFromSourceNode: (node: S) => string;
-  private _makeKeyFromDomainNode: (node: D) => string;
+  private _makeDomainNodeKeyFromSourceNode: (node: S) => string;
+  private _makeDomainNodeKeyFromDomainModel: (node: D) => string;
   private _makeDomainModel: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
@@ -27,16 +27,16 @@ export class SyncableCollection<S extends object, D extends object> implements I
   }
 
   constructor({
-    makeKeyFromSourceNode,
-    makeKeyFromDomainNode,
+    makeDomainNodeKeyFromSourceNode,
+    makeDomainNodeKeyFromDomainModel,
     makeDomainModel,
   }: {
-    makeKeyFromSourceNode: (sourceNode: S) => string;
-    makeKeyFromDomainNode: (domainNode: D) => string;
+    makeDomainNodeKeyFromSourceNode: (sourceNode: S) => string;
+    makeDomainNodeKeyFromDomainModel: (domainNode: D) => string;
     makeDomainModel: (sourceNode: S) => D;
   }) {
-    this._makeKeyFromSourceNode = makeKeyFromSourceNode;
-    this._makeKeyFromDomainNode = makeKeyFromDomainNode;
+    this._makeDomainNodeKeyFromSourceNode = makeDomainNodeKeyFromSourceNode;
+    this._makeDomainNodeKeyFromDomainModel = makeDomainNodeKeyFromDomainModel;
     this._makeDomainModel = makeDomainModel;
     this._map$ = new Map<string, D>();
   }
@@ -44,12 +44,12 @@ export class SyncableCollection<S extends object, D extends object> implements I
   // -----------------------------------
   // IDomainModelFactory
   // -----------------------------------
-  public makeKeyFromSourceNode = (sourceNode: S) => {
-    return this._makeKeyFromSourceNode(sourceNode);
+  public makeDomainNodeKeyFromSourceNode = (sourceNode: S) => {
+    return this._makeDomainNodeKeyFromSourceNode(sourceNode);
   };
 
-  public makeKeyFromDomainNode = (domainNode: D) => {
-    return this._makeKeyFromDomainNode(domainNode);
+  public makeDomainNodeKeyFromDomainModel = (domainNode: D) => {
+    return this._makeDomainNodeKeyFromDomainModel(domainNode);
   };
 
   public makeDomainModel = (sourceItem: S) => {
@@ -83,7 +83,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
-    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeKeyFromDomainNode });
+    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeDomainNodeKeyFromDomainModel });
   };
 
   public clear = () => {

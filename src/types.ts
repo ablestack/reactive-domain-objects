@@ -30,7 +30,7 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
   defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
   globalOptions?: IGlobalPropertyNameTransformation;
-  targetedOptions?: Array<INodeSyncOptions<any, any>>;
+  targetedOptions?: Array<INodeSyncOptionsStrict<any, any>>;
 }
 
 export interface IGlobalPropertyNameTransformation {
@@ -38,7 +38,28 @@ export interface IGlobalPropertyNameTransformation {
   makePropertyName?: (sourcePropertyName) => string;
 }
 
-export interface INodeSyncOptions<S extends object, D extends object> {
+/***************************************************************************
+ * Node Sync Options
+ *
+ * We have *Strict interfaces is because we want to support one internal
+ * use case where a `fromDomainModel` factory does not need to be supplied, but in all user-config supplied
+ * use cases, require both `fromSourceNode` and `fromDomainNode` for a DomainNodeKeyFactory config
+ *
+ *****************************************************************************/
+
+export interface INodeSyncOptionsStrict<S, D> {
+  selector: INodeSelector<S>;
+  ignore?: boolean;
+  domainModelCreation?: IDomainModelFactory<S, D>;
+}
+
+export interface INodeSyncOptions<S, D> {
+  selector: INodeSelector<S>;
+  ignore?: boolean;
+  domainModelCreation?: IDomainModelFactory<S, D>;
+}
+
+export interface INodeSyncOptionsStrict<S, D> {
   selector: INodeSelector<S>;
   ignore?: boolean;
   domainModelCreation?: IDomainModelFactory<S, D>;
@@ -57,19 +78,34 @@ export interface IMakeDomainModel<S, D> {
   (sourceObject: S): D;
 }
 
-export interface IDomainModelFactory<S extends object, D extends object> {
-  makeKeyFromSourceNode?: IMakeKey<S>;
-  makeKeyFromDomainNode?: IMakeKey<D>;
+export interface IDomainModelFactory<S, D> {
+  makeDomainNodeKey?: IDomainNodeKeyFactory<S, D>;
   makeDomainModel: IMakeDomainModel<S, D>;
+}
+
+export interface IDomainModelFactoryStrict<S, D> {
+  makeDomainNodeKey?: IDomainNodeKeyFactoryStrict<S, D>;
+  makeDomainModel: IMakeDomainModel<S, D>;
+}
+
+// *See `Strict` note above top of file
+export interface IDomainNodeKeyFactoryStrict<S, D> {
+  fromSourceNode: IMakeKey<S>;
+  fromDomainModel: IMakeKey<D>;
+}
+
+export interface IDomainNodeKeyFactory<S, D> {
+  fromSourceNode: IMakeKey<S>;
+  fromDomainModel?: IMakeKey<D>;
 }
 
 export function IsIDomainModelFactory(o: any): o is IDomainModelFactory<any, any> {
   return (
     o &&
-    o.makeKeyFromSourceNode &&
-    typeof o.makeKeyFromSourceNode === 'function' &&
-    o.makeKeyFromDomainNode &&
-    typeof o.makeKeyFromDomainNode === 'function' &&
+    o.makeDomainNodeKeyFromSourceNode &&
+    typeof o.makeDomainNodeKeyFromSourceNode === 'function' &&
+    o.makeDomainNodeKeyFromDomainModel &&
+    typeof o.makeDomainNodeKeyFromDomainModel === 'function' &&
     o.makeDomainModel &&
     typeof o.makeDomainModel === 'function'
   );
@@ -99,15 +135,15 @@ export function IsISyncableCollection(o: any) {
   );
 }
 
-export interface ISynchronizeState<S extends object> {
+export interface ISynchronizeState<S> {
   ({ sourceObject, graphSynchronizer }: { sourceObject: S | null | undefined; graphSynchronizer: IGraphSynchronizer }): boolean;
 }
 
-export interface IStateEqual<S extends object> {
+export interface IStateEqual<S> {
   (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined): boolean;
 }
 
-export interface ICustomSyncDomainModel<S extends object> {
+export interface ICustomSyncDomainModel<S> {
   synchronizeState: ISynchronizeState<S>;
 }
 
@@ -115,7 +151,7 @@ export function IsICustomSyncDomainModel(o: any): o is ICustomSyncDomainModel<an
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
 }
 
-export interface ICustomEqualityDomainModel<S extends object> {
+export interface ICustomEqualityDomainModel<S> {
   isStateEqual: IStateEqual<S>;
 }
 

@@ -107,7 +107,7 @@ test('Synchronize updates complex domain graph as expected', () => {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('achieves more than 500 full synchronizations a second on a medium sized graph', () => {
+test(`achieves more than ${PERF_TEST_ITERATION_COUNT_MS} full synchronizations in ${PERF_TEST_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
   // SETUP
   const iterations = PERF_TEST_ITERATION_COUNT_MS;
   const libraryDomainModel = new LibraryDomainModel();
@@ -530,8 +530,7 @@ test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
         selector: { path: 'mapOfDefault_IdDomainModel' },
         domainModelCreation: {
           makeDomainModel: (domainNode: DefaultIdObject) => new DefaultId$DomainModel(),
-          makeKeyFromSourceNode: (sourceNode) => sourceNode.id,
-          makeKeyFromDomainNode: (domainNode) => domainNode._id,
+          makeDomainNodeKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
         },
       },
     ],
@@ -552,38 +551,3 @@ test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
   expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
   expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
 });
-
-//targetedOptions are found and used as expected
-
-// Test option methods are called (or not)
-
-// test('Synchronize only updated properties where source data changed', () => {
-//   const libraryDomainModel = new LibraryDomainModel();
-//   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
-
-//   // Initial data load
-//   graphSynchronizer.synchronize({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
-
-//   // Add method spies
-//   const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
-//   const library_capacity_spy = jest.spyOn(libraryDomainModel, 'capacity', 'set');
-
-//   const authors_0_age_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
-//   const authors_0_name_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
-
-//   // Mutate data
-//   const libraryWithEdits = _.cloneDeep(librarySourceJSON);
-//   libraryWithEdits.code = libraryWithEdits.code + ' - changed';
-//   libraryWithEdits.authors[0].age = libraryWithEdits.authors[0].age + 2;
-
-//   // EXECUTE
-//   // update
-//   graphSynchronizer.synchronize({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
-
-//   // RESULTS VERIFICATION
-//   expect(library_code_spy).toHaveBeenCalled();
-//   expect(library_capacity_spy).not.toHaveBeenCalled();
-
-//   expect(authors_0_age_spy).toHaveBeenCalled();
-//   expect(authors_0_name_spy).not.toHaveBeenCalled();
-// });

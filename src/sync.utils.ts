@@ -9,7 +9,7 @@ function synchronizeCollection<S, T>({
   sourceCollection,
   getTargetCollectionSize,
   getTargetCollectionKeys,
-  makeKeyFromSourceNode,
+  makeDomainNodeKeyFromSourceNode,
   makeItemForTargetCollection,
   tryGetItemFromTargetCollection,
   insertItemToTargetCollection,
@@ -18,12 +18,12 @@ function synchronizeCollection<S, T>({
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionSize: () => number;
-  getTargetCollectionKeys: () => string[];
-  makeKeyFromSourceNode: (sourceItem: S) => string;
+  getTargetCollectionKeys?: () => string[];
+  makeDomainNodeKeyFromSourceNode?: (sourceItem: S) => string;
   makeItemForTargetCollection: (s) => T;
-  tryGetItemFromTargetCollection: (key: string) => T;
+  tryGetItemFromTargetCollection?: (key: string) => T | undefined;
   insertItemToTargetCollection: (key: string, value: T) => void;
-  tryDeleteItemFromTargetCollection: (key: string) => void;
+  tryDeleteItemFromTargetCollection?: (key: string) => void;
   trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
 }) {
   let changed = false;
@@ -33,14 +33,18 @@ function synchronizeCollection<S, T>({
   for (const sourceItem of sourceCollection) {
     if (sourceItem === null || sourceItem === undefined) continue;
     // Make key
-    const key = makeKeyFromSourceNode(sourceItem);
+    if (!makeDomainNodeKeyFromSourceNode) throw Error(`makeDomainNodeKeyFromSourceNode wan null or undefined. It must be defined when sourceCollection.length > 0`);
+    const key = makeDomainNodeKeyFromSourceNode(sourceItem);
 
     // Track keys so can be used in target item removal later
     sourceKeys.push(key);
 
     // Get or create target item
     let targetItem: T | undefined = undefined;
-    if (!targetCollectionStartedEmpty) targetItem = tryGetItemFromTargetCollection(key);
+    if (!targetCollectionStartedEmpty) {
+      if (!tryGetItemFromTargetCollection) throw Error(`tryGetItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
+      targetItem = tryGetItemFromTargetCollection(key);
+    }
     if (!targetItem) {
       targetItem = makeItemForTargetCollection(sourceItem);
       logger.trace(`Adding item ${key} to collection`, targetItem);
@@ -59,6 +63,8 @@ function synchronizeCollection<S, T>({
   // This id a performance optimization and also (indirectly)
   // allows for default collection methods based on target item types
   if (!targetCollectionStartedEmpty) {
+    if (!getTargetCollectionKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
+    if (!tryDeleteItemFromTargetCollection) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
     // If destination item missing from source - remove from destination
     const destinationInstanceIds = getTargetCollectionKeys();
     const instanceIdsInDestinationOnly = _.difference(destinationInstanceIds, sourceKeys);
