@@ -1,6 +1,6 @@
 import { Author } from '.';
 import { SyncableCollection } from '../src';
-import { SimpleObject } from './test-types';
+import { SimpleObject } from './test-source-types';
 
 // -----------------------------------
 // LIBRARY GRAPH - FOO BAR
@@ -161,9 +161,9 @@ export class SimpleObjectDomainModel {
 // LIBRARY GRAPH - PROP NAME TEST MODEL
 // -----------------------------------
 export class TargetedOptionsTestRootDomainModel {
-  public mapOfDefaultIdDomainModel = new Map<string, DefaultIdDomainModel>();
-  public mapOfDefaultId$DomainModel = new Map<string, DefaultId$DomainModel>();
-  public mapOfDefault_IdDomainModel = new Map<string, Default_IdDomainModel>();
+  public mapOfDefaultIdDomainModel = new Array<DefaultIdDomainModel>();
+  public mapOfDefaultId$DomainModel = new Array<DefaultId$DomainModel>();
+  public mapOfDefault_IdDomainModel = new Array<Default_IdDomainModel>();
 }
 
 export class DefaultIdDomainModel {

@@ -1,7 +1,7 @@
 import { BookDomainModel, LibraryDomainModel, librarySourceJSON, AllCollectionTypesWithObjectsDomainModel, allCollectionsJSON_Trio, allCollectionsJSON_Uno } from '.';
 import { GraphSynchronizer } from '../src';
 import { Logger } from '../src/logger';
-import { Book, SimpleObject, Bar, DefaultIdObject } from './test-types';
+import { Book, SimpleObject, Bar, DefaultIdSourceObject } from './test-source-types';
 import _ from 'lodash';
 import {
   SimpleObjectDomainModel,
@@ -494,26 +494,60 @@ test('tryStandardPostfix works with DefaultSourceNodeKeyMakers, AND test that ig
   const targetedOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedOptions: [
-      { selector: { path: 'mapOfDefaultIdDomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdObject) => new DefaultIdDomainModel() } },
-      { selector: { path: 'mapOfDefaultId$DomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdObject) => new DefaultId$DomainModel() } },
+      { selector: { path: 'mapOfDefaultIdDomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
+      { selector: { path: 'mapOfDefaultId$DomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
       { selector: { path: 'mapOfDefault_IdDomainModel' }, ignore: true },
     ],
     globalOptions: { tryStandardPostfix: '$' },
   });
 
   // POSTURE VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
 
-  // EXECUTE
+  // LOAD DATA
   graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
 
-  // RESULTS VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
+  // RESULTS VERIFICATION STAGE 1
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
   expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel[0].id);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
   expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel[0].id);
+
+  // REMOVE ITEM & SYNC
+  const targetedOptionsTestRootJSONWithEdits = _.cloneDeep(targetedOptionsTestRootJSON);
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
+  graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+
+  // RESULTS VERIFICATION STAGE 2
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
+
+  // REMOVE ANOTHER ITEM & SYNC
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
+  graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+
+  // RESULTS VERIFICATION STAGE 3
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
+
+  // ADD ITEM & SYNC
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.push({ id: '4A' });
+  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.push({ id: '4B' });
+  graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+
+  // RESULTS VERIFICATION STAGE 2
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
 });
 
 // --------------------------------------------------------------
@@ -529,7 +563,7 @@ test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
       {
         selector: { path: 'mapOfDefault_IdDomainModel' },
         domainModelCreation: {
-          makeDomainModel: (domainNode: DefaultIdObject) => new DefaultId$DomainModel(),
+          makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
           makeDomainNodeKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
         },
       },
@@ -538,16 +572,16 @@ test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
   });
 
   // POSTURE VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
 
   // EXECUTE
   graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
 
   // RESULTS VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toEqual(0);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.size).toEqual(0);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
   expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
 });

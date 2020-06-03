@@ -61,7 +61,7 @@ function synchronizeCollection<S, T>({
 
   // short-cutting this check when initial collection was empty.
   // This id a performance optimization and also (indirectly)
-  // allows for default collection methods based on target item types
+  // allows for auto collection methods based on target item types
   if (!targetCollectionStartedEmpty) {
     if (!getTargetCollectionKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
     if (!tryDeleteItemFromTargetCollection) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
