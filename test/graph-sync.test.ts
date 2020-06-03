@@ -1,10 +1,19 @@
-import { BookDomainModel, LibraryDomainModel, librarySourceJSON, AllCollectionTypesWithObjectsDomainModel, allCollections_Trio, allCollections_Uno } from '.';
+import { BookDomainModel, LibraryDomainModel, librarySourceJSON, AllCollectionTypesWithObjectsDomainModel, allCollectionsJSON_Trio, allCollectionsJSON_Uno } from '.';
 import { GraphSynchronizer } from '../src';
 import { Logger } from '../src/logger';
-import { Book, SimpleObject, Bar } from './test-types';
+import { Book, SimpleObject, Bar, DefaultIdObject } from './test-types';
 import _ from 'lodash';
-import { SimpleObjectDomainModel, AllCollectionTypesWithPrimitivesDomainModel, AllCollectionTypesDomainModel, BarDomainModel, FooDomainModel } from './test-domain-models';
-import { fooSourceJSON } from './test-data';
+import {
+  SimpleObjectDomainModel,
+  AllCollectionTypesWithPrimitivesDomainModel,
+  AllCollectionTypesDomainModel,
+  BarDomainModel,
+  FooDomainModel,
+  TargetedOptionsTestRootDomainModel,
+  DefaultIdDomainModel,
+  DefaultId$DomainModel,
+} from './test-domain-models';
+import { fooSourceJSON, targetedOptionsTestRootJSON } from './test-data';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 const PERF_TEST_ITERATION_COUNT_MS = 1000;
@@ -228,7 +237,7 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
@@ -250,7 +259,7 @@ test('Synchronize all primitive collection types', () => {
   expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -266,7 +275,7 @@ test('Synchronize collection additions', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -279,7 +288,7 @@ test('Synchronize collection additions', () => {
 
   // EXECUTE
   // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollections_Trio);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers.push(4);
   allCollectionSourceModelWithEdits.mapOfNumbers.push(4);
   allCollectionSourceModelWithEdits.setOfNumbers.push(4);
@@ -307,7 +316,7 @@ test('Synchronize collection removals', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -320,7 +329,7 @@ test('Synchronize collection removals', () => {
 
   // EXECUTE
   // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollections_Trio);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
   allCollectionSourceModelWithEdits.mapOfNumbers.pop();
   allCollectionSourceModelWithEdits.setOfNumbers.pop();
@@ -348,7 +357,7 @@ test('Synchronize collection removals - down to zero - with selector targeted co
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Uno });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Uno });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(1);
@@ -361,7 +370,7 @@ test('Synchronize collection removals - down to zero - with selector targeted co
 
   // EXECUTE
   // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollections_Uno);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Uno);
   allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
   allCollectionSourceModelWithEdits.mapOfNumbers.pop();
   allCollectionSourceModelWithEdits.setOfNumbers.pop();
@@ -389,7 +398,7 @@ test('Synchronize collection element edit', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -402,7 +411,7 @@ test('Synchronize collection element edit', () => {
 
   // EXECUTE
   // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollections_Trio);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers[0] = 4;
   allCollectionSourceModelWithEdits.mapOfNumbers[0] = 4;
   allCollectionSourceModelWithEdits.setOfNumbers[0] = 4;
@@ -435,7 +444,7 @@ test('Synchronize collection element - handle null value edits', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollections_Trio });
+  graphSynchronizer.synchronize({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
@@ -448,7 +457,7 @@ test('Synchronize collection element - handle null value edits', () => {
 
   // EXECUTE
   // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollections_Trio);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers[0] = 4;
   allCollectionSourceModelWithEdits.mapOfNumbers[0] = 4;
   allCollectionSourceModelWithEdits.setOfNumbers[0] = 4;
@@ -476,6 +485,77 @@ test('Synchronize collection element - handle null value edits', () => {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+
+test('tryStandardPostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
+  const targetedOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+  const graphSynchronizer = new GraphSynchronizer({
+    targetedOptions: [
+      { selector: { path: 'mapOfDefaultIdDomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdObject) => new DefaultIdDomainModel() } },
+      { selector: { path: 'mapOfDefaultId$DomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdObject) => new DefaultId$DomainModel() } },
+      { selector: { path: 'mapOfDefault_IdDomainModel' }, ignore: true },
+    ],
+    globalOptions: { tryStandardPostfix: '$' },
+  });
+
+  // POSTURE VERIFICATION
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+
+  // EXECUTE
+  graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
+
+  // RESULTS VERIFICATION
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel[0].id);
+
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel[0].id);
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+
+test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
+  const targetedOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+  const graphSynchronizer = new GraphSynchronizer({
+    targetedOptions: [
+      { selector: { path: 'mapOfDefaultIdDomainModel' }, ignore: true },
+      { selector: { path: 'mapOfDefaultId$DomainModel' }, ignore: true },
+      {
+        selector: { path: 'mapOfDefault_IdDomainModel' },
+        domainModelCreation: {
+          makeDomainModel: (domainNode: DefaultIdObject) => new DefaultId$DomainModel(),
+          makeKeyFromSourceNode: (sourceNode) => sourceNode.id,
+          makeKeyFromDomainNode: (domainNode) => domainNode._id,
+        },
+      },
+    ],
+    globalOptions: { tryStandardPostfix: '$' },
+  });
+
+  // POSTURE VERIFICATION
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toBeFalsy();
+
+  // EXECUTE
+  graphSynchronizer.synchronize({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
+
+  // RESULTS VERIFICATION
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.size).toEqual(0);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.size).toEqual(0);
+
+  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.size).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
+  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
+});
+
+//targetedOptions are found and used as expected
+
+// Test option methods are called (or not)
 
 // test('Synchronize only updated properties where source data changed', () => {
 //   const libraryDomainModel = new LibraryDomainModel();

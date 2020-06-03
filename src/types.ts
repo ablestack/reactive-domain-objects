@@ -30,7 +30,7 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
   defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
   globalOptions?: IGlobalPropertyNameTransformation;
-  targetedOptions?: Array<IPropertySyncOptions<any, any>>;
+  targetedOptions?: Array<INodeSyncOptions<any, any>>;
 }
 
 export interface IGlobalPropertyNameTransformation {
@@ -38,7 +38,7 @@ export interface IGlobalPropertyNameTransformation {
   makePropertyName?: (sourcePropertyName) => string;
 }
 
-export interface IPropertySyncOptions<S extends object, D extends object> {
+export interface INodeSyncOptions<S extends object, D extends object> {
   selector: INodeSelector<S>;
   ignore?: boolean;
   domainModelCreation?: IDomainModelFactory<S, D>;

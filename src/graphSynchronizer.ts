@@ -1,5 +1,5 @@
 import { runInAction } from 'mobx';
-import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, IPropertySyncOptions, IsICustomEqualityDomainModel, SyncUtils } from '.';
+import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, IsICustomEqualityDomainModel, SyncUtils } from '.';
 import { Logger } from './logger';
 import {
   DomainNodeType,
@@ -32,8 +32,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
   private _globalOptions: IGlobalPropertyNameTransformation | undefined;
-  private _targetOptionsPathMap: Map<string, IPropertySyncOptions<any, any>>;
-  private _targetOptionsSelectorArray: Array<IPropertySyncOptions<any, any>>;
+  private _targetOptionsPathMap: Map<string, INodeSyncOptions<any, any>>;
+  private _targetOptionsSelectorArray: Array<INodeSyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
   private _sourceNodeKeyChain = new Array<string>();
   private _sourceObjectKeyChain = new Array<string>();
@@ -73,8 +73,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   constructor(options?: IGraphSyncOptions) {
     this._defaultEqualityComparer = options?.defaultEqualityChecker || comparers.apollo;
     this._globalOptions = options?.globalOptions;
-    this._targetOptionsPathMap = new Map<string, IPropertySyncOptions<any, any>>();
-    this._targetOptionsSelectorArray = new Array<IPropertySyncOptions<any, any>>();
+    this._targetOptionsPathMap = new Map<string, INodeSyncOptions<any, any>>();
+    this._targetOptionsSelectorArray = new Array<INodeSyncOptions<any, any>>();
 
     if (options?.targetedOptions) {
       options?.targetedOptions.forEach((targetedOptionsItem) => {
@@ -204,16 +204,49 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     domainNodeVal: any;
     tryUpdateDomainNode: (key: string, value: any) => void;
   }): boolean {
-    this.addSourceNodeToPath(sourceNodeKey, sourceNodeKind);
-
-    // setup
-    let changed = false;
-    const sourceNodeTypeInfo = this.getSourceNodeType(sourceNodeVal);
-    const domainNodeTypeInfo = this.getDomainNodeType(domainNodeVal);
-
     logger.trace(`synchronizeProperty (${domainNodeKey}) - enter`, { sourceNodeVal, domainNodeVal });
 
-    //
+    // Setup
+    let changed = false;
+
+    // Node traversal tracking - step-in
+    this.addSourceNodeToPath(sourceNodeKey, sourceNodeKind);
+
+    // Test to see if node should be ignored
+    const matchingOptions = this.getMatchingOptionsForNode();
+    if (matchingOptions?.ignore) {
+      logger.trace(`synchronizeProperty (${domainNodeKey}) - ignore node`);
+    } else {
+      // Type specific node processing
+      const sourceNodeTypeInfo = this.getSourceNodeType(sourceNodeVal);
+      const domainNodeTypeInfo = this.getDomainNodeType(domainNodeVal);
+
+      changed = this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, domainNodeTypeInfo, sourceNodeVal, domainNodeVal, domainNodeKey, tryUpdateDomainNode });
+    }
+
+    // Node traversal tracking - step-out
+    this.removeSourceNodeFromPath(sourceNodeKind);
+    return changed;
+  }
+
+  /** */
+  private trySynchronizeNode_TypeSpecificProcessing({
+    sourceNodeTypeInfo,
+    domainNodeTypeInfo,
+    sourceNodeVal,
+    domainNodeVal,
+    domainNodeKey,
+    tryUpdateDomainNode,
+  }: {
+    sourceNodeTypeInfo: SourceNodeTypeInfo;
+    domainNodeTypeInfo: DomainNodeTypeInfo;
+    sourceNodeVal: any;
+    domainNodeVal: any;
+    domainNodeKey: string;
+    tryUpdateDomainNode: (key: string, value: any) => void;
+  }) {
+    let changed = false;
+
     switch (sourceNodeTypeInfo.type) {
       case 'Primitive': {
         if (sourceNodeTypeInfo.builtInType !== domainNodeTypeInfo.builtInType && !!domainNodeTypeInfo.type) {
@@ -244,8 +277,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         break;
       }
     }
-
-    this.removeSourceNodeFromPath(sourceNodeKind);
     return changed;
   }
 
@@ -385,7 +416,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       makeKeyFromDomainNode = (primitive) => primitive.toString();
       makeDomainModel = (primitive) => primitive;
     } else {
-      const targetDerivedOptions = this.getMatchingOptions({ sourceCollection, domainCollection });
+      const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection });
       const typeDerivedOptions = IsIDomainModelFactory(domainCollection)
         ? {
             makeKeyFromSourceNode: domainCollection.makeKeyFromSourceNode,
@@ -408,14 +439,24 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   /** */
-  private getMatchingOptions({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: Iterable<any> }): IPropertySyncOptions<any, any> | undefined {
+  private getMatchingOptionsForNode(): INodeSyncOptions<any, any> | undefined {
     const currentPath = this.getSourceObjectPath();
-    let options = this._targetOptionsPathMap.get(currentPath);
+    return this._targetOptionsPathMap.get(currentPath);
+  }
+
+  /** */
+  private getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: Iterable<any> }): INodeSyncOptions<any, any> | undefined {
+    let options = this.getMatchingOptionsForNode();
     if (options) {
       return options;
     }
 
-    // Try and get options from source collection
+    if (this._targetOptionsSelectorArray.length === 0) return;
+
+    // Selector targeted options could be matching elements of a collection
+    // So look at the first element of source or domain collections to check
+
+    // Try and get options from Source collection
     if (sourceCollection && sourceCollection.length > 0) {
       const firstItemInSourceCollection = sourceCollection[0];
       options = this._targetOptionsSelectorArray.find((targetOptionsItem) => (targetOptionsItem.selector.matcher ? targetOptionsItem.selector.matcher(firstItemInSourceCollection) : false));

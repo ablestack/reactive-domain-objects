@@ -160,21 +160,38 @@ export class SimpleObjectDomainModel {
 // -----------------------------------
 // LIBRARY GRAPH - PROP NAME TEST MODEL
 // -----------------------------------
-export class PropNameTestRootDomainModel {
+export class TargetedOptionsTestRootDomainModel {
   public mapOfDefaultIdDomainModel = new Map<string, DefaultIdDomainModel>();
   public mapOfDefaultId$DomainModel = new Map<string, DefaultId$DomainModel>();
+  public mapOfDefault_IdDomainModel = new Map<string, Default_IdDomainModel>();
 }
 
 export class DefaultIdDomainModel {
   private _id: string = '';
   public get id(): string {
-    return this.id;
+    return this._id;
+  }
+  public set id(value) {
+    this._id = value;
   }
 }
 
 export class DefaultId$DomainModel {
   private _id$: string = '';
   public get id$(): string {
-    return this.id$;
+    return this._id$;
+  }
+  public set id$(value) {
+    this._id$ = value;
+  }
+}
+
+export class Default_IdDomainModel {
+  private __id: string = '';
+  public get _id(): string {
+    return this.__id;
+  }
+  public set _id(value) {
+    this.__id = value;
   }
 }

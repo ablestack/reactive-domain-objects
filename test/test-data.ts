@@ -77,7 +77,7 @@ export const librarySourceJSON: Library = {
 // -----------------------------------
 // ALL COLLECTIONS GRAPH - TEST SOURCE MODEL
 // -----------------------------------
-export const allCollections_Trio: AllCollections = {
+export const allCollectionsJSON_Trio: AllCollections = {
   arrayOfNumbers: [1, 2, undefined, null, 3],
   arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
   mapOfNumbers: [1, 2, undefined, null, 3],
@@ -91,7 +91,7 @@ export const allCollections_Trio: AllCollections = {
 // -----------------------------------
 // ALL COLLECTIONS GRAPH - TEST SOURCE MODEL
 // -----------------------------------
-export const allCollections_Uno: AllCollections = {
+export const allCollectionsJSON_Uno: AllCollections = {
   arrayOfNumbers: [1],
   arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }],
   mapOfNumbers: [1],
@@ -105,7 +105,8 @@ export const allCollections_Uno: AllCollections = {
 // -----------------------------------
 // LIBRARY GRAPH - PROP NAME TEST MODEL
 // -----------------------------------
-export const propNameTestRootModel: PropNameTestRoot = {
+export const targetedOptionsTestRootJSON: PropNameTestRoot = {
   mapOfDefaultIdDomainModel: [{ id: '1' }],
-  mapOfDefaultId$DomainModel: [{ id: '1' }],
+  mapOfDefaultId$DomainModel: [{ id: '2' }],
+  mapOfDefault_IdDomainModel: [{ id: '3' }],
 };
