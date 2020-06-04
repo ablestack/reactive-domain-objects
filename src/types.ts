@@ -28,14 +28,14 @@ export interface IGraphSynchronizer {
 }
 
 export interface IGraphSyncOptions {
-  defaultEqualityChecker?: IEqualityComparer; //defaultEqualityChecker is apolloComparer
-  globalOptions?: IGlobalPropertyNameTransformation;
-  targetedOptions?: Array<INodeSyncOptionsStrict<any, any>>;
+  customEqualityComparer?: IEqualityComparer; //customEqualityComparer is apolloComparer
+  globalNodeOptions?: IGlobalPropertyNameTransformation;
+  targetedNodeOptions?: Array<INodeSyncOptionsStrict<any, any>>;
 }
 
 export interface IGlobalPropertyNameTransformation {
-  tryStandardPostfix?: string;
-  makePropertyName?: (sourcePropertyName) => string;
+  commonDomainFieldnamePostfix?: string;
+  computeDomainFieldnameForSourceItem?: ({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 }
 
 /***************************************************************************
@@ -48,26 +48,26 @@ export interface IGlobalPropertyNameTransformation {
  *****************************************************************************/
 
 export interface INodeSyncOptionsStrict<S, D> {
-  selector: INodeSelector<S>;
+  matcher: INodeSelector<S>;
   ignore?: boolean;
   domainModelCreation?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptions<S, D> {
-  selector: INodeSelector<S>;
+  matcher: INodeSelector<S>;
   ignore?: boolean;
   domainModelCreation?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
-  selector: INodeSelector<S>;
+  matcher: INodeSelector<S>;
   ignore?: boolean;
   domainModelCreation?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSelector<S> {
   sourceNodePath?: string;
-  matcher?: (sourceNode: S) => boolean;
+  sourceNodeContent?: (sourceNode: S) => boolean;
 }
 
 export interface IMakeKey<T> {

@@ -32,7 +32,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
-  private _globalOptions: IGlobalPropertyNameTransformation | undefined;
+  private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
   private _targetOptionsPathMap: Map<string, INodeSyncOptions<any, any>>;
   private _targetOptionsSelectorArray: Array<INodeSyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
@@ -72,15 +72,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // CONSTRUCTOR
   // ------------------------------------------------------------------------------------------------------------------
   constructor(options?: IGraphSyncOptions) {
-    this._defaultEqualityComparer = options?.defaultEqualityChecker || comparers.apollo;
-    this._globalOptions = options?.globalOptions;
+    this._defaultEqualityComparer = options?.customEqualityComparer || comparers.apollo;
+    this._globalNodeOptions = options?.globalNodeOptions;
     this._targetOptionsPathMap = new Map<string, INodeSyncOptions<any, any>>();
     this._targetOptionsSelectorArray = new Array<INodeSyncOptions<any, any>>();
 
-    if (options?.targetedOptions) {
-      options?.targetedOptions.forEach((targetedOptionsItem) => {
-        if (targetedOptionsItem.selector.sourceNodePath) this._targetOptionsPathMap.set(targetedOptionsItem.selector.sourceNodePath, targetedOptionsItem);
-        this._targetOptionsSelectorArray.push(targetedOptionsItem);
+    if (options?.targetedNodeOptions) {
+      options?.targetedNodeOptions.forEach((targetedNodeOptionsItem) => {
+        if (targetedNodeOptionsItem.matcher.sourceNodePath) this._targetOptionsPathMap.set(targetedNodeOptionsItem.matcher.sourceNodePath, targetedNodeOptionsItem);
+        this._targetOptionsSelectorArray.push(targetedNodeOptionsItem);
       });
     }
   }
@@ -92,15 +92,17 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, domainModel }: { key: string; sourceObject: S; domainModel: D }): boolean {
+  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ sourceObjectPath, sourceObject, domainModel }: { sourceObjectPath: string; sourceObject: S; domainModel: D }): boolean {
     let changed = false;
 
     // Loop properties
     for (const sourcePropKey of Object.keys(sourceObject)) {
+      const sourcePropVal = sourceObject[sourcePropKey];
+
       // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-      let domainPropKey = this._globalOptions?.makePropertyName ? this._globalOptions?.makePropertyName(sourcePropKey) : sourcePropKey;
-      if (!(domainPropKey in domainModel) && this._globalOptions?.tryStandardPostfix) {
-        const domainPropKeyWithPostfix = `${domainPropKey}${this._globalOptions.tryStandardPostfix}`;
+      let domainPropKey = this._globalNodeOptions?.computeDomainFieldnameForSourceItem ? this._globalNodeOptions?.computeDomainFieldnameForSourceItem({ sourceObjectPath, sourcePropKey, sourcePropVal }) : sourcePropKey;
+      if (!(domainPropKey in domainModel) && this._globalNodeOptions?.commonDomainFieldnamePostfix) {
+        const domainPropKeyWithPostfix = `${domainPropKey}${this._globalNodeOptions.commonDomainFieldnamePostfix}`;
         logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Trying '${domainPropKeyWithPostfix}' `);
         domainPropKey = domainPropKeyWithPostfix;
       }
@@ -115,7 +117,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         this.trySynchronizeNode({
           sourceNodeKind: 'objectProperty',
           sourceNodeKey: sourcePropKey,
-          sourceNodeVal: sourceObject[sourcePropKey],
+          sourceNodeVal: sourcePropVal,
           domainNodeKey: domainPropKey,
           domainNodeVal: domainModel[domainPropKey],
           tryUpdateDomainNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ collection: domainModel, key, value }),
@@ -449,14 +451,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Try and get options from Source collection
     if (sourceCollection && sourceCollection.length > 0) {
       const firstItemInSourceCollection = sourceCollection[0];
-      options = this._targetOptionsSelectorArray.find((targetOptionsItem) => (targetOptionsItem.selector.matcher ? targetOptionsItem.selector.matcher(firstItemInSourceCollection) : false));
+      options = this._targetOptionsSelectorArray.find((targetOptionsItem) => (targetOptionsItem.matcher.sourceNodeContent ? targetOptionsItem.matcher.sourceNodeContent(firstItemInSourceCollection) : false));
       if (options) return options;
     }
 
     // Try and get options from Domain collection
     // ASSUMPTION - all supported collection types implement Iterable<>
     const firstItemInDomainCollection = domainCollection[Symbol.iterator]().next().value;
-    options = this._targetOptionsSelectorArray.find((targetOptionsItem) => (targetOptionsItem.selector.matcher ? targetOptionsItem.selector.matcher(firstItemInDomainCollection) : false));
+    options = this._targetOptionsSelectorArray.find((targetOptionsItem) => (targetOptionsItem.matcher.sourceNodeContent ? targetOptionsItem.matcher.sourceNodeContent(firstItemInDomainCollection) : false));
     return options;
   }
 
@@ -481,8 +483,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       let hasIdKey = idKey in firstItemInDomainCollection;
 
       // If matching id key not found, try with standardPostfix if config setting supplied
-      if (!hasIdKey && this._globalOptions?.tryStandardPostfix) {
-        idKey = `${idKey}${this._globalOptions.tryStandardPostfix}`;
+      if (!hasIdKey && this._globalNodeOptions?.commonDomainFieldnamePostfix) {
+        idKey = `${idKey}${this._globalNodeOptions.commonDomainFieldnamePostfix}`;
         hasIdKey = idKey in firstItemInDomainCollection;
       }
 
@@ -544,7 +546,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         changed = domainModel.synchronizeState({ sourceObject, graphSynchronizer: this });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceObjectPath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.trySynchronizeObject({ key, sourceObject: sourceObject, domainModel: domainModel });
+        changed = this.trySynchronizeObject({ sourceObjectPath, sourceObject, domainModel });
       }
     } else {
       logger.trace(`synchronizeObjectState - ${sourceObjectPath} - already in sync. Skipping`);

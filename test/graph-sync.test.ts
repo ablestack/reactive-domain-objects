@@ -17,7 +17,7 @@ import {
   FooDomainGraphSimple,
   FooDomainGraphWithCollection,
 } from './test-domain-models';
-import { fooSourceJSONWithCollection, targetedOptionsTestRootJSON, fooWithNotesSourceJSON, fooSourceJSONSimple, fooSourceJSON } from './test-data';
+import { fooSourceJSONWithCollection, targetedNodeOptionsTestRootJSON, fooWithNotesSourceJSON, fooSourceJSONSimple, fooSourceJSON } from './test-data';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 const PERF_TEST_ITERATION_COUNT_MS = 1000;
@@ -62,7 +62,7 @@ test('Simple graph usage demo', () => {
 test('Collection usage demo', () => {
   const fooDomainModel = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedOptions: [{ selector: { sourceNodePath: 'collectionOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+    targetedNodeOptions: [{ matcher: { sourceNodePath: 'collectionOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
@@ -82,9 +82,9 @@ test('Collection usage demo', () => {
 test('Simple usage demo with notes', () => {
   const fooWithNotesDomainModel = new FooWithNotesDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
-    targetedOptions: [
-      { selector: { sourceNodePath: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
-      { selector: { sourceNodePath: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+    targetedNodeOptions: [
+      { matcher: { sourceNodePath: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { matcher: { sourceNodePath: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
     ],
   });
 
@@ -108,8 +108,8 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedOptions: [{ selector: { sourceNodePath: 'authors.books' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
-    globalOptions: { tryStandardPostfix: '$' },
+    targetedNodeOptions: [{ matcher: { sourceNodePath: 'authors.books' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
 
@@ -218,15 +218,15 @@ test('Synchronize only updated properties where source data changed', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedOptions: [{ selector: { matcher: (node) => node && node.__type === 'Book' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
-    globalOptions: { tryStandardPostfix: '$' },
+    targetedNodeOptions: [{ matcher: { sourceNodeContent: (node) => node && node.__type === 'Book' }, domainModelCreation: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('Synchronize using selector config', () => {
+test('Synchronize using matcher config', () => {
   const libraryDomainModel = new LibraryDomainModel();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions();
 
@@ -247,25 +247,25 @@ test('Synchronize using selector config', () => {
 function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
   // SETUP
   return new GraphSynchronizer({
-    targetedOptions: [
+    targetedNodeOptions: [
       {
-        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
+        matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
         domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
-        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
+        matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
         domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
-        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
+        matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
         domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
-        selector: { matcher: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
+        matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
         domainModelCreation: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
     ],
-    globalOptions: { tryStandardPostfix: '$' },
+    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
 
@@ -398,7 +398,7 @@ test('Synchronize collection removals', () => {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('Synchronize collection removals - down to zero - with selector targeted configuration', () => {
+test('Synchronize collection removals - down to zero - with matcher targeted configuration', () => {
   const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
@@ -536,98 +536,98 @@ test('Synchronize collection element - handle null value edits', () => {
 // TEST
 // --------------------------------------------------------------
 
-test('tryStandardPostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
-  const targetedOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
+  const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
-    targetedOptions: [
-      { selector: { sourceNodePath: 'mapOfDefaultIdDomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
-      { selector: { sourceNodePath: 'mapOfDefaultId$DomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
-      { selector: { sourceNodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
+    targetedNodeOptions: [
+      { matcher: { sourceNodePath: 'mapOfDefaultIdDomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
+      { matcher: { sourceNodePath: 'mapOfDefaultId$DomainModel' }, domainModelCreation: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
+      { matcher: { sourceNodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
     ],
-    globalOptions: { tryStandardPostfix: '$' },
+    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 
   // POSTURE VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
 
   // LOAD DATA
-  graphSynchronizer.smartSync({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION STAGE 1
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSON.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdDomainModel[0].id);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$DomainModel[0].id);
 
   // REMOVE ITEM & SYNC
-  const targetedOptionsTestRootJSONWithEdits = _.cloneDeep(targetedOptionsTestRootJSON);
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+  const targetedNodeOptionsTestRootJSONWithEdits = _.cloneDeep(targetedNodeOptionsTestRootJSON);
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
 
   // REMOVE ANOTHER ITEM & SYNC
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 3
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
 
   // ADD ITEM & SYNC
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.push({ id: '4A' });
-  targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.push({ id: '4B' });
-  graphSynchronizer.smartSync({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSONWithEdits });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.push({ id: '4A' });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.push({ id: '4B' });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
-test('tryStandardPostfix works with DefaultSourceNodeKeyMakers', () => {
-  const targetedOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
+  const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
-    targetedOptions: [
-      { selector: { sourceNodePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
-      { selector: { sourceNodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
+    targetedNodeOptions: [
+      { matcher: { sourceNodePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
+      { matcher: { sourceNodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
       {
-        selector: { sourceNodePath: 'mapOfDefault_IdDomainModel' },
+        matcher: { sourceNodePath: 'mapOfDefault_IdDomainModel' },
         domainModelCreation: {
           makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
           makeDomainNodeKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
         },
       },
     ],
-    globalOptions: { tryStandardPostfix: '$' },
+    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 
   // POSTURE VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: targetedOptionsTestRootDomainModel, rootSourceNode: targetedOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
 
-  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.length).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
-  expect(targetedOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
+  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
 });

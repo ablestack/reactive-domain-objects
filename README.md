@@ -132,9 +132,9 @@ export class BarDomainModel {
 
 // Configuration Options
 const syncOptions: IGraphSyncOptions = {
-  targetedOptions: [
+  targetedNodeOptions: [
     {
-      selector: { sourceNodePath: 'collectionOfBar' }, // *2
+      matcher: { sourceNodePath: 'collectionOfBar' }, // *2
       domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
     }
   ],
@@ -150,28 +150,219 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 ```
 
 1. \* Because the BarDomainModel type lives in a parent collection, there is a need for it to be dynamically created as corresponding source collection items are added). As such, we need to define a 'make' function, and supply it through the options object
-2. The options can be mapped to their corresponding JSON node either by specifying the `sourceNodePath` (as with this example), or by supplying a `matcher` method that can identify the object type from it's contained data (such a `__type` field). See the configuration options documentation for more information
+2. The options can be mapped to their corresponding JSON node either by specifying the `sourceNodePath` (as with this example), or by supplying a `sourceNodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the configuration options documentation for more information
 
 ## Additional Usage Examples and Documentation
 
 - Multiple additional usage examples can be found in src/tests/graph-sync/test.ts.
-- See the Configuration section for a detailed description of all the configuration options
+- See the [Configuration section](#GraphSynchronizer-Configuration-Options) for a detailed description of all the configuration options
 
 # API Documentation
 
 ## GraphSyncronizer
 
-See Usage Examples above for primary documentation for usage.
+See [Usage Section](#Usage) Examples above for primary documentation for usage. See below for notes and configuration documentation.
 
-## GraphSyncronizer Configuration Options
+### Notes
 
-# Important Notes
+- **Equality Checking**: by default the [@wry/equality](https://github.com/benjamn/wryware/tree/master/packages/equality) comparer is used. This was chosen because
+  - It is the same equality comparer used by the ApolloGraphQL client, which was a major use-case for this project
+  - It provides structural equality checking, with correct handling of cyclic references, and minimal bundle size
+
+## GraphSynchronizer.smartSync Configuration Options
+
+The following provides an overview of the GraphSynchronizer.smartSync options
+
+```TypeScript
+{
+  customEqualityComparer: IEqualityComparer, // --> // Custom Equality Comparer
+
+  globalNodeOptions: { // ------------------------> // Options that apply to all source nodes
+    commonDomainFieldnamePostfix: string;
+    computeDomainFieldnameForSourceItem: (sourceNodeKey) => string;
+  },
+
+  targetedNodeOptions:[ // -----------------------> // Options that only apply to source nodes that
+  {                                                 // meet the matcher criteria
+
+    matcher: {
+      sourceNodePath: string; // -----------------> // Selector can be targeted at a specific source node path
+      sourceNodeContent: (sourceNode) => boolean;   // or by specific source node contents
+    },
+
+    ignore: boolean, // --------------------------> // A source node can be ignored
+
+    domainModelCreation: { // --------------------> // Configuration pertaining to the creation of Domain Models
+
+      makeDomainNodeKey: { // --------------------> // If makeDomainNodeKey creation methods not supplied
+        fromSourceNode: (sourceNode) => string;     // a default key creation method will be supplied which
+        fromDomainNodeNode: (domainNode) => string; // assumes an `id` field id available (or an error will be thrown)
+      },
+      makeDomainModel: (sourceNode) => any;         // Required when Domain Models are contained in a parent collection
+    }                                               // so they can be automatically instantiated as items are added to the
+  }]                                                // source collection
+}
+
+```
+
+### Root Options
+
+#### CustomEqualityComparer
+
+A custom equality comparer can be provided to evaluate if an object has changed. It must satisfy the following interface:
+
+```TypeScript
+interface IEqualityComparer {
+  (a: any, b: any): boolean;
+}
+```
+
+### Global Node Options
+
+#### commonDomainFieldnamePostfix
+
+Instructs the sync algorithm to attempt to look for a Domain Node field with the same property name as the Source Node with the supplied postfix appended. This options was added to primarily support the convention of adding a `$` to the end of observable property names.
+
+For example:
+
+```TypeScript
+const source = {
+  name: 'Simple Foo 1',     // <-- NOTE the 'name' key
+};
+
+// DEFINE
+export class Target {
+  public name$: string = ''; // <-- NOTE the `$` Symbol on the end of name
+```
+
+Upon graphSynchronizer.smartSync of the above supplied source and target models would fail due to the mismatch of the `source.name` and the `target.name$` field names.
+However, the following configuration would allow for the smartSync to successfully match the fields:
+
+```
+  { globalNodeOptions: { commonDomainFieldnamePostfix: '$' } }
+```
+
+Note that the matching algorithm will first try to find a field match _without_ the fieldname prefix. And, if it finds one, it will use that and not continue to look for a match with the common postfix.
+
+#### computeDomainFieldnameForSourceItem
+
+If the names of the Domain Models are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
+
+```TypeScript
+({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+```
+
+The parameters that are supplied to the method are as follows:
+
+- `sourceObjectPath`: The source path for the parent object of the current item (see the config section on Paths)
+- `sourcePropKey`: The key for the current source item on it's parent property
+- `sourcePropVal`: The value for the current source item
+
+### Targeted Node Options
+
+Targeted Node Options provide configuration data for specific source nodes. The primary use case for this is telling the graphSynchronizer how to instantiate the Domain Model objects. This is required for every Domain Model object that is contained in a parent collection (so that new Domain Models can be added dynamically to reflect changes in the corresponding source collection node)
+
+### Matchers
+
+The matcher configuration lets the graphSynchronizer know which source node the configuration item relates to. There are two types of Matchers:
+
+#### SourceNodePath
+
+This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
+
+For example, to target the grandchild node of the following sourceJSON:
+
+```TypeScript
+const rootSourceNode = {
+  child: {
+    grandchild:{
+      data:'some data'
+    }
+  }
+}
+```
+
+The configuration item would be:
+
+```TypeScript
+const graphSynchronizerOptions = {
+    targetedNodeOptions: [{
+      matcher: { sourceNodePath: 'child.grandchild' },
+      //... config options here
+    }],
+  }
+```
+
+Note: for JSON array items, the object path still applies, but doesn't need to factor in the element index. For example, the _same_ configuration would work for the following source graph. However, in this instance, it would match _all_ granchild nodes of _all_ child nodes. This is OK, as the configuration rules are for the _type_ of object rather than a specific object instance
+
+For example, to target the grandchild node of the following sourceJSON:
+
+```TypeScript
+const rootSourceNode = {
+  child:[ {
+    grandchild:[{
+      data:'some data'
+    }]
+  }]
+}
+```
+
+#### SourceNodeContent
+
+Instead of matching nodes based on path, the sourceContentNode configuration option allows a node type to be identified by its content. The configuration takes the form of function that must match the following signature.
+
+```
+  (sourceNode: S) => boolean
+```
+
+The returned boolean indicates if the given node is a match. For example, to target the grandchild node of the following sourceJSON:
+
+```TypeScript
+const rootSourceNode = {
+  child: {
+    grandchild:{
+      data:'some data',
+      __type: 'grandchild'
+    }
+  }
+}
+```
+
+The targetedNodeOptions configuration item could be:
+
+```TypeScript
+const graphSynchronizerOptions = {
+    targetedNodeOptions: [{
+      matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'grandchild' },
+      //... config options here
+    }],
+  }
+```
+
+Note: the matching algorithm only passes the _first_ item from a collection to check for match. If this matches, it is assumed that all other items in the collection will be of the same type (and indeed, the synchronization would not work if they were not)
+
+#### Ignore
+
+If the `ignore` configuration item is present, and set to false, the matching source node will not be copied to the corresponding Domain Model node. Otherwise, it will be synchronized when a change is detected
+
+#### domainModelCreation
+
+# Notes
 
 ## Companion Libraries
 
-This library is part of a group of companion libraries under the [Ablestack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
+This library is part of a suite of companion libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
 
-    Contribute to an ecosystem of reusable building blocks and patterns for small teams to build modern, sophisticated, full stack web-applications that are, reliable, affordable to run, and easy to maintain
+    Contribute to the full-stack web and app development open-source ecosystem, with a focus on tools and libraries that enable help small tech businesses rapidly and affordably build high quality and sophisticated applications that are, reliable, affordable, easy to maintain... and a pleasure to build.
+
+To achieve these goals, the following principles are applied:
+
+- \*Leverage existing, high quality, open source platforms and libraries where possible
+- Prioritize technology choices that embrace open source. TypeScript over C#, and Node over .Net an example of this
+- Where possible, avoid technology choices that could result in hosting vendor lock-in. ApolloGraphQL over AWS Amplify is an example of this
+- Automate wherever possible, from development, through testing, to deployment, monitoring, and maintenance. Codegen from strongly types schemas is a good example of this.
+
+This is an ongoing work-in-progress. If you'd like to check out the companion libraries, even contribute to them, you can find them at the [AbleStack on GitHub](https://github.com/ablestack)
 
 ## Limitations
 
