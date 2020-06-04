@@ -134,8 +134,8 @@ export class BarDomainModel {
 const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
-      matcher: { sourceNodePath: 'collectionOfBar' }, // *2
-      domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
+      sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
+      domainModelConfig: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
     }
   ],
 };
@@ -150,7 +150,7 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 ```
 
 1. \* Because the BarDomainModel type lives in a parent collection, there is a need for it to be dynamically created as corresponding source collection items are added). As such, we need to define a 'make' function, and supply it through the options object
-2. The options can be mapped to their corresponding JSON node either by specifying the `sourceNodePath` (as with this example), or by supplying a `sourceNodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the configuration options documentation for more information
+2. The options can be mapped to their corresponding JSON node either by specifying the `nodePath` (as with this example), or by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the configuration options documentation for more information
 
 ## Additional Usage Examples and Documentation
 
@@ -179,22 +179,22 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
   globalNodeOptions: { // ------------------------> // Options that apply to all source nodes
     commonDomainFieldnamePostfix: string;
-    computeDomainFieldnameForSourceItem: (sourceNodeKey) => string;
+    computeDomainFieldname: (sourceNodeKey) => string;
   },
 
   targetedNodeOptions:[ // -----------------------> // Options that only apply to source nodes that
-  {                                                 // meet the matcher criteria
+  {                                                 // meet the sourceNodeMatcher criteria
 
-    matcher: {
-      sourceNodePath: string; // -----------------> // Selector can be targeted at a specific source node path
-      sourceNodeContent: (sourceNode) => boolean;   // or by specific source node contents
+    sourceNodeMatcher: {
+      nodePath: string; // -----------------------> // Selector can be targeted at a specific source node path
+      nodeContent: (sourceNode) => boolean;         // or by specific source node contents
     },
 
     ignore: boolean, // --------------------------> // A source node can be ignored
 
-    domainModelCreation: { // --------------------> // Configuration pertaining to the creation of Domain Models
+    domainModelConfig: { // ----------------------> // Configuration pertaining to the creation of Domain Models
 
-      makeDomainNodeKey: { // --------------------> // If makeDomainNodeKey creation methods not supplied
+      makeDomainCollectionElementKey: { // -------> // If makeDomainCollectionElementKey creation methods not supplied
         fromSourceNode: (sourceNode) => string;     // a default key creation method will be supplied which
         fromDomainNodeNode: (domainNode) => string; // assumes an `id` field id available (or an error will be thrown)
       },
@@ -244,7 +244,7 @@ However, the following configuration would allow for the smartSync to successful
 
 Note that the matching algorithm will first try to find a field match _without_ the fieldname prefix. And, if it finds one, it will use that and not continue to look for a match with the common postfix.
 
-#### computeDomainFieldnameForSourceItem
+#### computeDomainFieldname
 
 If the names of the Domain Models are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
 
@@ -264,7 +264,7 @@ Targeted Node Options provide configuration data for specific source nodes. The 
 
 ### Matchers
 
-The matcher configuration lets the graphSynchronizer know which source node the configuration item relates to. There are two types of Matchers:
+The sourceNodeMatcher configuration lets the graphSynchronizer know which source node the configuration item relates to. There are two types of Matchers:
 
 #### SourceNodePath
 
@@ -287,7 +287,7 @@ The configuration item would be:
 ```TypeScript
 const graphSynchronizerOptions = {
     targetedNodeOptions: [{
-      matcher: { sourceNodePath: 'child.grandchild' },
+      sourceNodeMatcher: { nodePath: 'child.grandchild' },
       //... config options here
     }],
   }
@@ -333,7 +333,7 @@ The targetedNodeOptions configuration item could be:
 ```TypeScript
 const graphSynchronizerOptions = {
     targetedNodeOptions: [{
-      matcher: { sourceNodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'grandchild' },
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'grandchild' },
       //... config options here
     }],
   }
@@ -345,7 +345,7 @@ Note: the matching algorithm only passes the _first_ item from a collection to c
 
 If the `ignore` configuration item is present, and set to false, the matching source node will not be copied to the corresponding Domain Model node. Otherwise, it will be synchronized when a change is detected
 
-#### domainModelCreation
+#### domainModelConfig
 
 # Notes
 
@@ -353,7 +353,7 @@ If the `ignore` configuration item is present, and set to false, the matching so
 
 This library is part of a suite of companion libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
 
-    Contribute to the full-stack web and app development open-source ecosystem, with a focus on tools and libraries that enable help small tech businesses rapidly and affordably build high quality and sophisticated applications that are, reliable, affordable, easy to maintain... and a pleasure to build.
+    Contribute to the full-stack web and app development open-source ecosystem, with a focus on tools and libraries that help small tech startups and businesses rapidly and affordably build big ideas.
 
 To achieve these goals, the following principles are applied:
 
@@ -366,11 +366,11 @@ This is an ongoing work-in-progress. If you'd like to check out the companion li
 
 ## Limitations
 
-- **Source & Tartet Structural Similarity**. While field names can be adjusted, by configuration, the overall 'shape' and nesting structure of the graph must match between the source and target graphs. This library does not, yet, have the capability of automatically manipulating the shape of a graph during the synchronization process
+- **Source & Target Structural Similarity**. While field names can be adjusted, by configuration, the overall 'shape' and nesting structure of the graph must match between the source and target graphs. This library does not, yet, have the capability of automatically manipulating the shape of a graph during the synchronization process
 
 ## Disclaimers
 
-This code was initially developed for use in a single commercial project. It is being shared in case useful to others, and as a contribution to the development community and the great GraphQL and TypeScript tools that already exist.
+This code was initially developed for use in a single commercial project. It is being shared in case useful to others, and as a contribution to the development community and the great tools and libraries that already exist.
 
 ## Known Issues
 

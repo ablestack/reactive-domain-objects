@@ -35,7 +35,7 @@ export interface IGraphSyncOptions {
 
 export interface IGlobalPropertyNameTransformation {
   commonDomainFieldnamePostfix?: string;
-  computeDomainFieldnameForSourceItem?: ({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+  computeDomainFieldname?: ({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 }
 
 /***************************************************************************
@@ -48,26 +48,26 @@ export interface IGlobalPropertyNameTransformation {
  *****************************************************************************/
 
 export interface INodeSyncOptionsStrict<S, D> {
-  matcher: INodeSelector<S>;
+  sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelCreation?: IDomainModelFactory<S, D>;
+  domainModelConfig?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptions<S, D> {
-  matcher: INodeSelector<S>;
+  sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelCreation?: IDomainModelFactory<S, D>;
+  domainModelConfig?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
-  matcher: INodeSelector<S>;
+  sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelCreation?: IDomainModelFactory<S, D>;
+  domainModelConfig?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSelector<S> {
-  sourceNodePath?: string;
-  sourceNodeContent?: (sourceNode: S) => boolean;
+  nodePath?: string;
+  nodeContent?: (sourceNode: S) => boolean;
 }
 
 export interface IMakeKey<T> {
@@ -79,12 +79,12 @@ export interface IMakeDomainModel<S, D> {
 }
 
 export interface IDomainModelFactory<S, D> {
-  makeDomainNodeKey?: IDomainNodeKeyFactory<S, D>;
+  makeDomainCollectionElementKey?: IDomainNodeKeyFactory<S, D>;
   makeDomainModel: IMakeDomainModel<S, D>;
 }
 
 export interface IDomainModelFactoryStrict<S, D> {
-  makeDomainNodeKey?: IDomainNodeKeyFactoryStrict<S, D>;
+  makeDomainCollectionElementKey?: IDomainNodeKeyFactoryStrict<S, D>;
   makeDomainModel: IMakeDomainModel<S, D>;
 }
 
