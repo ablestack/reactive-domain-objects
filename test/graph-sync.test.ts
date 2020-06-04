@@ -1,6 +1,5 @@
 import { BookDomainModel, LibraryDomainModel, librarySourceJSON, AllCollectionTypesWithObjectsDomainModel, allCollectionsJSON_Trio, allCollectionsJSON_Uno } from '.';
 import { GraphSynchronizer, INodeSyncOptionsStrict, IGraphSyncOptions } from '../src';
-import { Logger } from '../src/logger';
 import { Book, SimpleObject, Bar, DefaultIdSourceObject } from './test-source-types';
 import _ from 'lodash';
 import {
@@ -18,6 +17,7 @@ import {
   FooDomainGraphWithCollection,
 } from './test-domain-models';
 import { fooSourceJSONWithCollection, targetedNodeOptionsTestRootJSON, fooWithNotesSourceJSON, fooSourceJSONSimple, fooSourceJSON } from './test-data';
+import { Logger } from '../src/infrastructure/logger';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 const PERF_TEST_ITERATION_COUNT_MS = 1000;
@@ -62,7 +62,7 @@ test('Simple graph usage demo', () => {
 test('Collection usage demo', () => {
   const fooDomainModel = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainModelConfig: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
@@ -83,8 +83,8 @@ test('Simple usage demo with notes', () => {
   const fooWithNotesDomainModel = new FooWithNotesDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainModelConfig: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainModelConfig: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
     ],
   });
 
@@ -108,7 +108,7 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainModelConfig: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -218,7 +218,7 @@ test('Synchronize only updated properties where source data changed', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, domainModelConfig: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -250,19 +250,19 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
     targetedNodeOptions: [
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
-        domainModelConfig: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
-        domainModelConfig: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
-        domainModelConfig: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
-        domainModelConfig: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
       },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
@@ -540,8 +540,8 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
   const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, domainModelConfig: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, domainModelConfig: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
       { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
@@ -608,9 +608,9 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () =>
       { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
       {
         sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' },
-        domainModelConfig: {
+        domainCollection: {
           makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
-          makeDomainCollectionElementKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
+          makeCollectionKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
         },
       },
     ],

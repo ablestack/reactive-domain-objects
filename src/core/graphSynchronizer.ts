@@ -1,22 +1,26 @@
 import { runInAction } from 'mobx';
-import { CollectionUtils, comparers, IEqualityComparer, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, IsICustomEqualityDomainModel, SyncUtils } from '.';
-import { Logger } from './logger';
 import {
-  DomainNodeType,
-  DomainNodeTypeInfo,
+  IGraphSynchronizer,
+  IEqualityComparer,
   IGlobalPropertyNameTransformation,
-  IMakeDomainModel,
-  IMakeKey,
-  IsICustomSyncDomainModel,
-  IsIDomainModelFactory,
+  INodeSyncOptions,
+  JsonNodeKind,
+  IGraphSyncOptions,
+  comparers,
+  CollectionUtils,
+  SourceNodeTypeInfo,
+  JavaScriptBuiltInType,
+  DomainNodeTypeInfo,
   IsISyncableCollection,
   ISyncableCollection,
-  JavaScriptBuiltInType,
-  JsonNodeKind,
-  SourceNodeType,
-  SourceNodeTypeInfo,
   IDomainNodeKeyFactory,
-} from './types';
+  IMakeDomainModel,
+  IsIDomainModelFactory,
+  IsICustomEqualityDomainModel,
+  IsICustomSyncDomainModel,
+  SyncUtils,
+} from '..';
+import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -299,12 +303,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): boolean {
     if (!domainNodeTypeInfo.type) throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourceNodeTypeInfo}', Domain type: ${domainNodeTypeInfo} `);
 
-    const { makeDomainCollectionElementKey, makeDomainModel } = this.tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection: domainNodeVal });
+    const { makeCollectionKey, makeDomainModel } = this.tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection: domainNodeVal });
 
     // VALIDATE
-    if (sourceCollection.length > 0 && !makeDomainCollectionElementKey?.fromSourceNode) {
+    if (sourceCollection.length > 0 && !makeCollectionKey?.fromSourceNode) {
       throw new Error(
-        `Could not find 'makeDomainCollectionElementKey?.fromSourceNode)' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+        `Could not find 'makeCollectionKey?.fromSourceNode)' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
       );
     }
     if (sourceCollection.length > 0 && !makeDomainModel) {
@@ -327,7 +331,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         domainNodeCollection.clear();
       }
 
-      return this.synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeDomainCollectionElementKey: makeDomainCollectionElementKey!, makeDomainModel: makeDomainModel! });
+      return this.synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeCollectionKey: makeCollectionKey!, makeDomainModel: makeDomainModel! });
 
       //-----------------------------------------------------
       // MAP SYNC
@@ -339,7 +343,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         domainNodeCollection.clear();
       }
 
-      return this.synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeDomainCollectionElementKey: makeDomainCollectionElementKey!, makeDomainModel: makeDomainModel! });
+      return this.synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeCollectionKey: makeCollectionKey!, makeDomainModel: makeDomainModel! });
 
       //-----------------------------------------------------
       // SET SYNC
@@ -351,9 +355,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         domainNodeCollection.clear();
       }
 
-      if (domainNodeCollection.size > 0 && !makeDomainCollectionElementKey?.fromDomainModel)
+      if (domainNodeCollection.size > 0 && !makeCollectionKey?.fromDomainModel)
         throw new Error(
-          `Could not find '!makeDomainCollectionElementKey?.fromDomainModel' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+          `Could not find '!makeCollectionKey?.fromDomainModel' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
       if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
         logger.warn(
@@ -365,7 +369,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       return this.synchronizeDomainSet({
         sourceCollection,
         domainNodeCollection,
-        makeDomainCollectionElementKey: makeDomainCollectionElementKey!,
+        makeCollectionKey: makeCollectionKey!,
         makeDomainModel: makeDomainModel!,
       });
 
@@ -379,7 +383,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         CollectionUtils.Array.clear({ collection: domainNodeCollection });
       }
 
-      if (domainNodeCollection.length > 0 && !makeDomainCollectionElementKey?.fromDomainModel)
+      if (domainNodeCollection.length > 0 && !makeCollectionKey?.fromDomainModel)
         throw new Error(
           `Could not find 'makeDomainNodeKeyFromDomainModel' (Path: '${this.getSourceObjectPath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
@@ -393,7 +397,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       return this.synchronizeDomainArray({
         sourceCollection,
         domainNodeCollection,
-        makeDomainCollectionElementKey: makeDomainCollectionElementKey!,
+        makeCollectionKey: makeCollectionKey!,
         makeDomainModel: makeDomainModel!,
       });
     }
@@ -403,7 +407,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
   /** */
   private tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: any }) {
-    let makeDomainCollectionElementKey: IDomainNodeKeyFactory<any, any> | undefined;
+    let makeCollectionKey: IDomainNodeKeyFactory<any, any> | undefined;
     let makeDomainModel: IMakeDomainModel<any, any> | undefined;
 
     const collectionElementType = this.getCollectionElementType({ sourceCollection, domainCollection });
@@ -412,23 +416,22 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // If types are primitive, provide auto methods, else try and get from configuration
     //
     if (collectionElementType === 'primitive' || collectionElementType === 'empty') {
-      makeDomainCollectionElementKey = { fromSourceNode: (primitive) => primitive.toString(), fromDomainModel: (primitive) => primitive.toString() };
+      makeCollectionKey = { fromSourceNode: (primitive) => primitive.toString(), fromDomainModel: (primitive) => primitive.toString() };
       makeDomainModel = (primitive) => primitive;
     } else {
       const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection });
       const typeDerivedOptions = IsIDomainModelFactory(domainCollection)
-        ? { makeDomainCollectionElementKey: domainCollection.makeDomainCollectionElementKey, makeDomainModel: domainCollection.makeDomainModel }
+        ? { makeCollectionKey: domainCollection.makeCollectionKey, makeDomainModel: domainCollection.makeDomainModel }
         : { makeDomainNodeKeyFromSourceNode: undefined, makeDomainNodeKeyFromDomainModel: domainCollection.makeDomainNodeKeyFromDomainModel, makeDomainModel: undefined };
 
       // GET CONFIG ITEM: makeDomainNodeKeyFromSourceNode
-      makeDomainCollectionElementKey =
-        targetDerivedOptions?.domainModelConfig?.makeDomainCollectionElementKey || typeDerivedOptions.makeDomainCollectionElementKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
+      makeCollectionKey = targetDerivedOptions?.domainCollection?.makeCollectionKey || typeDerivedOptions.makeCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
 
       // GET CONFIG ITEM: makeDomainModel
-      makeDomainModel = targetDerivedOptions?.domainModelConfig?.makeDomainModel || targetDerivedOptions?.domainModelConfig?.makeDomainModel || typeDerivedOptions.makeDomainModel;
+      makeDomainModel = targetDerivedOptions?.domainCollection?.makeDomainModel || targetDerivedOptions?.domainCollection?.makeDomainModel || typeDerivedOptions.makeDomainModel;
     }
 
-    return { makeDomainCollectionElementKey, makeDomainModel };
+    return { makeCollectionKey, makeDomainModel };
   }
 
   /** */
@@ -465,13 +468,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
   /** */
   private tryMakeAutoKeyMaker({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: Iterable<any> }): IDomainNodeKeyFactory<any, any> | undefined {
-    let makeDomainCollectionElementKey: IDomainNodeKeyFactory<any, any> = {} as any;
+    let makeCollectionKey: IDomainNodeKeyFactory<any, any> = {} as any;
 
     // Try and get options from source collection
     if (sourceCollection && sourceCollection.length > 0) {
       const firstItemInSourceCollection = sourceCollection[0];
       if (firstItemInSourceCollection && firstItemInSourceCollection.id) {
-        makeDomainCollectionElementKey.fromSourceNode = (sourceNode: any) => {
+        makeCollectionKey.fromSourceNode = (sourceNode: any) => {
           return sourceNode.id;
         };
       }
@@ -490,7 +493,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       }
 
       if (hasIdKey) {
-        makeDomainCollectionElementKey.fromDomainModel = (domainNode: any) => {
+        makeCollectionKey.fromDomainModel = (domainNode: any) => {
           return domainNode[idKey];
         };
       }
@@ -498,8 +501,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     // Allow to return if fromDomainModel is null, even though this is not allowed in user supplied options
     //  When defaultKeyMaker, the code can handle a special case where fromDomainModel is null (when no items in domain collection)
-    if (!makeDomainCollectionElementKey || !makeDomainCollectionElementKey.fromSourceNode) return undefined;
-    else return makeDomainCollectionElementKey;
+    if (!makeCollectionKey || !makeCollectionKey.fromSourceNode) return undefined;
+    else return makeCollectionKey;
   }
 
   /** */
@@ -562,19 +565,19 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeISyncableCollection<S, D>({
     sourceCollection,
     domainNodeCollection,
-    makeDomainCollectionElementKey,
+    makeCollectionKey,
     makeDomainModel,
   }: {
     sourceCollection: Array<S>;
     domainNodeCollection: ISyncableCollection<any>;
-    makeDomainCollectionElementKey: IDomainNodeKeyFactory<S, D>;
+    makeCollectionKey: IDomainNodeKeyFactory<S, D>;
     makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => domainNodeCollection.size,
       getTargetCollectionKeys: domainNodeCollection.getKeys,
-      makeDomainNodeKeyFromSourceNode: makeDomainCollectionElementKey?.fromSourceNode!,
+      makeDomainNodeKeyFromSourceNode: makeCollectionKey?.fromSourceNode!,
       tryGetItemFromTargetCollection: (key) => domainNodeCollection.tryGetItemFromTargetCollection(key),
       insertItemToTargetCollection: (key, value) => domainNodeCollection.insertItemToTargetCollection(key, value),
       tryDeleteItemFromTargetCollection: (key) => domainNodeCollection.tryDeleteItemFromTargetCollection(key),
@@ -597,19 +600,19 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeDomainMap<S, D>({
     sourceCollection,
     domainNodeCollection,
-    makeDomainCollectionElementKey,
+    makeCollectionKey,
     makeDomainModel,
   }: {
     sourceCollection: Array<S>;
     domainNodeCollection: Map<string, S>;
-    makeDomainCollectionElementKey: IDomainNodeKeyFactory<S, D>;
+    makeCollectionKey: IDomainNodeKeyFactory<S, D>;
     makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => domainNodeCollection.size,
       getTargetCollectionKeys: () => Array.from(domainNodeCollection.keys()),
-      makeDomainNodeKeyFromSourceNode: makeDomainCollectionElementKey?.fromSourceNode,
+      makeDomainNodeKeyFromSourceNode: makeCollectionKey?.fromSourceNode,
       tryGetItemFromTargetCollection: (key) => domainNodeCollection.get(key),
       insertItemToTargetCollection: (key, value) => domainNodeCollection.set(key, value),
       tryDeleteItemFromTargetCollection: (key) => domainNodeCollection.delete(key),
@@ -632,27 +635,23 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeDomainSet<S, D>({
     sourceCollection,
     domainNodeCollection,
-    makeDomainCollectionElementKey,
+    makeCollectionKey,
     makeDomainModel,
   }: {
     sourceCollection: Array<S>;
     domainNodeCollection: Set<D>;
-    makeDomainCollectionElementKey: IDomainNodeKeyFactory<S, D>;
+    makeCollectionKey: IDomainNodeKeyFactory<S, D>;
     makeDomainModel: IMakeDomainModel<S, D>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => domainNodeCollection.size,
-      getTargetCollectionKeys: makeDomainCollectionElementKey?.fromDomainModel
-        ? () => CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel! })
-        : undefined,
-      makeDomainNodeKeyFromSourceNode: makeDomainCollectionElementKey?.fromSourceNode,
-      tryGetItemFromTargetCollection: makeDomainCollectionElementKey?.fromDomainModel
-        ? (key) => CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel!, key })
-        : undefined,
+      getTargetCollectionKeys: makeCollectionKey?.fromDomainModel ? () => CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel! }) : undefined,
+      makeDomainNodeKeyFromSourceNode: makeCollectionKey?.fromSourceNode,
+      tryGetItemFromTargetCollection: makeCollectionKey?.fromDomainModel ? (key) => CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel!, key }) : undefined,
       insertItemToTargetCollection: (key, value) => CollectionUtils.Set.insertItem({ collection: domainNodeCollection, key, value }),
-      tryDeleteItemFromTargetCollection: makeDomainCollectionElementKey?.fromDomainModel
-        ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel!, key })
+      tryDeleteItemFromTargetCollection: makeCollectionKey?.fromDomainModel
+        ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel!, key })
         : undefined,
       makeItemForTargetCollection: makeDomainModel,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
@@ -662,7 +661,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           domainNodeKey: targetElementKey,
           domainNodeVal: targetElementVal,
-          tryUpdateDomainNode: (key, value) => CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel!, value }),
+          tryUpdateDomainNode: (key, value) => CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel!, value }),
         }),
     });
   }
@@ -673,29 +672,23 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeDomainArray<S, D>({
     sourceCollection,
     domainNodeCollection,
-    makeDomainCollectionElementKey,
+    makeCollectionKey,
     makeDomainModel,
   }: {
     sourceCollection: Array<S>;
     domainNodeCollection: Array<any>;
-    makeDomainCollectionElementKey: IDomainNodeKeyFactory<S, D>;
+    makeCollectionKey: IDomainNodeKeyFactory<S, D>;
     makeDomainModel: IMakeDomainModel<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => domainNodeCollection.length,
-      getTargetCollectionKeys: makeDomainCollectionElementKey?.fromDomainModel
-        ? () => CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel! })
-        : undefined,
-      makeDomainNodeKeyFromSourceNode: makeDomainCollectionElementKey?.fromSourceNode,
+      getTargetCollectionKeys: makeCollectionKey?.fromDomainModel ? () => CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel! }) : undefined,
+      makeDomainNodeKeyFromSourceNode: makeCollectionKey?.fromSourceNode,
       makeItemForTargetCollection: makeDomainModel,
-      tryGetItemFromTargetCollection: makeDomainCollectionElementKey?.fromDomainModel
-        ? (key) => CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey?.fromDomainModel!, key })
-        : undefined,
+      tryGetItemFromTargetCollection: makeCollectionKey?.fromDomainModel ? (key) => CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeKey: makeCollectionKey?.fromDomainModel!, key }) : undefined,
       insertItemToTargetCollection: (key, value) => CollectionUtils.Array.insertItem({ collection: domainNodeCollection, key, value }),
-      tryDeleteItemFromTargetCollection: makeDomainCollectionElementKey?.fromDomainModel
-        ? (key) => CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeKey: makeDomainCollectionElementKey.fromDomainModel!, key })
-        : undefined,
+      tryDeleteItemFromTargetCollection: makeCollectionKey?.fromDomainModel ? (key) => CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainModel!, key }) : undefined,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeKind: 'arrayElement',

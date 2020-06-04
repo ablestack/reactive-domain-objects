@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import { Logger } from './logger';
-import { IMakeKey } from '.';
+import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('SyncUtils');
 

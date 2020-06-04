@@ -50,19 +50,19 @@ export interface IGlobalPropertyNameTransformation {
 export interface INodeSyncOptionsStrict<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelConfig?: IDomainModelFactory<S, D>;
+  domainCollection?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelConfig?: IDomainModelFactory<S, D>;
+  domainCollection?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  domainModelConfig?: IDomainModelFactory<S, D>;
+  domainCollection?: IDomainModelFactory<S, D>;
 }
 
 export interface INodeSelector<S> {
@@ -79,12 +79,12 @@ export interface IMakeDomainModel<S, D> {
 }
 
 export interface IDomainModelFactory<S, D> {
-  makeDomainCollectionElementKey?: IDomainNodeKeyFactory<S, D>;
+  makeCollectionKey?: IDomainNodeKeyFactory<S, D>;
   makeDomainModel: IMakeDomainModel<S, D>;
 }
 
 export interface IDomainModelFactoryStrict<S, D> {
-  makeDomainCollectionElementKey?: IDomainNodeKeyFactoryStrict<S, D>;
+  makeCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
   makeDomainModel: IMakeDomainModel<S, D>;
 }
 

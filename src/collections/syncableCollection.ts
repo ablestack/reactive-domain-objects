@@ -1,8 +1,6 @@
 import { observable, computed, action } from 'mobx';
-import { IDomainModelFactory, ICustomEqualityDomainModel, ICustomSyncDomainModel } from '.';
-import { ISyncableCollection } from './types';
-import { Logger } from './logger';
-import { CollectionUtils } from './collection.utils';
+import { IDomainModelFactory, ISyncableCollection, CollectionUtils } from '..';
+import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { Logger } from './logger';
-import { IMakeKey } from '.';
+import { Logger } from '../infrastructure/logger';
+import { IMakeKey } from '..';
 
 const logger = Logger.make('CollectionUtils');
 

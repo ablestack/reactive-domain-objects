@@ -135,7 +135,7 @@ const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
       sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
-      domainModelConfig: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
+      domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
     }
   ],
 };
@@ -157,7 +157,12 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 - Multiple additional usage examples can be found in src/tests/graph-sync/test.ts.
 - See the [Configuration section](#GraphSynchronizer-Configuration-Options) for a detailed description of all the configuration options
 
-# API Documentation
+# Usage Documentation
+
+## General Usage Notes & Tips
+
+- Domain Models must be instantiated with properties initialized to non-undefined values. Use strict TypeScript compile option to help enforce this
+- A LOG_LEVEL value can be set in a .env file to turn on logging: `# 0:off, 1:error, 2:warn, 3:info, 4:debug, 5:trace`
 
 ## GraphSyncronizer
 
@@ -192,9 +197,9 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
     ignore: boolean, // --------------------------> // A source node can be ignored
 
-    domainModelConfig: { // ----------------------> // Configuration pertaining to the creation of Domain Models
+    domainCollection: { // ----------------------> // Configuration pertaining to the creation of Domain Models
 
-      makeDomainCollectionElementKey: { // -------> // If makeDomainCollectionElementKey creation methods not supplied
+      makeCollectionKey: { // --------------------> // If makeCollectionKey creation methods not supplied
         fromSourceNode: (sourceNode) => string;     // a default key creation method will be supplied which
         fromDomainNodeNode: (domainNode) => string; // assumes an `id` field id available (or an error will be thrown)
       },
@@ -345,11 +350,68 @@ Note: the matching algorithm only passes the _first_ item from a collection to c
 
 If the `ignore` configuration item is present, and set to false, the matching source node will not be copied to the corresponding Domain Model node. Otherwise, it will be synchronized when a change is detected
 
-#### domainModelConfig
+#### domainCollection
+
+Contains configuration that inform GraphSynchronizer how to handle collections of Domain Objects
+
+##### makeCollectionKey
+
+The two contained configuration properties are:
+
+```
+  fromSourceNode: (sourceNode) => string;
+  fromDomainNodeNode: (domainNode) => string;
+```
+
+These methods:
+
+- Are are used to create unique keys for each Domain collection element, and should be idempotent
+- They are only required for Domain Models that are contained in a Domain Collection AND where there is no `id` field
+- If they are not supplied, default methods will be supplied that look for an `id` field in the node (and throw an error if not found)
+
+#### makeDomainModel
+
+This configuration property had the following signature:
+
+```
+(sourceNode) => any;
+```
+
+This property is required for every Domain Model type that is contained in a parent collection, so they can be automatically instantiated as items are added to the source collection
+
+##
 
 # Notes
 
-## Companion Libraries
+## Terminology
+
+For clarity, this is a brief reference for some terminology that is used throughout the documentation and the source code. Please feel free to update if you see any terms being used incorrectly:
+
+- Element: an item of a collection
+- Node: An Property of an Object, or an Element of a collection
+- Source: JSON source data, and the 'source of truth'
+- Domain Model: JavaScript objects that contain the Source data, as well as any other methods that support their purpose in the Domain
+- Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
+
+## Limitations
+
+- **Source & Target Structural Similarity**. While field names can be adjusted, by configuration, the overall 'shape' and nesting structure of the graph must match between the source and target graphs. This library does not, yet, have the capability of automatically manipulating the shape of a graph during the synchronization process
+
+## Disclaimers
+
+This code was initially developed for use in a single commercial project. It is being shared in case useful to others, and as a contribution to the development community and the great tools and libraries that already exist.
+
+## Known Issues
+
+Known Issues Include:
+
+- Array and Set collections types in Domain Models are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)
+
+## Refinements and Enhancements Needed
+
+- Open to suggestions
+
+# Companion Libraries
 
 This library is part of a suite of companion libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
 
@@ -364,41 +426,8 @@ To achieve these goals, the following principles are applied:
 
 This is an ongoing work-in-progress. If you'd like to check out the companion libraries, even contribute to them, you can find them at the [AbleStack on GitHub](https://github.com/ablestack)
 
-## Limitations
-
-- **Source & Target Structural Similarity**. While field names can be adjusted, by configuration, the overall 'shape' and nesting structure of the graph must match between the source and target graphs. This library does not, yet, have the capability of automatically manipulating the shape of a graph during the synchronization process
-
-## Disclaimers
-
-This code was initially developed for use in a single commercial project. It is being shared in case useful to others, and as a contribution to the development community and the great tools and libraries that already exist.
-
-## Known Issues
-
-Known Issues Include:
-
-TBD
-
-## Refinements and Enhancements Needed
-
-TBD
-
 # Release Notes
 
 ### Notes 1.0.0
 
-- Expect non collection properties to be not null or undefined
-- Presidence: PathMap, TypeMap, Interfaces
-- Requires properties are initialized. Use strict TypeScript compile option
-- LOG_LEVEL .env
-
-### Terminology
-
-- Element: an item of a collection
-- Node: An Property of an Object, or an Element of a collection
-- Source: Json source data
-- Domain: JavaScript Target Objects
-- Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
-- makeDomainNodeKeyFromDomainModel needs to be specified for any Domain Array or Set collections
-- Domain Array and Set collections are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)
-- Public Properties, Getters/Setters, Observables all supported
-- Instrumented
+- TBD
