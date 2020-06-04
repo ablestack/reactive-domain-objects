@@ -1,6 +1,6 @@
 {
   "name": "@shallyware/reactive-domain-graphs",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Utility classes and methods to transform ApolloGraphQL results into observable Domain Models",
   "author": "ahrnee <ahrndee@gmail.com>",
   "license": "MIT",

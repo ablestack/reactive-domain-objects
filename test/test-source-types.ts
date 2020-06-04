@@ -1,8 +1,10 @@
 // -----------------------------------
 // FOO GRAPH - TEST SOURCE TYPES
 // -----------------------------------
-export type Foo = { mapOfBar: Bar[] };
-export type Bar = { id: string };
+export type Foo = { id: string; name: string };
+export type FooSimple = { bar: Bar };
+export type FooWithCollection = { collectionOfBar: Bar[] };
+export type Bar = { id: string; name: string };
 
 // -----------------------------------
 // FOO WITH NOTES GRAPH - TEST SOURCE TYPES

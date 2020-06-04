@@ -6,11 +6,21 @@ import { SimpleObject } from './test-source-types';
 // LIBRARY GRAPH - FOO BAR
 // -----------------------------------
 export class FooDomainModel {
-  public mapOfBar = new Map<string, BarDomainModel>();
+  public id: string = '';
+  public name: string = '';
+}
+
+export class FooDomainGraphSimple {
+  public bar = new BarDomainModel();
+}
+
+export class FooDomainGraphWithCollection {
+  public collectionOfBar = new Map<string, BarDomainModel>();
 }
 
 export class BarDomainModel {
   public id: string = '';
+  public name: string = '';
 }
 
 // -----------------------------------
@@ -134,13 +144,13 @@ export class LibraryDomainModel {
 // ALL COLLECTION TYPES GRAPH - TEST DOMAIN MODELS
 // ------------------------------------------------
 export class AllCollectionTypesWithObjectsDomainModel {
-  public arrayOfObjects = new Array<SimpleObjectDomainModel>();
-  public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
-  public setOfObjects = new Set<SimpleObjectDomainModel>();
+  public arrayOfObjects = new Array<SimpleDomainModel>();
+  public mapOfObjects = new Map<string, SimpleDomainModel>();
+  public setOfObjects = new Set<SimpleDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
     makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainModel: (o: SimpleObjectDomainModel) => o.id,
-    makeDomainModel: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+    makeDomainNodeKeyFromDomainModel: (o: SimpleDomainModel) => o.id,
+    makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
   });
 }
 
@@ -151,20 +161,20 @@ export class AllCollectionTypesWithPrimitivesDomainModel {
 }
 
 export class AllCollectionTypesDomainModel {
-  public arrayOfObjects = new Array<SimpleObjectDomainModel>();
-  public mapOfObjects = new Map<string, SimpleObjectDomainModel>();
-  public setOfObjects = new Set<SimpleObjectDomainModel>();
+  public arrayOfObjects = new Array<SimpleDomainModel>();
+  public mapOfObjects = new Map<string, SimpleDomainModel>();
+  public setOfObjects = new Set<SimpleDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
     makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainModel: (o: SimpleObjectDomainModel) => o.id,
-    makeDomainModel: (o: SimpleObjectDomainModel) => new SimpleObjectDomainModel(),
+    makeDomainNodeKeyFromDomainModel: (o: SimpleDomainModel) => o.id,
+    makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
   });
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();
 }
 
-export class SimpleObjectDomainModel {
+export class SimpleDomainModel {
   public id = '';
 }
 

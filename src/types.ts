@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { SimpleObjectDomainModel } from '../test';
+import { SimpleDomainModel } from '../test';
 
 export type JavaScriptBuiltInType =
   | '[object Array]'
@@ -24,7 +24,7 @@ export type DomainNodeType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableC
 export type DomainNodeTypeInfo = { type: DomainNodeType | undefined; builtInType: JavaScriptBuiltInType };
 
 export interface IGraphSynchronizer {
-  synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D });
+  smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D });
 }
 
 export interface IGraphSyncOptions {
@@ -66,7 +66,7 @@ export interface INodeSyncOptionsStrict<S, D> {
 }
 
 export interface INodeSelector<S> {
-  path?: string;
+  sourceNodePath?: string;
   matcher?: (sourceNode: S) => boolean;
 }
 

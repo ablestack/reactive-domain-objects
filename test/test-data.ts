@@ -1,11 +1,12 @@
-import { Library, AllCollections, Foo, PropNameTestRoot, FooWithNotes } from '.';
+import { Library, AllCollections, PropNameTestRoot, FooWithNotes } from '.';
+import { FooSimple, FooWithCollection, Foo } from './test-source-types';
 
 // -----------------------------------
 // FOO - TEST SOURCE MODEL
 // -----------------------------------
-export const fooSourceJSON: Foo = {
-  mapOfBar: [{ id: 'bar-1' }],
-};
+export const fooSourceJSON: Foo = { id: 'foo-1', name: 'Simple Foo 1' };
+export const fooSourceJSONSimple: FooSimple = { bar: { id: 'bar-1', name: 'Bar 1' } };
+export const fooSourceJSONWithCollection: FooWithCollection = { collectionOfBar: [{ id: 'bar-1', name: 'Bar 1' }] };
 
 // -----------------------------------
 // FOO BAR GRAPH - TEST SOURCE MODEL

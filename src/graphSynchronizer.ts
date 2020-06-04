@@ -43,14 +43,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
   private addSourceNodeToPath(key: string, sourceNodeKind: JsonNodeKind) {
-    logger.trace(`Adding SourceNode to path: ${this.getSourceNodePath()} + ${key} (${sourceNodeKind})`);
+    logger.trace(`Adding SourceNode to sourceNodePath: ${this.getSourceNodePath()} + ${key} (${sourceNodeKind})`);
     this._sourceNodeKeyChain.push(key);
     if (sourceNodeKind === 'objectProperty') this._sourceObjectKeyChain.push(key);
   }
 
   private removeSourceNodeFromPath(sourceNodeKind: JsonNodeKind) {
     const key = this._sourceNodeKeyChain.pop();
-    logger.trace(`Removing SourceNode from path: ${this.getSourceNodePath()} - ${key} (${sourceNodeKind})`);
+    logger.trace(`Removing SourceNode from sourceNodePath: ${this.getSourceNodePath()} - ${key} (${sourceNodeKind})`);
     if (sourceNodeKind === 'objectProperty') this._sourceObjectKeyChain.pop();
   }
 
@@ -59,7 +59,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     return this._sourceNodeKeyChain.join('.');
   }
 
-  // ObjectPath is used for configuration generated options. It is the node path, with the collection keys skipped. It is static, but  not unique per node
+  // ObjectPath is used for configuration generated options. It is the node sourceNodePath, with the collection keys skipped. It is static, but  not unique per node
   private getSourceObjectPath(): string {
     return this._sourceObjectKeyChain.join('.');
   }
@@ -79,7 +79,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     if (options?.targetedOptions) {
       options?.targetedOptions.forEach((targetedOptionsItem) => {
-        if (targetedOptionsItem.selector.path) this._targetOptionsPathMap.set(targetedOptionsItem.selector.path, targetedOptionsItem);
+        if (targetedOptionsItem.selector.sourceNodePath) this._targetOptionsPathMap.set(targetedOptionsItem.selector.sourceNodePath, targetedOptionsItem);
         this._targetOptionsSelectorArray.push(targetedOptionsItem);
       });
     }
@@ -702,14 +702,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public synchronize<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D }) {
+  public smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D }) {
     if (!rootSourceNode || !rootDomainNode) {
-      logger.warn('synchronize - sourceObject or domainModel was null. Exiting', { rootSourceNode, rootSyncableObject: rootDomainNode });
+      logger.warn('smartSync - sourceObject or domainModel was null. Exiting', { rootSourceNode, rootSyncableObject: rootDomainNode });
       return;
     }
 
-    logger.trace('synchronize - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
     this.trySynchronizeObject({ key: 'root', sourceObject: rootSourceNode, domainModel: rootDomainNode });
-    logger.trace('synchronize - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
   }
 }
