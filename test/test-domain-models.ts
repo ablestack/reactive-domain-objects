@@ -6,22 +6,33 @@ import { SimpleObject } from './test-source-types';
 // LIBRARY GRAPH - FOO BAR
 // -----------------------------------
 export class FooDomainModel {
+  public mapOfBar = new Map<string, BarDomainModel>();
+}
+
+export class BarDomainModel {
+  public id: string = '';
+}
+
+// -----------------------------------
+// LIBRARY GRAPH - FOO BAR WITH NOTES
+// -----------------------------------
+export class FooWithNotesDomainModel {
   // Public properties. Getters and Setters will work fine also
   public id = '';
 
   // Child Domain Models
-  public bar = new BarDomainModel();
+  public bar = new BarWithNotesDomainModel();
 
   // Collections of Child Domain Models
-  public arrayOfBar = new Array<BarDomainModel>();
-  public mapOfBar = new Map<string, BarDomainModel>();
+  public arrayOfBar = new Array<BarWithNotesDomainModel>();
+  public mapOfBar = new Map<string, BarWithNotesDomainModel>();
 
   /* Any other domain-specific properties and methods here */
 
   // Note, all values must be initialized to a default value on instantiation, or they will be removed by the TS -> JS compilation step and will not sync
 }
 
-export class BarDomainModel {
+export class BarWithNotesDomainModel {
   public id: string = '';
 
   /* Further nesting of Domain Models or collections of Domain Models here */

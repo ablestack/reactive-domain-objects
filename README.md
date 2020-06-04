@@ -1,14 +1,14 @@
 # Overview
 
-reactive-domain-graphs helps make a dumb graph of nested JSON data into a fully reactive graph of smart Domain Model objects. It supports deeply data-structures (graphs), built-in and custom collection types, and observable Domain Model nodes. It tracks previous state, and will only update Domain values that have changed - essentially negating the need for much of the pervasive memoization code often found in downstream consumers, such as React projects.
+reactive-domain-graphs lets you turn a dumb graph of nested JSON data into a fully reactive graph of smart Domain Model objects. It supports deeply data-structures (graphs), built-in and custom collection types, and observable Domain Model nodes. It tracks previous state, and will only update Domain values that have changed - essentially negating the need for much of the memoization code often found in downstream consuming code, such as React projects.
 
 ## Key Features
 
 - **Automatic synchronization** of a nested Domain Model graph with s JSON data-source
 - **Tracks previous data-source state**, and only updates Domain Model nodes where changes are detected
 - **Configurable equality comparers**, defaulting to optimized deep structural equality checks (handling circular references)
-- **4 milliseconds for a full synchronization** of a medium sized graph in approx (as measured on a 2015 quad-core laptop)
-- **Domain Model nodes support** Public properties, getters/Setters, and Observables, Arrays, Maps, Sets, and custom collection types
+- **Less than 5 milliseconds for full synchronization** of a medium sized graph in approx (as measured on a 2015 quad-core laptop)
+- **Domain Model support** for all build-in structures, including public properties, getters/Setters, Observables, Arrays, Maps, Sets, and custom collection types
 - **A suite of tests**, including performance tests
 - **Deep instrumentation**, with configurable logging levels from Tracing through to Error
 
@@ -51,6 +51,32 @@ graphSynchronizer.synchronize({ rootDomainNode, rootSourceNode });
 Multiple usage examples can be found in tests/graph-sync/test.ts
 
 ```TypeScript
+export const fooSourceJSON: Foo = {
+  id: 'foo-0',
+  bar: { id: 'bar-0' },
+  arrayOfBar: [{ id: 'bar-1' }],
+  mapOfBar: [{ id: 'bar-2' }],
+};
+
+```
+
+```TypeScript
+export const fooSourceJSON: Foo = {
+  id: 'foo-0',
+  bar: { id: 'bar-0' },
+  arrayOfBar: [{ id: 'bar-1' }],
+  mapOfBar: [{ id: 'bar-2' }],
+};
+
+```
+
+```TypeScript
+  const graphSynchronizer = new GraphSynchronizer({
+    targetedOptions: [
+      { selector: { path: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
+      { selector: { path: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
+    ],
+  });
 
 ```
 

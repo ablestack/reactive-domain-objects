@@ -1,9 +1,16 @@
-import { Library, AllCollections, Foo, PropNameTestRoot } from '.';
+import { Library, AllCollections, Foo, PropNameTestRoot, FooWithNotes } from '.';
+
+// -----------------------------------
+// FOO - TEST SOURCE MODEL
+// -----------------------------------
+export const fooSourceJSON: Foo = {
+  mapOfBar: [{ id: 'bar-1' }],
+};
 
 // -----------------------------------
 // FOO BAR GRAPH - TEST SOURCE MODEL
 // -----------------------------------
-export const fooSourceJSON: Foo = {
+export const fooWithNotesSourceJSON: FooWithNotes = {
   id: 'foo-0',
   bar: { id: 'bar-0' },
   arrayOfBar: [{ id: 'bar-1' }],

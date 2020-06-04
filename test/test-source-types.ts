@@ -1,8 +1,14 @@
 // -----------------------------------
 // FOO GRAPH - TEST SOURCE TYPES
 // -----------------------------------
-export type Foo = { id: string; bar: Bar; arrayOfBar: Bar[]; mapOfBar: Bar[] };
+export type Foo = { mapOfBar: Bar[] };
 export type Bar = { id: string };
+
+// -----------------------------------
+// FOO WITH NOTES GRAPH - TEST SOURCE TYPES
+// -----------------------------------
+export type FooWithNotes = { id: string; bar: BarWithNotes; arrayOfBar: BarWithNotes[]; mapOfBar: BarWithNotes[] };
+export type BarWithNotes = { id: string };
 
 // -----------------------------------
 // LIBRARY GRAPH - TEST SOURCE TYPES

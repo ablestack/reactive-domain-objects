@@ -12,48 +12,58 @@ import {
   TargetedOptionsTestRootDomainModel,
   DefaultIdDomainModel,
   DefaultId$DomainModel,
+  FooWithNotesDomainModel,
+  BarWithNotesDomainModel,
 } from './test-domain-models';
-import { fooSourceJSON, targetedOptionsTestRootJSON } from './test-data';
+import { fooSourceJSON, targetedOptionsTestRootJSON, fooWithNotesSourceJSON } from './test-data';
 
 const logger = Logger.make('autoSynchronize.test.ts');
 const PERF_TEST_ITERATION_COUNT_MS = 1000;
 const PERF_TEST_MAX_TIME_MS = 500;
 
 // --------------------------------------------------------------
-// SHARED
-// --------------------------------------------------------------
-function makePreconfiguredFooGraphSynchronizerUsingPathOptions() {
-  // SETUP
-  return new GraphSynchronizer({
-    targetedOptions: [
-      { selector: { path: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
-      { selector: { path: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } },
-    ],
-  });
-}
-
-// --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
-test('Synchronize updates complex domain graph as expected', () => {
+test('Simple usage demo', () => {
   const fooDomainModel = new FooDomainModel();
-  const graphSynchronizer = makePreconfiguredFooGraphSynchronizerUsingPathOptions();
-
-  // POSTURE VERIFICATION
-  expect(fooDomainModel.id).toBeFalsy();
+  const graphSynchronizer = new GraphSynchronizer({
+    targetedOptions: [{ selector: { path: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+  });
 
   // EXECUTE
   graphSynchronizer.synchronize({ rootDomainNode: fooDomainModel, rootSourceNode: fooSourceJSON });
 
   // RESULTS VERIFICATION
-  expect(fooDomainModel.id).not.toBeFalsy();
-
-  expect(fooDomainModel.arrayOfBar.length).toEqual(fooSourceJSON.arrayOfBar.length);
-  expect(fooDomainModel.arrayOfBar[0].id).toEqual(fooSourceJSON.arrayOfBar[0].id);
-
   expect(fooDomainModel.mapOfBar.size).toEqual(fooSourceJSON.mapOfBar.length);
   expect(fooDomainModel.mapOfBar.values().next().value.id).toEqual(fooSourceJSON.mapOfBar[0].id);
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+
+test('Simple usage demo with notes', () => {
+  const fooWithNotesDomainModel = new FooWithNotesDomainModel();
+  const graphSynchronizer = new GraphSynchronizer({
+    targetedOptions: [
+      { selector: { path: 'arrayOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { selector: { path: 'mapOfBar' }, domainModelCreation: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+    ],
+  });
+
+  // POSTURE VERIFICATION
+  expect(fooWithNotesDomainModel.mapOfBar.size).toBeFalsy();
+
+  // EXECUTE
+  graphSynchronizer.synchronize({ rootDomainNode: fooWithNotesDomainModel, rootSourceNode: fooWithNotesSourceJSON });
+
+  // RESULTS VERIFICATION
+  expect(fooWithNotesDomainModel.arrayOfBar.length).toEqual(fooWithNotesSourceJSON.arrayOfBar.length);
+  expect(fooWithNotesDomainModel.arrayOfBar[0].id).toEqual(fooWithNotesSourceJSON.arrayOfBar[0].id);
+
+  expect(fooWithNotesDomainModel.mapOfBar.size).toEqual(fooWithNotesSourceJSON.mapOfBar.length);
+  expect(fooWithNotesDomainModel.mapOfBar.values().next().value.id).toEqual(fooWithNotesSourceJSON.mapOfBar[0].id);
 });
 
 // --------------------------------------------------------------
