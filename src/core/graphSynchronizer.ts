@@ -37,38 +37,62 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
   private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
-  private _targetedOptionNodeTypePathsMap: Map<string, INodeSyncOptions<any, any>>;
+  private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
   private _sourceNodeInstancePathStack = new Array<string>();
-  private _sourceNodeTypePathStack = new Array<string>();
+  private _sourceNodePathStack = new Array<string>();
 
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
-  private addSourceNodeToPath(key: string, sourceNodeKind: JsonNodeKind) {
-    logger.trace(`Adding SourceNode to nodeInstancePath: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
+  private pushSourceNodeInstancePathOntoStack(key: string, sourceNodeKind: JsonNodeKind) {
+    logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
     this._sourceNodeInstancePathStack.push(key);
-    if (sourceNodeKind === 'objectProperty') this._sourceNodeTypePathStack.push(key);
+    // reset locally cached dependencies
+    this._sourceNodeInstancePath = undefined;
+
+    // push to typepath if objectProperty
+    if (sourceNodeKind === 'objectProperty') {
+      this._sourceNodePathStack.push(key);
+      // reset locally cached dependencies
+      this._sourceNodePath = undefined;
+    }
   }
 
-  private removeSourceNodeFromPath(sourceNodeKind: JsonNodeKind) {
+  private popSourceNodeInstancePathFromStack(sourceNodeKind: JsonNodeKind) {
     const key = this._sourceNodeInstancePathStack.pop();
-    logger.trace(`Removing SourceNode from nodeInstancePath: ${this.getSourceNodeInstancePath()} - ${key} (${sourceNodeKind})`);
-    if (sourceNodeKind === 'objectProperty') this._sourceNodeTypePathStack.pop();
+    logger.trace(`Popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
+    // reset locally cached dependencies
+    this._sourceNodeInstancePath = undefined;
+
+    // pop from typepath if objectProperty
+    if (sourceNodeKind === 'objectProperty') {
+      this._sourceNodePathStack.pop();
+      // reset locally cached dependencies
+      this._sourceNodePath = undefined;
+    }
   }
 
-  // NodeInstancePath is used for persisting previous source state. It is unique per node, but dynamic (thus not predictable)
+  // sourceNodeInstancePath is used for persisting previous source state
+  private _sourceNodeInstancePath: string | undefined;
   private getSourceNodeInstancePath(): string {
-    return this._sourceNodeInstancePathStack.join('.');
+    if (!this._sourceNodeInstancePath) this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join('.');
+    return this._sourceNodeInstancePath || '';
   }
 
-  // NodeTypePath is used for configuration generated options. It is the node nodeInstancePath, with the collection keys skipped. It is static, but  not unique per node
-  private getSourceNodeTypePath(): string {
-    return this._sourceNodeTypePathStack.join('.');
+  // sourceNodePath is used for configuration generated options. It is essentially the node sourceNodeInstancePath, with the collection keys skipped. It is static, but  not unique per node
+  private _sourceNodePath: string | undefined;
+  private getSourceNodePath(): string {
+    if (!this._sourceNodePath) this._sourceNodePath = this._sourceNodePathStack.join('.');
+    return this._sourceNodePath || '';
   }
 
-  private getLastSourceNodeInstanceValue(): string {
+  private setLastSourceNodeInstancePathValue(value) {
+    this._sourceObjectMap.set(this.getSourceNodeInstancePath(), value);
+  }
+
+  private getLastSourceNodeInstancePathValue(): string {
     return this._sourceObjectMap.get(this.getSourceNodeInstancePath());
   }
 
@@ -78,12 +102,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   constructor(options?: IGraphSyncOptions) {
     this._defaultEqualityComparer = options?.customEqualityComparer || comparers.apollo;
     this._globalNodeOptions = options?.globalNodeOptions;
-    this._targetedOptionNodeTypePathsMap = new Map<string, INodeSyncOptions<any, any>>();
+    this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any>>();
     this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any>>();
 
     if (options?.targetedNodeOptions) {
       options?.targetedNodeOptions.forEach((targetedNodeOptionsItem) => {
-        if (targetedNodeOptionsItem.sourceNodeMatcher.nodeInstancePath) this._targetedOptionNodeTypePathsMap.set(targetedNodeOptionsItem.sourceNodeMatcher.nodeInstancePath, targetedNodeOptionsItem);
+        if (targetedNodeOptionsItem.sourceNodeMatcher.nodePath) this._targetedOptionNodePathsMap.set(targetedNodeOptionsItem.sourceNodeMatcher.nodePath, targetedNodeOptionsItem);
         this._targetedOptionMatchersArray.push(targetedNodeOptionsItem);
       });
     }
@@ -96,7 +120,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeTypePath, sourceObject, domainModel }: { sourceNodeTypePath: string; sourceObject: S; domainModel: D }): boolean {
+  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ sourceNodePath, sourceObject, domainObject }: { sourceNodePath: string; sourceObject: S; domainObject: D }): boolean {
     let changed = false;
 
     // Loop properties
@@ -104,15 +128,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       const sourcePropVal = sourceObject[sourcePropKey];
 
       // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-      let domainPropKey = this._globalNodeOptions?.computeDomainFieldname ? this._globalNodeOptions?.computeDomainFieldname({ sourceNodeTypePath, sourcePropKey, sourcePropVal }) : sourcePropKey;
-      if (!(domainPropKey in domainModel) && this._globalNodeOptions?.commonDomainFieldnamePostfix) {
+      let domainPropKey = this._globalNodeOptions?.computeDomainFieldname ? this._globalNodeOptions?.computeDomainFieldname({ sourceNodePath, sourcePropKey, sourcePropVal }) : sourcePropKey;
+      if (!(domainPropKey in domainObject) && this._globalNodeOptions?.commonDomainFieldnamePostfix) {
         const domainPropKeyWithPostfix = `${domainPropKey}${this._globalNodeOptions.commonDomainFieldnamePostfix}`;
         logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Trying '${domainPropKeyWithPostfix}' `);
         domainPropKey = domainPropKeyWithPostfix;
       }
 
       // Check to see if key exists
-      if (!(domainPropKey in domainModel)) {
+      if (!(domainPropKey in domainObject)) {
         logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Skipping property`);
         continue;
       }
@@ -123,8 +147,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeKey: sourcePropKey,
           sourceNodeVal: sourcePropVal,
           domainNodeKey: domainPropKey,
-          domainNodeVal: domainModel[domainPropKey],
-          tryUpdateDomainNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ collection: domainModel, key, value }),
+          domainNodeVal: domainObject[domainPropKey],
+          tryUpdateDomainNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ collection: domainObject, key, value }),
         }) || changed;
     }
 
@@ -217,7 +241,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     let changed = false;
 
     // Node traversal tracking - step-in
-    this.addSourceNodeToPath(sourceNodeKey, sourceNodeKind);
+    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, sourceNodeKind);
 
     // Test to see if node should be ignored
     const matchingOptions = this.getMatchingOptionsForNode();
@@ -232,7 +256,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     // Node traversal tracking - step-out
-    this.removeSourceNodeFromPath(sourceNodeKind);
+    this.setLastSourceNodeInstancePathValue(sourceNodeVal);
+    this.popSourceNodeInstancePathFromStack(sourceNodeKind);
     return changed;
   }
 
@@ -257,7 +282,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     switch (sourceNodeTypeInfo.type) {
       case 'Primitive': {
         if (sourceNodeTypeInfo.builtInType !== domainNodeTypeInfo.builtInType && !!domainNodeTypeInfo.type) {
-          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourceNodeTypeInfo}', Domain type: ${domainNodeTypeInfo}`);
+          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourceNodeTypeInfo.builtInType}', Domain type: ${domainNodeTypeInfo.builtInType}`);
         }
         if (sourceNodeVal !== domainNodeVal) {
           logger.trace(`primitive value found in domainPropKey ${domainNodeKey}. Setting from old value to new value`, domainNodeVal, sourceNodeVal);
@@ -272,7 +297,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
             `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourceNodeTypeInfo}', Domain type: ${domainNodeTypeInfo} `,
           );
         }
-        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainModel: domainNodeVal });
+        changed = this.trySynchronizeObjectState({ key: domainNodeKey, sourceObject: sourceNodeVal, domainObject: domainNodeVal });
         break;
       }
       case 'Array': {
@@ -308,12 +333,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // VALIDATE
     if (sourceCollection.length > 0 && !makeCollectionKey?.fromSourceNode) {
       throw new Error(
-        `Could not find 'makeCollectionKey?.fromSourceNode)' (Path: '${this.getSourceNodeTypePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+        `Could not find 'makeCollectionKey?.fromSourceNode)' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
       );
     }
     if (sourceCollection.length > 0 && !makeDomainModel) {
       throw new Error(
-        `Could not find 'makeDomainModel' (Path: '${this.getSourceNodeTypePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+        `Could not find 'makeDomainModel' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
       );
     }
 
@@ -357,11 +382,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (domainNodeCollection.size > 0 && !makeCollectionKey?.fromDomainNode)
         throw new Error(
-          `Could not find '!makeCollectionKey?.fromDomainNode' (Path: '${this.getSourceNodeTypePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+          `Could not find '!makeCollectionKey?.fromDomainNode' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
       if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
         logger.warn(
-          `Path: '${this.getSourceNodeTypePath()}', collectionSize:${
+          `Path: '${this.getSourceNodePath()}', collectionSize:${
             sourceCollection.lastIndexOf
           }, Domain collection type: Set - It is recommended that the Map or Custom collections types are used in the Domain objects for large collections. Set and Array collections will perform poorly with large collections`,
         );
@@ -385,11 +410,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (domainNodeCollection.length > 0 && !makeCollectionKey?.fromDomainNode)
         throw new Error(
-          `Could not find 'makeDomainNodeKeyFromDomainNode' (Path: '${this.getSourceNodeTypePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
+          `Could not find 'makeDomainNodeKeyFromDomainNode' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`,
         );
       if (sourceCollection.length > 100)
         logger.warn(
-          `Path: '${this.getSourceNodeTypePath()}', collectionSize:${
+          `Path: '${this.getSourceNodePath()}', collectionSize:${
             sourceCollection.lastIndexOf
           }, Domain collection type: Array - It is recommended that the Map or Custom collections types are used in the Domain objects for large collections. Set and Array collections will perform poorly with large collections`,
         );
@@ -436,8 +461,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
   /** */
   private getMatchingOptionsForNode(): INodeSyncOptions<any, any> | undefined {
-    const currentPath = this.getSourceNodeTypePath();
-    return this._targetedOptionNodeTypePathsMap.get(currentPath);
+    const currentPath = this.getSourceNodePath();
+    return this._targetedOptionNodePathsMap.get(currentPath);
   }
 
   /** */
@@ -530,30 +555,31 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private trySynchronizeObjectState<S extends Record<string, any>, D extends Record<string, any>>({
     key,
     sourceObject,
-    domainModel,
+    domainObject,
   }: {
     key: string;
     sourceObject: S;
-    domainModel: D;
+    domainObject: D;
     options?: IGraphSyncOptions;
   }): boolean {
     let changed = false;
-    const sourceNodeTypePath = this.getSourceNodeTypePath();
-    const lastSourceObject = this.getLastSourceNodeInstanceValue();
+    const sourceNodePath = this.getSourceNodePath();
+    const lastSourceObject = this.getLastSourceNodeInstancePathValue();
 
     // Check if already in sync
-    const isInSync = IsICustomEqualityDomainModel(domainModel) ? domainModel.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+    const isInSync = IsICustomEqualityDomainModel(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+    //logger.debug(`'${this.getSourceNodeInstancePath()}':isInSync ${isInSync}`, { sourceObject, lastSourceObject });
     if (!isInSync) {
       // Synchronize
-      if (IsICustomSyncDomainModel(domainModel)) {
-        logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - custom state synchronizer found. Using to sync`);
-        changed = domainModel.synchronizeState({ sourceObject, graphSynchronizer: this });
+      if (IsICustomSyncDomainModel(domainObject)) {
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
+        changed = domainObject.synchronizeState({ sourceObject, graphSynchronizer: this });
       } else {
-        logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.trySynchronizeObject({ sourceNodeTypePath, sourceObject, domainModel });
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
+        changed = this.trySynchronizeObject({ sourceNodePath, sourceObject, domainObject });
       }
     } else {
-      logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - already in sync. Skipping`);
+      logger.trace(`synchronizeObjectState - ${sourceNodePath} - already in sync. Skipping`);
     }
 
     return changed;
@@ -713,7 +739,17 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
-    this.trySynchronizeObject({ sourceNodeTypePath: '', sourceObject: rootSourceNode, domainModel: rootDomainNode });
+    this.trySynchronizeObject({ sourceNodePath: '', sourceObject: rootSourceNode, domainObject: rootDomainNode });
     logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
+  }
+
+  /**
+   *
+   *
+   * @memberof GraphSynchronizer
+   * @description clears the previously tracked data
+   */
+  public clearTrackedData() {
+    this._sourceObjectMap.clear();
   }
 }

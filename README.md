@@ -1,4 +1,6 @@
-# Overview
+# Reactive Domain Graphs
+
+## Overview
 
 reactive-domain-graphs lets you turn a dumb graph of nested JSON data into a fully reactive graph of smart Domain Model objects. The previous source data state is tracked, and only changes are copied to the Domain Graph. This is especially powerful when Domain Graph nodes are Observable, as the Domain Model becomes a bridge from an _Imperative programming model_ to a _Reactive programming model_. This also has the effect of, in many circumstances,negating the need for much of the memoization code often found in downstream dependent code, such as React projects
 
@@ -7,7 +9,7 @@ reactive-domain-graphs lets you turn a dumb graph of nested JSON data into a ful
 - **Automatic synchronization** of a nested Domain Model graph with s JSON data-source
 - **Tracks previous data-source state**, and only updates Domain Model nodes where changes are detected
 - **Configurable equality comparers**, defaulting to optimized deep structural equality checks (handling circular references)
-- **Less than 5 milliseconds for full synchronization** of a medium sized graph in approx (as measured on a 2015 quad-core laptop)
+- **Less than 0.2 milliseconds for an update synchronization** of a medium sized graph in approx (as measured on a 2015 quad-core laptop). Less than 5 milliseconds for an full initial graph load
 - **Domain Model support** for all build-in structures, including public properties, getters/Setters, Observables, Arrays, Maps, Sets, and custom collection types
 - **A suite of tests**, including performance tests
 - **Deep instrumentation**, with configurable logging levels from Tracing through to Error
@@ -18,7 +20,7 @@ reactive-domain-graphs lets you turn a dumb graph of nested JSON data into a ful
 
 The initial use-case the library was designed to support
 
-# Installation
+## Installation
 
 ```
     npm i @ablestack/reactive-domain-graphs --save
@@ -30,7 +32,7 @@ Or
     yarn add @ablestack/reactive-domain-graphs
 ```
 
-# Usage
+## Usage
 
 Below are some simple usage examples for common scenarios, with the goal of illustrating the core concepts. Each example follows the same basic pattern:
 
@@ -54,7 +56,7 @@ graphSynchronizer.smartSync({ rootDomainNode, rootSourceNode });
 
 \*The GraphSynchronize object maintains state to track previous source values. So, in order to ensure that only the changed values are updated, it is important that subsequent smartSync calls are made using the original instance of the GraphSynchronize object.
 
-## Simple Usage Example
+### Simple Usage Example
 
 ```TypeScript
 // SOURCE JSON DATA *1
@@ -74,15 +76,17 @@ graphSynchronizer.smartSync({ rootDomainNode: fooDomainModel, rootSourceNode: fo
 
 ```
 
-1. \* Source JSON data can be locally constructed (such as a Redux State Tree), or from an API (such as REST or GraphQL query results)
-   , but it must have a consistent and predictable structure that can be mapped to a Domain Model graph
-2. \* For any subsequent change to the source data, call the smartSync method again. Only the changed values will be updated
+> Note: **smartSync**
+>
+> 1. \* Source JSON data can be locally constructed (such as a Redux State Tree), or from an API (such as REST or GraphQL query results)
+>    , but it must have a consistent and predictable structure that can be mapped to a Domain Model graph
+> 2. \* For any subsequent change to the source data, call the smartSync method again. Only the changed values will be updated
 
-### A Note About Domain Models
-
-1. Domain Model Properties must be initialized with a value other than undefined, otherwise the sync may not work properly
-2. Domain Model Properties are only updated when the source data changes. This feature is especially powerful when the properties are Observable
-3. Domain Models may be enriched with any methods and properties in addition to those that contain the transferred source data
+> Note: **Domain Models**
+>
+> - Domain Model Properties must be initialized with a value other than undefined, otherwise the sync may not work properly
+> - Domain Model Properties are only updated when the source data changes. This feature is especially powerful when the properties are Observable
+> - Domain Models may be enriched with any methods and properties in addition to those that contain the transferred source data
 
 ## Nested Domain Model Object Graph Example
 
@@ -110,7 +114,9 @@ const graphSynchronizer = new GraphSynchronizer();
 graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: fooSourceJSONSimple });
 ```
 
-1. \* Nested Domain Objects (other than when in collections) should be initialized with a instance. It is not necessary to seed with data, as the initial smartSync method will load the data from the source
+> Note: **Domain Model Instances**
+>
+> 1. \* Nested Domain Objects (other than when in collections) should be initialized with an instance. \* However, it is not necessary (or recommended) to seed with data, as the initial smartSync method will load the data from the source
 
 ## Simple Usage Example With Collections
 
@@ -134,7 +140,7 @@ export class BarDomainModel {
 const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
-      sourceNodeMatcher: { nodeTypePath: 'collectionOfBar' }, // *2
+      sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
       domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
     }
   ],
@@ -149,8 +155,11 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 
 ```
 
-1. \* Because the BarDomainModel type lives in a parent collection, there is a need for it to be dynamically created as corresponding source collection items are added). As such, we need to define a 'make' function, and supply it through the options object
-2. The options can be mapped to their corresponding JSON node either by specifying the `nodeTypePath` (as with this example), or by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the [configuration options documentation](TODO) for more information
+> Note: **Domain Model Instantiation**
+>
+> 1. \* Because the BarDomainModel type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created. As such, a corresponding 'make' function needs to be supplied to the GraphSynchronizer
+>
+> 2. \* There are several ways the options can be mapped to their corresponding JSON node either by specifying the `nodePath` (as with this example), or by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the [configuration options documentation](TODO) for more information
 
 ## Additional Usage Examples and Documentation
 
@@ -166,13 +175,13 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 
 ## Source Node Paths
 
-There are two types of path: NodeTypePath and NodeInstancePath:
+There are two types of path: NodePath and NodeInstancePath:
 
-### NodeTypePath
+### NodePath
 
 This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
 
-For example, the NodeTypePath: `child.grandchild` matches the `grandchild` node of the following sourceJSON:
+For example, the NodePath: `child.grandchild` matches the `grandchild` node of the following sourceJSON:
 
 ```TypeScript
 const rootSourceNode = {
@@ -184,11 +193,11 @@ const rootSourceNode = {
 }
 ```
 
-The NodeTypePath is: `child.grandchild`
+The NodePath is: `child.grandchild`
 
-For arrays items in the source JSON, the NodeTypePath doesn't need to factor in the element index or key.
+For arrays items in the source JSON, the NodePath doesn't need to factor in the element index or key.
 
-For example, the NodeTypePath:`children.grandchildren` matches the `grandchild` type in the following source graph:
+For example, the NodePath:`children.grandchildren` matches the `grandchild` type in the following source graph:
 
 ```TypeScript
 const rootSourceNode = {
@@ -200,13 +209,13 @@ const rootSourceNode = {
 }
 ```
 
-In this instance, the NodeTypePath represents _all_ the `grandchildren` nodes (of _all_ `children` nodes). This is correct, because NodeTypePaths are for identifying the _type_ of object rather than specific object instances.
+In this instance, the NodePath represents _all_ the `grandchildren` nodes (of _all_ `children` nodes). This is correct, because NodePaths are for identifying the _type_ of object rather than specific object instances.
 
 ### NodeInstancePath
 
 > Note: This is currently only used internally, to track previous state. However, the details are being provided for completeness, and to facilitate any developers who are looking to contribute or enhance this library
 
-NodeInstancePath is the same as NodeTypePath, with the exception that collection keys are _included_ in the path. So, in the first example of the [NodeTypePath section](TODO) the path string is identical. However when collections are in the Source graph, it would differ.
+NodeInstancePath is the same as NodePath, with the exception that collection keys are _included_ in the path. So, in the first example of the [NodePath section](TODO) the path string is identical. However when collections are in the Source graph, it would differ.
 
 For example, the path `children.child-1.grandchildren.grandchild-1` would be a match for the specific data node 'grandchild1' below:
 
@@ -246,7 +255,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
   {                                                 // meet the sourceNodeMatcher criteria
 
     sourceNodeMatcher: {
-      nodeTypePath: string; // -----------------------> // Selector can be targeted at a specific source node path
+      nodePath: string; // -----------------------> // Selector can be targeted at a specific source node path
       nodeContent: (sourceNode) => boolean;         // or by specific source node contents
     },
 
@@ -309,12 +318,12 @@ Note that the matching algorithm will first try to find a field match _without_ 
 If the names of the Domain Models are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
 
 ```TypeScript
-({ sourceNodeTypePath, sourcePropKey, sourcePropVal }: { sourceNodeTypePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+({ sourceNodePath, sourcePropKey, sourcePropVal }: { sourceNodePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 ```
 
 The parameters that are supplied to the method are as follows:
 
-- `sourceNodeTypePath`: The source path for the parent object of the current item (see the config section on Paths)
+- `sourceNodePath`: The source path for the parent object of the current item (see the config section on Paths)
 - `sourcePropKey`: The key for the current source item on it's parent property
 - `sourcePropVal`: The value for the current source item
 
@@ -347,7 +356,7 @@ The configuration item would be:
 ```TypeScript
 const graphSynchronizerOptions = {
     targetedNodeOptions: [{
-      sourceNodeMatcher: { nodeTypePath: 'child.grandchild' },
+      sourceNodeMatcher: { nodePath: 'child.grandchild' },
       //... config options here
     }],
   }

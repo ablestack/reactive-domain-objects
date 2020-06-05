@@ -65,8 +65,25 @@ export class PublisherDomainModel {
 
 export class BookDomainModel {
   public id: string = '';
-  public title$: string = '';
-  public pages$: number = 0;
+
+  // Title. Using Getter/Setter so we can use a testing spy
+  private _title$: string = '';
+  public get title$(): string {
+    return this._title$;
+  }
+  public set title$(value: string) {
+    this._title$ = value;
+  }
+
+  // pages. Using Getter/Setter so we can use a testing spy
+  private _pages$: number = 0;
+  public get pages$(): number {
+    return this._pages$;
+  }
+  public set pages$(value: number) {
+    this._pages$ = value;
+  }
+
   public publisher: PublisherDomainModel = new PublisherDomainModel();
 
   /* Any other domain-specific properties and methods here */

@@ -35,7 +35,7 @@ export interface IGraphSyncOptions {
 
 export interface IGlobalPropertyNameTransformation {
   commonDomainFieldnamePostfix?: string;
-  computeDomainFieldname?: ({ sourceNodeTypePath, sourcePropKey, sourcePropVal }: { sourceNodeTypePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+  computeDomainFieldname?: ({ sourceNodePath, sourcePropKey, sourcePropVal }: { sourceNodePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 }
 
 /***************************************************************************
@@ -66,7 +66,7 @@ export interface INodeSyncOptionsStrict<S, D> {
 }
 
 export interface INodeSelector<S> {
-  nodeInstancePath?: string;
+  nodePath?: string;
   nodeContent?: (sourceNode: S) => boolean;
 }
 

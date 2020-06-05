@@ -1,27 +1,29 @@
-import { BookDomainModel, LibraryDomainModel, librarySourceJSON, AllCollectionTypesWithObjectsDomainModel, allCollectionsJSON_Trio, allCollectionsJSON_Uno } from '.';
-import { GraphSynchronizer, INodeSyncOptionsStrict, IGraphSyncOptions } from '../src';
-import { Book, SimpleObject, Bar, DefaultIdSourceObject } from './test-source-types';
 import _ from 'lodash';
+import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsDomainModel, BookDomainModel, LibraryDomainModel, librarySourceJSON } from '.';
+import { GraphSynchronizer, IGraphSyncOptions } from '../src';
+import { Logger } from '../src/infrastructure/logger';
 import {
-  SimpleDomainModel,
-  AllCollectionTypesWithPrimitivesDomainModel,
   AllCollectionTypesDomainModel,
+  AllCollectionTypesWithPrimitivesDomainModel,
   BarDomainModel,
-  TargetedOptionsTestRootDomainModel,
-  DefaultIdDomainModel,
-  DefaultId$DomainModel,
-  FooWithNotesDomainModel,
   BarWithNotesDomainModel,
-  FooDomainModel,
+  DefaultId$DomainModel,
+  DefaultIdDomainModel,
   FooDomainGraphSimple,
   FooDomainGraphWithCollection,
+  FooDomainModel,
+  FooWithNotesDomainModel,
+  SimpleDomainModel,
+  TargetedOptionsTestRootDomainModel,
 } from './test-domain-models';
-import { fooSourceJSONWithCollection, targetedNodeOptionsTestRootJSON, fooWithNotesSourceJSON, fooSourceJSONSimple, fooSourceJSON } from './test-data';
-import { Logger } from '../src/infrastructure/logger';
+import { fooSourceJSON, fooSourceJSONSimple, fooSourceJSONWithCollection, fooWithNotesSourceJSON, targetedNodeOptionsTestRootJSON } from './test-source-data';
+import { Bar, Book, DefaultIdSourceObject, SimpleObject, Library } from './test-source-types';
 
 const logger = Logger.make('autoSynchronize.test.ts');
-const PERF_TEST_ITERATION_COUNT_MS = 1000;
-const PERF_TEST_MAX_TIME_MS = 500;
+const FULL_SYNC_ITERATION_COUNT = 2;
+const FULL_SYNC_MAX_TIME_MS = 1000;
+const CHANGE_SYNC_ITERATION_COUNT = 5000;
+const CHANGE_SYNC_MAX_TIME_MS = 1000;
 
 // --------------------------------------------------------------
 // TEST
@@ -62,7 +64,7 @@ test('Simple graph usage demo', () => {
 test('Collection usage demo', () => {
   const fooDomainModel = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeInstancePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
@@ -83,8 +85,8 @@ test('Simple usage demo with notes', () => {
   const fooWithNotesDomainModel = new FooWithNotesDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodeInstancePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
     ],
   });
 
@@ -108,7 +110,7 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeInstancePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -153,17 +155,37 @@ test('Synchronize updates complex domain graph as expected', () => {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test(`achieves more than ${PERF_TEST_ITERATION_COUNT_MS} full synchronizations in ${PERF_TEST_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
+test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in ${FULL_SYNC_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
   // SETUP
-  const iterations = PERF_TEST_ITERATION_COUNT_MS;
+  const iterations = FULL_SYNC_ITERATION_COUNT;
   const libraryDomainModel = new LibraryDomainModel();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
+
+  // initiate a smart sync
+  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+
+  // setup spys to ensure the data is actually being set as expected
+  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[7], 'pages$', 'set');
+  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[8], 'pages$', 'set');
+  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[9], 'pages$', 'set');
+
+  // clone library for edits
+  const libraryWithEdits = _.cloneDeep(librarySourceJSON);
 
   // EXECUTE
   const startTime = performance.now();
 
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+    // clear the tracked data
+    graphSynchronizer.clearTrackedData();
+
+    // change some values to get around the source -> domain value check for primitive types, allowing the spying on the set methods to be hit
+    libraryWithEdits.authors[2].books[7].pages = i;
+    libraryWithEdits.authors[2].books[8].pages = i;
+    libraryWithEdits.authors[2].books[9].pages = i;
+
+    // initiate a smart sync
+    graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
   }
 
   const finishTime = performance.now();
@@ -171,17 +193,76 @@ test(`achieves more than ${PERF_TEST_ITERATION_COUNT_MS} full synchronizations i
 
   // VERIFY
   logger.info(
-    `${iterations} graphSynchronizer.smartSync iterations: totalTime: ${totalTimeMs} milliseconds (${totalTimeMs / 1000} seconds) = per iteration ${totalTimeMs / iterations} milliseconds (${
+    `Full Sync ${iterations} graphSynchronizer.smartSync iterations - TotalTime: ${totalTimeMs} milliseconds (${totalTimeMs / 1000} seconds). Mean average per iteration: ${totalTimeMs / iterations} milliseconds (${
       totalTimeMs / iterations / 1000
     } seconds) `,
   );
-  expect(totalTimeMs).toBeLessThan(PERF_TEST_MAX_TIME_MS);
+
+  // Verify timing
+  expect(totalTimeMs).toBeLessThan(FULL_SYNC_MAX_TIME_MS);
+
+  // Verify changes were made as expected (indicating the full sync did actually occur)
+  expect(authors_2_books_7_pages_spy_set).toHaveBeenCalledTimes(iterations);
+  expect(authors_2_books_8_pages_spy_set).toHaveBeenCalledTimes(iterations);
+  expect(authors_2_books_9_pages_spy_set).toHaveBeenCalledTimes(iterations);
+  expect(libraryDomainModel.authors.array$[2].books[8].pages$).toEqual(libraryWithEdits.authors[2].books[8].pages);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('Synchronize only updated properties where source data changed', () => {
+test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations in ${CHANGE_SYNC_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
+  // SETUP
+  const iterations = CHANGE_SYNC_ITERATION_COUNT;
+  const libraryDomainModel = new LibraryDomainModel();
+  const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
+
+  // get data for repeatedly editing and syncing
+  const libraryWithEditsCollection: Library[] = [];
+  for (let i = 0; i < iterations; i++) {
+    libraryWithEditsCollection[i] = _.cloneDeep(librarySourceJSON);
+    libraryWithEditsCollection[i].authors[2].books[8].pages = i;
+  }
+
+  // initial sync
+  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+
+  // setup spys to ensure the data is actually being set as expected
+  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[7], 'pages$', 'set');
+  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[8], 'pages$', 'set');
+  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[9], 'pages$', 'set');
+
+  // EXECUTE
+  const startTime = performance.now();
+
+  for (let i = 0; i < iterations; i++) {
+    graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEditsCollection[i] });
+  }
+
+  const finishTime = performance.now();
+  const totalTimeMs = Math.round(finishTime - startTime);
+
+  // VERIFY
+  logger.info(
+    ` Change sync ${iterations} graphSynchronizer.smartSync iterations - TotalTime: ${totalTimeMs} milliseconds (${totalTimeMs / 1000} seconds). Mean average per iteration: ${totalTimeMs / iterations} milliseconds (${
+      totalTimeMs / iterations / 1000
+    } seconds) `,
+  );
+
+  // Verify timing
+  expect(totalTimeMs).toBeLessThan(CHANGE_SYNC_MAX_TIME_MS);
+
+  // Verify changes were made as expected (indicating the full sync did actually occur)
+  expect(authors_2_books_7_pages_spy_set).not.toHaveBeenCalled();
+  expect(authors_2_books_8_pages_spy_set).toHaveBeenCalledTimes(iterations);
+  expect(authors_2_books_9_pages_spy_set).not.toHaveBeenCalled();
+  expect(libraryDomainModel.authors.array$[2].books[8].pages$).toEqual(iterations - 1); // -1 because of zero indexing
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+test('Synchronize only updated properties only where source data changed', () => {
   const libraryDomainModel = new LibraryDomainModel();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
@@ -189,11 +270,13 @@ test('Synchronize only updated properties where source data changed', () => {
   graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
 
   // Add method spies
-  const library_code_spy = jest.spyOn(libraryDomainModel, 'code$', 'set');
-  const library_capacity_spy = jest.spyOn(libraryDomainModel, 'capacity', 'set');
+  const library_code_spy_set = jest.spyOn(libraryDomainModel, 'code$', 'set');
+  const library_capacity_spy_set = jest.spyOn(libraryDomainModel, 'capacity', 'set');
 
-  const authors_0_age_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
-  const authors_0_name_spy = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
+  const authors_0_age_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
+  const authors_0_name_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
+
+  const authors_0_books_0_title_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0].books[0], 'title$', 'get');
 
   // Mutate data
   const libraryWithEdits = _.cloneDeep(librarySourceJSON);
@@ -205,11 +288,12 @@ test('Synchronize only updated properties where source data changed', () => {
   graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
 
   // RESULTS VERIFICATION
-  expect(library_code_spy).toHaveBeenCalled();
-  expect(library_capacity_spy).not.toHaveBeenCalled();
+  expect(library_code_spy_set).toHaveBeenCalled();
+  expect(library_capacity_spy_set).not.toHaveBeenCalled();
 
-  expect(authors_0_age_spy).toHaveBeenCalled();
-  expect(authors_0_name_spy).not.toHaveBeenCalled();
+  expect(authors_0_age_spy_set).toHaveBeenCalled();
+  expect(authors_0_name_spy_set).not.toHaveBeenCalled();
+  expect(authors_0_books_0_title_spy_set).not.toHaveBeenCalled(); // This should not have been called, because the isEqual algorithm further up the graph should have determined no change, and so not traversed up the node tree to this point
 });
 
 // --------------------------------------------------------------
@@ -540,9 +624,9 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
   const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
@@ -604,10 +688,10 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () =>
   const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
-      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
       {
-        sourceNodeMatcher: { nodeInstancePath: 'mapOfDefault_IdDomainModel' },
+        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' },
         domainCollection: {
           makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
           makeCollectionKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainNode: (domainModel) => domainModel._id },
