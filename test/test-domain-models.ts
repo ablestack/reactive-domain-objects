@@ -133,7 +133,7 @@ export class LibraryDomainModel {
 
   public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({
     makeDomainNodeKeyFromSourceNode: (author: Author) => author.id,
-    makeDomainNodeKeyFromDomainModel: (author: AuthorDomainModel) => author.id,
+    makeDomainNodeKeyFromDomainNode: (author: AuthorDomainModel) => author.id,
     makeDomainModel: (book: Author) => new AuthorDomainModel(),
   });
 
@@ -149,7 +149,7 @@ export class AllCollectionTypesWithObjectsDomainModel {
   public setOfObjects = new Set<SimpleDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
     makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainModel: (o: SimpleDomainModel) => o.id,
+    makeDomainNodeKeyFromDomainNode: (o: SimpleDomainModel) => o.id,
     makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
   });
 }
@@ -166,7 +166,7 @@ export class AllCollectionTypesDomainModel {
   public setOfObjects = new Set<SimpleDomainModel>();
   public customCollectionOfObjects = new SyncableCollection({
     makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainModel: (o: SimpleDomainModel) => o.id,
+    makeDomainNodeKeyFromDomainNode: (o: SimpleDomainModel) => o.id,
     makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
   });
   public arrayOfNumbers = new Array<Number>();

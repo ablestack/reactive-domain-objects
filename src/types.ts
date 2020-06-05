@@ -35,14 +35,14 @@ export interface IGraphSyncOptions {
 
 export interface IGlobalPropertyNameTransformation {
   commonDomainFieldnamePostfix?: string;
-  computeDomainFieldname?: ({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+  computeDomainFieldname?: ({ sourceNodeTypePath, sourcePropKey, sourcePropVal }: { sourceNodeTypePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 }
 
 /***************************************************************************
  * Node Sync Options
  *
  * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromDomainModel` factory does not need to be supplied, but in all user-config supplied
+ * use case where a `fromDomainNode` factory does not need to be supplied, but in all user-config supplied
  * use cases, require both `fromSourceNode` and `fromDomainNode` for a DomainNodeKeyFactory config
  *
  *****************************************************************************/
@@ -66,7 +66,7 @@ export interface INodeSyncOptionsStrict<S, D> {
 }
 
 export interface INodeSelector<S> {
-  nodePath?: string;
+  nodeInstancePath?: string;
   nodeContent?: (sourceNode: S) => boolean;
 }
 
@@ -91,21 +91,25 @@ export interface IDomainModelFactoryStrict<S, D> {
 // *See `Strict` note above top of file
 export interface IDomainNodeKeyFactoryStrict<S, D> {
   fromSourceNode: IMakeKey<S>;
-  fromDomainModel: IMakeKey<D>;
+  fromDomainNode: IMakeKey<D>;
 }
 
 export interface IDomainNodeKeyFactory<S, D> {
   fromSourceNode: IMakeKey<S>;
-  fromDomainModel?: IMakeKey<D>;
+  fromDomainNode?: IMakeKey<D>;
 }
+
+// --------------------------------------------------
+// Types relating to sync custom behavior and options
+// --------------------------------------------------
 
 export function IsIDomainModelFactory(o: any): o is IDomainModelFactory<any, any> {
   return (
     o &&
     o.makeDomainNodeKeyFromSourceNode &&
     typeof o.makeDomainNodeKeyFromSourceNode === 'function' &&
-    o.makeDomainNodeKeyFromDomainModel &&
-    typeof o.makeDomainNodeKeyFromDomainModel === 'function' &&
+    o.makeDomainNodeKeyFromDomainNode &&
+    typeof o.makeDomainNodeKeyFromDomainNode === 'function' &&
     o.makeDomainModel &&
     typeof o.makeDomainModel === 'function'
   );
@@ -158,6 +162,8 @@ export interface ICustomEqualityDomainModel<S> {
 export function IsICustomEqualityDomainModel(o: any): o is ICustomEqualityDomainModel<any> {
   return o && o.isStateEqual && typeof o.isStateEqual === 'function';
 }
+
+// --------------------------------------------------
 
 export interface IEqualityComparer {
   (a: any, b: any): boolean;

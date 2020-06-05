@@ -62,7 +62,7 @@ test('Simple graph usage demo', () => {
 test('Collection usage demo', () => {
   const fooDomainModel = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodeInstancePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
@@ -83,8 +83,8 @@ test('Simple usage demo with notes', () => {
   const fooWithNotesDomainModel = new FooWithNotesDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodeInstancePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
     ],
   });
 
@@ -108,7 +108,7 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodeInstancePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -540,9 +540,9 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
   const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
@@ -604,13 +604,13 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () =>
   const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodeInstancePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
       {
-        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' },
+        sourceNodeMatcher: { nodeInstancePath: 'mapOfDefault_IdDomainModel' },
         domainCollection: {
           makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
-          makeCollectionKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainModel: (domainModel) => domainModel._id },
+          makeCollectionKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainNode: (domainModel) => domainModel._id },
         },
       },
     ],

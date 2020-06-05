@@ -6,7 +6,7 @@ const logger = Logger.make('SyncableCollection');
 
 export class SyncableCollection<S extends object, D extends object> implements IDomainModelFactory<S, D>, ISyncableCollection<D> {
   private _makeDomainNodeKeyFromSourceNode: (node: S) => string;
-  private _makeDomainNodeKeyFromDomainModel: (node: D) => string;
+  private _makeDomainNodeKeyFromDomainNode: (node: D) => string;
   private _makeDomainModel: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
@@ -26,15 +26,15 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   constructor({
     makeDomainNodeKeyFromSourceNode,
-    makeDomainNodeKeyFromDomainModel,
+    makeDomainNodeKeyFromDomainNode,
     makeDomainModel,
   }: {
     makeDomainNodeKeyFromSourceNode: (sourceNode: S) => string;
-    makeDomainNodeKeyFromDomainModel: (domainNode: D) => string;
+    makeDomainNodeKeyFromDomainNode: (domainNode: D) => string;
     makeDomainModel: (sourceNode: S) => D;
   }) {
     this._makeDomainNodeKeyFromSourceNode = makeDomainNodeKeyFromSourceNode;
-    this._makeDomainNodeKeyFromDomainModel = makeDomainNodeKeyFromDomainModel;
+    this._makeDomainNodeKeyFromDomainNode = makeDomainNodeKeyFromDomainNode;
     this._makeDomainModel = makeDomainModel;
     this._map$ = new Map<string, D>();
   }
@@ -46,8 +46,8 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._makeDomainNodeKeyFromSourceNode(sourceNode);
   };
 
-  public makeDomainNodeKeyFromDomainModel = (domainNode: D) => {
-    return this._makeDomainNodeKeyFromDomainModel(domainNode);
+  public makeDomainNodeKeyFromDomainNode = (domainNode: D) => {
+    return this._makeDomainNodeKeyFromDomainNode(domainNode);
   };
 
   public makeDomainModel = (sourceItem: S) => {
@@ -81,7 +81,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
-    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeDomainNodeKeyFromDomainModel });
+    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeDomainNodeKeyFromDomainNode });
   };
 
   public clear = () => {

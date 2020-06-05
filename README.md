@@ -134,7 +134,7 @@ export class BarDomainModel {
 const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
-      sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
+      sourceNodeMatcher: { nodeTypePath: 'collectionOfBar' }, // *2
       domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
     }
   ],
@@ -150,7 +150,7 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 ```
 
 1. \* Because the BarDomainModel type lives in a parent collection, there is a need for it to be dynamically created as corresponding source collection items are added). As such, we need to define a 'make' function, and supply it through the options object
-2. The options can be mapped to their corresponding JSON node either by specifying the `nodePath` (as with this example), or by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the configuration options documentation for more information
+2. The options can be mapped to their corresponding JSON node either by specifying the `nodeTypePath` (as with this example), or by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field). See the [configuration options documentation](TODO) for more information
 
 ## Additional Usage Examples and Documentation
 
@@ -164,7 +164,62 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 - Domain Models must be instantiated with properties initialized to non-undefined values. Use strict TypeScript compile option to help enforce this
 - A LOG_LEVEL value can be set in a .env file to turn on logging: `# 0:off, 1:error, 2:warn, 3:info, 4:debug, 5:trace`
 
-## GraphSyncronizer
+## Source Node Paths
+
+There are two types of path: NodeTypePath and NodeInstancePath:
+
+### NodeTypePath
+
+This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
+
+For example, the NodeTypePath: `child.grandchild` matches the `grandchild` node of the following sourceJSON:
+
+```TypeScript
+const rootSourceNode = {
+  child: {
+    grandchild:{
+      data:'some data'
+    }
+  }
+}
+```
+
+The NodeTypePath is: `child.grandchild`
+
+For arrays items in the source JSON, the NodeTypePath doesn't need to factor in the element index or key.
+
+For example, the NodeTypePath:`children.grandchildren` matches the `grandchild` type in the following source graph:
+
+```TypeScript
+const rootSourceNode = {
+  children:[ {
+    grandchildren:[{
+      data:'some data'
+    }]
+  }]
+}
+```
+
+In this instance, the NodeTypePath represents _all_ the `grandchildren` nodes (of _all_ `children` nodes). This is correct, because NodeTypePaths are for identifying the _type_ of object rather than specific object instances.
+
+### NodeInstancePath
+
+> Note: This is currently only used internally, to track previous state. However, the details are being provided for completeness, and to facilitate any developers who are looking to contribute or enhance this library
+
+NodeInstancePath is the same as NodeTypePath, with the exception that collection keys are _included_ in the path. So, in the first example of the [NodeTypePath section](TODO) the path string is identical. However when collections are in the Source graph, it would differ.
+
+For example, the path `children.child-1.grandchildren.grandchild-1` would be a match for the specific data node 'grandchild1' below:
+
+```TypeScript
+const rootSourceNode = {
+  children:[ {
+    id: 'child-1',
+    grandchildren:[{ id: 'grandchild-1', data:'some data' }]
+  }]
+}
+```
+
+## GraphSynchronizer
 
 See [Usage Section](#Usage) Examples above for primary documentation for usage. See below for notes and configuration documentation.
 
@@ -191,7 +246,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
   {                                                 // meet the sourceNodeMatcher criteria
 
     sourceNodeMatcher: {
-      nodePath: string; // -----------------------> // Selector can be targeted at a specific source node path
+      nodeTypePath: string; // -----------------------> // Selector can be targeted at a specific source node path
       nodeContent: (sourceNode) => boolean;         // or by specific source node contents
     },
 
@@ -201,7 +256,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
       makeCollectionKey: { // --------------------> // If makeCollectionKey creation methods not supplied
         fromSourceNode: (sourceNode) => string;     // a default key creation method will be supplied which
-        fromDomainNodeNode: (domainNode) => string; // assumes an `id` field id available (or an error will be thrown)
+        fromDomainNode: (domainNode) => string; // assumes an `id` field id available (or an error will be thrown)
       },
       makeDomainModel: (sourceNode) => any;         // Required when Domain Models are contained in a parent collection
     }                                               // so they can be automatically instantiated as items are added to the
@@ -254,12 +309,12 @@ Note that the matching algorithm will first try to find a field match _without_ 
 If the names of the Domain Models are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
 
 ```TypeScript
-({ sourceObjectPath, sourcePropKey, sourcePropVal }: { sourceObjectPath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+({ sourceNodeTypePath, sourcePropKey, sourcePropVal }: { sourceNodeTypePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 ```
 
 The parameters that are supplied to the method are as follows:
 
-- `sourceObjectPath`: The source path for the parent object of the current item (see the config section on Paths)
+- `sourceNodeTypePath`: The source path for the parent object of the current item (see the config section on Paths)
 - `sourcePropKey`: The key for the current source item on it's parent property
 - `sourcePropVal`: The value for the current source item
 
@@ -271,11 +326,11 @@ Targeted Node Options provide configuration data for specific source nodes. The 
 
 The sourceNodeMatcher configuration lets the graphSynchronizer know which source node the configuration item relates to. There are two types of Matchers:
 
-#### SourceNodePath
+#### SourceNodeInstancePath
 
-This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
+This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node. See [Source Node Paths Section](#Source-Node-Paths) for further details.
 
-For example, to target the grandchild node of the following sourceJSON:
+For example, to target the grandchildren node of the following sourceJSON:
 
 ```TypeScript
 const rootSourceNode = {
@@ -292,24 +347,10 @@ The configuration item would be:
 ```TypeScript
 const graphSynchronizerOptions = {
     targetedNodeOptions: [{
-      sourceNodeMatcher: { nodePath: 'child.grandchild' },
+      sourceNodeMatcher: { nodeTypePath: 'child.grandchild' },
       //... config options here
     }],
   }
-```
-
-Note: for JSON array items, the object path still applies, but doesn't need to factor in the element index. For example, the _same_ configuration would work for the following source graph. However, in this instance, it would match _all_ granchild nodes of _all_ child nodes. This is OK, as the configuration rules are for the _type_ of object rather than a specific object instance
-
-For example, to target the grandchild node of the following sourceJSON:
-
-```TypeScript
-const rootSourceNode = {
-  child:[ {
-    grandchild:[{
-      data:'some data'
-    }]
-  }]
-}
 ```
 
 #### SourceNodeContent
@@ -344,7 +385,7 @@ const graphSynchronizerOptions = {
   }
 ```
 
-Note: the matching algorithm only passes the _first_ item from a collection to check for match. If this matches, it is assumed that all other items in the collection will be of the same type (and indeed, the synchronization would not work if they were not)
+> Note: the matching algorithm only passes the _first_ item from a collection to check for match. If this matches, it is assumed that all other items in the collection will be of the same type (and indeed, the synchronization would not work if they were not)
 
 #### Ignore
 
@@ -360,7 +401,7 @@ The two contained configuration properties are:
 
 ```
   fromSourceNode: (sourceNode) => string;
-  fromDomainNodeNode: (domainNode) => string;
+  fromDomainNode: (domainNode) => string;
 ```
 
 These methods:
@@ -379,7 +420,59 @@ This configuration property had the following signature:
 
 This property is required for every Domain Model type that is contained in a parent collection, so they can be automatically instantiated as items are added to the source collection
 
-##
+## Domain Model Sync Customizations
+
+Domain Models and Custom Collection Types can influence synchronization behavior and, in some cases, replace the need for configuration options, by implementing one of several interfaces
+
+### Domain Model Interfaces
+
+#### ICustomEqualityDomainModel
+
+```TypeScript
+interface ICustomEqualityDomainModel<S> {
+  isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined): boolean;
+}
+```
+
+When Domain Models implement this interface, this isStateEqual method will be used for equality comparison instead of the default equality comparer
+
+#### ICustomSyncDomainModel
+
+```TypeScript
+interface ICustomSyncDomainModel<S> {
+  synchronizeState: ({ sourceObject, graphSynchronizer }: { sourceObject: S | null | undefined; graphSynchronizer: IGraphSynchronizer }): boolean;
+}
+```
+
+- This interface allows you to take over full control of the synchronization for a specific type. When Domain Models implement this interface, the synchronizeState method will be used to synchronize the source data with the Domain Model, instead of the internal auto-synchronization algorithm.
+- **Please note**: Any child objects and collections of Domain Models that implement ICustomSyncDomainModel will no longer be auto-synchronized. To address this, you can either:
+  - Implement, and recursively call, the ICustomSyncDomainModel interface on child types
+  - Alternatively you can call the 'continueAutoSync' method, passing in the child property, and its full [Object Path](TODO)
+
+## Custom Collection Types
+
+#### ISyncableCollection
+
+```TypeScript
+interface ISyncableCollection<T> extends Iterable<T> {
+  readonly size: number;
+  getKeys: () => string[];
+  tryGetItemFromTargetCollection: (key: string) => T | null | undefined;
+  insertItemToTargetCollection: (key: string, value: T) => void;
+  updateItemInTargetCollection: (key: string, value: T) => void;
+  tryDeleteItemFromTargetCollection: (key: string) => void;
+  clear: () => void;
+}
+```
+
+#### IDomainModelFactory
+
+```TypeScript
+interface IDomainModelFactory<S, D> {
+  makeCollectionKey: IDomainNodeKeyFactory<S, D>;
+  makeDomainModel: IMakeDomainModel<S, D>;
+}
+```
 
 # Notes
 
@@ -410,12 +503,14 @@ Known Issues Include:
 ## Refinements and Enhancements Needed
 
 - Open to suggestions
+- Find a clever way to provide a default mechanism to instantiate Domain Objects without the need for user configuration to provide these. Will probably require some kind of TypeScript reflection, as in 'empty domain collection' scenarios, an instance will not be available, and nor will type runtime type information
+- Provide decorators that can be applied to the Domain Types to perform useful functions in lieu of configuration options, such as 'ignore'
 
 # Companion Libraries
 
-This library is part of a suite of companion libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
+This library is part of a collection of companion tools and libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
 
-    Contribute to the full-stack web and app development open-source ecosystem, with a focus on tools and libraries that help small tech startups and businesses rapidly and affordably build big ideas.
+> Help **small tech** startups and businesses **rapidly and affordably build big ideas** with tools, libraries, patterns, examples, and guidance
 
 To achieve these goals, the following principles are applied:
 
@@ -424,7 +519,7 @@ To achieve these goals, the following principles are applied:
 - Where possible, avoid technology choices that could result in hosting vendor lock-in. ApolloGraphQL over AWS Amplify is an example of this
 - Automate wherever possible, from development, through testing, to deployment, monitoring, and maintenance. Codegen from strongly types schemas is a good example of this.
 
-This is an ongoing work-in-progress. If you'd like to check out the companion libraries, even contribute to them, you can find them at the [AbleStack on GitHub](https://github.com/ablestack)
+This is an ongoing effort, that is never done. If you'd like to check out the companion libraries, even contribute to them, you can find them at the [AbleStack on GitHub](https://github.com/ablestack)
 
 # Release Notes
 
