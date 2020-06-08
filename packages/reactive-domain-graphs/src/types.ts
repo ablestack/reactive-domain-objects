@@ -147,12 +147,44 @@ export interface IStateEqual<S> {
   (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined): boolean;
 }
 
-export interface ICustomSyncDomainModel<S> {
+export interface IBeforeSyncIfNeeded<S> {
+  beforeSyncIfNeeded: ({ sourceObject, isSyncNeeded }: { sourceObject: S; isSyncNeeded: boolean }) => void;
+}
+
+export function IsIBeforeSyncIfNeeded(o: any): o is IBeforeSyncIfNeeded<any> {
+  return o && o.beforeSyncIfNeeded && typeof o.beforeSyncIfNeeded === 'function';
+}
+
+export interface IBeforeSyncUpdate<S> {
+  beforeSyncUpdate: ({ sourceObject }: { sourceObject: S }) => void;
+}
+
+export function IsIBeforeSyncUpdate(o: any): o is IBeforeSyncUpdate<any> {
+  return o && o.beforeSyncUpdate && typeof o.beforeSyncUpdate === 'function';
+}
+
+export interface ICustomSync<S> {
   synchronizeState: ISynchronizeState<S>;
 }
 
-export function IsICustomSyncDomainModel(o: any): o is ICustomSyncDomainModel<any> {
+export function IsICustomSync(o: any): o is ICustomSync<any> {
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
+}
+
+export interface IAfterSyncUpdate<S> {
+  afterSyncUpdate: ({ sourceObject }: { sourceObject: S }) => void;
+}
+
+export function IsIAfterSyncUpdate(o: any): o is IAfterSyncUpdate<any> {
+  return o && o.afterSyncUpdate && typeof o.afterSyncUpdate === 'function';
+}
+
+export interface IAfterSyncIfNeeded<S> {
+  afterSyncIfNeeded: ({ sourceObject, syncAttempted, domainModelChanged }: { sourceObject: S; syncAttempted: boolean; domainModelChanged: boolean }) => void;
+}
+
+export function IsIAfterSyncIfNeeded(o: any): o is IAfterSyncIfNeeded<any> {
+  return o && o.afterSyncIfNeeded && typeof o.afterSyncIfNeeded === 'function';
 }
 
 export interface ICustomEqualityDomainModel<S> {

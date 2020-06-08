@@ -1,26 +1,26 @@
-import { runInAction } from 'mobx';
 import {
-  IGraphSynchronizer,
+  CollectionUtils,
+  comparers,
+  DomainNodeTypeInfo,
+  IDomainNodeKeyFactory,
   IEqualityComparer,
   IGlobalPropertyNameTransformation,
-  INodeSyncOptions,
-  JsonNodeKind,
+  IGraphSynchronizer,
   IGraphSyncOptions,
-  comparers,
-  CollectionUtils,
-  SourceNodeTypeInfo,
-  JavaScriptBuiltInType,
-  DomainNodeTypeInfo,
+  IMakeDomainModel,
+  INodeSyncOptions,
+  IsICustomEqualityDomainModel,
+  IsICustomSync,
+  IsIDomainModelFactory,
   IsISyncableCollection,
   ISyncableCollection,
-  IDomainNodeKeyFactory,
-  IMakeDomainModel,
-  IsIDomainModelFactory,
-  IsICustomEqualityDomainModel,
-  IsICustomSyncDomainModel,
+  JavaScriptBuiltInType,
+  JsonNodeKind,
+  SourceNodeTypeInfo,
   SyncUtils,
 } from '..';
-import { Logger } from '../infrastructure/logger';
+import { Logger } from './infrastructure/logger';
+import { IsIAfterSyncIfNeeded, IsIAfterSyncUpdate, IsIBeforeSyncIfNeeded, IsIBeforeSyncUpdate } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -92,7 +92,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._sourceObjectMap.set(this.getSourceNodeInstancePath(), value);
   }
 
-  private getLastSourceNodeInstancePathValue(): string {
+  private getLastSourceNodeInstancePathValue(): any {
     return this._sourceObjectMap.get(this.getSourceNodeInstancePath());
   }
 
@@ -566,21 +566,37 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const sourceNodePath = this.getSourceNodePath();
     const lastSourceObject = this.getLastSourceNodeInstancePathValue();
 
-    // Check if already in sync
-    const isInSync = IsICustomEqualityDomainModel(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+    // Check if previous source state and new source state are equal
+    const isAlreadyInSync = IsICustomEqualityDomainModel(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+
+    // Call lifecycle methods if found
+    if (IsIBeforeSyncIfNeeded(domainObject)) domainObject.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
+
+    // Call lifecycle methods if found
+    if (IsIBeforeSyncUpdate(domainObject)) domainObject.beforeSyncUpdate({ sourceObject });
+
     //logger.debug(`'${this.getSourceNodeInstancePath()}':isInSync ${isInSync}`, { sourceObject, lastSourceObject });
-    if (!isInSync) {
+    if (!isAlreadyInSync) {
+      // Call lifecycle methods if found
+      if (IsIBeforeSyncUpdate(domainObject)) domainObject.beforeSyncUpdate({ sourceObject });
+
       // Synchronize
-      if (IsICustomSyncDomainModel(domainObject)) {
+      if (IsICustomSync(domainObject)) {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
         changed = domainObject.synchronizeState({ sourceObject, graphSynchronizer: this });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
         changed = this.trySynchronizeObject({ sourceNodePath, sourceObject, domainObject });
       }
+
+      // Call lifecycle methods if found
+      if (IsIAfterSyncUpdate(domainObject)) domainObject.afterSyncUpdate({ sourceObject });
     } else {
       logger.trace(`synchronizeObjectState - ${sourceNodePath} - already in sync. Skipping`);
     }
+
+    // Call lifecycle methods if found
+    if (IsIAfterSyncIfNeeded(domainObject)) domainObject.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, domainModelChanged: changed });
 
     return changed;
   }
@@ -738,9 +754,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       return;
     }
 
-    logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootSyncableObject: rootDomainNode });
     this.trySynchronizeObject({ sourceNodePath: '', sourceObject: rootSourceNode, domainObject: rootDomainNode });
-    logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
   }
 
   /**
