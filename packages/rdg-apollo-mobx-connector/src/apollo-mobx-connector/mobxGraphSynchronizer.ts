@@ -1,4 +1,4 @@
-import { Logger } from '@ablestack/infrastructure/logger';
+import { Logger } from '@ablestack/rdg/infrastructure/logger';
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdg';
 import { runInAction } from 'mobx';
 

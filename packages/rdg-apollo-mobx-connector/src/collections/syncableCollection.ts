@@ -1,6 +1,6 @@
-import { observable, computed, action } from 'mobx';
-import { IDomainModelFactory, ISyncableCollection, CollectionUtils } from '..';
-import { Logger } from '../infrastructure/logger';
+import { observable, computed } from 'mobx';
+import { IDomainModelFactory, ISyncableCollection, CollectionUtils } from '@ablestack/rdg';
+import { Logger } from '@ablestack/rdg/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
 

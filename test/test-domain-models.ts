@@ -1,5 +1,5 @@
 import { Author } from '.';
-import { SyncableCollection } from '../src';
+import { SyncableCollection } from '@ablestack/rdg-apollo-mobx-connector';
 import { SimpleObject } from './test-source-types';
 
 // -----------------------------------

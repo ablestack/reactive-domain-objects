@@ -1,6 +1,6 @@
 import { ObservableQuery, ApolloClient } from '@apollo/client';
 import uuid from 'uuid';
-import { Logger } from '@ablestack/infrastructure/logger';
+import { Logger } from '@ablestack/rdg/infrastructure/logger';
 
 const logger = Logger.make('ViewModelSyncUtils');
 

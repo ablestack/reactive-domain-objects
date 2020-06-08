@@ -18,7 +18,7 @@ import {
   JsonNodeKind,
   SourceNodeTypeInfo,
   SyncUtils,
-} from '..';
+} from '.';
 import { Logger } from './infrastructure/logger';
 import { IsIAfterSyncIfNeeded, IsIAfterSyncUpdate, IsIBeforeSyncIfNeeded, IsIBeforeSyncUpdate } from './types';
 

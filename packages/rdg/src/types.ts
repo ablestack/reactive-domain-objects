@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { SimpleDomainModel } from '../test';
-
 export type JavaScriptBuiltInType =
   | '[object Array]'
   | '[object Boolean]'

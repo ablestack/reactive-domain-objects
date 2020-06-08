@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ablestack/graphql-codegen-hasura"
+    "url": "git+https://github.com/ablestack/reactive-domain-objects"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
@@ -16,6 +16,8 @@
     "lpub": "lerna publish --forcePublish"
   },
   "devDependencies": {
+    "@ablestack/rdg": "0.1.0",
+    "@ablestack/rdg-apollo-mobx-connector": "0.1.0",
     "lerna": "^3.20.0",
     "ts-node": "~7.0.0",
     "typescript": "^3.7.2"
