@@ -1,6 +1,6 @@
 {
   "name": "@ablestack/rdg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A library to facilitate building and running graphs of Reactive Domain Objects - connecting JSON data sources to reactive client applications",
   "author": "jamshally <ahrndee@gmail.com>",
   "license": "MIT",
@@ -24,9 +24,9 @@
     "graphql-tag": "^2.10.3"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
     "@wry/equality": "^0.1.11",
-    "debug": "^4.1.1"
+    "debug": "^4.1.1",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@babel/core": "^7.10.0",
