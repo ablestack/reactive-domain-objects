@@ -1,6 +1,6 @@
 {
   "name": "@ablestack/rdg",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A library to facilitate building and running graphs of Reactive Domain Objects - connecting JSON data sources to reactive client applications",
   "author": "jamshally <ahrndee@gmail.com>",
   "license": "MIT",
@@ -47,5 +47,5 @@
   "typescript": {
     "definition": "dist/rdg/src/index.d.ts"
   },
-  "gitHead": "4dad4b7d9bae8a2e2651f047352f70a4a9c8e79f"
+  "gitHead": "751f19a4548c130154b18d26a6631512f1487783"
 }
