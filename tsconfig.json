@@ -1,26 +1,6 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "esModuleInterop": true,
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "target": "es2018",
-    "lib": ["es6", "esnext", "es2015", "dom"],
-    "suppressImplicitAnyIndexErrors": true,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "sourceMap": true,
-    "strict": true,
-    "declaration": true,
-    "noImplicitAny": false,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "extends": "./tsconfig-base",
+  "files": [],
+  "include": [],
+  "references": [{ "path": "./packages/rdg" }, { "path": "./packages/rdg-apollo-mobx-connector" }]
 }

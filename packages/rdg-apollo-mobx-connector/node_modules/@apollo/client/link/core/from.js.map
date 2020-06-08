@@ -1,0 +1,1 @@
+{"version":3,"file":"from.js","sources":["from.js"],"sourcesContent":["import { ApolloLink } from './ApolloLink';\nexport var from = ApolloLink.from;\n//# sourceMappingURL=from.js.map"],"names":[],"mappings":";;AACU,IAAC,IAAI,GAAG,UAAU,CAAC;;;;"}

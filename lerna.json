@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "packages": [".", "packages/rdg", "packages/rdg-apollo-mobx-connector"],
+  "command": {
+    "publish": {
+      "ignoreChanges": ["*.md"]
+    }
+  }
+}
