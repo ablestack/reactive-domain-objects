@@ -64,10 +64,9 @@ graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNo
 
 ```
 
-## Full Usage Examples and Documentation
+## Full Documentation
 
-- Multiple additional usage examples can be found in src/tests/graph-sync/test.ts.
-- See the [Configuration section](#GraphSynchronizer-Configuration-Options) for a detailed description of all the configuration options
+- See [Full Documentation](https://github.com/ablestack/reactive-domain-graphs/blob/master/TECHNICAL.md) for a detailed description of all the functionality, configuration options, and additional usage examples.
 
 ## Definitions
 
