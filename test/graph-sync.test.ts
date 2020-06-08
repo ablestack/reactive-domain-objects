@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsDomainModel, BookDomainModel, LibraryDomainModel, librarySourceJSON } from '.';
-import { GraphSynchronizer, IGraphSyncOptions } from '../src';
-import { Logger } from '../src/infrastructure/logger';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdg';
+import { Logger } from '@ablestack/rdg/infrastructure/logger';
 import {
   AllCollectionTypesDomainModel,
   AllCollectionTypesWithPrimitivesDomainModel,
@@ -20,8 +20,8 @@ import { fooSourceJSON, fooSourceJSONSimple, fooSourceJSONWithCollection, fooWit
 import { Bar, Book, DefaultIdSourceObject, SimpleObject, Library } from './test-source-types';
 
 const logger = Logger.make('autoSynchronize.test.ts');
-const FULL_SYNC_ITERATION_COUNT = 2;
-const FULL_SYNC_MAX_TIME_MS = 1000;
+const FULL_SYNC_ITERATION_COUNT = 500;
+const FULL_SYNC_MAX_TIME_MS = 5000;
 const CHANGE_SYNC_ITERATION_COUNT = 5000;
 const CHANGE_SYNC_MAX_TIME_MS = 1000;
 

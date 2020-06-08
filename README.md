@@ -21,7 +21,7 @@ The problems being solved primarily revolve around consuming and using JSON data
 - **Interfaces and Custom Collection Types** to support the construction of [Reactive Domain Object](#definition-reactive-domain-object) Graphs
 - **Automatic synchronization** of [Reactive Domain Object](#definition-reactive-domain-object) Graphs with an external data-source
 - **Automatic Change tracking**, of external data-sources, with [Reactive Domain Object](#definition-reactive-domain-object) Nodes only being updated only where changes are detected. When combined with Observable properties, this is a very powerful feature, that
-- **Performance Optimized**, with update synchronizations on a medium sized graph in sub 0.2 milliseconds, a full initial graph load in sub 5 milliseconds (as measured on a 2015 quad-core laptop)
+- **Performance Optimized**, with update synchronizations on a medium sized graph in sub 0.1 milliseconds, a full initial graph load in sub 0.5 milliseconds (as measured on a 2015 quad-core laptop)
 - **One way data flow paradigm**: Actions --> External Data Source --> State
 - **Custom Collection Types**, to support easy graph traversal, and reduce the need for denormalization of data
 
