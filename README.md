@@ -28,13 +28,11 @@ The problems being solved primarily revolve around consuming and using JSON data
 ## Installation
 
 ```
-    npm i @ablestack/reactive-domain-graphs --save
-```
+    // npm
+    npm i @ablestack/rdg, @ablestack/rdg-apollo-mobx-connector --save
 
-Or
-
-```
-    yarn add @ablestack/reactive-domain-graphs
+    // yarn
+    yarn add @ablestack/rdg, @ablestack/rdg-apollo-mobx-connector
 ```
 
 ## Abridge Usage Example
