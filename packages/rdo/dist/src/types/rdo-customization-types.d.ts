@@ -4,7 +4,7 @@ export interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extend
         sourceNodePath: string;
         sourceFieldname: string;
         sourceFieldVal: any;
-    }) => string;
+    }) => string | undefined;
 }
 export declare function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any, any>;
 export interface ICustomSync<S> {

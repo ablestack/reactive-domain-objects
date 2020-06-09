@@ -43,6 +43,7 @@ export class QueryWatcher<Q> {
     this._onAfterStop = onStop;
   }
 
+  //
   public async initialize(apolloClient: ApolloClient<object>) {
     if (!this._watchedQuery) {
       this._watchedQuery = await this._makeObservableQuery(apolloClient);
@@ -53,34 +54,24 @@ export class QueryWatcher<Q> {
     }
   }
 
+  //
   public start(apolloClient: ApolloClient<object>) {
     if (this.active) return;
 
-    if (!this._watchedQuery) {
-      logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
-      return;
-    }
-    logger.trace(`${this._name} - Starting`);
-
-    this._watchedQuery.resetLastResults();
-
-    this._watchedQuerySubscription = this._watchedQuery.subscribe(
-      (next) => {
-        logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
-        if (next.data) {
-          this._handleDataChange(next.data);
-        }
-      },
-      (error) => {
-        logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
-      },
-      () => {
-        logger.error(`${this._name} - watchedQuerySubscription - Completed`);
-      },
-    );
-    this._active = true;
+    this.initiateWatch({ apolloClient, runOnce: false });
 
     logger.trace(`${this._name} - Started`);
+
+    if (this._onAfterStart) this._onAfterStart(apolloClient);
+  }
+
+  //
+  public runOnce(apolloClient: ApolloClient<object>) {
+    if (this.active) return;
+
+    this.initiateWatch({ apolloClient, runOnce: true });
+
+    logger.trace(`${this._name} - RunOnce`);
 
     if (this._onAfterStart) this._onAfterStart(apolloClient);
   }
@@ -95,5 +86,35 @@ export class QueryWatcher<Q> {
 
       if (this._onAfterStop) this._onAfterStop(apolloClient);
     }
+  }
+
+  //
+  private initiateWatch({ apolloClient, runOnce }: { apolloClient: ApolloClient<object>; runOnce: boolean }) {
+    if (!this._watchedQuery) {
+      logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
+      return;
+    }
+    logger.trace(`${this._name} - Starting`);
+
+    this._watchedQuery.resetLastResults();
+
+    this._watchedQuerySubscription = this._watchedQuery.subscribe(
+      (next) => {
+        logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
+        if (next.data) {
+          this._handleDataChange(next.data);
+          if (runOnce) this.stop(apolloClient);
+        }
+      },
+      (error) => {
+        logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
+        this.stop(apolloClient);
+      },
+      () => {
+        logger.info(`${this._name} - watchedQuerySubscription - Completed`);
+        this.stop(apolloClient);
+      },
+    );
+    this._active = true;
   }
 }

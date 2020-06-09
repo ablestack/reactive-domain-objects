@@ -222,8 +222,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-customization-types.ts": {
-        "version": "5f594c952cd447d6461e5346e963ddfb136be29f76eabbe8cc75406e886d940b",
-        "signature": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
+        "version": "156a2686bd772a1a9f27b1f640e1a809064771024011e192cc330335a6adca17",
+        "signature": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
         "affectsGlobalScope": false
       },
       "../src/types/index.ts": {
