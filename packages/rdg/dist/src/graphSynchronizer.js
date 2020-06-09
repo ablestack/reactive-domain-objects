@@ -91,12 +91,12 @@ class GraphSynchronizer {
             let domainPropKey = ((_a = this._globalNodeOptions) === null || _a === void 0 ? void 0 : _a.computeDomainFieldname) ? (_b = this._globalNodeOptions) === null || _b === void 0 ? void 0 : _b.computeDomainFieldname({ sourceNodePath, sourcePropKey, sourcePropVal }) : sourcePropKey;
             if (!(domainPropKey in domainObject) && ((_c = this._globalNodeOptions) === null || _c === void 0 ? void 0 : _c.commonDomainFieldnamePostfix)) {
                 const domainPropKeyWithPostfix = `${domainPropKey}${this._globalNodeOptions.commonDomainFieldnamePostfix}`;
-                logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Trying '${domainPropKeyWithPostfix}' `);
+                logger.trace(`domainPropKey '${domainPropKey}' not found in RDO. Trying '${domainPropKeyWithPostfix}' `);
                 domainPropKey = domainPropKeyWithPostfix;
             }
             // Check to see if key exists
             if (!(domainPropKey in domainObject)) {
-                logger.trace(`domainPropKey '${domainPropKey}' not found in domainModel. Skipping property`);
+                logger.trace(`domainPropKey '${domainPropKey}' not found in RDO. Skipping property`);
                 continue;
             }
             changed ==
@@ -232,13 +232,13 @@ class GraphSynchronizer {
     synchronizeSourceArray({ domainNodeTypeInfo, sourceNodeTypeInfo, domainNodeVal, sourceCollection, }) {
         if (!domainNodeTypeInfo.type)
             throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourceNodeTypeInfo}', Domain type: ${domainNodeTypeInfo} `);
-        const { makeCollectionKey, makeDomainModel } = this.tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection: domainNodeVal });
+        const { makeRDOCollectionKey, makeRDO } = this.tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection: domainNodeVal });
         // VALIDATE
-        if (sourceCollection.length > 0 && !(makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromSourceNode)) {
-            throw new Error(`Could not find 'makeCollectionKey?.fromSourceNode)' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`);
+        if (sourceCollection.length > 0 && !(makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement)) {
+            throw new Error(`Could not find 'makeRDOCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRDOFactory on the contained type`);
         }
-        if (sourceCollection.length > 0 && !makeDomainModel) {
-            throw new Error(`Could not find 'makeDomainModel' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`);
+        if (sourceCollection.length > 0 && !makeRDO) {
+            throw new Error(`Could not find 'makeRDO' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRDOFactory on the contained type`);
         }
         //
         // Execute the sync based on collection type
@@ -251,7 +251,7 @@ class GraphSynchronizer {
             if (sourceCollection.length === 0 && domainNodeCollection.size > 0) {
                 domainNodeCollection.clear();
             }
-            return this.synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeCollectionKey: makeCollectionKey, makeDomainModel: makeDomainModel });
+            return this.synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeRDOCollectionKey: makeRDOCollectionKey, makeRDO: makeRDO });
             //-----------------------------------------------------
             // MAP SYNC
             //-----------------------------------------------------
@@ -261,7 +261,7 @@ class GraphSynchronizer {
             if (sourceCollection.length === 0 && domainNodeCollection.size > 0) {
                 domainNodeCollection.clear();
             }
-            return this.synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeCollectionKey: makeCollectionKey, makeDomainModel: makeDomainModel });
+            return this.synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeRDOCollectionKey: makeRDOCollectionKey, makeRDO: makeRDO });
             //-----------------------------------------------------
             // SET SYNC
             //-----------------------------------------------------
@@ -271,15 +271,15 @@ class GraphSynchronizer {
             if (sourceCollection.length === 0 && domainNodeCollection.size > 0) {
                 domainNodeCollection.clear();
             }
-            if (domainNodeCollection.size > 0 && !(makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode))
-                throw new Error(`Could not find '!makeCollectionKey?.fromDomainNode' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`);
+            if (domainNodeCollection.size > 0 && !(makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement))
+                throw new Error(`Could not find '!makeRDOCollectionKey?.fromDomainElement' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRDOFactory on the contained type`);
             if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
                 logger.warn(`Path: '${this.getSourceNodePath()}', collectionSize:${sourceCollection.lastIndexOf}, Domain collection type: Set - It is recommended that the Map or Custom collections types are used in the Domain objects for large collections. Set and Array collections will perform poorly with large collections`);
             return this.synchronizeDomainSet({
                 sourceCollection,
                 domainNodeCollection,
-                makeCollectionKey: makeCollectionKey,
-                makeDomainModel: makeDomainModel,
+                makeRDOCollectionKey: makeRDOCollectionKey,
+                makeRDO: makeRDO,
             });
             //-----------------------------------------------------
             // ARRAY SYNC
@@ -290,15 +290,15 @@ class GraphSynchronizer {
             if (sourceCollection.length === 0 && domainNodeCollection.length > 0) {
                 _1.CollectionUtils.Array.clear({ collection: domainNodeCollection });
             }
-            if (domainNodeCollection.length > 0 && !(makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode))
-                throw new Error(`Could not find 'makeDomainNodeKeyFromDomainNode' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IDomainModelFactory on the contained type`);
+            if (domainNodeCollection.length > 0 && !(makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement))
+                throw new Error(`Could not find 'makeRDOCollectionKeyFromDomainElement' (Path: '${this.getSourceNodePath()}', type: ${domainNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRDOFactory on the contained type`);
             if (sourceCollection.length > 100)
                 logger.warn(`Path: '${this.getSourceNodePath()}', collectionSize:${sourceCollection.lastIndexOf}, Domain collection type: Array - It is recommended that the Map or Custom collections types are used in the Domain objects for large collections. Set and Array collections will perform poorly with large collections`);
             return this.synchronizeDomainArray({
                 sourceCollection,
                 domainNodeCollection,
-                makeCollectionKey: makeCollectionKey,
-                makeDomainModel: makeDomainModel,
+                makeRDOCollectionKey: makeRDOCollectionKey,
+                makeRDO: makeRDO,
             });
         }
         return false;
@@ -306,27 +306,27 @@ class GraphSynchronizer {
     /** */
     tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection }) {
         var _a, _b, _c;
-        let makeCollectionKey;
-        let makeDomainModel;
+        let makeRDOCollectionKey;
+        let makeRDO;
         const collectionElementType = this.getCollectionElementType({ sourceCollection, domainCollection });
         //
         // If types are primitive, provide auto methods, else try and get from configuration
         //
         if (collectionElementType === 'primitive' || collectionElementType === 'empty') {
-            makeCollectionKey = { fromSourceNode: (primitive) => primitive.toString(), fromDomainNode: (primitive) => primitive.toString() };
-            makeDomainModel = (primitive) => primitive;
+            makeRDOCollectionKey = { fromSourceElement: (primitive) => primitive.toString(), fromDomainElement: (primitive) => primitive.toString() };
+            makeRDO = (primitive) => primitive;
         }
         else {
             const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection });
-            const typeDerivedOptions = _1.IsIDomainModelFactory(domainCollection)
-                ? { makeCollectionKey: domainCollection.makeCollectionKey, makeDomainModel: domainCollection.makeDomainModel }
-                : { makeDomainNodeKeyFromSourceNode: undefined, makeDomainNodeKeyFromDomainNode: domainCollection.makeDomainNodeKeyFromDomainNode, makeDomainModel: undefined };
-            // GET CONFIG ITEM: makeDomainNodeKeyFromSourceNode
-            makeCollectionKey = ((_a = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _a === void 0 ? void 0 : _a.makeCollectionKey) || typeDerivedOptions.makeCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
-            // GET CONFIG ITEM: makeDomainModel
-            makeDomainModel = ((_b = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _b === void 0 ? void 0 : _b.makeDomainModel) || ((_c = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _c === void 0 ? void 0 : _c.makeDomainModel) || typeDerivedOptions.makeDomainModel;
+            const typeDerivedOptions = _1.IsIRDOFactory(domainCollection)
+                ? { makeRDOCollectionKey: domainCollection.makeRDOCollectionKey, makeRDO: domainCollection.makeRDO }
+                : { makeRDOCollectionKeyFromSourceElement: undefined, makeRDOCollectionKeyFromDomainElement: domainCollection.makeRDOCollectionKeyFromDomainElement, makeRDO: undefined };
+            // GET CONFIG ITEM: makeRDOCollectionKeyFromSourceElement
+            makeRDOCollectionKey = ((_a = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _a === void 0 ? void 0 : _a.makeRDOCollectionKey) || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
+            // GET CONFIG ITEM: makeRDO
+            makeRDO = ((_b = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _b === void 0 ? void 0 : _b.makeRDO) || ((_c = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _c === void 0 ? void 0 : _c.makeRDO) || typeDerivedOptions.makeRDO;
         }
-        return { makeCollectionKey, makeDomainModel };
+        return { makeRDOCollectionKey, makeRDO };
     }
     /** */
     getMatchingOptionsForNode() {
@@ -359,12 +359,12 @@ class GraphSynchronizer {
     /** */
     tryMakeAutoKeyMaker({ sourceCollection, domainCollection }) {
         var _a;
-        let makeCollectionKey = {};
+        let makeRDOCollectionKey = {};
         // Try and get options from source collection
         if (sourceCollection && sourceCollection.length > 0) {
             const firstItemInSourceCollection = sourceCollection[0];
             if (firstItemInSourceCollection && firstItemInSourceCollection.id) {
-                makeCollectionKey.fromSourceNode = (sourceNode) => {
+                makeRDOCollectionKey.fromSourceElement = (sourceNode) => {
                     return sourceNode.id;
                 };
             }
@@ -380,17 +380,17 @@ class GraphSynchronizer {
                 hasIdKey = idKey in firstItemInDomainCollection;
             }
             if (hasIdKey) {
-                makeCollectionKey.fromDomainNode = (domainNode) => {
+                makeRDOCollectionKey.fromDomainElement = (domainNode) => {
                     return domainNode[idKey];
                 };
             }
         }
-        // Allow to return if fromDomainNode is null, even though this is not allowed in user supplied options
-        //  When defaultKeyMaker, the code can handle a special case where fromDomainNode is null (when no items in domain collection)
-        if (!makeCollectionKey || !makeCollectionKey.fromSourceNode)
+        // Allow to return if fromDomainElement is null, even though this is not allowed in user supplied options
+        //  When defaultKeyMaker, the code can handle a special case where fromDomainElement is null (when no items in domain collection)
+        if (!makeRDOCollectionKey || !makeRDOCollectionKey.fromSourceElement)
             return undefined;
         else
-            return makeCollectionKey;
+            return makeRDOCollectionKey;
     }
     /** */
     getCollectionElementType({ sourceCollection, domainCollection }) {
@@ -422,7 +422,7 @@ class GraphSynchronizer {
         const sourceNodePath = this.getSourceNodePath();
         const lastSourceObject = this.getLastSourceNodeInstancePathValue();
         // Check if previous source state and new source state are equal
-        const isAlreadyInSync = _1.IsICustomEqualityDomainModel(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+        const isAlreadyInSync = _1.IsICustomEqualityRDO(domainObject) ? domainObject.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
         // Call lifecycle methods if found
         if (types_1.IsIBeforeSyncIfNeeded(domainObject))
             domainObject.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
@@ -452,22 +452,22 @@ class GraphSynchronizer {
         }
         // Call lifecycle methods if found
         if (types_1.IsIAfterSyncIfNeeded(domainObject))
-            domainObject.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, domainModelChanged: changed });
+            domainObject.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
         return changed;
     }
     /**
      *
      */
-    synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeCollectionKey, makeDomainModel, }) {
+    synchronizeISyncableCollection({ sourceCollection, domainNodeCollection, makeRDOCollectionKey, makeRDO, }) {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.size,
             getTargetCollectionKeys: domainNodeCollection.getKeys,
-            makeDomainNodeKeyFromSourceNode: makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromSourceNode,
+            makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
             tryGetItemFromTargetCollection: (key) => domainNodeCollection.tryGetItemFromTargetCollection(key),
             insertItemToTargetCollection: (key, value) => domainNodeCollection.insertItemToTargetCollection(key, value),
             tryDeleteItemFromTargetCollection: (key) => domainNodeCollection.tryDeleteItemFromTargetCollection(key),
-            makeItemForTargetCollection: makeDomainModel,
+            makeItemForTargetCollection: makeRDO,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
                 sourceNodeKind: 'arrayElement',
                 sourceNodeKey: sourceElementKey,
@@ -481,16 +481,16 @@ class GraphSynchronizer {
     /**
      *
      */
-    synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeCollectionKey, makeDomainModel, }) {
+    synchronizeDomainMap({ sourceCollection, domainNodeCollection, makeRDOCollectionKey, makeRDO, }) {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.size,
             getTargetCollectionKeys: () => Array.from(domainNodeCollection.keys()),
-            makeDomainNodeKeyFromSourceNode: makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromSourceNode,
+            makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
             tryGetItemFromTargetCollection: (key) => domainNodeCollection.get(key),
             insertItemToTargetCollection: (key, value) => domainNodeCollection.set(key, value),
             tryDeleteItemFromTargetCollection: (key) => domainNodeCollection.delete(key),
-            makeItemForTargetCollection: makeDomainModel,
+            makeItemForTargetCollection: makeRDO,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
                 sourceNodeKind: 'arrayElement',
                 sourceNodeKey: sourceElementKey,
@@ -504,39 +504,43 @@ class GraphSynchronizer {
     /**
      *
      */
-    synchronizeDomainSet({ sourceCollection, domainNodeCollection, makeCollectionKey, makeDomainModel, }) {
+    synchronizeDomainSet({ sourceCollection, domainNodeCollection, makeRDOCollectionKey, makeRDO, }) {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.size,
-            getTargetCollectionKeys: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? () => _1.CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode }) : undefined,
-            makeDomainNodeKeyFromSourceNode: makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromSourceNode,
-            tryGetItemFromTargetCollection: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? (key) => _1.CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode, key }) : undefined,
+            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
+            makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
+            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+                : undefined,
             insertItemToTargetCollection: (key, value) => _1.CollectionUtils.Set.insertItem({ collection: domainNodeCollection, key, value }),
-            tryDeleteItemFromTargetCollection: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? (key) => _1.CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode, key }) : undefined,
-            makeItemForTargetCollection: makeDomainModel,
+            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+                : undefined,
+            makeItemForTargetCollection: makeRDO,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
                 sourceNodeKind: 'arrayElement',
                 sourceNodeKey: sourceElementKey,
                 sourceNodeVal: sourceElementVal,
                 domainNodeKey: targetElementKey,
                 domainNodeVal: targetElementVal,
-                tryUpdateDomainNode: (key, value) => _1.CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode, value }),
+                tryUpdateDomainNode: (key, value) => _1.CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, value }),
             }),
         });
     }
     /**
      *
      */
-    synchronizeDomainArray({ sourceCollection, domainNodeCollection, makeCollectionKey, makeDomainModel, }) {
+    synchronizeDomainArray({ sourceCollection, domainNodeCollection, makeRDOCollectionKey, makeRDO, }) {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.length,
-            getTargetCollectionKeys: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? () => _1.CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode }) : undefined,
-            makeDomainNodeKeyFromSourceNode: makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromSourceNode,
-            makeItemForTargetCollection: makeDomainModel,
-            tryGetItemFromTargetCollection: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? (key) => _1.CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeKey: makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode, key }) : undefined,
+            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
+            makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
+            makeItemForTargetCollection: makeRDO,
+            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement, key })
+                : undefined,
             insertItemToTargetCollection: (key, value) => _1.CollectionUtils.Array.insertItem({ collection: domainNodeCollection, key, value }),
-            tryDeleteItemFromTargetCollection: (makeCollectionKey === null || makeCollectionKey === void 0 ? void 0 : makeCollectionKey.fromDomainNode) ? (key) => _1.CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeKey: makeCollectionKey.fromDomainNode, key }) : undefined,
+            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+                : undefined,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
                 sourceNodeKind: 'arrayElement',
                 sourceNodeKey: sourceElementKey,
@@ -555,7 +559,7 @@ class GraphSynchronizer {
      */
     smartSync({ rootSourceNode, rootDomainNode }) {
         if (!rootSourceNode || !rootDomainNode) {
-            logger.warn('smartSync - sourceObject or domainModel was null. Exiting', { rootSourceNode, rootSyncableObject: rootDomainNode });
+            logger.warn('smartSync - sourceObject or RDO was null. Exiting', { rootSourceNode, rootSyncableObject: rootDomainNode });
             return;
         }
         logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootSyncableObject: rootDomainNode });

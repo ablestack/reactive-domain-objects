@@ -38,27 +38,27 @@ The problems being solved primarily revolve around consuming and using JSON data
 ## Abridge Usage Example
 
 ```TypeScript
-// DEFINE DOMAIN MODEL GRAPH
+// DEFINE REACTIVE DOMAIN GRAPH
 class FooSimpleDomainGraph {
-  public bar = new BarDomainModel(); //*1
+  public bar = new BarRDO(); //*1
 }
 
-export class BarDomainModel {
+export class BarRDO {
   public id: string = '';
   public name: string = '';
 }
 
-// INSTANTIATE DOMAIN MODEL AND GRAPH SYNCHRONIZER
-const fooSimpleDomainModel = new FooDomainGraphSimple();
+// INSTANTIATE DOMAIN RDO AND GRAPH SYNCHRONIZER
+const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer(/* Config Options Here */);
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: { bar: { id: 'bar-1', name: 'Original Name' } } });
+graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'Original Name' } } });
 
 // Make any changes to the source data
 
 // RESYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: { bar: { id: 'bar-1', name: 'New Name' } } });
+graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'New Name' } } });
 
 ```
 
@@ -84,7 +84,7 @@ A Reactive Domain Object (RDO) is any object which satisfies the following condi
 ### Known Issues & Limitations
 
 - **Source & Target Structural Similarity**. While field names can be adjusted, by configuration, the overall 'shape' and nesting structure of the graph must match between the source and target graphs. This library does not, yet, have the capability of automatically manipulating the shape of a graph during the synchronization process
-- **Array and Set collections types** in Domain Models are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)
+- **Array and Set collections types** in RDOs are more processing intensive. It is suggested that they are avoided for collections that may contain a large number of elements (100+)
 
 ### Disclaimers
 

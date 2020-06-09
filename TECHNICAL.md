@@ -10,7 +10,7 @@ Below are some simple usage examples for common scenarios, with the goal of illu
  const graphSynchronizer = new GraphSynchronizer({ /* options */ });
 ```
 
-2. Call the smartSync method, passing in a root Domain Model object, and root JSON node, to load initial data (optional)
+2. Call the smartSync method, passing in a root RDO, and root JSON node, to load initial data (optional)
 
 ```
 graphSynchronizer.smartSync({ rootDomainNode, rootSourceNode });
@@ -31,34 +31,34 @@ graphSynchronizer.smartSync({ rootDomainNode, rootSourceNode });
 const fooSourceJSON = { id: 'foo-1', name: 'Simple Foo 1' };
 
 // DEFINE
-export class FooDomainModel {                        // Domain Model Object
+export class FooRDO {                        // RDO
   public id: string = '';
   public name: string = '';
 
 // INSTANTIATE
-const fooDomainModel = new FooDomainModel();        // Empty Domain Model
+const fooRDO = new FooRDO();        // Empty RDO
 const graphSynchronizer = new GraphSynchronizer();  // GraphSynchronizer
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooDomainModel, rootSourceNode: fooSourceJSON }); //*2
+graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSON }); //*2
 
 ```
 
 > Note: **smartSync**
 >
 > 1. \* Source JSON data can be locally constructed (such as a Redux State Tree), or from an API (such as REST or GraphQL query results)
->    , but it must have a consistent and predictable structure that can be mapped to a Domain Model graph
+>    , but it must have a consistent and predictable structure that can be mapped to an Reactive Domain Graph
 > 2. \* For any subsequent change to the source data, call the smartSync method again. Only the changed values will be updated
 
-> Note: **Domain Models**
+> Note: **RDOs**
 >
-> - Domain Model Properties must be initialized with a value other than undefined, otherwise the sync may not work properly
-> - Domain Model Properties are only updated when the source data changes. This feature is especially powerful when the properties are Observable
-> - Domain Models may be enriched with any methods and properties in addition to those that contain the transferred source data
+> - RDO Properties must be initialized with a value other than undefined, otherwise the sync may not work properly
+> - RDO Properties are only updated when the source data changes. This feature is especially powerful when the properties are Observable
+> - RDOs may be enriched with any methods and properties in addition to those that contain the transferred source data
 
-## Nested Domain Model Object Graph Example
+## Nested RDO Example
 
-Domain Models with nested objects are still a simple use case, but have some notable differences, highlighted in the comments:
+RDOs with nested objects are still a simple use case, but have some notable differences, highlighted in the comments:
 
 ```TypeScript
 // SOURCE JSON DATA
@@ -66,23 +66,23 @@ const fooSourceJSONSimple: FooSimple = { bar: { id: 'bar-1', name: 'Bar 1' } };
 
 // DEFINE
 class FooSimpleDomainGraph {
-  public bar = new BarDomainModel(); //*1
+  public bar = new BarRDO(); //*1
 }
 
-export class BarDomainModel {
+export class BarRDO {
   public id: string = '';
   public name: string = '';
 }
 
 // INSTANTIATE
-const fooSimpleDomainModel = new FooDomainGraphSimple();
+const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer();
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: fooSourceJSONSimple });
+graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 ```
 
-> Note: **Domain Model Instances**
+> Note: **RDO Instances**
 >
 > 1. \* Nested Domain Objects (other than when in collections) should be initialized with an instance. \* However, it is not necessary (or recommended) to seed with data, as the initial smartSync method will load the data from the source
 
@@ -96,10 +96,10 @@ const fooSourceJSONSimple: FooSimple = { bar: { id: 'bar-1', name: 'Bar 1' } };
 
 // DEFINE
 class FooSimpleDomainGraph {
-  public bar = new BarDomainModel(); //*1
+  public bar = new BarRDO(); //*1
 }
 
-export class BarDomainModel {
+export class BarRDO {
   public id: string = '';
   public name: string = '';
 }
@@ -109,41 +109,41 @@ const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
       sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
-      domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() }
+      domainCollection: { makeRDO: (sourceNode: Bar) => new BarRDO() }
     }
   ],
 };
 
 // INSTANTIATE
-const fooSimpleDomainModel = new FooDomainGraphSimple();
+const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer(syncOptions); // Note - passing in sync options here
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: fooSourceJSONSimple });
+graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 
 ```
 
-> Note: **Domain Model Instantiation**
+> Note: **RDO Instantiation**
 >
-> 1.  \* Because the BarDomainModel type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created. As such, a corresponding 'make' function needs to be supplied to the GraphSynchronizer
+> 1.  \* Because the BarRDO type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created. As such, a corresponding 'make' function needs to be supplied to the GraphSynchronizer
 >
-> 2.  \* There are several ways the make function for a Domain Model can be supplied to the GraphSynchronizer:
+> 2.  \* There are several ways the makeRDO function can be supplied to the GraphSynchronizer:
 >
 >     - As with the above example, a make method can be contained in an Options object, and mapped to the corresponding JSON node by specifying the `nodePath`
 >     - A make method can be contained in an Options object, and mapped to the corresponding JSON node by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field).
->     - The 'IDomainModelFactory' interface can be implemented by the containing collection in the Domain Model
+>     - The 'IRDOFactory' interface can be implemented by the containing collection
 >
 >     See the [configuration options documentation](TODO) for more information
 
 ## General Usage Notes & Tips
 
-- Domain Models must be instantiated with properties initialized to non-undefined values. Use strict TypeScript compile option to help enforce this
+- RDOs must be instantiated with properties initialized to non-undefined values. Use strict TypeScript compile option to help enforce this
 - A LOG_LEVEL value can be set in a .env file to turn on logging: `# 0:off, 1:error, 2:warn, 3:info, 4:debug, 5:trace`
 
 ## GraphSynchronizer
 
 The GraphSynchronizer class is at the center of the reactive-domain-graphs library.
-An instance of this class allows a Domain Model graph to be synchronized with a source JSON graph via the smartSync method. The GraphSynchronizer tracks the source JSON previous state, and used it, along with several other optimizations, to perform efficient synchronizations and, importantly, only update the Domain Model graph nodes where changes have been detected.
+An instance of this class allows a Reactive Domain Graph to be synchronized with a source JSON graph via the smartSync method. The GraphSynchronizer tracks the source JSON previous state, and used it, along with several other optimizations, to perform efficient synchronizations and, importantly, only update the RDO nodes where changes have been detected.
 
 > Note: **Equality Checking**
 > By default the [@wry/equality](https://github.com/benjamn/wryware/tree/master/packages/equality) comparer is used. This was chosen because:
@@ -214,32 +214,31 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
 ```TypeScript
 {
-  customEqualityComparer: IEqualityComparer, // --> // Custom Equality Comparer
+  customEqualityComparer: IEqualityComparer, // ----> // Custom Equality Comparer
 
-  globalNodeOptions: { // ------------------------> // Options that apply to all source nodes
+  globalNodeOptions: { // ----------------------==--> // Options that apply to all source nodes
     commonDomainFieldnamePostfix: string;
     computeDomainFieldname: (sourceNodeKey) => string;
   },
 
-  targetedNodeOptions:[ // -----------------------> // Options that only apply to source nodes that
-  {                                                 // meet the sourceNodeMatcher criteria
+  targetedNodeOptions:[ // -------------------------> // Options that only apply to source nodes that
+    {                                                 // meet the sourceNodeMatcher criteria
 
-    sourceNodeMatcher: {
-      nodePath: string; // -----------------------> // Selector can be targeted at a specific source node path
-      nodeContent: (sourceNode) => boolean;         // or by specific source node contents
-    },
-
-    ignore: boolean, // --------------------------> // A source node can be ignored
-
-    domainCollection: { // ---------------------->  // Configuration pertaining to the creation of Domain Models
-
-      makeCollectionKey: { // --------------------> // If makeCollectionKey creation methods not supplied
-        fromSourceNode: (sourceNode) => string;     // a default key creation method will be supplied which
-        fromDomainNode: (domainNode) => string;     // assumes an `id` field id available (or an error will be thrown)
+      sourceNodeMatcher: {
+        nodePath: string; // -----------------------> // Selector can be targeted at a specific source node path
+        nodeContent: (sourceNode) => boolean;         // or by specific source node contents
       },
-      makeDomainModel: (sourceNode) => any;         // Required when Domain Models are contained in a parent collection
-    }                                               // so they can be automatically instantiated as items are added to the
-  }]                                                // source collection
+
+      ignore: boolean, // --------------------------> // A source node can be ignored
+
+      makeRDOCollectionKey: { // -------------------> // If makeRDOCollectionKey creation methods not supplied
+        fromSourceElement: (sourceNode) => string;    // a default key creation method will be supplied which
+        fromDomainElement: (domainNode) => string;    // assumes an `id` field id available (or an error will be thrown)
+      },
+      makeRDO: (sourceNode) => any;                   // Use when RDOs are contained in a parent collection
+                                                      // so they can be automatically instantiated as items are added to the
+    }                                                 // source collection
+  ]
 }
 
 ```
@@ -274,7 +273,7 @@ export class Target {
   public name$: string = ''; // <-- NOTE the `$` Symbol on the end of name
 ```
 
-Upon graphSynchronizer.smartSync of the above supplied source and target models would fail due to the mismatch of the `source.name` and the `target.name$` field names.
+Upon graphSynchronizer.smartSync of the above supplied source and target objects would fail due to the mismatch of the `source.name` and the `target.name$` field names.
 However, the following configuration would allow for the smartSync to successfully match the fields:
 
 ```
@@ -285,7 +284,7 @@ Note that the matching algorithm will first try to find a field match _without_ 
 
 #### computeDomainFieldname
 
-If the names of the Domain Models are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
+If the names of the RDOs are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
 
 ```TypeScript
 ({ sourceNodePath, sourcePropKey, sourcePropVal }: { sourceNodePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
@@ -299,7 +298,7 @@ The parameters that are supplied to the method are as follows:
 
 ### Targeted Node Options
 
-Targeted Node Options provide configuration data for specific source nodes. The primary use case for this is telling the graphSynchronizer how to instantiate the Domain Model objects. This is required for every Domain Model object that is contained in a parent collection (so that new Domain Models can be added dynamically to reflect changes in the corresponding source collection node)
+Targeted Node Options provide configuration data for specific source nodes. The primary use case for this is telling the graphSynchronizer how to instantiate the RDOs. This is required for every RDO that is contained in a parent collection (so that new RDOs can be added dynamically to reflect changes in the corresponding source collection node)
 
 ### Matchers
 
@@ -368,28 +367,28 @@ const graphSynchronizerOptions = {
 
 #### Ignore
 
-If the `ignore` configuration item is present, and set to false, the matching source node will not be copied to the corresponding Domain Model node. Otherwise, it will be synchronized when a change is detected
+If the `ignore` configuration item is present, and set to false, the matching source node will not be copied to the corresponding RDO node. Otherwise, it will be synchronized when a change is detected
 
 #### DomainCollection
 
 Contains configuration that inform GraphSynchronizer how to handle collections of Domain Objects, as detailed below
 
-##### MakeCollectionKey
+##### makeRDOCollectionKey
 
 The two contained configuration properties are:
 
 ```
-  fromSourceNode: (sourceNode) => string;
-  fromDomainNode: (domainNode) => string;
+  fromSourceElement: (sourceNode) => string;
+  fromDomainElement: (domainNode) => string;
 ```
 
 These methods:
 
 - Are are used to create unique keys for each Domain collection element, and should be idempotent
-- They are only required for Domain Models that are contained in a Domain Collection AND where there is no `id` field
+- They are only required for RDOs that are contained in a Domain Collection AND where there is no `id` field
 - If they are not supplied, default methods will be supplied that look for an `id` field in the node (and throw an error if not found)
 
-#### MakeDomainModel
+#### makeRDO
 
 This configuration property had the following signature:
 
@@ -397,11 +396,11 @@ This configuration property had the following signature:
 (sourceNode) => any;
 ```
 
-This property is required for every Domain Model type that is contained in a parent collection, so they can be automatically instantiated as items are added to the source collection
+This property is required for every RDO type that is contained in a parent collection, so they can be automatically instantiated as items are added to the source collection
 
-## Domain Model Sync Customizations & Lifecycle Methods
+## RDO Sync Customizations & Lifecycle Methods
 
-Domain Models and Custom Collection Types can influence synchronization behavior and, in some cases, replace the need for configuration options, by implementing one of several interfaces
+RDOs and Custom Collection Types can influence synchronization behavior and, in some cases, replace the need for configuration options, by implementing one of several interfaces
 
 ### IBeforeSyncIfNeeded
 
@@ -413,9 +412,9 @@ interface IBeforeSyncIfNeeded<S> {
 }
 ```
 
-This lifecycle method is called before the synchronization stage for every instance of the Domain Model that implements it
+This lifecycle method is called before the synchronization stage for every instance of the RDO that implements it
 
-> Note: If the parent Domain Model objects evaluate to being equal, this lifecycle method will not be called, as the smartSync algorithm will not recurse down a tree of nodes that evaluate to being equal
+> Note: If the parent RDO evaluate to being equal, this lifecycle method will not be called, as the smartSync algorithm will not recurse down a tree of nodes that evaluate to being equal
 
 ### IBeforeSyncUpdate
 
@@ -427,7 +426,7 @@ interface IBeforeSyncUpdate<S> {
 }
 ```
 
-This lifecycle method is called before the synchronization step of a Domain Model instance IF the node is evaluated as having changed and is about to be updated
+This lifecycle method is called before the synchronization step of an RDO instance IF the node is evaluated as having changed and is about to be updated
 
 ### IBeforeSyncIfNeeded
 
@@ -439,7 +438,7 @@ interface IAfterSyncUpdate<S> {
 }
 ```
 
-This lifecycle method is called after an update of a Domain Model instance
+This lifecycle method is called after an update of an RDO instance
 
 ### IBeforeSyncIfNeeded
 
@@ -447,27 +446,27 @@ Signature:
 
 ```TypeScript
 interface IAfterSyncIfNeeded<S> {
-  afterSyncIfNeeded: ({ sourceObject, syncAttempted, domainModelChanged }: { sourceObject: S; syncAttempted: boolean; domainModelChanged: boolean }) => void;
+  afterSyncIfNeeded: ({ sourceObject, syncAttempted, RDOChanged }: { sourceObject: S; syncAttempted: boolean; RDOChanged: boolean }) => void;
 }
 ```
 
-This lifecycle method is called after the synchronization stage for every instance of a Domain Model that implements it
+This lifecycle method is called after the synchronization stage for every instance of an RDO that implements it
 
-> Note: If the parent Domain Model objects evaluate to being equal, this lifecycle method will not be called, as the smartSync algorithm will not recurse down a tree of nodes that evaluate to being equal
+> Note: If the parent RDOs evaluate to being equal, this lifecycle method will not be called, as the smartSync algorithm will not recurse down a tree of nodes that evaluate to being equal
 
-### ICustomEqualityDomainModel
+### ICustomEqualityRDO
 
 ```TypeScript
-interface ICustomEqualityDomainModel<S> {
+interface ICustomEqualityRDO<S> {
   isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined): boolean;
 }
 ```
 
-When Domain Models implement this interface, this isStateEqual method will be used for equality comparison instead of the default equality comparer
+When RDOs implement this interface, this isStateEqual method will be used for equality comparison instead of the default equality comparer
 
 ### ICustomSync
 
-This interface allows a Domain Model to take over full control of the synchronization for a specific type. When implemented this interface, the GraphSynchronizer will hand off the synchronization of the source data to the Domain Model (instead of using the internal auto-synchronization algorithm).
+This interface allows an RDO to take over full control of the synchronization for a specific type. When implemented this interface, the GraphSynchronizer will hand off the synchronization of the source data to the RDO (instead of using the internal auto-synchronization algorithm).
 
 The interface has the following signiture:
 
@@ -477,7 +476,7 @@ interface ICustomSync<S> {
 }
 ```
 
-> Note: any child objects and collections of Domain Models that implement ICustomSync will no longer be auto-synchronized. To subsequently synchronize a child object or collection, of of the following options are available:
+> Note: any child objects and collections of RDOs that implement ICustomSync will no longer be auto-synchronized. To subsequently synchronize a child object or collection, of of the following options are available:
 
 - A custom recursive sync routine is write, which could even take advantage of the ICustomSync interface by implementing on child Domain objects
 - The 'continueSmartSync' function (passed into the method), can be called for each child object [Object Path](TODO)
@@ -498,12 +497,12 @@ interface ISyncableCollection<T> extends Iterable<T> {
 }
 ```
 
-### IDomainModelFactory
+### IRDOFactory
 
 ```TypeScript
-interface IDomainModelFactory<S, D> {
-  makeCollectionKey: IDomainNodeKeyFactory<S, D>;
-  makeDomainModel: IMakeDomainModel<S, D>;
+interface IRDOFactory<S, D> {
+  makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
+  makeRDO: ImakeRDO<S, D>;
 }
 ```
 
@@ -514,5 +513,5 @@ For clarity, this is a brief reference for some terminology that is used through
 - Element: an item of a collection
 - Node: An Property of an Object, or an Element of a collection
 - Source: JSON source data, and the 'source of truth'
-- Domain Model: JavaScript objects that contain the Source data, as well as any other methods that support their purpose in the Domain
+- RDO: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-graphs/blob/master/README.md)
 - Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)

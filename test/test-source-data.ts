@@ -114,7 +114,7 @@ export const allCollectionsJSON_Uno: AllCollections = {
 // LIBRARY GRAPH - PROP NAME TEST MODEL
 // -----------------------------------
 export const targetedNodeOptionsTestRootJSON: PropNameTestRoot = {
-  mapOfDefaultIdDomainModel: [{ id: '1A' }, { id: '1B' }],
-  mapOfDefaultId$DomainModel: [{ id: '2A' }, { id: '2B' }],
-  mapOfDefault_IdDomainModel: [{ id: '3A' }, { id: '3B' }],
+  mapOfDefaultIdRDO: [{ id: '1A' }, { id: '1B' }],
+  mapOfDefaultId$RDO: [{ id: '2A' }, { id: '2B' }],
+  mapOfDefault_IdRDO: [{ id: '3A' }, { id: '3B' }],
 };

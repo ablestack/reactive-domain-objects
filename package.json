@@ -13,7 +13,9 @@
     "bootstrap": "lerna bootstrap",
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose",
-    "lpub": "lerna publish --forcePublish",
+    "publish": "lerna publish --forcePublish",
+    "local-publish": "yarn run build && lerna run prepublishOnly --stream && yalc publish packages/rdg/dist/src --force && yalc publish packages/rdg-apollo-mobx-connector/dist/src --force",
+    "local-push": "yarn run build && lerna run prepublishOnly --stream && yalc push packages/rdg/dist/src --force && yalc push packages/rdg-apollo-mobx-connector/dist/src --force",
     "test": "jest"
   },
   "devDependencies": {

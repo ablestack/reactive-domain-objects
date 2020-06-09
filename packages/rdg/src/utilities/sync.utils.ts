@@ -8,7 +8,7 @@ function synchronizeCollection<S, T>({
   sourceCollection,
   getTargetCollectionSize,
   getTargetCollectionKeys,
-  makeDomainNodeKeyFromSourceNode,
+  makeRDOCollectionKeyFromSourceElement,
   makeItemForTargetCollection,
   tryGetItemFromTargetCollection,
   insertItemToTargetCollection,
@@ -18,7 +18,7 @@ function synchronizeCollection<S, T>({
   sourceCollection: Iterable<S>;
   getTargetCollectionSize: () => number;
   getTargetCollectionKeys?: () => string[];
-  makeDomainNodeKeyFromSourceNode?: (sourceItem: S) => string;
+  makeRDOCollectionKeyFromSourceElement?: (sourceItem: S) => string;
   makeItemForTargetCollection: (s) => T;
   tryGetItemFromTargetCollection?: (key: string) => T | undefined;
   insertItemToTargetCollection: (key: string, value: T) => void;
@@ -32,8 +32,8 @@ function synchronizeCollection<S, T>({
   for (const sourceItem of sourceCollection) {
     if (sourceItem === null || sourceItem === undefined) continue;
     // Make key
-    if (!makeDomainNodeKeyFromSourceNode) throw Error(`makeDomainNodeKeyFromSourceNode wan null or undefined. It must be defined when sourceCollection.length > 0`);
-    const key = makeDomainNodeKeyFromSourceNode(sourceItem);
+    if (!makeRDOCollectionKeyFromSourceElement) throw Error(`makeRDOCollectionKeyFromSourceElement wan null or undefined. It must be defined when sourceCollection.length > 0`);
+    const key = makeRDOCollectionKeyFromSourceElement(sourceItem);
 
     // Track keys so can be used in target item removal later
     sourceKeys.push(key);

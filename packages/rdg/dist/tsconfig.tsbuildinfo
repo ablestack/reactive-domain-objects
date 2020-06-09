@@ -552,8 +552,8 @@
         "affectsGlobalScope": false
       },
       "../src/utilities/sync.utils.ts": {
-        "version": "d3d0f738d8175ec53f0ce762d6a00cfc4d0c6c4cfaccd0ac3dc5f2486292a8fd",
-        "signature": "4cab95e8555af54cd5657b5df0ab3da8352bb38f709cee2edac983c192097ef4",
+        "version": "0437fd81529ae725dcd315af2af7e2cbb4b342202eadf14ff9037f502b9f35ce",
+        "signature": "b5e4fcfc00b36fbd6d6cb6d8d290b70396ce1903965cfc04d00caa436884306a",
         "affectsGlobalScope": false
       },
       "../src/utilities/index.ts": {
@@ -562,8 +562,8 @@
         "affectsGlobalScope": false
       },
       "../src/types.ts": {
-        "version": "2b68276c3742f75fb9653e4c6c4dc4c92a9fbb4cf11bf500cdf5b9573b61a89f",
-        "signature": "6f1b4f267544626e49e7c7a6a142f4279e7954b45a6e348fa69d9fa20d9be40f",
+        "version": "405ee81f5e49c11c61061a4abc4f5613b678ef624debe5885697ea43078f8e6f",
+        "signature": "eba257fbbcf99595910377e26f9fcc44b596a2645ae90b768addaa1ffa7352f2",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
@@ -572,7 +572,7 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "24ae2a7d3854022e908ec2cfa6826b0e2f2f672506e8dcd0a3e2d7d4723b7453",
+        "version": "be2a37477600f55122f54bb39a07d33138df2e73d9a86d5ff7680d82fa544e2e",
         "signature": "ccec400e1671666d63160ec9fb041ffa8a3d2a07eb0e882d594aa7418b505f8c",
         "affectsGlobalScope": false
       },

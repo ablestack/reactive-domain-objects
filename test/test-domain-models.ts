@@ -5,20 +5,20 @@ import { SimpleObject } from './test-source-types';
 // -----------------------------------
 // LIBRARY GRAPH - FOO BAR
 // -----------------------------------
-export class FooDomainModel {
+export class FooRDO {
   public id: string = '';
   public name: string = '';
 }
 
 export class FooDomainGraphSimple {
-  public bar = new BarDomainModel();
+  public bar = new BarRDO();
 }
 
 export class FooDomainGraphWithCollection {
-  public collectionOfBar = new Map<string, BarDomainModel>();
+  public collectionOfBar = new Map<string, BarRDO>();
 }
 
-export class BarDomainModel {
+export class BarRDO {
   public id: string = '';
   public name: string = '';
 }
@@ -26,44 +26,44 @@ export class BarDomainModel {
 // -----------------------------------
 // LIBRARY GRAPH - FOO BAR WITH NOTES
 // -----------------------------------
-export class FooWithNotesDomainModel {
+export class FooWithNotesRDO {
   // Public properties. Getters and Setters will work fine also
   public id = '';
 
-  // Child Domain Models
-  public bar = new BarWithNotesDomainModel();
+  // Child RDOs
+  public bar = new BarWithNotesRDO();
 
-  // Collections of Child Domain Models
-  public arrayOfBar = new Array<BarWithNotesDomainModel>();
-  public mapOfBar = new Map<string, BarWithNotesDomainModel>();
+  // Collections of Child RDOs
+  public arrayOfBar = new Array<BarWithNotesRDO>();
+  public mapOfBar = new Map<string, BarWithNotesRDO>();
 
   /* Any other domain-specific properties and methods here */
 
   // Note, all values must be initialized to a default value on instantiation, or they will be removed by the TS -> JS compilation step and will not sync
 }
 
-export class BarWithNotesDomainModel {
+export class BarWithNotesRDO {
   public id: string = '';
 
-  /* Further nesting of Domain Models or collections of Domain Models here */
+  /* Further nesting of RDOs or collections of RDOs here */
 
   /* Any other domain-specific properties and methods here */
 }
 
 // -----------------------------------
-// LIBRARY GRAPH - TEST DOMAIN MODELS
+// LIBRARY GRAPH - TEST RDOS
 // -----------------------------------
 
 /**
  * @export
- * @class PublisherDomainModel
+ * @class PublisherRDO
  */
-export class PublisherDomainModel {
+export class PublisherRDO {
   public id: string = '';
   public name$: string = '';
 }
 
-export class BookDomainModel {
+export class BookRDO {
   public id: string = '';
 
   // Title. Using Getter/Setter so we can use a testing spy
@@ -84,16 +84,16 @@ export class BookDomainModel {
     this._pages$ = value;
   }
 
-  public publisher: PublisherDomainModel = new PublisherDomainModel();
+  public publisher: PublisherRDO = new PublisherRDO();
 
   /* Any other domain-specific properties and methods here */
 }
 
 /**
  * @export
- * @class AuthorDomainModel
+ * @class AuthorRDO
  */
-export class AuthorDomainModel {
+export class AuthorRDO {
   public id: string = '';
 
   private _name$: string = '';
@@ -112,7 +112,7 @@ export class AuthorDomainModel {
     this._age$ = value;
   }
 
-  public books = new Array<BookDomainModel>();
+  public books = new Array<BookRDO>();
 
   /* Any other domain-specific properties and methods here */
 }
@@ -121,9 +121,9 @@ export class AuthorDomainModel {
  *
  *
  * @export
- * @class LibraryDomainModel
+ * @class LibraryRDO
  */
-export class LibraryDomainModel {
+export class LibraryRDO {
   // Using public variable
   public name: string = '';
 
@@ -148,63 +148,63 @@ export class LibraryDomainModel {
     this._capacity = value;
   }
 
-  public authors: SyncableCollection<Author, AuthorDomainModel> = new SyncableCollection({
-    makeDomainNodeKeyFromSourceNode: (author: Author) => author.id,
-    makeDomainNodeKeyFromDomainNode: (author: AuthorDomainModel) => author.id,
-    makeDomainModel: (book: Author) => new AuthorDomainModel(),
+  public authors: SyncableCollection<Author, AuthorRDO> = new SyncableCollection({
+    makeRDOCollectionKeyFromSourceElement: (author: Author) => author.id,
+    makeRDOCollectionKeyFromDomainElement: (author: AuthorRDO) => author.id,
+    makeRDO: (book: Author) => new AuthorRDO(),
   });
 
   /* Any other domain-specific properties and methods here */
 }
 
 // ------------------------------------------------
-// ALL COLLECTION TYPES GRAPH - TEST DOMAIN MODELS
+// ALL COLLECTION TYPES GRAPH - TEST RDOS
 // ------------------------------------------------
-export class AllCollectionTypesWithObjectsDomainModel {
-  public arrayOfObjects = new Array<SimpleDomainModel>();
-  public mapOfObjects = new Map<string, SimpleDomainModel>();
-  public setOfObjects = new Set<SimpleDomainModel>();
+export class AllCollectionTypesWithObjectsRDO {
+  public arrayOfObjects = new Array<SimpleRDO>();
+  public mapOfObjects = new Map<string, SimpleRDO>();
+  public setOfObjects = new Set<SimpleRDO>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainNode: (o: SimpleDomainModel) => o.id,
-    makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
+    makeRDOCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeRDOCollectionKeyFromDomainElement: (o: SimpleRDO) => o.id,
+    makeRDO: (o: SimpleRDO) => new SimpleRDO(),
   });
 }
 
-export class AllCollectionTypesWithPrimitivesDomainModel {
+export class AllCollectionTypesWithPrimitivesRDO {
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();
 }
 
-export class AllCollectionTypesDomainModel {
-  public arrayOfObjects = new Array<SimpleDomainModel>();
-  public mapOfObjects = new Map<string, SimpleDomainModel>();
-  public setOfObjects = new Set<SimpleDomainModel>();
+export class AllCollectionTypesRDO {
+  public arrayOfObjects = new Array<SimpleRDO>();
+  public mapOfObjects = new Map<string, SimpleRDO>();
+  public setOfObjects = new Set<SimpleRDO>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeDomainNodeKeyFromSourceNode: (o: SimpleObject) => o.id,
-    makeDomainNodeKeyFromDomainNode: (o: SimpleDomainModel) => o.id,
-    makeDomainModel: (o: SimpleDomainModel) => new SimpleDomainModel(),
+    makeRDOCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeRDOCollectionKeyFromDomainElement: (o: SimpleRDO) => o.id,
+    makeRDO: (o: SimpleRDO) => new SimpleRDO(),
   });
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();
 }
 
-export class SimpleDomainModel {
+export class SimpleRDO {
   public id = '';
 }
 
 // -----------------------------------
 // LIBRARY GRAPH - PROP NAME TEST MODEL
 // -----------------------------------
-export class TargetedOptionsTestRootDomainModel {
-  public mapOfDefaultIdDomainModel = new Array<DefaultIdDomainModel>();
-  public mapOfDefaultId$DomainModel = new Array<DefaultId$DomainModel>();
-  public mapOfDefault_IdDomainModel = new Array<Default_IdDomainModel>();
+export class TargetedOptionsTestRootRDO {
+  public mapOfDefaultIdRDO = new Array<DefaultIdRDO>();
+  public mapOfDefaultId$RDO = new Array<DefaultId$RDO>();
+  public mapOfDefault_IdRDO = new Array<Default_IdRDO>();
 }
 
-export class DefaultIdDomainModel {
+export class DefaultIdRDO {
   private _id: string = '';
   public get id(): string {
     return this._id;
@@ -214,7 +214,7 @@ export class DefaultIdDomainModel {
   }
 }
 
-export class DefaultId$DomainModel {
+export class DefaultId$RDO {
   private _id$: string = '';
   public get id$(): string {
     return this._id$;
@@ -224,7 +224,7 @@ export class DefaultId$DomainModel {
   }
 }
 
-export class Default_IdDomainModel {
+export class Default_IdRDO {
   private __id: string = '';
   public get _id(): string {
     return this.__id;

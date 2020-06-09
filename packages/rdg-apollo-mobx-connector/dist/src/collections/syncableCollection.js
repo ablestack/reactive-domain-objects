@@ -7,19 +7,19 @@ const rdg_1 = require("@ablestack/rdg");
 const logger_1 = require("@ablestack/rdg/infrastructure/logger");
 const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
-    constructor({ makeDomainNodeKeyFromSourceNode, makeDomainNodeKeyFromDomainNode, makeDomainModel, }) {
+    constructor({ makeRDOCollectionKeyFromSourceElement, makeRDOCollectionKeyFromDomainElement, makeRDO, }) {
         this._array$ = new Array();
         // -----------------------------------
-        // IDomainModelFactory
+        // IRDOFactory
         // -----------------------------------
-        this.makeDomainNodeKeyFromSourceNode = (sourceNode) => {
-            return this._makeDomainNodeKeyFromSourceNode(sourceNode);
+        this.makeRDOCollectionKeyFromSourceElement = (sourceNode) => {
+            return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
         };
-        this.makeDomainNodeKeyFromDomainNode = (domainNode) => {
-            return this._makeDomainNodeKeyFromDomainNode(domainNode);
+        this.makeRDOCollectionKeyFromDomainElement = (domainNode) => {
+            return this._makeRDOCollectionKeyFromDomainElement(domainNode);
         };
-        this.makeDomainModel = (sourceItem) => {
-            return this._makeDomainModel(sourceItem);
+        this.makeRDO = (sourceItem) => {
+            return this._makeRDO(sourceItem);
         };
         // -----------------------------------
         // ISyncableCollection
@@ -40,15 +40,15 @@ class SyncableCollection {
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
             this._map$.delete(key);
-            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeKey: this._makeDomainNodeKeyFromDomainNode });
+            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeKey: this._makeRDOCollectionKeyFromDomainElement });
         };
         this.clear = () => {
             this._map$.clear();
             rdg_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
-        this._makeDomainNodeKeyFromSourceNode = makeDomainNodeKeyFromSourceNode;
-        this._makeDomainNodeKeyFromDomainNode = makeDomainNodeKeyFromDomainNode;
-        this._makeDomainModel = makeDomainModel;
+        this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
+        this._makeRDOCollectionKeyFromDomainElement = makeRDOCollectionKeyFromDomainElement;
+        this._makeRDO = makeRDO;
         this._map$ = new Map();
     }
     get size() {

@@ -41,5 +41,5 @@ export type AllCollections = {
 // -----------------------------------
 // LIBRARY GRAPH - TEST SOURCE TYPES
 // -----------------------------------
-export type PropNameTestRoot = { mapOfDefaultIdDomainModel: DefaultIdSourceObject[]; mapOfDefaultId$DomainModel: DefaultIdSourceObject[]; mapOfDefault_IdDomainModel: DefaultIdSourceObject[] };
+export type PropNameTestRoot = { mapOfDefaultIdRDO: DefaultIdSourceObject[]; mapOfDefaultId$RDO: DefaultIdSourceObject[]; mapOfDefault_IdRDO: DefaultIdSourceObject[] };
 export type DefaultIdSourceObject = { id: string };

@@ -1,20 +1,20 @@
 import _ from 'lodash';
-import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsDomainModel, BookDomainModel, LibraryDomainModel, librarySourceJSON } from '.';
+import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsRDO, BookRDO, LibraryRDO, librarySourceJSON } from '.';
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdg';
 import { Logger } from '@ablestack/rdg/infrastructure/logger';
 import {
-  AllCollectionTypesDomainModel,
-  AllCollectionTypesWithPrimitivesDomainModel,
-  BarDomainModel,
-  BarWithNotesDomainModel,
-  DefaultId$DomainModel,
-  DefaultIdDomainModel,
+  AllCollectionTypesRDO,
+  AllCollectionTypesWithPrimitivesRDO,
+  BarRDO,
+  BarWithNotesRDO,
+  DefaultId$RDO,
+  DefaultIdRDO,
   FooDomainGraphSimple,
   FooDomainGraphWithCollection,
-  FooDomainModel,
-  FooWithNotesDomainModel,
-  SimpleDomainModel,
-  TargetedOptionsTestRootDomainModel,
+  FooRDO,
+  FooWithNotesRDO,
+  SimpleRDO,
+  TargetedOptionsTestRootRDO,
 } from './test-domain-models';
 import { fooSourceJSON, fooSourceJSONSimple, fooSourceJSONWithCollection, fooWithNotesSourceJSON, targetedNodeOptionsTestRootJSON } from './test-source-data';
 import { Bar, Book, DefaultIdSourceObject, SimpleObject, Library } from './test-source-types';
@@ -30,15 +30,15 @@ const CHANGE_SYNC_MAX_TIME_MS = 1000;
 // --------------------------------------------------------------
 
 test('Flat object demo', () => {
-  const fooDomainModel = new FooDomainModel();
+  const fooRDO = new FooRDO();
   const graphSynchronizer = new GraphSynchronizer();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooDomainModel, rootSourceNode: fooSourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSON });
 
   // RESULTS VERIFICATION
-  expect(fooDomainModel.id).toEqual(fooSourceJSON.id);
-  expect(fooDomainModel.name).toEqual(fooSourceJSON.name);
+  expect(fooRDO.id).toEqual(fooSourceJSON.id);
+  expect(fooRDO.name).toEqual(fooSourceJSON.name);
 });
 
 // --------------------------------------------------------------
@@ -46,15 +46,15 @@ test('Flat object demo', () => {
 // --------------------------------------------------------------
 
 test('Simple graph usage demo', () => {
-  const fooSimpleDomainModel = new FooDomainGraphSimple();
+  const fooSimpleRDO = new FooDomainGraphSimple();
   const graphSynchronizer = new GraphSynchronizer();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooSimpleDomainModel, rootSourceNode: fooSourceJSONSimple });
+  graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 
   // RESULTS VERIFICATION
-  expect(fooSimpleDomainModel.bar.id).toEqual(fooSourceJSONSimple.bar.id);
-  expect(fooSimpleDomainModel.bar.name).toEqual(fooSourceJSONSimple.bar.name);
+  expect(fooSimpleRDO.bar.id).toEqual(fooSourceJSONSimple.bar.id);
+  expect(fooSimpleRDO.bar.name).toEqual(fooSourceJSONSimple.bar.name);
 });
 
 // --------------------------------------------------------------
@@ -62,19 +62,19 @@ test('Simple graph usage demo', () => {
 // --------------------------------------------------------------
 
 test('Collection usage demo', () => {
-  const fooDomainModel = new FooDomainGraphWithCollection();
+  const fooRDO = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, domainCollection: { makeRDO: (sourceNode: Bar) => new BarRDO() } }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooDomainModel, rootSourceNode: fooSourceJSONWithCollection });
+  graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSONWithCollection });
 
   // RESULTS VERIFICATION
-  expect(fooDomainModel.collectionOfBar.size).toEqual(fooSourceJSONWithCollection.collectionOfBar.length);
-  expect(fooDomainModel.collectionOfBar.values().next().value.id).toEqual(fooSourceJSONWithCollection.collectionOfBar[0].id);
+  expect(fooRDO.collectionOfBar.size).toEqual(fooSourceJSONWithCollection.collectionOfBar.length);
+  expect(fooRDO.collectionOfBar.values().next().value.id).toEqual(fooSourceJSONWithCollection.collectionOfBar[0].id);
 });
 
 // --------------------------------------------------------------
@@ -82,26 +82,26 @@ test('Collection usage demo', () => {
 // --------------------------------------------------------------
 
 test('Simple usage demo with notes', () => {
-  const fooWithNotesDomainModel = new FooWithNotesDomainModel();
+  const fooWithNotesRDO = new FooWithNotesRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainCollection: { makeDomainModel: (sourceNode: Bar) => new BarWithNotesDomainModel() } },
+      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, domainCollection: { makeRDO: (sourceNode: Bar) => new BarWithNotesRDO() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, domainCollection: { makeRDO: (sourceNode: Bar) => new BarWithNotesRDO() } },
     ],
   });
 
   // POSTURE VERIFICATION
-  expect(fooWithNotesDomainModel.mapOfBar.size).toBeFalsy();
+  expect(fooWithNotesRDO.mapOfBar.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooWithNotesDomainModel, rootSourceNode: fooWithNotesSourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: fooWithNotesRDO, rootSourceNode: fooWithNotesSourceJSON });
 
   // RESULTS VERIFICATION
-  expect(fooWithNotesDomainModel.arrayOfBar.length).toEqual(fooWithNotesSourceJSON.arrayOfBar.length);
-  expect(fooWithNotesDomainModel.arrayOfBar[0].id).toEqual(fooWithNotesSourceJSON.arrayOfBar[0].id);
+  expect(fooWithNotesRDO.arrayOfBar.length).toEqual(fooWithNotesSourceJSON.arrayOfBar.length);
+  expect(fooWithNotesRDO.arrayOfBar[0].id).toEqual(fooWithNotesSourceJSON.arrayOfBar[0].id);
 
-  expect(fooWithNotesDomainModel.mapOfBar.size).toEqual(fooWithNotesSourceJSON.mapOfBar.length);
-  expect(fooWithNotesDomainModel.mapOfBar.values().next().value.id).toEqual(fooWithNotesSourceJSON.mapOfBar[0].id);
+  expect(fooWithNotesRDO.mapOfBar.size).toEqual(fooWithNotesSourceJSON.mapOfBar.length);
+  expect(fooWithNotesRDO.mapOfBar.values().next().value.id).toEqual(fooWithNotesSourceJSON.mapOfBar[0].id);
 });
 
 // --------------------------------------------------------------
@@ -110,7 +110,7 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, domainCollection: { makeRDO: (book: Book) => new BookRDO() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -120,36 +120,36 @@ function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
 // --------------------------------------------------------------
 
 test('Synchronize updates complex domain graph as expected', () => {
-  const libraryDomainModel = new LibraryDomainModel();
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // POSTURE VERIFICATION
-  expect(libraryDomainModel.name).toBeFalsy();
-  expect(libraryDomainModel.city$).toBeFalsy();
-  expect(libraryDomainModel.authors.size).toBeFalsy();
+  expect(libraryRDO.name).toBeFalsy();
+  expect(libraryRDO.city$).toBeFalsy();
+  expect(libraryRDO.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // RESULTS VERIFICATION
-  expect(libraryDomainModel.name).not.toBeFalsy();
-  expect(libraryDomainModel.city$).not.toBeFalsy();
-  expect(libraryDomainModel.authors.size).not.toBeFalsy();
+  expect(libraryRDO.name).not.toBeFalsy();
+  expect(libraryRDO.city$).not.toBeFalsy();
+  expect(libraryRDO.authors.size).not.toBeFalsy();
 
-  expect(libraryDomainModel.name).toEqual(librarySourceJSON.name);
-  expect(libraryDomainModel.city$).toEqual(librarySourceJSON.city);
+  expect(libraryRDO.name).toEqual(librarySourceJSON.name);
+  expect(libraryRDO.city$).toEqual(librarySourceJSON.city);
 
-  expect(libraryDomainModel.authors.size).toEqual(librarySourceJSON.authors.length);
-  expect(libraryDomainModel.authors.array$[0].id).toEqual(librarySourceJSON.authors[0].id);
-  expect(libraryDomainModel.authors.array$[0].name$).toEqual(librarySourceJSON.authors[0].name);
-  expect(libraryDomainModel.authors.array$[0].age$).toEqual(librarySourceJSON.authors[0].age);
+  expect(libraryRDO.authors.size).toEqual(librarySourceJSON.authors.length);
+  expect(libraryRDO.authors.array$[0].id).toEqual(librarySourceJSON.authors[0].id);
+  expect(libraryRDO.authors.array$[0].name$).toEqual(librarySourceJSON.authors[0].name);
+  expect(libraryRDO.authors.array$[0].age$).toEqual(librarySourceJSON.authors[0].age);
 
-  expect(libraryDomainModel.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
-  expect(libraryDomainModel.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
-  expect(libraryDomainModel.authors.array$[0].books[0].title$).toEqual(librarySourceJSON.authors[0].books[0].title);
-  expect(libraryDomainModel.authors.array$[0].books[0].publisher).toBeDefined();
-  expect(libraryDomainModel.authors.array$[0].books[0].publisher.id).toEqual(librarySourceJSON.authors[0].books[0].publisher.id);
-  expect(libraryDomainModel.authors.array$[0].books[0].publisher.name$).toEqual(librarySourceJSON.authors[0].books[0].publisher.name);
+  expect(libraryRDO.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
+  expect(libraryRDO.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
+  expect(libraryRDO.authors.array$[0].books[0].title$).toEqual(librarySourceJSON.authors[0].books[0].title);
+  expect(libraryRDO.authors.array$[0].books[0].publisher).toBeDefined();
+  expect(libraryRDO.authors.array$[0].books[0].publisher.id).toEqual(librarySourceJSON.authors[0].books[0].publisher.id);
+  expect(libraryRDO.authors.array$[0].books[0].publisher.name$).toEqual(librarySourceJSON.authors[0].books[0].publisher.name);
 });
 
 // --------------------------------------------------------------
@@ -158,16 +158,16 @@ test('Synchronize updates complex domain graph as expected', () => {
 test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in ${FULL_SYNC_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
   // SETUP
   const iterations = FULL_SYNC_ITERATION_COUNT;
-  const libraryDomainModel = new LibraryDomainModel();
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // initiate a smart sync
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // setup spys to ensure the data is actually being set as expected
-  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[7], 'pages$', 'set');
-  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[8], 'pages$', 'set');
-  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[9], 'pages$', 'set');
+  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[7], 'pages$', 'set');
+  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[8], 'pages$', 'set');
+  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[9], 'pages$', 'set');
 
   // clone library for edits
   const libraryWithEdits = _.cloneDeep(librarySourceJSON);
@@ -185,7 +185,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
     libraryWithEdits.authors[2].books[9].pages = i;
 
     // initiate a smart sync
-    graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
+    graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEdits });
   }
 
   const finishTime = performance.now();
@@ -205,7 +205,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   expect(authors_2_books_7_pages_spy_set).toHaveBeenCalledTimes(iterations);
   expect(authors_2_books_8_pages_spy_set).toHaveBeenCalledTimes(iterations);
   expect(authors_2_books_9_pages_spy_set).toHaveBeenCalledTimes(iterations);
-  expect(libraryDomainModel.authors.array$[2].books[8].pages$).toEqual(libraryWithEdits.authors[2].books[8].pages);
+  expect(libraryRDO.authors.array$[2].books[8].pages$).toEqual(libraryWithEdits.authors[2].books[8].pages);
 });
 
 // --------------------------------------------------------------
@@ -214,7 +214,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
 test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations in ${CHANGE_SYNC_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
   // SETUP
   const iterations = CHANGE_SYNC_ITERATION_COUNT;
-  const libraryDomainModel = new LibraryDomainModel();
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // get data for repeatedly editing and syncing
@@ -225,18 +225,18 @@ test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations 
   }
 
   // initial sync
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // setup spys to ensure the data is actually being set as expected
-  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[7], 'pages$', 'set');
-  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[8], 'pages$', 'set');
-  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryDomainModel.authors.array$[2].books[9], 'pages$', 'set');
+  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[7], 'pages$', 'set');
+  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[8], 'pages$', 'set');
+  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[9], 'pages$', 'set');
 
   // EXECUTE
   const startTime = performance.now();
 
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEditsCollection[i] });
+    graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEditsCollection[i] });
   }
 
   const finishTime = performance.now();
@@ -256,27 +256,27 @@ test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations 
   expect(authors_2_books_7_pages_spy_set).not.toHaveBeenCalled();
   expect(authors_2_books_8_pages_spy_set).toHaveBeenCalledTimes(iterations);
   expect(authors_2_books_9_pages_spy_set).not.toHaveBeenCalled();
-  expect(libraryDomainModel.authors.array$[2].books[8].pages$).toEqual(iterations - 1); // -1 because of zero indexing
+  expect(libraryRDO.authors.array$[2].books[8].pages$).toEqual(iterations - 1); // -1 because of zero indexing
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize only updated properties only where source data changed', () => {
-  const libraryDomainModel = new LibraryDomainModel();
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // Initial data load
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // Add method spies
-  const library_code_spy_set = jest.spyOn(libraryDomainModel, 'code$', 'set');
-  const library_capacity_spy_set = jest.spyOn(libraryDomainModel, 'capacity', 'set');
+  const library_code_spy_set = jest.spyOn(libraryRDO, 'code$', 'set');
+  const library_capacity_spy_set = jest.spyOn(libraryRDO, 'capacity', 'set');
 
-  const authors_0_age_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0], 'age$', 'set');
-  const authors_0_name_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0], 'name$', 'set');
+  const authors_0_age_spy_set = jest.spyOn(libraryRDO.authors.array$[0], 'age$', 'set');
+  const authors_0_name_spy_set = jest.spyOn(libraryRDO.authors.array$[0], 'name$', 'set');
 
-  const authors_0_books_0_title_spy_set = jest.spyOn(libraryDomainModel.authors.array$[0].books[0], 'title$', 'get');
+  const authors_0_books_0_title_spy_set = jest.spyOn(libraryRDO.authors.array$[0].books[0], 'title$', 'get');
 
   // Mutate data
   const libraryWithEdits = _.cloneDeep(librarySourceJSON);
@@ -285,7 +285,7 @@ test('Synchronize only updated properties only where source data changed', () =>
 
   // EXECUTE
   // update
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: libraryWithEdits });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEdits });
 
   // RESULTS VERIFICATION
   expect(library_code_spy_set).toHaveBeenCalled();
@@ -302,7 +302,7 @@ test('Synchronize only updated properties only where source data changed', () =>
 function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, domainCollection: { makeDomainModel: (book: Book) => new BookDomainModel() } }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, domainCollection: { makeRDO: (book: Book) => new BookRDO() } }],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 }
@@ -311,18 +311,18 @@ function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
 // TEST
 // --------------------------------------------------------------
 test('Synchronize using sourceNodeMatcher config', () => {
-  const libraryDomainModel = new LibraryDomainModel();
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions();
 
   // POSTURE VERIFICATION
-  expect(libraryDomainModel.authors.size).toBeFalsy();
+  expect(libraryRDO.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: libraryDomainModel, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // RESULTS VERIFICATION
-  expect(libraryDomainModel.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
-  expect(libraryDomainModel.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
+  expect(libraryRDO.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
+  expect(libraryRDO.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
 });
 
 // --------------------------------------------------------------
@@ -334,19 +334,19 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
     targetedNodeOptions: [
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
-        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeRDO: (o: SimpleObject) => new SimpleRDO() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
-        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeRDO: (o: SimpleObject) => new SimpleRDO() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
-        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeRDO: (o: SimpleObject) => new SimpleRDO() },
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
-        domainCollection: { makeDomainModel: (o: SimpleObject) => new SimpleDomainModel() },
+        domainCollection: { makeRDO: (o: SimpleObject) => new SimpleRDO() },
       },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
@@ -357,64 +357,64 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
 // TEST
 // --------------------------------------------------------------
 test('Synchronize all object collection types', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesWithObjectsDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesWithObjectsRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(0);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize all primitive collection types', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesWithPrimitivesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesWithPrimitivesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(0);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(0);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(0);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(0);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection additions', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 
   // EXECUTE
   // Mutate data
@@ -428,34 +428,34 @@ test('Synchronize collection additions', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects.push({ id: '4' });
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(4);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(4);
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(4);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection removals', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 
   // EXECUTE
   // Mutate data
@@ -469,34 +469,34 @@ test('Synchronize collection removals', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(2);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(2);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(2);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(2);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(2);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(2);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(2);
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(2);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(2);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(2);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(2);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(2);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(2);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(2);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection removals - down to zero - with sourceNodeMatcher targeted configuration', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Uno });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Uno });
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(1);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(1);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(1);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(1);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(1);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(1);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(1);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(1);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(1);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(1);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(1);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(1);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(1);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(1);
 
   // EXECUTE
   // Mutate data
@@ -510,34 +510,34 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(0);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(0);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(0);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(0);
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(0);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(0);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(0);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection element edit', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 
   // EXECUTE
   // Mutate data
@@ -551,39 +551,39 @@ test('Synchronize collection element edit', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();
-  expect(allCollectionTypesDomainModel.setOfNumbers.has(4)).toBeTruthy();
-  expect(allCollectionTypesDomainModel.setOfNumbers.has(1)).not.toBeTruthy();
-  expect(allCollectionTypesDomainModel.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
-  expect(allCollectionTypesDomainModel.mapOfObjects.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesDomainModel.mapOfObjects.get('1')).toBeUndefined();
-  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
-  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
+  expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
+  expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
+  expect(allCollectionTypesRDO.mapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
+  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection element - handle null value edits', () => {
-  const allCollectionTypesDomainModel = new AllCollectionTypesDomainModel();
+  const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesDomainModel.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 
   // EXECUTE
   // Mutate data
@@ -597,19 +597,19 @@ test('Synchronize collection element - handle null value edits', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesDomainModel, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesDomainModel.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.get('4')).toEqual(4);
-  expect(allCollectionTypesDomainModel.mapOfNumbers.get('1')).toBeUndefined();
-  expect(allCollectionTypesDomainModel.setOfNumbers.has(4)).toBeTruthy();
-  expect(allCollectionTypesDomainModel.setOfNumbers.has(1)).not.toBeTruthy();
-  expect(allCollectionTypesDomainModel.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
-  expect(allCollectionTypesDomainModel.mapOfObjects.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesDomainModel.mapOfObjects.get('1')).toBeUndefined();
-  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
-  expect(Array.from(allCollectionTypesDomainModel.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesDomainModel.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
+  expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
+  expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
+  expect(allCollectionTypesRDO.mapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
+  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------
@@ -621,63 +621,63 @@ test('Synchronize collection element - handle null value edits', () => {
 // --------------------------------------------------------------
 
 test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
-  const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+  const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultIdDomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, domainCollection: { makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel() } },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, domainCollection: { makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, domainCollection: { makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() } },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
     ],
     globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
   });
 
   // POSTURE VERIFICATION
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // LOAD DATA
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION STAGE 1
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdDomainModel.length);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO.length);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$DomainModel.length);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO.length);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO[0].id);
 
   // REMOVE ITEM & SYNC
   const targetedNodeOptionsTestRootJSONWithEdits = _.cloneDeep(targetedNodeOptionsTestRootJSON);
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
 
   // REMOVE ANOTHER ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 3
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
 
   // ADD ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel.push({ id: '4A' });
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel.push({ id: '4B' });
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.push({ id: '4A' });
+  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.push({ id: '4B' });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$DomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
 });
 
 // --------------------------------------------------------------
@@ -685,16 +685,16 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
 // --------------------------------------------------------------
 
 test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
-  const targetedNodeOptionsTestRootDomainModel = new TargetedOptionsTestRootDomainModel();
+  const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdDomainModel' }, ignore: true },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$DomainModel' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, ignore: true },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, ignore: true },
       {
-        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdDomainModel' },
+        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
         domainCollection: {
-          makeDomainModel: (sourceNode: DefaultIdSourceObject) => new DefaultId$DomainModel(),
-          makeCollectionKey: { fromSourceNode: (sourceNode) => sourceNode.id, fromDomainNode: (domainModel) => domainModel._id },
+          makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
+          makeRDOCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromDomainElement: (RDO) => RDO._id },
         },
       },
     ],
@@ -702,16 +702,16 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () =>
   });
 
   // POSTURE VERIFICATION
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootDomainModel, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultIdDomainModel.length).toEqual(0);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefaultId$DomainModel.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
 
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdDomainModel.length);
-  expect(targetedNodeOptionsTestRootDomainModel.mapOfDefault_IdDomainModel.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdDomainModel[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO.length);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO[0].id);
 });

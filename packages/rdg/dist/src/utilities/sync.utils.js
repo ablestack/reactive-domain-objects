@@ -6,7 +6,7 @@ const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const logger_1 = require("../infrastructure/logger");
 const logger = logger_1.Logger.make('SyncUtils');
 /** */
-function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeDomainNodeKeyFromSourceNode, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, trySyncElement, }) {
+function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeRDOCollectionKeyFromSourceElement, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, trySyncElement, }) {
     let changed = false;
     const sourceKeys = new Array();
     const targetCollectionStartedEmpty = getTargetCollectionSize() === 0;
@@ -14,9 +14,9 @@ function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getT
         if (sourceItem === null || sourceItem === undefined)
             continue;
         // Make key
-        if (!makeDomainNodeKeyFromSourceNode)
-            throw Error(`makeDomainNodeKeyFromSourceNode wan null or undefined. It must be defined when sourceCollection.length > 0`);
-        const key = makeDomainNodeKeyFromSourceNode(sourceItem);
+        if (!makeRDOCollectionKeyFromSourceElement)
+            throw Error(`makeRDOCollectionKeyFromSourceElement wan null or undefined. It must be defined when sourceCollection.length > 0`);
+        const key = makeRDOCollectionKeyFromSourceElement(sourceItem);
         // Track keys so can be used in target item removal later
         sourceKeys.push(key);
         // Get or create target item

@@ -1,20 +1,20 @@
 "use strict";
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IsICustomEqualityDomainModel = exports.IsIAfterSyncIfNeeded = exports.IsIAfterSyncUpdate = exports.IsICustomSync = exports.IsIBeforeSyncUpdate = exports.IsIBeforeSyncIfNeeded = exports.IsISyncableCollection = exports.IsIDomainModelFactory = void 0;
+exports.IsICustomEqualityRDO = exports.IsIAfterSyncIfNeeded = exports.IsIAfterSyncUpdate = exports.IsICustomSync = exports.IsIBeforeSyncUpdate = exports.IsIBeforeSyncIfNeeded = exports.IsISyncableCollection = exports.IsIRDOFactory = void 0;
 // --------------------------------------------------
 // Types relating to sync custom behavior and options
 // --------------------------------------------------
-function IsIDomainModelFactory(o) {
+function IsIRDOFactory(o) {
     return (o &&
-        o.makeDomainNodeKeyFromSourceNode &&
-        typeof o.makeDomainNodeKeyFromSourceNode === 'function' &&
-        o.makeDomainNodeKeyFromDomainNode &&
-        typeof o.makeDomainNodeKeyFromDomainNode === 'function' &&
-        o.makeDomainModel &&
-        typeof o.makeDomainModel === 'function');
+        o.makeRDOCollectionKeyFromSourceElement &&
+        typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
+        o.makeRDOCollectionKeyFromDomainElement &&
+        typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
+        o.makeRDO &&
+        typeof o.makeRDO === 'function');
 }
-exports.IsIDomainModelFactory = IsIDomainModelFactory;
+exports.IsIRDOFactory = IsIRDOFactory;
 function IsISyncableCollection(o) {
     return (o &&
         o.getKeys &&
@@ -47,8 +47,8 @@ function IsIAfterSyncIfNeeded(o) {
     return o && o.afterSyncIfNeeded && typeof o.afterSyncIfNeeded === 'function';
 }
 exports.IsIAfterSyncIfNeeded = IsIAfterSyncIfNeeded;
-function IsICustomEqualityDomainModel(o) {
+function IsICustomEqualityRDO(o) {
     return o && o.isStateEqual && typeof o.isStateEqual === 'function';
 }
-exports.IsICustomEqualityDomainModel = IsICustomEqualityDomainModel;
+exports.IsICustomEqualityRDO = IsICustomEqualityRDO;
 //# sourceMappingURL=types.js.map

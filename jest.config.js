@@ -3,5 +3,8 @@ module.exports = {
   testEnvironment: 'jsdom',
   "testMatch": [
     "**/?(*.)+(spec|test).[t]s?(x)"
+  ],
+  modulePathIgnorePatterns: [
+    "<rootDir>/.*/dist/.*"
   ]
 };

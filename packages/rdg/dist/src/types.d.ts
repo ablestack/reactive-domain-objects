@@ -33,24 +33,24 @@ export interface IGlobalPropertyNameTransformation {
  * Node Sync Options
  *
  * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromDomainNode` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceNode` and `fromDomainNode` for a DomainNodeKeyFactory config
+ * use case where a `fromDomainElement` factory does not need to be supplied, but in all user-config supplied
+ * use cases, require both `fromSourceElement` and `fromDomainElement` for a DomainNodeKeyFactory config
  *
  *****************************************************************************/
 export interface INodeSyncOptionsStrict<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    domainCollection?: IDomainModelFactory<S, D>;
+    domainCollection?: IRDOFactory<S, D>;
 }
 export interface INodeSyncOptions<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    domainCollection?: IDomainModelFactory<S, D>;
+    domainCollection?: IRDOFactory<S, D>;
 }
 export interface INodeSyncOptionsStrict<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    domainCollection?: IDomainModelFactory<S, D>;
+    domainCollection?: IRDOFactory<S, D>;
 }
 export interface INodeSelector<S> {
     nodePath?: string;
@@ -59,26 +59,26 @@ export interface INodeSelector<S> {
 export interface IMakeKey<T> {
     (item: T): string;
 }
-export interface IMakeDomainModel<S, D> {
+export interface ImakeRDO<S, D> {
     (sourceObject: S): D;
 }
-export interface IDomainModelFactory<S, D> {
-    makeCollectionKey?: IDomainNodeKeyFactory<S, D>;
-    makeDomainModel: IMakeDomainModel<S, D>;
+export interface IRDOFactory<S, D> {
+    makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
+    makeRDO: ImakeRDO<S, D>;
 }
-export interface IDomainModelFactoryStrict<S, D> {
-    makeCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
-    makeDomainModel: IMakeDomainModel<S, D>;
+export interface IRDOFactoryStrict<S, D> {
+    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+    makeRDO: ImakeRDO<S, D>;
 }
 export interface IDomainNodeKeyFactoryStrict<S, D> {
-    fromSourceNode: IMakeKey<S>;
-    fromDomainNode: IMakeKey<D>;
+    fromSourceElement: IMakeKey<S>;
+    fromDomainElement: IMakeKey<D>;
 }
 export interface IDomainNodeKeyFactory<S, D> {
-    fromSourceNode: IMakeKey<S>;
-    fromDomainNode?: IMakeKey<D>;
+    fromSourceElement: IMakeKey<S>;
+    fromDomainElement?: IMakeKey<D>;
 }
-export declare function IsIDomainModelFactory(o: any): o is IDomainModelFactory<any, any>;
+export declare function IsIRDOFactory(o: any): o is IRDOFactory<any, any>;
 export interface ISyncableCollection<T> extends Iterable<T> {
     readonly size: number;
     getKeys: () => string[];
@@ -122,17 +122,17 @@ export interface IAfterSyncUpdate<S> {
 }
 export declare function IsIAfterSyncUpdate(o: any): o is IAfterSyncUpdate<any>;
 export interface IAfterSyncIfNeeded<S> {
-    afterSyncIfNeeded: ({ sourceObject, syncAttempted, domainModelChanged }: {
+    afterSyncIfNeeded: ({ sourceObject, syncAttempted, RDOChanged }: {
         sourceObject: S;
         syncAttempted: boolean;
-        domainModelChanged: boolean;
+        RDOChanged: boolean;
     }) => void;
 }
 export declare function IsIAfterSyncIfNeeded(o: any): o is IAfterSyncIfNeeded<any>;
-export interface ICustomEqualityDomainModel<S> {
+export interface ICustomEqualityRDO<S> {
     isStateEqual: IStateEqual<S>;
 }
-export declare function IsICustomEqualityDomainModel(o: any): o is ICustomEqualityDomainModel<any>;
+export declare function IsICustomEqualityRDO(o: any): o is ICustomEqualityRDO<any>;
 export interface IEqualityComparer {
     (a: any, b: any): boolean;
 }

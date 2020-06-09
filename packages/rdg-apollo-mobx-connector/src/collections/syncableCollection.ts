@@ -1,13 +1,13 @@
 import { observable, computed } from 'mobx';
-import { IDomainModelFactory, ISyncableCollection, CollectionUtils } from '@ablestack/rdg';
+import { IRDOFactory, ISyncableCollection, CollectionUtils } from '@ablestack/rdg';
 import { Logger } from '@ablestack/rdg/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
 
-export class SyncableCollection<S extends object, D extends object> implements IDomainModelFactory<S, D>, ISyncableCollection<D> {
-  private _makeDomainNodeKeyFromSourceNode: (node: S) => string;
-  private _makeDomainNodeKeyFromDomainNode: (node: D) => string;
-  private _makeDomainModel: (sourceItem: S) => D;
+export class SyncableCollection<S extends object, D extends object> implements IRDOFactory<S, D>, ISyncableCollection<D> {
+  private _makeRDOCollectionKeyFromSourceElement: (node: S) => string;
+  private _makeRDOCollectionKeyFromDomainElement: (node: D) => string;
+  private _makeRDO: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
 
@@ -25,33 +25,33 @@ export class SyncableCollection<S extends object, D extends object> implements I
   }
 
   constructor({
-    makeDomainNodeKeyFromSourceNode,
-    makeDomainNodeKeyFromDomainNode,
-    makeDomainModel,
+    makeRDOCollectionKeyFromSourceElement,
+    makeRDOCollectionKeyFromDomainElement,
+    makeRDO,
   }: {
-    makeDomainNodeKeyFromSourceNode: (sourceNode: S) => string;
-    makeDomainNodeKeyFromDomainNode: (domainNode: D) => string;
-    makeDomainModel: (sourceNode: S) => D;
+    makeRDOCollectionKeyFromSourceElement: (sourceNode: S) => string;
+    makeRDOCollectionKeyFromDomainElement: (domainNode: D) => string;
+    makeRDO: (sourceNode: S) => D;
   }) {
-    this._makeDomainNodeKeyFromSourceNode = makeDomainNodeKeyFromSourceNode;
-    this._makeDomainNodeKeyFromDomainNode = makeDomainNodeKeyFromDomainNode;
-    this._makeDomainModel = makeDomainModel;
+    this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
+    this._makeRDOCollectionKeyFromDomainElement = makeRDOCollectionKeyFromDomainElement;
+    this._makeRDO = makeRDO;
     this._map$ = new Map<string, D>();
   }
 
   // -----------------------------------
-  // IDomainModelFactory
+  // IRDOFactory
   // -----------------------------------
-  public makeDomainNodeKeyFromSourceNode = (sourceNode: S) => {
-    return this._makeDomainNodeKeyFromSourceNode(sourceNode);
+  public makeRDOCollectionKeyFromSourceElement = (sourceNode: S) => {
+    return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
   };
 
-  public makeDomainNodeKeyFromDomainNode = (domainNode: D) => {
-    return this._makeDomainNodeKeyFromDomainNode(domainNode);
+  public makeRDOCollectionKeyFromDomainElement = (domainNode: D) => {
+    return this._makeRDOCollectionKeyFromDomainElement(domainNode);
   };
 
-  public makeDomainModel = (sourceItem: S) => {
-    return this._makeDomainModel(sourceItem);
+  public makeRDO = (sourceItem: S) => {
+    return this._makeRDO(sourceItem);
   };
 
   [Symbol.iterator](): Iterator<D> {
@@ -81,7 +81,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
-    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeDomainNodeKeyFromDomainNode });
+    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeRDOCollectionKeyFromDomainElement });
   };
 
   public clear = () => {
