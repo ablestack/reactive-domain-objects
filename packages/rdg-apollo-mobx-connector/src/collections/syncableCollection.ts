@@ -1,10 +1,10 @@
 import { observable, computed } from 'mobx';
-import { IRDOFactory, ISyncableCollection, CollectionUtils } from '@ablestack/rdg';
+import { ISyncableRDOCollection, CollectionUtils } from '@ablestack/rdg';
 import { Logger } from '@ablestack/rdg/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
 
-export class SyncableCollection<S extends object, D extends object> implements IRDOFactory<S, D>, ISyncableCollection<D> {
+export class SyncableCollection<S extends object, D extends object> implements ISyncableRDOCollection<S, D> {
   private _makeRDOCollectionKeyFromSourceElement: (node: S) => string;
   private _makeRDOCollectionKeyFromDomainElement: (node: D) => string;
   private _makeRDO: (sourceItem: S) => D;

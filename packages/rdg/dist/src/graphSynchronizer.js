@@ -317,7 +317,7 @@ class GraphSynchronizer {
         }
         else {
             const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection });
-            const typeDerivedOptions = _1.IsIRDOFactory(domainCollection)
+            const typeDerivedOptions = types_1.IsISyncableRDOCollection(domainCollection)
                 ? { makeRDOCollectionKey: domainCollection.makeRDOCollectionKey, makeRDO: domainCollection.makeRDO }
                 : { makeRDOCollectionKeyFromSourceElement: undefined, makeRDOCollectionKeyFromDomainElement: domainCollection.makeRDOCollectionKeyFromDomainElement, makeRDO: undefined };
             // GET CONFIG ITEM: makeRDOCollectionKeyFromSourceElement

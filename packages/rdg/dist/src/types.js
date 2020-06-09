@@ -1,20 +1,7 @@
 "use strict";
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IsICustomEqualityRDO = exports.IsIAfterSyncIfNeeded = exports.IsIAfterSyncUpdate = exports.IsICustomSync = exports.IsIBeforeSyncUpdate = exports.IsIBeforeSyncIfNeeded = exports.IsISyncableCollection = exports.IsIRDOFactory = void 0;
-// --------------------------------------------------
-// Types relating to sync custom behavior and options
-// --------------------------------------------------
-function IsIRDOFactory(o) {
-    return (o &&
-        o.makeRDOCollectionKeyFromSourceElement &&
-        typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
-        o.makeRDOCollectionKeyFromDomainElement &&
-        typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
-        o.makeRDO &&
-        typeof o.makeRDO === 'function');
-}
-exports.IsIRDOFactory = IsIRDOFactory;
+exports.IsICustomEqualityRDO = exports.IsIAfterSyncIfNeeded = exports.IsIAfterSyncUpdate = exports.IsICustomSync = exports.IsIBeforeSyncUpdate = exports.IsIBeforeSyncIfNeeded = exports.IsISyncableRDOCollection = exports.IsISyncableCollection = void 0;
 function IsISyncableCollection(o) {
     return (o &&
         o.getKeys &&
@@ -27,6 +14,17 @@ function IsISyncableCollection(o) {
         typeof o.tryDeleteItemFromTargetCollection === 'function');
 }
 exports.IsISyncableCollection = IsISyncableCollection;
+function IsISyncableRDOCollection(o) {
+    return (o &&
+        o.makeRDOCollectionKeyFromSourceElement &&
+        typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
+        o.makeRDOCollectionKeyFromDomainElement &&
+        typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
+        o.makeRDO &&
+        typeof o.makeRDO === 'function' &&
+        IsISyncableCollection(o));
+}
+exports.IsISyncableRDOCollection = IsISyncableRDOCollection;
 function IsIBeforeSyncIfNeeded(o) {
     return o && o.beforeSyncIfNeeded && typeof o.beforeSyncIfNeeded === 'function';
 }

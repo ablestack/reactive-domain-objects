@@ -59,14 +59,6 @@ export interface IMakeKey<T> {
 export interface IMakeRDO<S, D> {
     (sourceObject: S): D;
 }
-export interface IRDOFactory<S, D> {
-    makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
-    makeRDO: IMakeRDO<S, D>;
-}
-export interface IRDOFactoryStrict<S, D> {
-    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
-    makeRDO: IMakeRDO<S, D>;
-}
 export interface IDomainNodeKeyFactoryStrict<S, D> {
     fromSourceElement: IMakeKey<S>;
     fromDomainElement: IMakeKey<D>;
@@ -75,7 +67,6 @@ export interface IDomainNodeKeyFactory<S, D> {
     fromSourceElement: IMakeKey<S>;
     fromDomainElement?: IMakeKey<D>;
 }
-export declare function IsIRDOFactory(o: any): o is IRDOFactory<any, any>;
 export interface ISyncableCollection<T> extends Iterable<T> {
     readonly size: number;
     getKeys: () => string[];
@@ -85,7 +76,12 @@ export interface ISyncableCollection<T> extends Iterable<T> {
     tryDeleteItemFromTargetCollection: (key: string) => void;
     clear: () => void;
 }
-export declare function IsISyncableCollection(o: any): boolean;
+export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
+export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
+    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+    makeRDO: IMakeRDO<S, D>;
+}
+export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;
 export interface ISynchronizeState<S> {
     ({ sourceObject, graphSynchronizer }: {
         sourceObject: S | null | undefined;

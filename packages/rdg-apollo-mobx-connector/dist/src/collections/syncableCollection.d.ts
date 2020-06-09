@@ -1,5 +1,5 @@
-import { IRDOFactory, ISyncableCollection } from '@ablestack/rdg';
-export declare class SyncableCollection<S extends object, D extends object> implements IRDOFactory<S, D>, ISyncableCollection<D> {
+import { ISyncableRDOCollection } from '@ablestack/rdg';
+export declare class SyncableCollection<S extends object, D extends object> implements ISyncableRDOCollection<S, D> {
     private _makeRDOCollectionKeyFromSourceElement;
     private _makeRDOCollectionKeyFromDomainElement;
     private _makeRDO;

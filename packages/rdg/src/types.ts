@@ -72,16 +72,6 @@ export interface IMakeRDO<S, D> {
   (sourceObject: S): D;
 }
 
-export interface IRDOFactory<S, D> {
-  makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
-  makeRDO: IMakeRDO<S, D>;
-}
-
-export interface IRDOFactoryStrict<S, D> {
-  makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
-  makeRDO: IMakeRDO<S, D>;
-}
-
 // *See `Strict` note above top of file
 export interface IDomainNodeKeyFactoryStrict<S, D> {
   fromSourceElement: IMakeKey<S>;
@@ -96,19 +86,6 @@ export interface IDomainNodeKeyFactory<S, D> {
 // --------------------------------------------------
 // Types relating to sync custom behavior and options
 // --------------------------------------------------
-
-export function IsIRDOFactory(o: any): o is IRDOFactory<any, any> {
-  return (
-    o &&
-    o.makeRDOCollectionKeyFromSourceElement &&
-    typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
-    o.makeRDOCollectionKeyFromDomainElement &&
-    typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
-    o.makeRDO &&
-    typeof o.makeRDO === 'function'
-  );
-}
-
 export interface ISyncableCollection<T> extends Iterable<T> {
   readonly size: number;
   getKeys: () => string[];
@@ -119,7 +96,7 @@ export interface ISyncableCollection<T> extends Iterable<T> {
   clear: () => void;
 }
 
-export function IsISyncableCollection(o: any) {
+export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
   return (
     o &&
     o.getKeys &&
@@ -130,6 +107,24 @@ export function IsISyncableCollection(o: any) {
     typeof o.insertItemToTargetCollection === 'function' &&
     o.tryDeleteItemFromTargetCollection &&
     typeof o.tryDeleteItemFromTargetCollection === 'function'
+  );
+}
+
+export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
+  makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+  makeRDO: IMakeRDO<S, D>;
+}
+
+export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
+  return (
+    o &&
+    o.makeRDOCollectionKeyFromSourceElement &&
+    typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
+    o.makeRDOCollectionKeyFromDomainElement &&
+    typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
+    o.makeRDO &&
+    typeof o.makeRDO === 'function' &&
+    IsISyncableCollection(o)
   );
 }
 

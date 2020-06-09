@@ -237,8 +237,8 @@
         "affectsGlobalScope": false
       },
       "../../rdg/dist/src/types.d.ts": {
-        "version": "eba257fbbcf99595910377e26f9fcc44b596a2645ae90b768addaa1ffa7352f2",
-        "signature": "eba257fbbcf99595910377e26f9fcc44b596a2645ae90b768addaa1ffa7352f2",
+        "version": "7583ca27c2957cf7d2113bac5b434a284c92a7e8a04f188d9d16361b233d97f4",
+        "signature": "7583ca27c2957cf7d2113bac5b434a284c92a7e8a04f188d9d16361b233d97f4",
         "affectsGlobalScope": false
       },
       "../../rdg/dist/src/index.d.ts": {
@@ -1617,8 +1617,8 @@
         "affectsGlobalScope": false
       },
       "../src/collections/syncablecollection.ts": {
-        "version": "2adbbbe0480de994fed176513ef49cd69c57f0b2afd5df3eb1ff96d47a452cbc",
-        "signature": "abbf731fe787d8b9d964217b428392f799be1bafd4172810791d5630cf6271ab",
+        "version": "373cb03e6637838d9f6dc4fcc002da9a83d15d819b33fcc0c295375fb86064ee",
+        "signature": "6c831e961d5415e8fee3b700b78119140a745e942785c012eb6921e1a7e5e1e5",
         "affectsGlobalScope": false
       },
       "../src/collections/index.ts": {

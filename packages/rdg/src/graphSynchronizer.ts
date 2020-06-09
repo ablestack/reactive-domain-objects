@@ -11,7 +11,6 @@ import {
   INodeSyncOptions,
   IsICustomEqualityRDO,
   IsICustomSync,
-  IsIRDOFactory,
   IsISyncableCollection,
   ISyncableCollection,
   JavaScriptBuiltInType,
@@ -20,7 +19,7 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIAfterSyncIfNeeded, IsIAfterSyncUpdate, IsIBeforeSyncIfNeeded, IsIBeforeSyncUpdate } from './types';
+import { IsIAfterSyncIfNeeded, IsIAfterSyncUpdate, IsIBeforeSyncIfNeeded, IsIBeforeSyncUpdate, IsISyncableRDOCollection } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -443,7 +442,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       makeRDO = (primitive) => primitive;
     } else {
       const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, domainCollection });
-      const typeDerivedOptions = IsIRDOFactory(domainCollection)
+      const typeDerivedOptions = IsISyncableRDOCollection(domainCollection)
         ? { makeRDOCollectionKey: domainCollection.makeRDOCollectionKey, makeRDO: domainCollection.makeRDO }
         : { makeRDOCollectionKeyFromSourceElement: undefined, makeRDOCollectionKeyFromDomainElement: domainCollection.makeRDOCollectionKeyFromDomainElement, makeRDO: undefined };
 
