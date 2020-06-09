@@ -48,19 +48,19 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
 }
 
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-  makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
-  makeRDO: IMakeRDO<S, D>;
+  makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
+  makeRdo: IMakeRDO<S, D>;
 }
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
   return (
     o &&
-    o.makeRDOCollectionKeyFromSourceElement &&
-    typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
+    o.makeRdoCollectionKeyFromSourceElement &&
+    typeof o.makeRdoCollectionKeyFromSourceElement === 'function' &&
     o.makeRdoCollectionKeyFromRdoElement &&
     typeof o.makeRdoCollectionKeyFromRdoElement === 'function' &&
-    o.makeRDO &&
-    typeof o.makeRDO === 'function' &&
+    o.makeRdo &&
+    typeof o.makeRdo === 'function' &&
     IsISyncableCollection(o)
   );
 }

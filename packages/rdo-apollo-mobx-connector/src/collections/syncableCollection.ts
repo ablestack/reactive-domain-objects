@@ -5,9 +5,9 @@ import { Logger } from '@ablestack/rdo/infrastructure/logger';
 const logger = Logger.make('SyncableCollection');
 
 export class SyncableCollection<S extends object, D extends object> implements ISyncableRDOCollection<S, D> {
-  private _makeRDOCollectionKeyFromSourceElement: (node: S) => string;
+  private _makeRdoCollectionKeyFromSourceElement: (node: S) => string;
   private _makeRdoCollectionKeyFromRdoElement: (node: D) => string;
-  private _makeRDO: (sourceItem: S) => D;
+  private _makeRdo: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
 
@@ -25,33 +25,33 @@ export class SyncableCollection<S extends object, D extends object> implements I
   }
 
   constructor({
-    makeRDOCollectionKeyFromSourceElement,
+    makeRdoCollectionKeyFromSourceElement,
     makeRdoCollectionKeyFromRdoElement,
-    makeRDO,
+    makeRdo,
   }: {
-    makeRDOCollectionKeyFromSourceElement: (sourceNode: S) => string;
+    makeRdoCollectionKeyFromSourceElement: (sourceNode: S) => string;
     makeRdoCollectionKeyFromRdoElement: (rdo: D) => string;
-    makeRDO: (sourceNode: S) => D;
+    makeRdo: (sourceNode: S) => D;
   }) {
-    this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
+    this._makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
     this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
-    this._makeRDO = makeRDO;
+    this._makeRdo = makeRdo;
     this._map$ = new Map<string, D>();
   }
 
   // -----------------------------------
   // IRdoFactory
   // -----------------------------------
-  public makeRDOCollectionKeyFromSourceElement = (sourceNode: S) => {
-    return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
+  public makeRdoCollectionKeyFromSourceElement = (sourceNode: S) => {
+    return this._makeRdoCollectionKeyFromSourceElement(sourceNode);
   };
 
   public makeRdoCollectionKeyFromRdoElement = (rdo: D) => {
     return this._makeRdoCollectionKeyFromRdoElement(rdo);
   };
 
-  public makeRDO = (sourceItem: S) => {
-    return this._makeRDO(sourceItem);
+  public makeRdo = (sourceItem: S) => {
+    return this._makeRdo(sourceItem);
   };
 
   [Symbol.iterator](): Iterator<D> {

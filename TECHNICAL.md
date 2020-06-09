@@ -109,7 +109,7 @@ const syncOptions: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
       sourceNodeMatcher: { nodePath: 'collectionOfBar' }, // *2
-      domainCollection: { makeRDO: (sourceNode: Bar) => new BarRDO() }
+      domainCollection: { makeRdo: (sourceNode: Bar) => new BarRDO() }
     }
   ],
 };
@@ -127,7 +127,7 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 >
 > 1.  \* Because the BarRDO type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created. As such, a corresponding 'make' function needs to be supplied to the GraphSynchronizer
 >
-> 2.  \* There are several ways the makeRDO function can be supplied to the GraphSynchronizer:
+> 2.  \* There are several ways the makeRdo function can be supplied to the GraphSynchronizer:
 >
 >     - As with the above example, a make method can be contained in an Options object, and mapped to the corresponding JSON node by specifying the `nodePath`
 >     - A make method can be contained in an Options object, and mapped to the corresponding JSON node by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field).
@@ -231,11 +231,11 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
       ignore: boolean, // --------------------------> // A source node can be ignored
 
-      makeRDOCollectionKey: { // -------------------> // If makeRDOCollectionKey creation methods not supplied
+      makeRdoCollectionKey: { // -------------------> // If makeRdoCollectionKey creation methods not supplied
         fromSourceElement: (sourceNode) => string;    // a default key creation method will be supplied which
         fromRdoElement: (rdo) => string;    // assumes an `id` field id available (or an error will be thrown)
       },
-      makeRDO: (sourceNode) => any;                   // Use when RDOs are contained in a parent collection
+      makeRdo: (sourceNode) => any;                   // Use when RDOs are contained in a parent collection
                                                       // so they can be automatically instantiated as items are added to the
     }                                                 // source collection
   ]
@@ -373,7 +373,7 @@ If the `ignore` configuration item is present, and set to false, the matching so
 
 Contains configuration that inform GraphSynchronizer how to handle collections of Domain Objects, as detailed below
 
-##### makeRDOCollectionKey
+##### makeRdoCollectionKey
 
 The two contained configuration properties are:
 
@@ -388,7 +388,7 @@ These methods:
 - They are only required for RDOs that are contained in a Domain Collection AND where there is no `id` field
 - If they are not supplied, default methods will be supplied that look for an `id` field in the node (and throw an error if not found)
 
-#### makeRDO
+#### makeRdo
 
 This configuration property had the following signature:
 
@@ -464,11 +464,35 @@ interface ICustomEqualityRDO<S> {
 
 When RDOs implement this interface, this isStateEqual method will be used for equality comparison instead of the default equality comparer
 
+### IHasCustomRdoFieldNames
+
+When implemented this interface allows an RDO to determine the names of the fields that each of the corresponding source object fields map to.
+
+The interface has the following signature:
+
+```TypeScript
+interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extends Record<string, any>> {
+  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string | undefined;
+}
+```
+
+The interface requires a single method is implemented, which receives:
+
+| Parameter       | Description              |
+| --------------- | ------------------------ |
+| sourceNodePath  | Path of source node      |
+| sourceFieldname | Fieldname of source node |
+| sourceFieldVal  | Value of source node     |
+
+The method should return a string for the RDO fieldname that the source field corresponds to, or undefined if it does not correspond with any RDO fields
+
+> Note: If null is returned, the matching algorithm will still look for a direct naming match
+
 ### ICustomSync
 
 This interface allows an RDO to take over full control of the synchronization for a specific type. When implemented this interface, the GraphSynchronizer will hand off the synchronization of the source data to the RDO (instead of using the internal auto-synchronization algorithm).
 
-The interface has the following signiture:
+The interface has the following signature:
 
 ```TypeScript
 interface ICustomSync<S> {
@@ -501,8 +525,8 @@ interface ISyncableCollection<T> extends Iterable<T> {
 
 ```TypeScript
 interface IRdoFactory<S, D> {
-  makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
-  makeRDO: IMakeRDO<S, D>;
+  makeRdoCollectionKey: IRdoCollectionKeyFactory<S, D>;
+  makeRdo: IMakeRDO<S, D>;
 }
 ```
 

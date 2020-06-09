@@ -217,13 +217,13 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-collection-types.d.ts": {
-        "version": "427866db0e407c9e6e5fcdd07e6289b1205479797ee92cd1e7f9d37fe78ceb5a",
-        "signature": "427866db0e407c9e6e5fcdd07e6289b1205479797ee92cd1e7f9d37fe78ceb5a",
+        "version": "a64fa94831c8583382bd12c3472c9849b83841a78eabe38c3a5027536caefc5a",
+        "signature": "a64fa94831c8583382bd12c3472c9849b83841a78eabe38c3a5027536caefc5a",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-config-option-types.d.ts": {
-        "version": "728f917c98fa96a3cb530ec50dc327567e3efa614aded98affa436812c68746f",
-        "signature": "728f917c98fa96a3cb530ec50dc327567e3efa614aded98affa436812c68746f",
+        "version": "c8df95f6a07163420cfe6c32909985217d17b911e8491448d5304eae21b164b7",
+        "signature": "c8df95f6a07163420cfe6c32909985217d17b911e8491448d5304eae21b164b7",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": {
@@ -247,8 +247,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/sync.utils.d.ts": {
-        "version": "b5e4fcfc00b36fbd6d6cb6d8d290b70396ce1903965cfc04d00caa436884306a",
-        "signature": "b5e4fcfc00b36fbd6d6cb6d8d290b70396ce1903965cfc04d00caa436884306a",
+        "version": "deedfea2da0d32ed28e14c7095e8ec6dd99275d09be8ac7d971dd1191decfabc",
+        "signature": "deedfea2da0d32ed28e14c7095e8ec6dd99275d09be8ac7d971dd1191decfabc",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/index.d.ts": {
@@ -1637,8 +1637,8 @@
         "affectsGlobalScope": false
       },
       "../src/collections/syncablecollection.ts": {
-        "version": "a5aea67834d0294fa32ad40d3e2b8cfb9e2cad4d465f9b53075c8d8eb8c14948",
-        "signature": "c4fbd06bd67c914936b66b22d032f5b58f62c98dc150c0b0595f036b15d42cdf",
+        "version": "7c4b4c521c1de66cf62ce1e70111b611045e678dd3d9a3394a5859f48bc42b52",
+        "signature": "967fe9cf27ba2c466b0520563f8a0503f79573efaba578982bdbb4cd99d7e577",
         "affectsGlobalScope": false
       },
       "../src/collections/index.ts": {

@@ -24,15 +24,15 @@ export interface IGlobalPropertyNameTransformation {
 export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  makeRDOCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRdoFactory
-  makeRDO?: IMakeRDO<S, D>; // Match IRdoFactory except optional
+  makeRdoCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRdoFactory
+  makeRdo?: IMakeRDO<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>; // Match IRDOFactorsStrict
-  makeRDO?: IMakeRDO<S, D>; // Match IRdoFactory except optional
+  makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>; // Match IRDOFactorsStrict
+  makeRdo?: IMakeRDO<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSelector<S> {

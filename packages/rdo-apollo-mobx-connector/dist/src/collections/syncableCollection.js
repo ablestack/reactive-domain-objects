@@ -7,19 +7,19 @@ const rdo_1 = require("@ablestack/rdo");
 const logger_1 = require("@ablestack/rdo/infrastructure/logger");
 const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
-    constructor({ makeRDOCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRDO, }) {
+    constructor({ makeRdoCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRdo, }) {
         this._array$ = new Array();
         // -----------------------------------
         // IRdoFactory
         // -----------------------------------
-        this.makeRDOCollectionKeyFromSourceElement = (sourceNode) => {
-            return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
+        this.makeRdoCollectionKeyFromSourceElement = (sourceNode) => {
+            return this._makeRdoCollectionKeyFromSourceElement(sourceNode);
         };
         this.makeRdoCollectionKeyFromRdoElement = (rdo) => {
             return this._makeRdoCollectionKeyFromRdoElement(rdo);
         };
-        this.makeRDO = (sourceItem) => {
-            return this._makeRDO(sourceItem);
+        this.makeRdo = (sourceItem) => {
+            return this._makeRdo(sourceItem);
         };
         // -----------------------------------
         // ISyncableCollection
@@ -46,9 +46,9 @@ class SyncableCollection {
             this._map$.clear();
             rdo_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
-        this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
+        this._makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
         this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
-        this._makeRDO = makeRDO;
+        this._makeRdo = makeRdo;
         this._map$ = new Map();
     }
     get size() {

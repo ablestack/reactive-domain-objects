@@ -5,7 +5,7 @@
 import { IGraphSynchronizer } from '.';
 
 export interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extends Record<string, any>> {
-  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string;
+  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string | undefined;
 }
 
 export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any, any> {

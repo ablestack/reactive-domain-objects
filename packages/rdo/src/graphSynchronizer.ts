@@ -419,16 +419,16 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): boolean {
     if (!rdoFieldTypeInfo.type) throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourceNodeTypeInfo}', RDO field type: ${rdoFieldTypeInfo} `);
 
-    const { makeRDOCollectionKey, makeRDO } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection: targetCollection });
+    const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection: targetCollection });
 
     // VALIDATE
-    if (sourceCollection.length > 0 && !makeRDOCollectionKey?.fromSourceElement) {
+    if (sourceCollection.length > 0 && !makeRdoCollectionKey?.fromSourceElement) {
       throw new Error(
-        `Could not find 'makeRDOCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+        `Could not find 'makeRdoCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
       );
     }
-    if (sourceCollection.length > 0 && !makeRDO) {
-      throw new Error(`Could not find 'makeRDO' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
+    if (sourceCollection.length > 0 && !makeRdo) {
+      throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
     }
 
     //
@@ -445,7 +445,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         rdoCollection.clear();
       }
 
-      return this.synchronizeISyncableCollection({ sourceCollection, rdoCollection, makeRDOCollectionKey: makeRDOCollectionKey!, makeRDO: makeRDO! });
+      return this.synchronizeISyncableCollection({ sourceCollection, rdoCollection, makeRdoCollectionKey: makeRdoCollectionKey!, makeRdo: makeRdo! });
 
       //-----------------------------------------------------
       // MAP SYNC
@@ -457,7 +457,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         rdoCollection.clear();
       }
 
-      return this.synchronizeTargetMap({ sourceCollection, rdoCollection, makeRDOCollectionKey: makeRDOCollectionKey!, makeRDO: makeRDO! });
+      return this.synchronizeTargetMap({ sourceCollection, rdoCollection, makeRdoCollectionKey: makeRdoCollectionKey!, makeRdo: makeRdo! });
 
       //-----------------------------------------------------
       // SET SYNC
@@ -469,9 +469,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         rdoCollection.clear();
       }
 
-      if (rdoCollection.size > 0 && !makeRDOCollectionKey?.fromRdoElement)
+      if (rdoCollection.size > 0 && !makeRdoCollectionKey?.fromRdoElement)
         throw new Error(
-          `Could not find '!makeRDOCollectionKey?.fromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+          `Could not find '!makeRdoCollectionKey?.fromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
         );
       if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
         logger.warn(
@@ -483,8 +483,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       return this.synchronizeTargetSet({
         sourceCollection,
         rdoCollection,
-        makeRDOCollectionKey: makeRDOCollectionKey!,
-        makeRDO: makeRDO!,
+        makeRdoCollectionKey: makeRdoCollectionKey!,
+        makeRdo: makeRdo!,
       });
 
       //-----------------------------------------------------
@@ -497,7 +497,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         CollectionUtils.Array.clear({ collection: rdoCollection });
       }
 
-      if (rdoCollection.length > 0 && !makeRDOCollectionKey?.fromRdoElement)
+      if (rdoCollection.length > 0 && !makeRdoCollectionKey?.fromRdoElement)
         throw new Error(
           `Could not find 'makeRdoCollectionKeyFromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
         );
@@ -511,8 +511,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       return this.synchronizeTargetArray({
         sourceCollection,
         rdoCollection,
-        makeRDOCollectionKey: makeRDOCollectionKey!,
-        makeRDO: makeRDO!,
+        makeRdoCollectionKey: makeRdoCollectionKey!,
+        makeRdo: makeRdo!,
       });
     }
 
@@ -521,8 +521,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
   /** */
   private tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection }: { sourceCollection: Array<any>; targetCollection: any }) {
-    let makeRDOCollectionKey: IRdoCollectionKeyFactory<any, any> | undefined;
-    let makeRDO: IMakeRDO<any, any> | undefined;
+    let makeRdoCollectionKey: IRdoCollectionKeyFactory<any, any> | undefined;
+    let makeRdo: IMakeRDO<any, any> | undefined;
 
     const collectionElementType = this.getCollectionElementType({ sourceCollection, targetCollection });
 
@@ -530,22 +530,22 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // If types are primitive, provide auto methods, else try and get from configuration
     //
     if (collectionElementType === 'primitive' || collectionElementType === 'empty') {
-      makeRDOCollectionKey = { fromSourceElement: (primitive) => primitive.toString(), fromRdoElement: (primitive) => primitive.toString() };
-      makeRDO = (primitive) => primitive;
+      makeRdoCollectionKey = { fromSourceElement: (primitive) => primitive.toString(), fromRdoElement: (primitive) => primitive.toString() };
+      makeRdo = (primitive) => primitive;
     } else {
       const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, targetCollection });
       const typeDerivedOptions = IsISyncableRDOCollection(targetCollection)
-        ? { makeRDOCollectionKey: targetCollection.makeRDOCollectionKey, makeRDO: targetCollection.makeRDO }
-        : { makeRDOCollectionKeyFromSourceElement: undefined, makeRdoCollectionKeyFromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement, makeRDO: undefined };
+        ? { makeRdoCollectionKey: targetCollection.makeRdoCollectionKey, makeRdo: targetCollection.makeRdo }
+        : { makeRdoCollectionKeyFromSourceElement: undefined, makeRdoCollectionKeyFromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement, makeRdo: undefined };
 
-      // GET CONFIG ITEM: makeRDOCollectionKeyFromSourceElement
-      makeRDOCollectionKey = targetDerivedOptions?.makeRDOCollectionKey || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
+      // GET CONFIG ITEM: makeRdoCollectionKeyFromSourceElement
+      makeRdoCollectionKey = targetDerivedOptions?.makeRdoCollectionKey || typeDerivedOptions.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
 
-      // GET CONFIG ITEM: makeRDO
-      makeRDO = targetDerivedOptions?.makeRDO || targetDerivedOptions?.makeRDO || typeDerivedOptions.makeRDO;
+      // GET CONFIG ITEM: makeRdo
+      makeRdo = targetDerivedOptions?.makeRdo || targetDerivedOptions?.makeRdo || typeDerivedOptions.makeRdo;
     }
 
-    return { makeRDOCollectionKey, makeRDO };
+    return { makeRdoCollectionKey, makeRdo };
   }
 
   /** */
@@ -582,13 +582,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
   /** */
   private tryMakeAutoKeyMaker({ sourceCollection, targetCollection }: { sourceCollection: Array<any>; targetCollection: Iterable<any> }): IRdoCollectionKeyFactory<any, any> | undefined {
-    let makeRDOCollectionKey: IRdoCollectionKeyFactory<any, any> = {} as any;
+    let makeRdoCollectionKey: IRdoCollectionKeyFactory<any, any> = {} as any;
 
     // Try and get options from source collection
     if (sourceCollection && sourceCollection.length > 0) {
       const firstItemInSourceCollection = sourceCollection[0];
       if (firstItemInSourceCollection && firstItemInSourceCollection.id) {
-        makeRDOCollectionKey.fromSourceElement = (sourceNode: any) => {
+        makeRdoCollectionKey.fromSourceElement = (sourceNode: any) => {
           return sourceNode.id;
         };
       }
@@ -607,7 +607,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       }
 
       if (hasIdKey) {
-        makeRDOCollectionKey.fromRdoElement = (rdo: any) => {
+        makeRdoCollectionKey.fromRdoElement = (rdo: any) => {
           return rdo[idKey];
         };
       }
@@ -615,8 +615,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     // Allow to return if fromRdoElement is null, even though this is not allowed in user supplied options
     //  When defaultKeyMaker, the code can handle a special case where fromRdoElement is null (when no items in domain collection)
-    if (!makeRDOCollectionKey || !makeRDOCollectionKey.fromSourceElement) return undefined;
-    else return makeRDOCollectionKey;
+    if (!makeRdoCollectionKey || !makeRdoCollectionKey.fromSourceElement) return undefined;
+    else return makeRdoCollectionKey;
   }
 
   /** */
@@ -687,23 +687,23 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeISyncableCollection<S, D>({
     sourceCollection,
     rdoCollection,
-    makeRDOCollectionKey,
-    makeRDO,
+    makeRdoCollectionKey,
+    makeRdo,
   }: {
     sourceCollection: Array<S>;
     rdoCollection: ISyncableCollection<any>;
-    makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
-    makeRDO: IMakeRDO<any, any>;
+    makeRdoCollectionKey: IRdoCollectionKeyFactory<S, D>;
+    makeRdo: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => rdoCollection.size,
       getTargetCollectionKeys: rdoCollection.getKeys,
-      makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey?.fromSourceElement!,
+      makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement!,
       tryGetItemFromTargetCollection: (key) => rdoCollection.tryGetItemFromTargetCollection(key),
       insertItemToTargetCollection: (key, value) => rdoCollection.insertItemToTargetCollection(key, value),
       tryDeleteItemFromTargetCollection: (key) => rdoCollection.tryDeleteItemFromTargetCollection(key),
-      makeItemForTargetCollection: makeRDO,
+      makeItemForTargetCollection: makeRdo,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeKind: 'arrayElement',
@@ -722,23 +722,23 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeTargetMap<S, D>({
     sourceCollection,
     rdoCollection,
-    makeRDOCollectionKey,
-    makeRDO,
+    makeRdoCollectionKey,
+    makeRdo,
   }: {
     sourceCollection: Array<S>;
     rdoCollection: Map<string, S>;
-    makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
-    makeRDO: IMakeRDO<any, any>;
+    makeRdoCollectionKey: IRdoCollectionKeyFactory<S, D>;
+    makeRdo: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => rdoCollection.size,
       getTargetCollectionKeys: () => Array.from(rdoCollection.keys()),
-      makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey?.fromSourceElement,
+      makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement,
       tryGetItemFromTargetCollection: (key) => rdoCollection.get(key),
       insertItemToTargetCollection: (key, value) => rdoCollection.set(key, value),
       tryDeleteItemFromTargetCollection: (key) => rdoCollection.delete(key),
-      makeItemForTargetCollection: makeRDO,
+      makeItemForTargetCollection: makeRdo,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeKind: 'arrayElement',
@@ -757,27 +757,27 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeTargetSet<S, D>({
     sourceCollection,
     rdoCollection,
-    makeRDOCollectionKey,
-    makeRDO,
+    makeRdoCollectionKey,
+    makeRdo,
   }: {
     sourceCollection: Array<S>;
     rdoCollection: Set<D>;
-    makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
-    makeRDO: IMakeRDO<S, D>;
+    makeRdoCollectionKey: IRdoCollectionKeyFactory<S, D>;
+    makeRdo: IMakeRDO<S, D>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => rdoCollection.size,
-      getTargetCollectionKeys: makeRDOCollectionKey?.fromRdoElement ? () => CollectionUtils.Set.getKeys({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement! }) : undefined,
-      makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey?.fromSourceElement,
-      tryGetItemFromTargetCollection: makeRDOCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Set.tryGetItem({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement!, key })
+      getTargetCollectionKeys: makeRdoCollectionKey?.fromRdoElement ? () => CollectionUtils.Set.getKeys({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement! }) : undefined,
+      makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement,
+      tryGetItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
+        ? (key) => CollectionUtils.Set.tryGetItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
       insertItemToTargetCollection: (key, value) => CollectionUtils.Set.insertItem({ collection: rdoCollection, key, value }),
-      tryDeleteItemFromTargetCollection: makeRDOCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement!, key })
+      tryDeleteItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
+        ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
-      makeItemForTargetCollection: makeRDO,
+      makeItemForTargetCollection: makeRdo,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({
           sourceNodeKind: 'arrayElement',
@@ -785,7 +785,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
           targetNodeVal: targetElementVal,
-          tryUpdateTargetNode: (key, value) => CollectionUtils.Set.tryUpdateItem({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement!, value }),
+          tryUpdateTargetNode: (key, value) => CollectionUtils.Set.tryUpdateItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, value }),
         }),
     });
   }
@@ -796,26 +796,26 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeTargetArray<S, D>({
     sourceCollection,
     rdoCollection,
-    makeRDOCollectionKey,
-    makeRDO,
+    makeRdoCollectionKey,
+    makeRdo,
   }: {
     sourceCollection: Array<S>;
     rdoCollection: Array<any>;
-    makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
-    makeRDO: IMakeRDO<any, any>;
+    makeRdoCollectionKey: IRdoCollectionKeyFactory<S, D>;
+    makeRdo: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
       getTargetCollectionSize: () => rdoCollection.length,
-      getTargetCollectionKeys: makeRDOCollectionKey?.fromRdoElement ? () => CollectionUtils.Array.getKeys({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement! }) : undefined,
-      makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey?.fromSourceElement,
-      makeItemForTargetCollection: makeRDO,
-      tryGetItemFromTargetCollection: makeRDOCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Array.getItem({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey?.fromRdoElement!, key })
+      getTargetCollectionKeys: makeRdoCollectionKey?.fromRdoElement ? () => CollectionUtils.Array.getKeys({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement! }) : undefined,
+      makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement,
+      makeItemForTargetCollection: makeRdo,
+      tryGetItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
+        ? (key) => CollectionUtils.Array.getItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey?.fromRdoElement!, key })
         : undefined,
       insertItemToTargetCollection: (key, value) => CollectionUtils.Array.insertItem({ collection: rdoCollection, key, value }),
-      tryDeleteItemFromTargetCollection: makeRDOCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Array.deleteItem({ collection: rdoCollection, makeCollectionKey: makeRDOCollectionKey.fromRdoElement!, key })
+      tryDeleteItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
+        ? (key) => CollectionUtils.Array.deleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
       trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
         this.trySynchronizeNode({

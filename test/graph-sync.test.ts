@@ -64,7 +64,7 @@ test('Simple graph usage demo', () => {
 test('Collection usage demo', () => {
   const fooRDO = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, makeRDO: (sourceNode: Bar) => new BarRDO() }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, makeRdo: (sourceNode: Bar) => new BarRDO() }],
   };
 
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
@@ -85,8 +85,8 @@ test('Simple usage demo with notes', () => {
   const fooWithNotesRDO = new FooWithNotesRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, makeRDO: (sourceNode: Bar) => new BarWithNotesRDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, makeRDO: (sourceNode: Bar) => new BarWithNotesRDO() },
+      { sourceNodeMatcher: { nodePath: 'arrayOfBar' }, makeRdo: (sourceNode: Bar) => new BarWithNotesRDO() },
+      { sourceNodeMatcher: { nodePath: 'mapOfBar' }, makeRdo: (sourceNode: Bar) => new BarWithNotesRDO() },
     ],
   });
 
@@ -110,7 +110,7 @@ test('Simple usage demo with notes', () => {
 function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRDO: (book: Book) => new BookRDO() }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 }
@@ -302,7 +302,7 @@ test('Synchronize only updated properties only where source data changed', () =>
 function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, makeRDO: (book: Book) => new BookRDO() }],
+    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, makeRdo: (book: Book) => new BookRDO() }],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 }
@@ -334,19 +334,19 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
     targetedNodeOptions: [
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
-        makeRDO: (o: SimpleObject) => new SimpleRDO(),
+        makeRdo: (o: SimpleObject) => new SimpleRDO(),
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
-        makeRDO: (o: SimpleObject) => new SimpleRDO(),
+        makeRdo: (o: SimpleObject) => new SimpleRDO(),
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
-        makeRDO: (o: SimpleObject) => new SimpleRDO(),
+        makeRdo: (o: SimpleObject) => new SimpleRDO(),
       },
       {
         sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
-        makeRDO: (o: SimpleObject) => new SimpleRDO(),
+        makeRdo: (o: SimpleObject) => new SimpleRDO(),
       },
     ],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
@@ -624,8 +624,8 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
   const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO() },
+      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() },
       { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
     ],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
@@ -692,8 +692,8 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
       { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, ignore: true },
       {
         sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
-        makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
-        makeRDOCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
+        makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
+        makeRdoCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
       },
     ],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },

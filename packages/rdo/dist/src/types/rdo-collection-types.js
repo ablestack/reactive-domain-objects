@@ -16,12 +16,12 @@ function IsISyncableCollection(o) {
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {
     return (o &&
-        o.makeRDOCollectionKeyFromSourceElement &&
-        typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
+        o.makeRdoCollectionKeyFromSourceElement &&
+        typeof o.makeRdoCollectionKeyFromSourceElement === 'function' &&
         o.makeRdoCollectionKeyFromRdoElement &&
         typeof o.makeRdoCollectionKeyFromRdoElement === 'function' &&
-        o.makeRDO &&
-        typeof o.makeRDO === 'function' &&
+        o.makeRdo &&
+        typeof o.makeRdo === 'function' &&
         IsISyncableCollection(o));
 }
 exports.IsISyncableRDOCollection = IsISyncableRDOCollection;

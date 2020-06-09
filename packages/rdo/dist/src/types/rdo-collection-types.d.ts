@@ -23,8 +23,8 @@ export interface ISyncableCollection<T> extends Iterable<T> {
 }
 export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-    makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
-    makeRDO: IMakeRDO<S, D>;
+    makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
+    makeRdo: IMakeRDO<S, D>;
 }
 export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;
 /***************************************************************************

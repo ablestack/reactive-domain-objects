@@ -1,9 +1,9 @@
 /** */
-declare function synchronizeCollection<S, T>({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeRDOCollectionKeyFromSourceElement, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, trySyncElement, }: {
+declare function synchronizeCollection<S, T>({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeRdoCollectionKeyFromSourceElement, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, trySyncElement, }: {
     sourceCollection: Iterable<S>;
     getTargetCollectionSize: () => number;
     getTargetCollectionKeys?: () => string[];
-    makeRDOCollectionKeyFromSourceElement?: (sourceItem: S) => string;
+    makeRdoCollectionKeyFromSourceElement?: (sourceItem: S) => string;
     makeItemForTargetCollection: (s: any) => T;
     tryGetItemFromTargetCollection?: (key: string) => T | undefined;
     insertItemToTargetCollection: (key: string, value: T) => void;

@@ -21,14 +21,14 @@ export interface IGlobalPropertyNameTransformation {
 export interface INodeSyncOptions<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    makeRDOCollectionKey?: IRdoCollectionKeyFactory<S, D>;
-    makeRDO?: IMakeRDO<S, D>;
+    makeRdoCollectionKey?: IRdoCollectionKeyFactory<S, D>;
+    makeRdo?: IMakeRDO<S, D>;
 }
 export interface INodeSyncOptionsStrict<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
-    makeRDO?: IMakeRDO<S, D>;
+    makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
+    makeRdo?: IMakeRDO<S, D>;
 }
 export interface INodeSelector<S> {
     nodePath?: string;
