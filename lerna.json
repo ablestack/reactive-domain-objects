@@ -1,9 +1,15 @@
 {
-  "version": "0.2.1",
-  "packages": [".", "packages/rdo", "packages/rdo-apollo-mobx-connector"],
+  "version": "0.3.0",
+  "packages": [
+    ".",
+    "packages/rdo",
+    "packages/rdo-apollo-mobx-connector"
+  ],
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md"]
+      "ignoreChanges": [
+        "*.md"
+      ]
     }
   }
 }
