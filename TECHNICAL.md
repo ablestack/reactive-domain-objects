@@ -217,7 +217,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
   customEqualityComparer: IEqualityComparer, // ----> // Custom Equality Comparer
 
   globalNodeOptions: { // ----------------------==--> // Options that apply to all source nodes
-    commonDomainFieldnamePostfix: string;
+    commonRdoFieldnamePostfix: string;
     computeDomainFieldname: (sourceNodeKey) => string;
   },
 
@@ -277,7 +277,7 @@ Upon graphSynchronizer.smartSync of the above supplied source and target objects
 However, the following configuration would allow for the smartSync to successfully match the fields:
 
 ```
-  { globalNodeOptions: { commonDomainFieldnamePostfix: '$' } }
+  { globalNodeOptions: { commonRdoFieldnamePostfix: '$' } }
 ```
 
 Note that the matching algorithm will first try to find a field match _without_ the fieldname prefix. And, if it finds one, it will use that and not continue to look for a match with the common postfix.
@@ -501,7 +501,7 @@ interface ISyncableCollection<T> extends Iterable<T> {
 
 ```TypeScript
 interface IRDOFactory<S, D> {
-  makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
+  makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
   makeRDO: IMakeRDO<S, D>;
 }
 ```
@@ -512,6 +512,7 @@ For clarity, this is a brief reference for some terminology that is used through
 
 - Element: an item of a collection
 - Node: An Property of an Object, or an Element of a collection
+- Field: A Property of an Object Node
 - Source: JSON source data, and the 'source of truth'
 - RDO: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-graphs/blob/master/README.md)
 - Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)

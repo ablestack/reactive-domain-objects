@@ -1,29 +1,29 @@
 import _ from 'lodash';
 import { Logger } from '../infrastructure/logger';
-import { IMakeKey } from '..';
+import { IMakeRdoCollectionKey } from '..';
 
 const logger = Logger.make('CollectionUtils');
 
 const _Array = {
-  getKeys: <T>({ collection, makeKey }: { collection: Array<T>; makeKey: IMakeKey<T> }) => {
-    return collection.length > 0 ? collection.map((item) => makeKey(item)) : [];
+  getKeys: <T>({ collection, makeCollectionKey }: { collection: Array<T>; makeCollectionKey: IMakeRdoCollectionKey<T> }) => {
+    return collection.length > 0 ? collection.map((item) => makeCollectionKey(item)) : [];
   },
-  getItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) => {
-    return collection.length > 0 ? collection.find((item) => makeKey(item) === key) : undefined;
+  getItem: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) => {
+    return collection.length > 0 ? collection.find((item) => makeCollectionKey(item) === key) : undefined;
   },
   insertItem: <T>({ collection, key, value }: { collection: Array<T>; key: string; value: T }) => collection.push(value),
-  updateItem: <T>({ collection, makeKey, value }: { collection: Array<T>; makeKey: IMakeKey<T>; value: T }) => {
+  updateItem: <T>({ collection, makeCollectionKey, value }: { collection: Array<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; value: T }) => {
     if (collection.length === 0) return;
-    const key = makeKey(value);
-    const existingItemIndex = collection.findIndex((item) => makeKey(item) === key);
+    const key = makeCollectionKey(value);
+    const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
     if (existingItemIndex) {
       collection.splice(existingItemIndex, 1, value);
     }
   },
-  deleteItem: <T>({ collection, makeKey, key }: { collection: Array<T>; makeKey: IMakeKey<T>; key: string }) => {
+  deleteItem: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) => {
     if (collection.length === 0) return;
     collection.splice(
-      collection.findIndex((item) => makeKey(item) === key),
+      collection.findIndex((item) => makeCollectionKey(item) === key),
       1,
     );
   },
@@ -31,39 +31,40 @@ const _Array = {
 };
 
 const _Set = {
-  getKeys: <T>({ collection, makeKey }: { collection: Set<T>; makeKey: IMakeKey<T> }) => (collection.size > 0 ? Array.from(collection.values()).map((domainItem) => makeKey(domainItem)) : []),
-  tryGetItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) =>
-    collection.size > 0 ? Array.from(collection.values()).find((domainItem) => makeKey(domainItem) == key) : undefined,
+  getKeys: <T>({ collection, makeCollectionKey }: { collection: Set<T>; makeCollectionKey: IMakeRdoCollectionKey<T> }) =>
+    collection.size > 0 ? Array.from(collection.values()).map((domainItem) => makeCollectionKey(domainItem)) : [],
+  tryGetItem: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) =>
+    collection.size > 0 ? Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) == key) : undefined,
   insertItem: <T>({ collection, key, value }: { collection: Set<T>; key: string; value: T }) => {
     collection.add(value);
   },
-  tryUpdateItem: <T>({ collection, makeKey, value }: { collection: Set<T>; makeKey: IMakeKey<T>; value: T }) => {
+  tryUpdateItem: <T>({ collection, makeCollectionKey, value }: { collection: Set<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; value: T }) => {
     if (collection.size === 0) return;
-    const key = makeKey(value);
-    const existingItem = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
+    const key = makeCollectionKey(value);
+    const existingItem = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
     if (existingItem) {
       collection.delete(existingItem);
     }
     collection.add(value);
   },
-  tryDeleteItem: <T>({ collection, makeKey, key }: { collection: Set<T>; makeKey: IMakeKey<T>; key: string }) => {
+  tryDeleteItem: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) => {
     if (collection.size === 0) return;
-    const item = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
+    const item = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
     if (item) collection.delete(item);
   },
 };
 
 const _Record = {
-  getKeys: <T>({ collection }: { collection: Record<string, TextDecodeOptions> }) => Object.keys(collection),
-  tryGetItem: <T>({ collection, key }: { collection: Record<string, T>; key: string }) => collection[key],
-  insertItem: <T>({ collection, key, value }: { collection: Record<string, T>; key: string; value: T }) => {
-    collection[key] = value;
+  getKeys: <T>({ record }: { record: Record<string, TextDecodeOptions> }) => Object.keys(record),
+  tryGetItem: <T>({ record, key }: { record: Record<string, T>; key: string }) => record[key],
+  insertItem: <T>({ record, key, value }: { record: Record<string, T>; key: string; value: T }) => {
+    record[key] = value;
   },
-  tryUpdateItem: <T>({ collection, key, value }: { collection: Record<string, T>; key: string; value: T }) => {
-    collection[key] = value;
+  tryUpdateItem: <T>({ record, key, value }: { record: Record<string, T>; key: string; value: T }) => {
+    record[key] = value;
   },
-  tryDeleteItem: <T>({ collection, key }: { collection: Record<string, T>; key: string }) => {
-    delete collection[key];
+  tryDeleteItem: <T>({ record, key }: { record: Record<string, T>; key: string }) => {
+    delete record[key];
   },
 };
 

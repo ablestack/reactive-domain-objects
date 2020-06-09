@@ -40,32 +40,32 @@ export interface IGlobalPropertyNameTransformation {
 export interface INodeSyncOptions<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
+    makeRDOCollectionKey?: IRdoCollectionKeyFactory<S, D>;
     makeRDO?: IMakeRDO<S, D>;
 }
 export interface INodeSyncOptionsStrict<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+    makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
     makeRDO?: IMakeRDO<S, D>;
 }
 export interface INodeSelector<S> {
     nodePath?: string;
     nodeContent?: (sourceNode: S) => boolean;
 }
-export interface IMakeKey<T> {
+export interface IMakeRdoCollectionKey<T> {
     (item: T): string;
 }
 export interface IMakeRDO<S, D> {
     (sourceObject: S): D;
 }
-export interface IDomainNodeKeyFactoryStrict<S, D> {
-    fromSourceElement: IMakeKey<S>;
-    fromDomainElement: IMakeKey<D>;
+export interface IRdoCollectionKeyFactoryStrict<S, D> {
+    fromSourceElement: IMakeRdoCollectionKey<S>;
+    fromDomainElement: IMakeRdoCollectionKey<D>;
 }
-export interface IDomainNodeKeyFactory<S, D> {
-    fromSourceElement: IMakeKey<S>;
-    fromDomainElement?: IMakeKey<D>;
+export interface IRdoCollectionKeyFactory<S, D> {
+    fromSourceElement: IMakeRdoCollectionKey<S>;
+    fromDomainElement?: IMakeRdoCollectionKey<D>;
 }
 export interface ISyncableCollection<T> extends Iterable<T> {
     readonly size: number;
@@ -78,7 +78,7 @@ export interface ISyncableCollection<T> extends Iterable<T> {
 }
 export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+    makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
     makeRDO: IMakeRDO<S, D>;
 }
 export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;

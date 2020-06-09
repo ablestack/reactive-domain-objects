@@ -1,14 +1,14 @@
-import { IMakeKey } from '..';
+import { IMakeRdoCollectionKey } from '..';
 declare function isIterable(obj: any): boolean;
 export declare const CollectionUtils: {
     Array: {
-        getKeys: <T>({ collection, makeKey }: {
+        getKeys: <T>({ collection, makeCollectionKey }: {
             collection: T[];
-            makeKey: IMakeKey<T>;
+            makeCollectionKey: IMakeRdoCollectionKey<T>;
         }) => string[];
-        getItem: <T_1>({ collection, makeKey, key }: {
+        getItem: <T_1>({ collection, makeCollectionKey, key }: {
             collection: T_1[];
-            makeKey: IMakeKey<T_1>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_1>;
             key: string;
         }) => T_1 | undefined;
         insertItem: <T_2>({ collection, key, value }: {
@@ -16,14 +16,14 @@ export declare const CollectionUtils: {
             key: string;
             value: T_2;
         }) => number;
-        updateItem: <T_3>({ collection, makeKey, value }: {
+        updateItem: <T_3>({ collection, makeCollectionKey, value }: {
             collection: T_3[];
-            makeKey: IMakeKey<T_3>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_3>;
             value: T_3;
         }) => void;
-        deleteItem: <T_4>({ collection, makeKey, key }: {
+        deleteItem: <T_4>({ collection, makeCollectionKey, key }: {
             collection: T_4[];
-            makeKey: IMakeKey<T_4>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_4>;
             key: string;
         }) => void;
         clear: <T_5>({ collection }: {
@@ -31,13 +31,13 @@ export declare const CollectionUtils: {
         }) => T_5[];
     };
     Set: {
-        getKeys: <T_6>({ collection, makeKey }: {
+        getKeys: <T_6>({ collection, makeCollectionKey }: {
             collection: Set<T_6>;
-            makeKey: IMakeKey<T_6>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_6>;
         }) => string[];
-        tryGetItem: <T_7>({ collection, makeKey, key }: {
+        tryGetItem: <T_7>({ collection, makeCollectionKey, key }: {
             collection: Set<T_7>;
-            makeKey: IMakeKey<T_7>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_7>;
             key: string;
         }) => T_7 | undefined;
         insertItem: <T_8>({ collection, key, value }: {
@@ -45,14 +45,14 @@ export declare const CollectionUtils: {
             key: string;
             value: T_8;
         }) => void;
-        tryUpdateItem: <T_9>({ collection, makeKey, value }: {
+        tryUpdateItem: <T_9>({ collection, makeCollectionKey, value }: {
             collection: Set<T_9>;
-            makeKey: IMakeKey<T_9>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_9>;
             value: T_9;
         }) => void;
-        tryDeleteItem: <T_10>({ collection, makeKey, key }: {
+        tryDeleteItem: <T_10>({ collection, makeCollectionKey, key }: {
             collection: Set<T_10>;
-            makeKey: IMakeKey<T_10>;
+            makeCollectionKey: IMakeRdoCollectionKey<T_10>;
             key: string;
         }) => void;
     };

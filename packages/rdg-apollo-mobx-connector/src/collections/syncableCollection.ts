@@ -81,7 +81,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
-    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeKey: this._makeRDOCollectionKeyFromDomainElement });
+    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeCollectionKey: this._makeRDOCollectionKeyFromDomainElement });
   };
 
   public clear = () => {

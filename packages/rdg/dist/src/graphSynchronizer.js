@@ -507,12 +507,12 @@ class GraphSynchronizer {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.size,
-            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
+            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Set.getKeys({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
             makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
-            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryGetItem({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement, key })
                 : undefined,
             insertItemToTargetCollection: (key, value) => _1.CollectionUtils.Set.insertItem({ collection: domainNodeCollection, key, value }),
-            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Set.tryDeleteItem({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement, key })
                 : undefined,
             makeItemForTargetCollection: makeRDO,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
@@ -521,7 +521,7 @@ class GraphSynchronizer {
                 sourceNodeVal: sourceElementVal,
                 domainNodeKey: targetElementKey,
                 domainNodeVal: targetElementVal,
-                tryUpdateDomainNode: (key, value) => _1.CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, value }),
+                tryUpdateDomainNode: (key, value) => _1.CollectionUtils.Set.tryUpdateItem({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement, value }),
             }),
         });
     }
@@ -532,13 +532,13 @@ class GraphSynchronizer {
         return _1.SyncUtils.synchronizeCollection({
             sourceCollection,
             getTargetCollectionSize: () => domainNodeCollection.length,
-            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
+            getTargetCollectionKeys: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? () => _1.CollectionUtils.Array.getKeys({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement }) : undefined,
             makeRDOCollectionKeyFromSourceElement: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromSourceElement,
             makeItemForTargetCollection: makeRDO,
-            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement, key })
+            tryGetItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.getItem({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement, key })
                 : undefined,
             insertItemToTargetCollection: (key, value) => _1.CollectionUtils.Array.insertItem({ collection: domainNodeCollection, key, value }),
-            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeKey: makeRDOCollectionKey.fromDomainElement, key })
+            tryDeleteItemFromTargetCollection: (makeRDOCollectionKey === null || makeRDOCollectionKey === void 0 ? void 0 : makeRDOCollectionKey.fromDomainElement) ? (key) => _1.CollectionUtils.Array.deleteItem({ collection: domainNodeCollection, makeCollectionKey: makeRDOCollectionKey.fromDomainElement, key })
                 : undefined,
             trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) => this.trySynchronizeNode({
                 sourceNodeKind: 'arrayElement',

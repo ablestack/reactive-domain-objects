@@ -1,3 +1,3 @@
+export * from './types';
 export * from './utilities';
 export * from './graphSynchronizer';
-export * from './types';

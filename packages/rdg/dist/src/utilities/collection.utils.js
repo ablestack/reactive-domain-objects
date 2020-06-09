@@ -4,49 +4,49 @@ exports.CollectionUtils = void 0;
 const logger_1 = require("../infrastructure/logger");
 const logger = logger_1.Logger.make('CollectionUtils');
 const _Array = {
-    getKeys: ({ collection, makeKey }) => {
-        return collection.length > 0 ? collection.map((item) => makeKey(item)) : [];
+    getKeys: ({ collection, makeCollectionKey }) => {
+        return collection.length > 0 ? collection.map((item) => makeCollectionKey(item)) : [];
     },
-    getItem: ({ collection, makeKey, key }) => {
-        return collection.length > 0 ? collection.find((item) => makeKey(item) === key) : undefined;
+    getItem: ({ collection, makeCollectionKey, key }) => {
+        return collection.length > 0 ? collection.find((item) => makeCollectionKey(item) === key) : undefined;
     },
     insertItem: ({ collection, key, value }) => collection.push(value),
-    updateItem: ({ collection, makeKey, value }) => {
+    updateItem: ({ collection, makeCollectionKey, value }) => {
         if (collection.length === 0)
             return;
-        const key = makeKey(value);
-        const existingItemIndex = collection.findIndex((item) => makeKey(item) === key);
+        const key = makeCollectionKey(value);
+        const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
         if (existingItemIndex) {
             collection.splice(existingItemIndex, 1, value);
         }
     },
-    deleteItem: ({ collection, makeKey, key }) => {
+    deleteItem: ({ collection, makeCollectionKey, key }) => {
         if (collection.length === 0)
             return;
-        collection.splice(collection.findIndex((item) => makeKey(item) === key), 1);
+        collection.splice(collection.findIndex((item) => makeCollectionKey(item) === key), 1);
     },
     clear: ({ collection }) => collection.splice(0, collection.length),
 };
 const _Set = {
-    getKeys: ({ collection, makeKey }) => (collection.size > 0 ? Array.from(collection.values()).map((domainItem) => makeKey(domainItem)) : []),
-    tryGetItem: ({ collection, makeKey, key }) => collection.size > 0 ? Array.from(collection.values()).find((domainItem) => makeKey(domainItem) == key) : undefined,
+    getKeys: ({ collection, makeCollectionKey }) => collection.size > 0 ? Array.from(collection.values()).map((domainItem) => makeCollectionKey(domainItem)) : [],
+    tryGetItem: ({ collection, makeCollectionKey, key }) => collection.size > 0 ? Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) == key) : undefined,
     insertItem: ({ collection, key, value }) => {
         collection.add(value);
     },
-    tryUpdateItem: ({ collection, makeKey, value }) => {
+    tryUpdateItem: ({ collection, makeCollectionKey, value }) => {
         if (collection.size === 0)
             return;
-        const key = makeKey(value);
-        const existingItem = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
+        const key = makeCollectionKey(value);
+        const existingItem = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
         if (existingItem) {
             collection.delete(existingItem);
         }
         collection.add(value);
     },
-    tryDeleteItem: ({ collection, makeKey, key }) => {
+    tryDeleteItem: ({ collection, makeCollectionKey, key }) => {
         if (collection.size === 0)
             return;
-        const item = Array.from(collection.values()).find((domainItem) => makeKey(domainItem) === key);
+        const item = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
         if (item)
             collection.delete(item);
     },

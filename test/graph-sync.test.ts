@@ -111,7 +111,7 @@ function makePreconfiguredLibraryGraphSynchronizerUsingPathOptions() {
   // SETUP
   return new GraphSynchronizer({
     targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRDO: (book: Book) => new BookRDO() }],
-    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
+    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 }
 
@@ -303,7 +303,7 @@ function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
   // SETUP
   return new GraphSynchronizer({
     targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, makeRDO: (book: Book) => new BookRDO() }],
-    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
+    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 }
 
@@ -349,7 +349,7 @@ function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
         makeRDO: (o: SimpleObject) => new SimpleRDO(),
       },
     ],
-    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
+    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 }
 
@@ -620,7 +620,7 @@ test('Synchronize collection element - handle null value edits', () => {
 // TEST
 // --------------------------------------------------------------
 
-test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
+test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
   const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
@@ -628,7 +628,7 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
       { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() },
       { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
     ],
-    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
+    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 
   // POSTURE VERIFICATION
@@ -684,7 +684,7 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND te
 // TEST
 // --------------------------------------------------------------
 
-test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
+test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
   const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer({
     targetedNodeOptions: [
@@ -696,7 +696,7 @@ test('commonDomainFieldnamePostfix works with DefaultSourceNodeKeyMakers', () =>
         makeRDOCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromDomainElement: (RDO) => RDO._id },
       },
     ],
-    globalNodeOptions: { commonDomainFieldnamePostfix: '$' },
+    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
   });
 
   // POSTURE VERIFICATION

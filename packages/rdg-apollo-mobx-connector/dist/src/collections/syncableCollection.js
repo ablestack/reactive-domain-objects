@@ -40,7 +40,7 @@ class SyncableCollection {
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
             this._map$.delete(key);
-            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeKey: this._makeRDOCollectionKeyFromDomainElement });
+            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRDOCollectionKeyFromDomainElement });
         };
         this.clear = () => {
             this._map$.clear();
