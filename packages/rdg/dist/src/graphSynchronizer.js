@@ -305,7 +305,6 @@ class GraphSynchronizer {
     }
     /** */
     tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection }) {
-        var _a, _b, _c;
         let makeRDOCollectionKey;
         let makeRDO;
         const collectionElementType = this.getCollectionElementType({ sourceCollection, domainCollection });
@@ -322,9 +321,9 @@ class GraphSynchronizer {
                 ? { makeRDOCollectionKey: domainCollection.makeRDOCollectionKey, makeRDO: domainCollection.makeRDO }
                 : { makeRDOCollectionKeyFromSourceElement: undefined, makeRDOCollectionKeyFromDomainElement: domainCollection.makeRDOCollectionKeyFromDomainElement, makeRDO: undefined };
             // GET CONFIG ITEM: makeRDOCollectionKeyFromSourceElement
-            makeRDOCollectionKey = ((_a = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _a === void 0 ? void 0 : _a.makeRDOCollectionKey) || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
+            makeRDOCollectionKey = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRDOCollectionKey) || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
             // GET CONFIG ITEM: makeRDO
-            makeRDO = ((_b = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _b === void 0 ? void 0 : _b.makeRDO) || ((_c = targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.domainCollection) === null || _c === void 0 ? void 0 : _c.makeRDO) || typeDerivedOptions.makeRDO;
+            makeRDO = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRDO) || (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRDO) || typeDerivedOptions.makeRDO;
         }
         return { makeRDOCollectionKey, makeRDO };
     }

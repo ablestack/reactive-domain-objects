@@ -562,8 +562,8 @@
         "affectsGlobalScope": false
       },
       "../src/types.ts": {
-        "version": "405ee81f5e49c11c61061a4abc4f5613b678ef624debe5885697ea43078f8e6f",
-        "signature": "eba257fbbcf99595910377e26f9fcc44b596a2645ae90b768addaa1ffa7352f2",
+        "version": "d3ef304336437a0c44c283df77a9ebbe1fc033fc638da143316350127df689e4",
+        "signature": "5d84c88902c6c5623d47fe67390994ef675f744fe0bb235ef922b3b971d39359",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
@@ -572,7 +572,7 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "be2a37477600f55122f54bb39a07d33138df2e73d9a86d5ff7680d82fa544e2e",
+        "version": "00bbc95daa0ba56a77a78e058e9433fe5fbc0947b200bde2c00f1fb071803a22",
         "signature": "ccec400e1671666d63160ec9fb041ffa8a3d2a07eb0e882d594aa7418b505f8c",
         "affectsGlobalScope": false
       },

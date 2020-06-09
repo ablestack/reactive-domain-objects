@@ -502,7 +502,7 @@ interface ISyncableCollection<T> extends Iterable<T> {
 ```TypeScript
 interface IRDOFactory<S, D> {
   makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
-  makeRDO: ImakeRDO<S, D>;
+  makeRDO: IMakeRDO<S, D>;
 }
 ```
 

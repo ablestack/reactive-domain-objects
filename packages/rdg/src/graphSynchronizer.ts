@@ -7,7 +7,7 @@ import {
   IGlobalPropertyNameTransformation,
   IGraphSynchronizer,
   IGraphSyncOptions,
-  ImakeRDO,
+  IMakeRDO,
   INodeSyncOptions,
   IsICustomEqualityRDO,
   IsICustomSync,
@@ -431,7 +431,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /** */
   private tryGetDomainCollectionProcessingMethods({ sourceCollection, domainCollection }: { sourceCollection: Array<any>; domainCollection: any }) {
     let makeRDOCollectionKey: IDomainNodeKeyFactory<any, any> | undefined;
-    let makeRDO: ImakeRDO<any, any> | undefined;
+    let makeRDO: IMakeRDO<any, any> | undefined;
 
     const collectionElementType = this.getCollectionElementType({ sourceCollection, domainCollection });
 
@@ -448,10 +448,10 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         : { makeRDOCollectionKeyFromSourceElement: undefined, makeRDOCollectionKeyFromDomainElement: domainCollection.makeRDOCollectionKeyFromDomainElement, makeRDO: undefined };
 
       // GET CONFIG ITEM: makeRDOCollectionKeyFromSourceElement
-      makeRDOCollectionKey = targetDerivedOptions?.domainCollection?.makeRDOCollectionKey || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
+      makeRDOCollectionKey = targetDerivedOptions?.makeRDOCollectionKey || typeDerivedOptions.makeRDOCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, domainCollection });
 
       // GET CONFIG ITEM: makeRDO
-      makeRDO = targetDerivedOptions?.domainCollection?.makeRDO || targetDerivedOptions?.domainCollection?.makeRDO || typeDerivedOptions.makeRDO;
+      makeRDO = targetDerivedOptions?.makeRDO || targetDerivedOptions?.makeRDO || typeDerivedOptions.makeRDO;
     }
 
     return { makeRDOCollectionKey, makeRDO };
@@ -611,7 +611,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: ISyncableCollection<any>;
     makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
-    makeRDO: ImakeRDO<any, any>;
+    makeRDO: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -646,7 +646,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: Map<string, S>;
     makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
-    makeRDO: ImakeRDO<any, any>;
+    makeRDO: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -681,7 +681,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: Set<D>;
     makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
-    makeRDO: ImakeRDO<S, D>;
+    makeRDO: IMakeRDO<S, D>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,
@@ -720,7 +720,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceCollection: Array<S>;
     domainNodeCollection: Array<any>;
     makeRDOCollectionKey: IDomainNodeKeyFactory<S, D>;
-    makeRDO: ImakeRDO<any, any>;
+    makeRDO: IMakeRDO<any, any>;
   }): boolean {
     return SyncUtils.synchronizeCollection({
       sourceCollection,

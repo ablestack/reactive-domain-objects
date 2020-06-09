@@ -37,20 +37,17 @@ export interface IGlobalPropertyNameTransformation {
  * use cases, require both `fromSourceElement` and `fromDomainElement` for a DomainNodeKeyFactory config
  *
  *****************************************************************************/
-export interface INodeSyncOptionsStrict<S, D> {
-    sourceNodeMatcher: INodeSelector<S>;
-    ignore?: boolean;
-    domainCollection?: IRDOFactory<S, D>;
-}
 export interface INodeSyncOptions<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    domainCollection?: IRDOFactory<S, D>;
+    makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
+    makeRDO?: IMakeRDO<S, D>;
 }
 export interface INodeSyncOptionsStrict<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
-    domainCollection?: IRDOFactory<S, D>;
+    makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
+    makeRDO?: IMakeRDO<S, D>;
 }
 export interface INodeSelector<S> {
     nodePath?: string;
@@ -59,16 +56,16 @@ export interface INodeSelector<S> {
 export interface IMakeKey<T> {
     (item: T): string;
 }
-export interface ImakeRDO<S, D> {
+export interface IMakeRDO<S, D> {
     (sourceObject: S): D;
 }
 export interface IRDOFactory<S, D> {
     makeRDOCollectionKey?: IDomainNodeKeyFactory<S, D>;
-    makeRDO: ImakeRDO<S, D>;
+    makeRDO: IMakeRDO<S, D>;
 }
 export interface IRDOFactoryStrict<S, D> {
     makeRDOCollectionKey?: IDomainNodeKeyFactoryStrict<S, D>;
-    makeRDO: ImakeRDO<S, D>;
+    makeRDO: IMakeRDO<S, D>;
 }
 export interface IDomainNodeKeyFactoryStrict<S, D> {
     fromSourceElement: IMakeKey<S>;
