@@ -30,7 +30,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
     makeRDO,
   }: {
     makeRDOCollectionKeyFromSourceElement: (sourceNode: S) => string;
-    makeRDOCollectionKeyFromDomainElement: (domainNode: D) => string;
+    makeRDOCollectionKeyFromDomainElement: (rdo: D) => string;
     makeRDO: (sourceNode: S) => D;
   }) {
     this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
@@ -46,8 +46,8 @@ export class SyncableCollection<S extends object, D extends object> implements I
     return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
   };
 
-  public makeRDOCollectionKeyFromDomainElement = (domainNode: D) => {
-    return this._makeRDOCollectionKeyFromDomainElement(domainNode);
+  public makeRDOCollectionKeyFromDomainElement = (rdo: D) => {
+    return this._makeRDOCollectionKeyFromDomainElement(rdo);
   };
 
   public makeRDO = (sourceItem: S) => {

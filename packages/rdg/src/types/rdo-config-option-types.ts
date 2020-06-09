@@ -7,7 +7,7 @@ import { IEqualityComparer, IRdoCollectionKeyFactory, IMakeRDO, IRdoCollectionKe
 //---------------------------------------------
 
 export interface IGraphSynchronizer {
-  smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D });
+  smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D });
 }
 
 export interface IGraphSyncOptions {

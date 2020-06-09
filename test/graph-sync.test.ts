@@ -34,7 +34,7 @@ test('Flat object demo', () => {
   const graphSynchronizer = new GraphSynchronizer();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: fooRDO, rootSourceNode: fooSourceJSON });
 
   // RESULTS VERIFICATION
   expect(fooRDO.id).toEqual(fooSourceJSON.id);
@@ -50,7 +50,7 @@ test('Simple graph usage demo', () => {
   const graphSynchronizer = new GraphSynchronizer();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
+  graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 
   // RESULTS VERIFICATION
   expect(fooSimpleRDO.bar.id).toEqual(fooSourceJSONSimple.bar.id);
@@ -70,7 +70,7 @@ test('Collection usage demo', () => {
   const graphSynchronizer = new GraphSynchronizer(syncOptions);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSONWithCollection });
+  graphSynchronizer.smartSync({ rootRdo: fooRDO, rootSourceNode: fooSourceJSONWithCollection });
 
   // RESULTS VERIFICATION
   expect(fooRDO.collectionOfBar.size).toEqual(fooSourceJSONWithCollection.collectionOfBar.length);
@@ -94,7 +94,7 @@ test('Simple usage demo with notes', () => {
   expect(fooWithNotesRDO.mapOfBar.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: fooWithNotesRDO, rootSourceNode: fooWithNotesSourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: fooWithNotesRDO, rootSourceNode: fooWithNotesSourceJSON });
 
   // RESULTS VERIFICATION
   expect(fooWithNotesRDO.arrayOfBar.length).toEqual(fooWithNotesSourceJSON.arrayOfBar.length);
@@ -129,7 +129,7 @@ test('Synchronize updates complex domain graph as expected', () => {
   expect(libraryRDO.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // RESULTS VERIFICATION
   expect(libraryRDO.name).not.toBeFalsy();
@@ -162,7 +162,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // initiate a smart sync
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // setup spys to ensure the data is actually being set as expected
   const authors_2_books_7_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[7], 'pages$', 'set');
@@ -185,7 +185,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
     libraryWithEdits.authors[2].books[9].pages = i;
 
     // initiate a smart sync
-    graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEdits });
+    graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
   }
 
   const finishTime = performance.now();
@@ -225,7 +225,7 @@ test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations 
   }
 
   // initial sync
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // setup spys to ensure the data is actually being set as expected
   const authors_2_books_7_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[7], 'pages$', 'set');
@@ -236,7 +236,7 @@ test(`achieves more than ${CHANGE_SYNC_ITERATION_COUNT} CHANGE synchronizations 
   const startTime = performance.now();
 
   for (let i = 0; i < iterations; i++) {
-    graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEditsCollection[i] });
+    graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEditsCollection[i] });
   }
 
   const finishTime = performance.now();
@@ -267,7 +267,7 @@ test('Synchronize only updated properties only where source data changed', () =>
   const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingPathOptions();
 
   // Initial data load
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // Add method spies
   const library_code_spy_set = jest.spyOn(libraryRDO, 'code$', 'set');
@@ -285,7 +285,7 @@ test('Synchronize only updated properties only where source data changed', () =>
 
   // EXECUTE
   // update
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: libraryWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
 
   // RESULTS VERIFICATION
   expect(library_code_spy_set).toHaveBeenCalled();
@@ -318,7 +318,7 @@ test('Synchronize using sourceNodeMatcher config', () => {
   expect(libraryRDO.authors.size).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: libraryRDO, rootSourceNode: librarySourceJSON });
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
   // RESULTS VERIFICATION
   expect(libraryRDO.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
@@ -367,7 +367,7 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
@@ -389,7 +389,7 @@ test('Synchronize all primitive collection types', () => {
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(0);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
@@ -405,7 +405,7 @@ test('Synchronize collection additions', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
@@ -428,7 +428,7 @@ test('Synchronize collection additions', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects.push({ id: '4' });
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
@@ -446,7 +446,7 @@ test('Synchronize collection removals', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
@@ -469,7 +469,7 @@ test('Synchronize collection removals', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(2);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(2);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(2);
@@ -487,7 +487,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Uno });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Uno });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(1);
@@ -510,7 +510,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(0);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(0);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(0);
@@ -528,7 +528,7 @@ test('Synchronize collection element edit', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
@@ -551,7 +551,7 @@ test('Synchronize collection element edit', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
@@ -574,7 +574,7 @@ test('Synchronize collection element - handle null value edits', () => {
   const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
 
   // SETUP
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
@@ -597,7 +597,7 @@ test('Synchronize collection element - handle null value edits', () => {
   allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
-  graphSynchronizer.smartSync({ rootDomainNode: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
@@ -636,7 +636,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // LOAD DATA
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION STAGE 1
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO.length);
@@ -649,7 +649,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
   const targetedNodeOptionsTestRootJSONWithEdits = _.cloneDeep(targetedNodeOptionsTestRootJSON);
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
@@ -661,7 +661,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
   // REMOVE ANOTHER ITEM & SYNC
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 3
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
@@ -670,7 +670,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
   // ADD ITEM & SYNC
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.push({ id: '4A' });
   targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.push({ id: '4B' });
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
@@ -704,7 +704,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootDomainNode: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
 
   // RESULTS VERIFICATION
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);

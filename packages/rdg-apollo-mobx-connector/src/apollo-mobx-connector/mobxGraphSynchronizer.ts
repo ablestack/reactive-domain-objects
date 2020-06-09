@@ -12,11 +12,11 @@ export class MobxGraphSynchronizer extends GraphSynchronizer {
     super(options);
   }
 
-  public smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: { rootSourceNode: S; rootDomainNode: D }) {
-    logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
+  public smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D }) {
+    logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootRdo });
     runInAction('trySynchronizeObject', () => {
-      super.smartSync({ rootSourceNode, rootDomainNode });
+      super.smartSync({ rootSourceNode, rootRdo });
     });
-    logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootRdo });
   }
 }

@@ -13,13 +13,13 @@ Below are some simple usage examples for common scenarios, with the goal of illu
 2. Call the smartSync method, passing in a root RDO, and root JSON node, to load initial data (optional)
 
 ```
-graphSynchronizer.smartSync({ rootDomainNode, rootSourceNode });
+graphSynchronizer.smartSync({ rootRdo, rootSourceNode });
 ```
 
 3. Every time the source JSON is updated (or may have been updated), call the smartSync method again\*
 
 ```
-graphSynchronizer.smartSync({ rootDomainNode, rootSourceNode });
+graphSynchronizer.smartSync({ rootRdo, rootSourceNode });
 ```
 
 \*The GraphSynchronize object maintains state to track previous source values. So, in order to ensure that only the changed values are updated, it is important that subsequent smartSync calls are made using the original instance of the GraphSynchronize object.
@@ -40,7 +40,7 @@ const fooRDO = new FooRDO();        // Empty RDO
 const graphSynchronizer = new GraphSynchronizer();  // GraphSynchronizer
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooRDO, rootSourceNode: fooSourceJSON }); //*2
+graphSynchronizer.smartSync({ rootRdo: fooRDO, rootSourceNode: fooSourceJSON }); //*2
 
 ```
 
@@ -79,7 +79,7 @@ const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer();
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
+graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 ```
 
 > Note: **RDO Instances**
@@ -119,7 +119,7 @@ const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer(syncOptions); // Note - passing in sync options here
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
+graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
 
 ```
 
@@ -233,7 +233,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
       makeRDOCollectionKey: { // -------------------> // If makeRDOCollectionKey creation methods not supplied
         fromSourceElement: (sourceNode) => string;    // a default key creation method will be supplied which
-        fromDomainElement: (domainNode) => string;    // assumes an `id` field id available (or an error will be thrown)
+        fromDomainElement: (rdo) => string;    // assumes an `id` field id available (or an error will be thrown)
       },
       makeRDO: (sourceNode) => any;                   // Use when RDOs are contained in a parent collection
                                                       // so they can be automatically instantiated as items are added to the
@@ -379,7 +379,7 @@ The two contained configuration properties are:
 
 ```
   fromSourceElement: (sourceNode) => string;
-  fromDomainElement: (domainNode) => string;
+  fromDomainElement: (rdo) => string;
 ```
 
 These methods:

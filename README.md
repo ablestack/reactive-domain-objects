@@ -53,12 +53,12 @@ const fooSimpleRDO = new FooDomainGraphSimple();
 const graphSynchronizer = new GraphSynchronizer(/* Config Options Here */);
 
 // SYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'Original Name' } } });
+graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'Original Name' } } });
 
 // Make any changes to the source data
 
 // RESYNC
-graphSynchronizer.smartSync({ rootDomainNode: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'New Name' } } });
+graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: { bar: { id: 'bar-1', name: 'New Name' } } });
 
 ```
 
