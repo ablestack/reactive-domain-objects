@@ -52,16 +52,16 @@ const _Set = {
     },
 };
 const _Record = {
-    getKeys: ({ collection }) => Object.keys(collection),
-    tryGetItem: ({ collection, key }) => collection[key],
-    insertItem: ({ collection, key, value }) => {
-        collection[key] = value;
+    getKeys: ({ record }) => Object.keys(record),
+    tryGetItem: ({ record, key }) => record[key],
+    insertItem: ({ record, key, value }) => {
+        record[key] = value;
     },
-    tryUpdateItem: ({ collection, key, value }) => {
-        collection[key] = value;
+    tryUpdateItem: ({ record, key, value }) => {
+        record[key] = value;
     },
-    tryDeleteItem: ({ collection, key }) => {
-        delete collection[key];
+    tryDeleteItem: ({ record, key }) => {
+        delete record[key];
     },
 };
 function isIterable(obj) {

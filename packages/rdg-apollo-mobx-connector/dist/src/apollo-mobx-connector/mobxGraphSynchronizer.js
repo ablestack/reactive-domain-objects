@@ -12,12 +12,12 @@ class MobxGraphSynchronizer extends rdg_1.GraphSynchronizer {
     constructor(options) {
         super(options);
     }
-    smartSync({ rootSourceNode, rootDomainNode }) {
-        logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootDomainNode });
+    smartSync({ rootSourceNode, rootRdo }) {
+        logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootRdo });
         mobx_1.runInAction('trySynchronizeObject', () => {
-            super.smartSync({ rootSourceNode, rootDomainNode });
+            super.smartSync({ rootSourceNode, rootRdo });
         });
-        logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootDomainNode });
+        logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootRdo });
     }
 }
 exports.MobxGraphSynchronizer = MobxGraphSynchronizer;

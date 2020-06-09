@@ -211,9 +211,34 @@
         "signature": "7c3ab15d69ca0a28ec5a53e8d540c65d0a436b60069e598deaa83d67102ffbbe",
         "affectsGlobalScope": false
       },
+      "../../rdg/dist/src/types/general-types.d.ts": {
+        "version": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
+        "signature": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
+        "affectsGlobalScope": false
+      },
+      "../../rdg/dist/src/types/rdo-collection-types.d.ts": {
+        "version": "427866db0e407c9e6e5fcdd07e6289b1205479797ee92cd1e7f9d37fe78ceb5a",
+        "signature": "427866db0e407c9e6e5fcdd07e6289b1205479797ee92cd1e7f9d37fe78ceb5a",
+        "affectsGlobalScope": false
+      },
+      "../../rdg/dist/src/types/rdo-config-option-types.d.ts": {
+        "version": "728f917c98fa96a3cb530ec50dc327567e3efa614aded98affa436812c68746f",
+        "signature": "728f917c98fa96a3cb530ec50dc327567e3efa614aded98affa436812c68746f",
+        "affectsGlobalScope": false
+      },
+      "../../rdg/dist/src/types/rdo-customization-types.d.ts": {
+        "version": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
+        "signature": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
+        "affectsGlobalScope": false
+      },
+      "../../rdg/dist/src/types/index.d.ts": {
+        "version": "e2322b56cf1b313111f232d06c65baf0d9850d39f39e772ffcb071573884c99d",
+        "signature": "e2322b56cf1b313111f232d06c65baf0d9850d39f39e772ffcb071573884c99d",
+        "affectsGlobalScope": false
+      },
       "../../rdg/dist/src/utilities/collection.utils.d.ts": {
-        "version": "29b5c02f202efd4185b4055fa28e10d9612f3f561152838c083345903e0e29b6",
-        "signature": "29b5c02f202efd4185b4055fa28e10d9612f3f561152838c083345903e0e29b6",
+        "version": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
+        "signature": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
         "affectsGlobalScope": false
       },
       "../../rdg/dist/src/utilities/comparers.d.ts": {
@@ -232,18 +257,13 @@
         "affectsGlobalScope": false
       },
       "../../rdg/dist/src/graphsynchronizer.d.ts": {
-        "version": "ccec400e1671666d63160ec9fb041ffa8a3d2a07eb0e882d594aa7418b505f8c",
-        "signature": "ccec400e1671666d63160ec9fb041ffa8a3d2a07eb0e882d594aa7418b505f8c",
-        "affectsGlobalScope": false
-      },
-      "../../rdg/dist/src/types.d.ts": {
-        "version": "4f8fbbf038dc69c4089ee8054d1694e8a67523f61b7d82ad86076225ad5dfec2",
-        "signature": "4f8fbbf038dc69c4089ee8054d1694e8a67523f61b7d82ad86076225ad5dfec2",
+        "version": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
+        "signature": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
         "affectsGlobalScope": false
       },
       "../../rdg/dist/src/index.d.ts": {
-        "version": "f606181611556ec70ac0cc3347c121a733c27555a4e76e4384817b2aaf470e4c",
-        "signature": "f606181611556ec70ac0cc3347c121a733c27555a4e76e4384817b2aaf470e4c",
+        "version": "01cc0ac61c5b9ec9ee7efe97a808cfd0900cca9dc4f615dfecd65523b672b590",
+        "signature": "01cc0ac61c5b9ec9ee7efe97a808cfd0900cca9dc4f615dfecd65523b672b590",
         "affectsGlobalScope": false
       },
       "../node_modules/mobx/lib/utils/utils.d.ts": {
@@ -482,8 +502,8 @@
         "affectsGlobalScope": false
       },
       "../src/apollo-mobx-connector/mobxgraphsynchronizer.ts": {
-        "version": "ecc315fb83e668241035cbab0e8b4223c2b00146ac4f8264ab004c2899e6df78",
-        "signature": "0aff735f7e94844144f545b16e3a46420b15176462007311efeff0d57b756e43",
+        "version": "bf01a13b76ef9e46c3c6d64852684487db655674ed61db5201a7d53fb775935a",
+        "signature": "c2b320c2febbdea6f070cfcdb9dffb01d0e60e940aedbb12481ec4fb3215f06c",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/zen-observable/index.d.ts": {
@@ -1617,8 +1637,8 @@
         "affectsGlobalScope": false
       },
       "../src/collections/syncablecollection.ts": {
-        "version": "8ad2bb83f0c500f3612b05625f40fd793146346fc4ff139478fc4d00fd25d797",
-        "signature": "6c831e961d5415e8fee3b700b78119140a745e942785c012eb6921e1a7e5e1e5",
+        "version": "5e97968f602f392ae2bf257022267f57b96cda0eff3d49eb764ac7d917410238",
+        "signature": "ae2078285e02cf10fa85d958b97191bde48fc4f8015a6af36858caaefcf1c58b",
         "affectsGlobalScope": false
       },
       "../src/collections/index.ts": {
@@ -5301,7 +5321,7 @@
       ],
       "../../rdg/dist/src/index.d.ts": [
         "../../rdg/dist/src/graphsynchronizer.d.ts",
-        "../../rdg/dist/src/types.d.ts",
+        "../../rdg/dist/src/types/index.d.ts",
         "../../rdg/dist/src/utilities/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5316,7 +5336,41 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdg/dist/src/types.d.ts": [
+      "../../rdg/dist/src/types/general-types.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/index.d.ts": [
+        "../../rdg/dist/src/types/general-types.d.ts",
+        "../../rdg/dist/src/types/rdo-collection-types.d.ts",
+        "../../rdg/dist/src/types/rdo-config-option-types.d.ts",
+        "../../rdg/dist/src/types/rdo-customization-types.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-collection-types.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-config-option-types.d.ts": [
+        "../../rdg/dist/src/types/index.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-customization-types.d.ts": [
+        "../../rdg/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -8757,7 +8811,7 @@
       ],
       "../../rdg/dist/src/index.d.ts": [
         "../../rdg/dist/src/graphsynchronizer.d.ts",
-        "../../rdg/dist/src/types.d.ts",
+        "../../rdg/dist/src/types/index.d.ts",
         "../../rdg/dist/src/utilities/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -8772,7 +8826,41 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdg/dist/src/types.d.ts": [
+      "../../rdg/dist/src/types/general-types.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/index.d.ts": [
+        "../../rdg/dist/src/types/general-types.d.ts",
+        "../../rdg/dist/src/types/rdo-collection-types.d.ts",
+        "../../rdg/dist/src/types/rdo-config-option-types.d.ts",
+        "../../rdg/dist/src/types/rdo-customization-types.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-collection-types.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-config-option-types.d.ts": [
+        "../../rdg/dist/src/types/index.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdg/dist/src/types/rdo-customization-types.d.ts": [
+        "../../rdg/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -9175,7 +9263,11 @@
       "../../rdg/dist/src/graphsynchronizer.d.ts",
       "../../rdg/dist/src/index.d.ts",
       "../../rdg/dist/src/infrastructure/logger.d.ts",
-      "../../rdg/dist/src/types.d.ts",
+      "../../rdg/dist/src/types/general-types.d.ts",
+      "../../rdg/dist/src/types/index.d.ts",
+      "../../rdg/dist/src/types/rdo-collection-types.d.ts",
+      "../../rdg/dist/src/types/rdo-config-option-types.d.ts",
+      "../../rdg/dist/src/types/rdo-customization-types.d.ts",
       "../../rdg/dist/src/utilities/collection.utils.d.ts",
       "../../rdg/dist/src/utilities/comparers.d.ts",
       "../../rdg/dist/src/utilities/index.d.ts",

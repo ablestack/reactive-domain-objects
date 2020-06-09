@@ -7,16 +7,16 @@ const rdg_1 = require("@ablestack/rdg");
 const logger_1 = require("@ablestack/rdg/infrastructure/logger");
 const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
-    constructor({ makeRDOCollectionKeyFromSourceElement, makeRDOCollectionKeyFromDomainElement, makeRDO, }) {
+    constructor({ makeRDOCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRDO, }) {
         this._array$ = new Array();
         // -----------------------------------
-        // IRDOFactory
+        // IRdoFactory
         // -----------------------------------
         this.makeRDOCollectionKeyFromSourceElement = (sourceNode) => {
             return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
         };
-        this.makeRDOCollectionKeyFromDomainElement = (domainNode) => {
-            return this._makeRDOCollectionKeyFromDomainElement(domainNode);
+        this.makeRdoCollectionKeyFromRdoElement = (rdo) => {
+            return this._makeRdoCollectionKeyFromRdoElement(rdo);
         };
         this.makeRDO = (sourceItem) => {
             return this._makeRDO(sourceItem);
@@ -40,14 +40,14 @@ class SyncableCollection {
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
             this._map$.delete(key);
-            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRDOCollectionKeyFromDomainElement });
+            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
         };
         this.clear = () => {
             this._map$.clear();
             rdg_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
         this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
-        this._makeRDOCollectionKeyFromDomainElement = makeRDOCollectionKeyFromDomainElement;
+        this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
         this._makeRDO = makeRDO;
         this._map$ = new Map();
     }

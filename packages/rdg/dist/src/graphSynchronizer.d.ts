@@ -1,5 +1,21 @@
 import { IGraphSynchronizer, IGraphSyncOptions } from '.';
 /**
+ * INTERNAL TYPES
+ *
+ */
+export declare type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
+export declare type JsonNodeKind = 'objectProperty' | 'arrayElement';
+export declare type SourceNodeType = 'Primitive' | 'Array' | 'Object';
+export declare type SourceNodeTypeInfo = {
+    type: SourceNodeType | undefined;
+    builtInType: JavaScriptBuiltInType;
+};
+export declare type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
+export declare type RdoFieldTypeInfo = {
+    type: RdoFieldType | undefined;
+    builtInType: JavaScriptBuiltInType;
+};
+/**
  *
  *
  * @export
@@ -29,11 +45,15 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
+    private getRdoFieldname;
+    /**
+     *
+     */
     private getSourceNodeType;
     /**
      *
      */
-    private getDomainNodeType;
+    private getRdoFieldType;
     /**
      *
      */
@@ -43,9 +63,9 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    private synchronizeSourceArray;
+    private synchronizeTargetCollectionWithSourceArray;
     /** */
-    private tryGetDomainCollectionProcessingMethods;
+    private tryGetRdoCollectionProcessingMethods;
     /** */
     private getMatchingOptionsForNode;
     /** */
@@ -65,21 +85,21 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    private synchronizeDomainMap;
+    private synchronizeTargetMap;
     /**
      *
      */
-    private synchronizeDomainSet;
+    private synchronizeTargetSet;
     /**
      *
      */
-    private synchronizeDomainArray;
+    private synchronizeTargetArray;
     /**
      *
      */
-    smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootDomainNode }: {
+    smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: {
         rootSourceNode: S;
-        rootDomainNode: D;
+        rootRdo: D;
     }): void;
     /**
      *

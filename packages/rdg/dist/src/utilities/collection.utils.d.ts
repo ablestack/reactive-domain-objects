@@ -57,25 +57,25 @@ export declare const CollectionUtils: {
         }) => void;
     };
     Record: {
-        getKeys: <T_11>({ collection }: {
-            collection: Record<string, TextDecodeOptions>;
+        getKeys: <T_11>({ record }: {
+            record: Record<string, TextDecodeOptions>;
         }) => string[];
-        tryGetItem: <T_12>({ collection, key }: {
-            collection: Record<string, T_12>;
+        tryGetItem: <T_12>({ record, key }: {
+            record: Record<string, T_12>;
             key: string;
         }) => T_12;
-        insertItem: <T_13>({ collection, key, value }: {
-            collection: Record<string, T_13>;
+        insertItem: <T_13>({ record, key, value }: {
+            record: Record<string, T_13>;
             key: string;
             value: T_13;
         }) => void;
-        tryUpdateItem: <T_14>({ collection, key, value }: {
-            collection: Record<string, T_14>;
+        tryUpdateItem: <T_14>({ record, key, value }: {
+            record: Record<string, T_14>;
             key: string;
             value: T_14;
         }) => void;
-        tryDeleteItem: <T_15>({ collection, key }: {
-            collection: Record<string, T_15>;
+        tryDeleteItem: <T_15>({ record, key }: {
+            record: Record<string, T_15>;
             key: string;
         }) => void;
     };

@@ -194,7 +194,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     //
     // Try IHasCustomRdoFieldNames
     //
-    if (IsIHasCustomRdoFieldNames(parentObject)) {
+    if (!rdoFieldname && IsIHasCustomRdoFieldNames(parentObject)) {
       rdoFieldname = parentObject.tryGetRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal });
       // If fieldName not in parent, set to null
       if (rdoFieldname && !(rdoFieldname in parentObject)) {
@@ -207,7 +207,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     //
     // Try _globalNodeOptions
     //
-    if (this._globalNodeOptions?.tryGetRdoFieldname) {
+    if (!rdoFieldname && this._globalNodeOptions?.tryGetRdoFieldname) {
       rdoFieldname = this._globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal });
       // If fieldName not in parent, set to null
       if (rdoFieldname && !(rdoFieldname in parentObject)) {
@@ -232,7 +232,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Try commonRdoFieldnamePostfix
     //
     if (!rdoFieldname && this._globalNodeOptions?.commonRdoFieldnamePostfix) {
-      const domainPropKeyWithPostfix = `${rdoFieldname}${this._globalNodeOptions.commonRdoFieldnamePostfix}`;
+      const domainPropKeyWithPostfix = `${sourceFieldname}${this._globalNodeOptions.commonRdoFieldnamePostfix}`;
       rdoFieldname = domainPropKeyWithPostfix;
 
       // If fieldName not in parent, set to null

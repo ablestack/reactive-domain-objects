@@ -206,6 +206,31 @@
         "signature": "61649aa5553c5eb196c297184d861a2428210a175f2763f4e2ef0bac3169c220",
         "affectsGlobalScope": false
       },
+      "../src/types/general-types.ts": {
+        "version": "25343a1b6b9cee41d237bedfc9a525e5187efce0539417ebe3f881a1857111ba",
+        "signature": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
+        "affectsGlobalScope": false
+      },
+      "../src/types/rdo-collection-types.ts": {
+        "version": "7afffa0fed4431776602ad48941b656dcd25794e45b004f50eee63a39f1370d8",
+        "signature": "427866db0e407c9e6e5fcdd07e6289b1205479797ee92cd1e7f9d37fe78ceb5a",
+        "affectsGlobalScope": false
+      },
+      "../src/types/rdo-config-option-types.ts": {
+        "version": "fa85c3085881f0ad298a7f37f19fe792958c33c6551dcbf26656849dc56d17b4",
+        "signature": "728f917c98fa96a3cb530ec50dc327567e3efa614aded98affa436812c68746f",
+        "affectsGlobalScope": false
+      },
+      "../src/types/rdo-customization-types.ts": {
+        "version": "5f594c952cd447d6461e5346e963ddfb136be29f76eabbe8cc75406e886d940b",
+        "signature": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
+        "affectsGlobalScope": false
+      },
+      "../src/types/index.ts": {
+        "version": "b2e7273ffe65b195e5ca0ee612fce55bcc92a85ba270ae047338ae61cddff52b",
+        "signature": "e2322b56cf1b313111f232d06c65baf0d9850d39f39e772ffcb071573884c99d",
+        "affectsGlobalScope": false
+      },
       "../node_modules/@types/lodash/ts3.1/common/common.d.ts": {
         "version": "4025cf62742c5bb3d383c8a62342481622c87e3397ea5e7b7baab18b9efd5798",
         "signature": "4025cf62742c5bb3d383c8a62342481622c87e3397ea5e7b7baab18b9efd5798",
@@ -537,8 +562,8 @@
         "affectsGlobalScope": false
       },
       "../src/utilities/collection.utils.ts": {
-        "version": "3ad46f9b54beef521ee3475334efda31d133a48604353537e1e1e5ebc157a2b5",
-        "signature": "29b5c02f202efd4185b4055fa28e10d9612f3f561152838c083345903e0e29b6",
+        "version": "8fa8de1dba1ff4c0cef759728e1b0d2acf4dee814867a69ccbd1e3913e4a5111",
+        "signature": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
         "affectsGlobalScope": false
       },
       "../node_modules/@wry/equality/lib/equality.d.ts": {
@@ -561,19 +586,14 @@
         "signature": "edb76e4b056f73171c35a36262bcb1e898a85dba56a74f7a80498471684168e3",
         "affectsGlobalScope": false
       },
-      "../src/types.ts": {
-        "version": "ab5c4f85ed4cbab4d834d5be39b0c568da39b0b48c927d0e8bdebdef58a35ae0",
-        "signature": "4f8fbbf038dc69c4089ee8054d1694e8a67523f61b7d82ad86076225ad5dfec2",
-        "affectsGlobalScope": false
-      },
       "../src/index.ts": {
-        "version": "81f48aff50fbab4faad115942f3cd20a7f571914fb1f5a630f878f8a4e9d12dc",
-        "signature": "f606181611556ec70ac0cc3347c121a733c27555a4e76e4384817b2aaf470e4c",
+        "version": "2a99571b5633be4abcaef7c8c2985a45ee4b6a679993fcb2a2a07aa930d172e3",
+        "signature": "01cc0ac61c5b9ec9ee7efe97a808cfd0900cca9dc4f615dfecd65523b672b590",
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "7819029bc56382d857081b4d48800be1aedc04e3498adf9bc90e78cc8926c008",
-        "signature": "ccec400e1671666d63160ec9fb041ffa8a3d2a07eb0e882d594aa7418b505f8c",
+        "version": "095856c02bfebf2cc868a2cddb451e0daf5cbf5be10509aadc1e21018c2956b9",
+        "signature": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
         "affectsGlobalScope": false
       },
       "../node_modules/@babel/types/lib/index.d.ts": {
@@ -1983,7 +2003,7 @@
         "../node_modules/@types/node/util.d.ts",
         "../src/index.ts",
         "../src/infrastructure/logger.ts",
-        "../src/types.ts"
+        "../src/types/index.ts"
       ],
       "../src/index.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -1992,7 +2012,7 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../src/graphsynchronizer.ts",
-        "../src/types.ts",
+        "../src/types/index.ts",
         "../src/utilities/index.ts"
       ],
       "../src/infrastructure/logger.ts": [
@@ -2003,12 +2023,46 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/dotenv/types/index.d.ts"
       ],
-      "../src/types.ts": [
+      "../src/types/general-types.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
+      ],
+      "../src/types/index.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../src/types/general-types.ts",
+        "../src/types/rdo-collection-types.ts",
+        "../src/types/rdo-config-option-types.ts",
+        "../src/types/rdo-customization-types.ts"
+      ],
+      "../src/types/rdo-collection-types.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../src/types/rdo-config-option-types.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../src/types/index.ts"
+      ],
+      "../src/types/rdo-customization-types.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../src/types/index.ts"
       ],
       "../src/utilities/collection.utils.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -3283,8 +3337,20 @@
       ],
       "../src/index.ts": [
         "../src/graphsynchronizer.ts",
-        "../src/types.ts",
+        "../src/types/index.ts",
         "../src/utilities/index.ts"
+      ],
+      "../src/types/index.ts": [
+        "../src/types/general-types.ts",
+        "../src/types/rdo-collection-types.ts",
+        "../src/types/rdo-config-option-types.ts",
+        "../src/types/rdo-customization-types.ts"
+      ],
+      "../src/types/rdo-config-option-types.ts": [
+        "../src/types/index.ts"
+      ],
+      "../src/types/rdo-customization-types.ts": [
+        "../src/types/index.ts"
       ],
       "../src/utilities/collection.utils.ts": [
         "../src/index.ts"
@@ -3434,7 +3500,11 @@
       "../src/graphsynchronizer.ts",
       "../src/index.ts",
       "../src/infrastructure/logger.ts",
-      "../src/types.ts",
+      "../src/types/general-types.ts",
+      "../src/types/index.ts",
+      "../src/types/rdo-collection-types.ts",
+      "../src/types/rdo-config-option-types.ts",
+      "../src/types/rdo-customization-types.ts",
       "../src/utilities/collection.utils.ts",
       "../src/utilities/comparers.ts",
       "../src/utilities/index.ts",
