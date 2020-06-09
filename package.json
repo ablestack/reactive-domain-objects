@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@ablestack/reactive-domain-graphs",
+  "name": "@ablestack/reactive-domain-objects",
   "version": "0.2.1",
   "description": "A suite of packages to facilitate building and running graphs of Reactive Domain Objects",
   "author": "jamshally",

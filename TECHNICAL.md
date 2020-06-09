@@ -88,7 +88,7 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 
 ## Simple Usage Example With Collections
 
-Nested collections are really the complexity starts to increase. However, reactive-domain-graphs takes care of most of this complexity, just requiring that some basic configuration options are supplied. See example below, with notable differences from above examples highlighted in comments
+Nested collections are really the complexity starts to increase. However, reactive-domain-objects takes care of most of this complexity, just requiring that some basic configuration options are supplied. See example below, with notable differences from above examples highlighted in comments
 
 ```TypeScript
 // SOURCE JSON DATA
@@ -142,7 +142,7 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 
 ## GraphSynchronizer
 
-The GraphSynchronizer class is at the center of the reactive-domain-graphs library.
+The GraphSynchronizer class is at the center of the reactive-domain-objects library.
 An instance of this class allows a Reactive Domain Graph to be synchronized with a source JSON graph via the smartSync method. The GraphSynchronizer tracks the source JSON previous state, and used it, along with several other optimizations, to perform efficient synchronizations and, importantly, only update the RDO nodes where changes have been detected.
 
 > Note: **Equality Checking**
@@ -514,5 +514,5 @@ For clarity, this is a brief reference for some terminology that is used through
 - Node: An Property of an Object, or an Element of a collection
 - Field: A Property of an Object Node
 - Source: JSON source data, and the 'source of truth'
-- RDO: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-graphs/blob/master/README.md)
+- RDO: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-objects/blob/master/README.md)
 - Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
