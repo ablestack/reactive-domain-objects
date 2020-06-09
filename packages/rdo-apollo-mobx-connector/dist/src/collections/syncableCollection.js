@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SyncableCollection = void 0;
 const tslib_1 = require("tslib");
 const mobx_1 = require("mobx");
-const rdg_1 = require("@ablestack/rdg");
-const logger_1 = require("@ablestack/rdg/infrastructure/logger");
+const rdo_1 = require("@ablestack/rdo");
+const logger_1 = require("@ablestack/rdo/infrastructure/logger");
 const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
     constructor({ makeRDOCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRDO, }) {
@@ -32,19 +32,19 @@ class SyncableCollection {
         };
         this.insertItemToTargetCollection = (key, value) => {
             this._map$.set(key, value);
-            rdg_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
+            rdo_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
         };
         this.updateItemInTargetCollection = (key, value) => {
             this._map$.set(key, value);
-            rdg_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
+            rdo_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
             this._map$.delete(key);
-            rdg_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
+            rdo_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
         };
         this.clear = () => {
             this._map$.clear();
-            rdg_1.CollectionUtils.Array.clear({ collection: this._array$ });
+            rdo_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
         this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
         this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;

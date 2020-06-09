@@ -2,5 +2,5 @@
   "extends": "./tsconfig-base",
   "include": ["test/**/*.ts"],
   "exclude": ["node_modules"],
-  "references": [{ "path": "./packages/rdg" }, { "path": "./packages/rdg-apollo-mobx-connector" }]
+  "references": [{ "path": "./packages/rdo" }, { "path": "./packages/rdo-apollo-mobx-connector" }]
 }

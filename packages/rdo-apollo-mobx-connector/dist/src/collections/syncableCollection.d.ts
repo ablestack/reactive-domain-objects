@@ -1,4 +1,4 @@
-import { ISyncableRDOCollection } from '@ablestack/rdg';
+import { ISyncableRDOCollection } from '@ablestack/rdo';
 export declare class SyncableCollection<S extends object, D extends object> implements ISyncableRDOCollection<S, D> {
     private _makeRDOCollectionKeyFromSourceElement;
     private _makeRdoCollectionKeyFromRdoElement;

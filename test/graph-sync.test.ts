@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsRDO, BookRDO, LibraryRDO, librarySourceJSON } from '.';
-import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdg';
-import { Logger } from '@ablestack/rdg/infrastructure/logger';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
+import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import {
   AllCollectionTypesRDO,
   AllCollectionTypesWithPrimitivesRDO,

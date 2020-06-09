@@ -1,5 +1,5 @@
-import { Logger } from '@ablestack/rdg/infrastructure/logger';
-import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdg';
+import { Logger } from '@ablestack/rdo/infrastructure/logger';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { runInAction } from 'mobx';
 
 const logger = Logger.make('MobxGraphSynchronizer');

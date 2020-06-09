@@ -1,4 +1,4 @@
-# @ablestack/rdg
+# @ablestack/rdo-apollo-mobx-connector
 
 ## Summary
 

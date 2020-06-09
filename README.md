@@ -29,10 +29,10 @@ The problems being solved primarily revolve around consuming and using JSON data
 
 ```
     // npm
-    npm i @ablestack/rdg, @ablestack/rdg-apollo-mobx-connector --save
+    npm i @ablestack/rdo, @ablestack/rdo-apollo-mobx-connector --save
 
     // yarn
-    yarn add @ablestack/rdg, @ablestack/rdg-apollo-mobx-connector
+    yarn add @ablestack/rdo, @ablestack/rdo-apollo-mobx-connector
 ```
 
 ## Abridge Usage Example

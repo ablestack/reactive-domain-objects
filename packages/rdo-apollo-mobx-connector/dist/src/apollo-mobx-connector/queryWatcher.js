@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueryWatcher = void 0;
 const tslib_1 = require("tslib");
 const uuid_1 = tslib_1.__importDefault(require("uuid"));
-const logger_1 = require("@ablestack/rdg/infrastructure/logger");
+const logger_1 = require("@ablestack/rdo/infrastructure/logger");
 const logger = logger_1.Logger.make('ViewModelSyncUtils');
 class QueryWatcher {
     constructor({ name, makeObservableQuery, onAfterInitialized, onAfterStart: onStart, onDataChange, onAfterStop: onStop, }) {

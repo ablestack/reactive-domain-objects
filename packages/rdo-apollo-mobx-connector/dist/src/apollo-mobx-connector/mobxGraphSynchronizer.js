@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MobxGraphSynchronizer = void 0;
-const logger_1 = require("@ablestack/rdg/infrastructure/logger");
-const rdg_1 = require("@ablestack/rdg");
+const logger_1 = require("@ablestack/rdo/infrastructure/logger");
+const rdo_1 = require("@ablestack/rdo");
 const mobx_1 = require("mobx");
 const logger = logger_1.Logger.make('MobxGraphSynchronizer');
-class MobxGraphSynchronizer extends rdg_1.GraphSynchronizer {
+class MobxGraphSynchronizer extends rdo_1.GraphSynchronizer {
     // ------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     // ------------------------------------------------------------------------------------------------------------------
