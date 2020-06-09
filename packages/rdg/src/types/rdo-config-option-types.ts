@@ -24,15 +24,15 @@ export interface IGlobalPropertyNameTransformation {
 export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  makeRDOCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRDOFactory
-  makeRDO?: IMakeRDO<S, D>; // Match IRDOFactory except optional
+  makeRDOCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRdoFactory
+  makeRDO?: IMakeRDO<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
   makeRDOCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>; // Match IRDOFactorsStrict
-  makeRDO?: IMakeRDO<S, D>; // Match IRDOFactory except optional
+  makeRDO?: IMakeRDO<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSelector<S> {
@@ -46,7 +46,7 @@ export interface INodeSelector<S> {
  * Node Sync Options
  *
  * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromDomainElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromDomainElement` for a DomainNodeKeyFactory config
+ * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
+ * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
  *
  *****************************************************************************/

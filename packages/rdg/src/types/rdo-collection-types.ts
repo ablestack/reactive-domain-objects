@@ -15,12 +15,12 @@ export interface IMakeRDO<S, D> {
 // *See `Strict` note above top of file
 export interface IRdoCollectionKeyFactoryStrict<S, D> {
   fromSourceElement: IMakeRdoCollectionKey<S>;
-  fromDomainElement: IMakeRdoCollectionKey<D>;
+  fromRdoElement: IMakeRdoCollectionKey<D>;
 }
 
 export interface IRdoCollectionKeyFactory<S, D> {
   fromSourceElement: IMakeRdoCollectionKey<S>;
-  fromDomainElement?: IMakeRdoCollectionKey<D>;
+  fromRdoElement?: IMakeRdoCollectionKey<D>;
 }
 
 export interface ISyncableCollection<T> extends Iterable<T> {
@@ -57,8 +57,8 @@ export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<an
     o &&
     o.makeRDOCollectionKeyFromSourceElement &&
     typeof o.makeRDOCollectionKeyFromSourceElement === 'function' &&
-    o.makeRDOCollectionKeyFromDomainElement &&
-    typeof o.makeRDOCollectionKeyFromDomainElement === 'function' &&
+    o.makeRdoCollectionKeyFromRdoElement &&
+    typeof o.makeRdoCollectionKeyFromRdoElement === 'function' &&
     o.makeRDO &&
     typeof o.makeRDO === 'function' &&
     IsISyncableCollection(o)
@@ -71,7 +71,7 @@ export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<an
  * Node Sync Options
  *
  * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromDomainElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromDomainElement` for a DomainNodeKeyFactory config
+ * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
+ * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
  *
  *****************************************************************************/

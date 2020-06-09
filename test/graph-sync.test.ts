@@ -693,7 +693,7 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
       {
         sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
         makeRDO: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
-        makeRDOCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromDomainElement: (RDO) => RDO._id },
+        makeRDOCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
       },
     ],
     globalNodeOptions: { commonRdoFieldnamePostfix: '$' },

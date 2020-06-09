@@ -6,7 +6,7 @@ const logger = Logger.make('SyncableCollection');
 
 export class SyncableCollection<S extends object, D extends object> implements ISyncableRDOCollection<S, D> {
   private _makeRDOCollectionKeyFromSourceElement: (node: S) => string;
-  private _makeRDOCollectionKeyFromDomainElement: (node: D) => string;
+  private _makeRdoCollectionKeyFromRdoElement: (node: D) => string;
   private _makeRDO: (sourceItem: S) => D;
 
   @observable.shallow private _map$: Map<string, D>;
@@ -26,28 +26,28 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   constructor({
     makeRDOCollectionKeyFromSourceElement,
-    makeRDOCollectionKeyFromDomainElement,
+    makeRdoCollectionKeyFromRdoElement,
     makeRDO,
   }: {
     makeRDOCollectionKeyFromSourceElement: (sourceNode: S) => string;
-    makeRDOCollectionKeyFromDomainElement: (rdo: D) => string;
+    makeRdoCollectionKeyFromRdoElement: (rdo: D) => string;
     makeRDO: (sourceNode: S) => D;
   }) {
     this._makeRDOCollectionKeyFromSourceElement = makeRDOCollectionKeyFromSourceElement;
-    this._makeRDOCollectionKeyFromDomainElement = makeRDOCollectionKeyFromDomainElement;
+    this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
     this._makeRDO = makeRDO;
     this._map$ = new Map<string, D>();
   }
 
   // -----------------------------------
-  // IRDOFactory
+  // IRdoFactory
   // -----------------------------------
   public makeRDOCollectionKeyFromSourceElement = (sourceNode: S) => {
     return this._makeRDOCollectionKeyFromSourceElement(sourceNode);
   };
 
-  public makeRDOCollectionKeyFromDomainElement = (rdo: D) => {
-    return this._makeRDOCollectionKeyFromDomainElement(rdo);
+  public makeRdoCollectionKeyFromRdoElement = (rdo: D) => {
+    return this._makeRdoCollectionKeyFromRdoElement(rdo);
   };
 
   public makeRDO = (sourceItem: S) => {
@@ -81,7 +81,7 @@ export class SyncableCollection<S extends object, D extends object> implements I
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
     this._map$.delete(key);
-    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeCollectionKey: this._makeRDOCollectionKeyFromDomainElement });
+    CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
   };
 
   public clear = () => {

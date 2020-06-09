@@ -131,7 +131,7 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 >
 >     - As with the above example, a make method can be contained in an Options object, and mapped to the corresponding JSON node by specifying the `nodePath`
 >     - A make method can be contained in an Options object, and mapped to the corresponding JSON node by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field).
->     - The 'IRDOFactory' interface can be implemented by the containing collection
+>     - The 'IRdoFactory' interface can be implemented by the containing collection
 >
 >     See the [configuration options documentation](TODO) for more information
 
@@ -233,7 +233,7 @@ The following provides an overview of the GraphSynchronizer.smartSync options
 
       makeRDOCollectionKey: { // -------------------> // If makeRDOCollectionKey creation methods not supplied
         fromSourceElement: (sourceNode) => string;    // a default key creation method will be supplied which
-        fromDomainElement: (rdo) => string;    // assumes an `id` field id available (or an error will be thrown)
+        fromRdoElement: (rdo) => string;    // assumes an `id` field id available (or an error will be thrown)
       },
       makeRDO: (sourceNode) => any;                   // Use when RDOs are contained in a parent collection
                                                       // so they can be automatically instantiated as items are added to the
@@ -379,7 +379,7 @@ The two contained configuration properties are:
 
 ```
   fromSourceElement: (sourceNode) => string;
-  fromDomainElement: (rdo) => string;
+  fromRdoElement: (rdo) => string;
 ```
 
 These methods:
@@ -497,10 +497,10 @@ interface ISyncableCollection<T> extends Iterable<T> {
 }
 ```
 
-### IRDOFactory
+### IRdoFactory
 
 ```TypeScript
-interface IRDOFactory<S, D> {
+interface IRdoFactory<S, D> {
   makeRDOCollectionKey: IRdoCollectionKeyFactory<S, D>;
   makeRDO: IMakeRDO<S, D>;
 }
