@@ -2,7 +2,7 @@
 
 ## Overview
 
-The [Reactive-domain-graphs](https://github.com/ablestack/reactive-domain-objects) library facilitates building and running graphs of [Reactive Domain Objects](#reactive-domain-objects). A primary use case is connecting GraphQL client libraries (such as [ApolloGraphQL](https://github.com/apollographql/apollo-client)) with reactive client libraries (such as [MobX](https://mobx.js.org/)). However, it can also be useful tool for connecting any source of JSON data reactive client applications.
+The [reactive-domain-objects](https://github.com/ablestack/reactive-domain-objects) library facilitates building and running graphs of [Reactive Domain Objects](#reactive-domain-objects). A primary use case is connecting GraphQL client libraries (such as [ApolloGraphQL](https://github.com/apollographql/apollo-client)) with reactive client libraries (such as [MobX](https://mobx.js.org/)). However, it can also be useful tool for connecting any source of JSON data reactive client applications.
 
 This library does not exclusively support an _Imperative_ or _Reactive_ coding model. Rather, it acts a bridge from an _Imperative programming model_ of stateful objects to a _Reactive programming model_ of observables and data streams.
 
@@ -120,9 +120,9 @@ To achieve these goals, the following principles are applied:
 
 While this library solves several challenges relating to client-side JavaScript development, it was developed to solve some very specific use cases, and might not be the right solution for everyone. It is definitely worth checkout out these alternative solutions before making your choice:
 
-- [MobX-state-tree](https://mobx-state-tree.js.org/) is similar in many respects to this library. **Reactive-domain-graphs** is designed to solve similar problems, but is less opinionated, less complicated, but also less sophisticated. For more advanced features and a more opinionated solution, MobX-state-tree is definitely worth checking out
+- [MobX-state-tree](https://mobx-state-tree.js.org/) is similar in many respects to this library. **reactive-domain-objects** is designed to solve similar problems, but is less opinionated, less complicated, but also less sophisticated. For more advanced features and a more opinionated solution, MobX-state-tree is definitely worth checking out
 
-- [Vanilla MobX](https://mobx.js.org/). Many of the benefits **Reactive-domain-graphs** come from the integration with the great **MobX** library. For small and even mid-sized solutions, the same result can be achieved with MobX alone. The primary added benefit that **Reactive-domain-graphs** provides is automating the synchronization of data with external data sources. The point at which that task becomes more complex or tiresome than adding another dependency, or learning another library, is the right point at which to get **Reactive-domain-graphs** in the mix
+- [Vanilla MobX](https://mobx.js.org/). Many of the benefits **reactive-domain-objects** come from the integration with the great **MobX** library. For small and even mid-sized solutions, the same result can be achieved with MobX alone. The primary added benefit that **reactive-domain-objects** provides is automating the synchronization of data with external data sources. The point at which that task becomes more complex or tiresome than adding another dependency, or learning another library, is the right point at which to get **reactive-domain-objects** in the mix
 
 ## Release Notes
 
