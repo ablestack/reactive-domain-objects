@@ -1,15 +1,26 @@
 import { ISyncableRDOCollection } from '@ablestack/rdo';
+/**
+ *
+ *
+ * @export
+ * @class SyncableCollection
+ * @implements {ISyncableRDOCollection<S, D>}
+ * @implements {Map<string, D>}
+ * @template S
+ * @template D
+ * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map in order to only trigger observable changes when necessary
+ */
 export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, Map<string, D> {
-    private _makeRdoCollectionKeyFromSourceElement;
-    private _makeRdoCollectionKeyFromRdoElement;
-    private _makeRdo;
     private _map$;
+    makeRdoCollectionKeyFromSourceElement?: (node: S) => string;
+    makeRdoCollectionKeyFromRdoElement?: (node: D) => string;
+    makeRdo: (sourceItem: S) => D;
     get size(): number;
     private _array$;
     get array$(): Array<D>;
     constructor({ makeRdoCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRdo, }: {
-        makeRdoCollectionKeyFromSourceElement: (sourceNode: S) => string;
-        makeRdoCollectionKeyFromRdoElement: (rdo: D) => string;
+        makeRdoCollectionKeyFromSourceElement?: (sourceNode: S) => string;
+        makeRdoCollectionKeyFromRdoElement?: (rdo: D) => string;
         makeRdo: (sourceNode: S) => D;
     });
     delete(key: string): boolean;
@@ -22,9 +33,6 @@ export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<
     keys(): IterableIterator<string>;
     values(): IterableIterator<D>;
     [Symbol.toStringTag]: string;
-    makeRdoCollectionKeyFromSourceElement: (sourceNode: S) => string;
-    makeRdoCollectionKeyFromRdoElement: (rdo: D) => string;
-    makeRdo: (sourceItem: S) => D;
     getKeys: () => string[];
     tryGetItemFromTargetCollection: (key: string) => D | undefined;
     insertItemToTargetCollection: (key: string, value: D) => void;

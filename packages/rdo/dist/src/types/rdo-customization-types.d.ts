@@ -1,4 +1,3 @@
-import { IGraphSynchronizer } from '.';
 export interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extends Record<string, any>> {
     tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
         sourceNodePath: string;
@@ -8,10 +7,17 @@ export interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extend
 }
 export declare function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any, any>;
 export interface ICustomSync<S> {
-    synchronizeState: ({ sourceObject, graphSynchronizer }: {
-        sourceObject: S | null | undefined;
-        graphSynchronizer: IGraphSynchronizer;
+    synchronizeState: ({ sourceObject, continueSmartSync }: {
+        sourceObject: S;
+        continueSmartSync: IContinueSmartSync;
     }) => boolean;
+}
+export interface IContinueSmartSync {
+    ({ sourceNodeSubPath, sourceObject, rdo }: {
+        sourceNodeSubPath: string;
+        sourceObject: Record<string, any>;
+        rdo: Record<string, any>;
+    }): boolean;
 }
 export declare function IsICustomSync(o: any): o is ICustomSync<any>;
 export interface ICustomEqualityRDO<S> {

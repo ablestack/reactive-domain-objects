@@ -92,17 +92,20 @@ class GraphSynchronizer {
                 logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
                 continue;
             }
-            changed ==
-                this.trySynchronizeNode({
-                    sourceNodeKind: 'objectProperty',
-                    sourceNodeKey: sourceFieldname,
-                    sourceNodeVal: sourceFieldVal,
-                    targetNodeKey: rdoFieldname,
-                    targetNodeVal: rdo[rdoFieldname],
-                    tryUpdateTargetNode: (key, value) => _1.CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
-                }) || changed;
+            changed = this.trySynchronizeField({ rdo, rdoFieldname, sourceObject, sourceFieldname });
         }
         return changed;
+    }
+    /** */
+    trySynchronizeField({ rdo, rdoFieldname, sourceObject, sourceFieldname, }) {
+        return this.trySynchronizeNode({
+            sourceNodeKind: 'objectProperty',
+            sourceNodeKey: sourceFieldname,
+            sourceNodeVal: sourceObject[sourceFieldname],
+            targetNodeKey: rdoFieldname,
+            targetNodeVal: rdo[rdoFieldname],
+            tryUpdateTargetNode: (key, value) => _1.CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
+        });
     }
     /**
      *
@@ -495,7 +498,7 @@ class GraphSynchronizer {
             // Synchronize
             if (_1.IsICustomSync(rdo)) {
                 logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
-                changed = rdo.synchronizeState({ sourceObject, graphSynchronizer: this });
+                changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
             }
             else {
                 logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
@@ -512,6 +515,17 @@ class GraphSynchronizer {
         if (_1.IsIAfterSyncIfNeeded(rdo))
             rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
         return changed;
+    }
+    /*
+     *
+     */
+    makeContinueSmartSyncFunction({ originalSourceNodePath, }) {
+        return ({ sourceNodeSubPath: sourceNodeSubpath, sourceObject, rdo }) => {
+            if (!sourceNodeSubpath)
+                throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
+            const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
+            return this.trySynchronizeObject({ sourceNodePath, sourceObject, rdo });
+        };
     }
     /**
      *

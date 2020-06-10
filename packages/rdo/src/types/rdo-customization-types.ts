@@ -13,7 +13,11 @@ export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<
 }
 
 export interface ICustomSync<S> {
-  synchronizeState: ({ sourceObject, graphSynchronizer }: { sourceObject: S | null | undefined; graphSynchronizer: IGraphSynchronizer }) => boolean;
+  synchronizeState: ({ sourceObject, continueSmartSync }: { sourceObject: S; continueSmartSync: IContinueSmartSync }) => boolean;
+}
+
+export interface IContinueSmartSync {
+  ({ sourceNodeSubPath, sourceObject, rdo }: { sourceNodeSubPath: string; sourceObject: Record<string, any>; rdo: Record<string, any> }): boolean;
 }
 
 export function IsICustomSync(o: any): o is ICustomSync<any> {

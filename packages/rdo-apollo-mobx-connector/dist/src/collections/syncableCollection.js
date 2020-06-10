@@ -6,22 +6,21 @@ const mobx_1 = require("mobx");
 const rdo_1 = require("@ablestack/rdo");
 const logger_1 = require("@ablestack/rdo/infrastructure/logger");
 const logger = logger_1.Logger.make('SyncableCollection');
+/**
+ *
+ *
+ * @export
+ * @class SyncableCollection
+ * @implements {ISyncableRDOCollection<S, D>}
+ * @implements {Map<string, D>}
+ * @template S
+ * @template D
+ * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map in order to only trigger observable changes when necessary
+ */
 class SyncableCollection {
     constructor({ makeRdoCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRdo, }) {
         this._array$ = new Array();
         this[Symbol.toStringTag] = '[object Map]';
-        // -----------------------------------
-        // IRdoFactory
-        // -----------------------------------
-        this.makeRdoCollectionKeyFromSourceElement = (sourceNode) => {
-            return this._makeRdoCollectionKeyFromSourceElement(sourceNode);
-        };
-        this.makeRdoCollectionKeyFromRdoElement = (rdo) => {
-            return this._makeRdoCollectionKeyFromRdoElement(rdo);
-        };
-        this.makeRdo = (sourceItem) => {
-            return this._makeRdo(sourceItem);
-        };
         // -----------------------------------
         // ISyncableCollection
         // -----------------------------------
@@ -40,16 +39,29 @@ class SyncableCollection {
             rdo_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
-            this._map$.delete(key);
-            return rdo_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
+            const itemToDelete = this._map$.get(key);
+            if (itemToDelete) {
+                this._map$.delete(key);
+                // Get index from array
+                const indexOfItemToDelete = this.array$.indexOf(itemToDelete);
+                if (indexOfItemToDelete !== -1) {
+                    this.array$.splice(indexOfItemToDelete, 1);
+                }
+                else {
+                    logger.error(`tryDeleteItemFromTargetCollection - could not find array item for key ${key}. Rebuilding array`);
+                    this._array$ = Array.from(this._map$.values());
+                }
+                return true;
+            }
+            return false;
         };
         this.clear = () => {
             this._map$.clear();
             rdo_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
-        this._makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
-        this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
-        this._makeRdo = makeRdo;
+        this.makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
+        this.makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
+        this.makeRdo = makeRdo;
         this._map$ = new Map();
     }
     get size() {

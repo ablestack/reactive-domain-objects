@@ -134,18 +134,32 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         continue;
       }
 
-      changed ==
-        this.trySynchronizeNode({
-          sourceNodeKind: 'objectProperty',
-          sourceNodeKey: sourceFieldname,
-          sourceNodeVal: sourceFieldVal,
-          targetNodeKey: rdoFieldname,
-          targetNodeVal: rdo[rdoFieldname],
-          tryUpdateTargetNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
-        }) || changed;
+      changed = this.trySynchronizeField<S, D>({ rdo, rdoFieldname, sourceObject, sourceFieldname });
     }
 
     return changed;
+  }
+
+  /** */
+  private trySynchronizeField<S extends Record<string, any>, D extends Record<string, any>>({
+    rdo,
+    rdoFieldname,
+    sourceObject,
+    sourceFieldname,
+  }: {
+    rdo: D;
+    rdoFieldname: string;
+    sourceObject: S;
+    sourceFieldname: string;
+  }) {
+    return this.trySynchronizeNode({
+      sourceNodeKind: 'objectProperty',
+      sourceNodeKey: sourceFieldname,
+      sourceNodeVal: sourceObject[sourceFieldname],
+      targetNodeKey: rdoFieldname,
+      targetNodeVal: rdo[rdoFieldname],
+      tryUpdateTargetNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
+    });
   }
 
   /**
@@ -643,7 +657,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       // Synchronize
       if (IsICustomSync(rdo)) {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
-        changed = rdo.synchronizeState({ sourceObject, graphSynchronizer: this });
+        changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
         changed = this.trySynchronizeObject({ sourceNodePath, sourceObject, rdo });
@@ -659,6 +673,22 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
 
     return changed;
+  }
+
+  /*
+   *
+   */
+  private makeContinueSmartSyncFunction({
+    originalSourceNodePath,
+  }: {
+    originalSourceNodePath: string;
+  }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceObject, rdo }: { sourceNodeSubPath: string; sourceObject: S; rdo: D }) => boolean {
+    return ({ sourceNodeSubPath: sourceNodeSubpath, sourceObject, rdo }) => {
+      if (!sourceNodeSubpath) throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
+
+      const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
+      return this.trySynchronizeObject({ sourceNodePath, sourceObject, rdo });
+    };
   }
 
   /**

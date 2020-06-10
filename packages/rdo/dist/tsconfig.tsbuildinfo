@@ -222,8 +222,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-customization-types.ts": {
-        "version": "156a2686bd772a1a9f27b1f640e1a809064771024011e192cc330335a6adca17",
-        "signature": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
+        "version": "ebc52296a2c936b1e6257295887b09f2196579b21af3a738863b724054c0d2c0",
+        "signature": "0f1f2f29757d9ba6d3d0b48b757c63e0505f6a16ab6eddb9a2c1adaec94ea679",
         "affectsGlobalScope": false
       },
       "../src/types/index.ts": {
@@ -592,8 +592,8 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "0e10133f47a627f47ab465b8705f1bd209050e8218d1bbd63b00b2b95731ae80",
-        "signature": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
+        "version": "b54cb62c37a9e082def38e35f224eff7736669670b12b38193461e961b3a3756",
+        "signature": "317b8e098b6f6de12cc5e9af90078174aa8062bd9c644127d411820c5539a01d",
         "affectsGlobalScope": false
       },
       "../node_modules/@babel/types/lib/index.d.ts": {
@@ -735,6 +735,11 @@
         "version": "3602dfff3072caea42f23a9b63fb34a7b0c95a62b93ce2add5fe6b159447845e",
         "signature": "3602dfff3072caea42f23a9b63fb34a7b0c95a62b93ce2add5fe6b159447845e",
         "affectsGlobalScope": false
+      },
+      "../../../node_modules/@types/zen-observable/index.d.ts": {
+        "version": "11b37a33fc34df80dabf1ebcca0cd0b6d0a2bea9654bfab7c987778490246c7f",
+        "signature": "11b37a33fc34df80dabf1ebcca0cd0b6d0a2bea9654bfab7c987778490246c7f",
+        "affectsGlobalScope": true
       }
     },
     "options": {
@@ -784,6 +789,13 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../../node_modules/@types/minimist/index.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../../node_modules/@types/zen-observable/index.d.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -2127,6 +2139,13 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
+      "../../../node_modules/@types/zen-observable/index.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
       "../../../node_modules/typescript/lib/lib.dom.d.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -3349,9 +3368,6 @@
       "../src/types/rdo-config-option-types.ts": [
         "../src/types/index.ts"
       ],
-      "../src/types/rdo-customization-types.ts": [
-        "../src/types/index.ts"
-      ],
       "../src/utilities/collection.utils.ts": [
         "../src/index.ts"
       ],
@@ -3365,6 +3381,7 @@
       "../../../node_modules/@types/glob/index.d.ts",
       "../../../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/minimist/index.d.ts",
+      "../../../node_modules/@types/zen-observable/index.d.ts",
       "../../../node_modules/typescript/lib/lib.dom.d.ts",
       "../../../node_modules/typescript/lib/lib.es2015.collection.d.ts",
       "../../../node_modules/typescript/lib/lib.es2015.core.d.ts",

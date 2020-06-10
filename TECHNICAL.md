@@ -502,8 +502,8 @@ interface ICustomSync<S> {
 
 > Note: any child objects and collections of RDOs that implement ICustomSync will no longer be auto-synchronized. To subsequently synchronize a child object or collection, of of the following options are available:
 
-- A custom recursive sync routine is write, which could even take advantage of the ICustomSync interface by implementing on child Domain objects
-- The 'continueSmartSync' function (passed into the method), can be called for each child object [Object Path](TODO)
+- A custom recursive sync routine, which could take advantage of the ICustomSync interface by implementing on child Domain objects
+- The 'continueSmartSync' function (passed into the method), can be called from withing the customSync routine on any RDO sub-node where the smartSync should continue
 
 ## Custom Collection Types
 

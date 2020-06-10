@@ -1,15 +1,28 @@
 import { observable, computed } from 'mobx';
-import { ISyncableRDOCollection, CollectionUtils } from '@ablestack/rdo';
+import { ISyncableRDOCollection, CollectionUtils, SyncUtils } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
-
+/**
+ *
+ *
+ * @export
+ * @class SyncableCollection
+ * @implements {ISyncableRDOCollection<S, D>}
+ * @implements {Map<string, D>}
+ * @template S
+ * @template D
+ * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map in order to only trigger observable changes when necessary
+ */
 export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, Map<string, D> {
-  private _makeRdoCollectionKeyFromSourceElement: (node: S) => string;
-  private _makeRdoCollectionKeyFromRdoElement: (node: D) => string;
-  private _makeRdo: (sourceItem: S) => D;
-
   @observable.shallow private _map$: Map<string, D>;
+
+  // -----------------------------------
+  // IRdoFactory
+  // -----------------------------------
+  public makeRdoCollectionKeyFromSourceElement?: (node: S) => string;
+  public makeRdoCollectionKeyFromRdoElement?: (node: D) => string;
+  public makeRdo: (sourceItem: S) => D;
 
   @computed public get size(): number {
     return this._map$.size;
@@ -25,13 +38,13 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     makeRdoCollectionKeyFromRdoElement,
     makeRdo,
   }: {
-    makeRdoCollectionKeyFromSourceElement: (sourceNode: S) => string;
-    makeRdoCollectionKeyFromRdoElement: (rdo: D) => string;
+    makeRdoCollectionKeyFromSourceElement?: (sourceNode: S) => string;
+    makeRdoCollectionKeyFromRdoElement?: (rdo: D) => string;
     makeRdo: (sourceNode: S) => D;
   }) {
-    this._makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
-    this._makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
-    this._makeRdo = makeRdo;
+    this.makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
+    this.makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
+    this.makeRdo = makeRdo;
     this._map$ = new Map<string, D>();
   }
 
@@ -69,19 +82,29 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   [Symbol.toStringTag]: string = '[object Map]';
 
   // -----------------------------------
-  // IRdoFactory
+  // ISyncableCollection
   // -----------------------------------
-  public makeRdoCollectionKeyFromSourceElement = (sourceNode: S) => {
-    return this._makeRdoCollectionKeyFromSourceElement(sourceNode);
-  };
-
-  public makeRdoCollectionKeyFromRdoElement = (rdo: D) => {
-    return this._makeRdoCollectionKeyFromRdoElement(rdo);
-  };
-
-  public makeRdo = (sourceItem: S) => {
-    return this._makeRdo(sourceItem);
-  };
+  public synchronizeCollection({ sourceCollection }: { sourceCollection: Array<S> }) {
+    SyncUtils.synchronizeCollection({
+      sourceCollection,
+      getTargetCollectionSize: () => this.size,
+      getTargetCollectionKeys: this.getKeys,
+      makeRdoCollectionKeyFromSourceElement: this.makeRdoCollectionKeyFromSourceElement, //TODO
+      tryGetItemFromTargetCollection: (key) => this.tryGetItemFromTargetCollection(key),
+      insertItemToTargetCollection: (key, value) => this.insertItemToTargetCollection(key, value),
+      tryDeleteItemFromTargetCollection: (key) => this.tryDeleteItemFromTargetCollection(key),
+      makeItemForTargetCollection: this.makeRdo,
+      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        this.trySynchronizeNode({
+          sourceNodeKind: 'arrayElement',
+          sourceNodeKey: sourceElementKey,
+          sourceNodeVal: sourceElementVal,
+          targetNodeKey: targetElementKey,
+          targetNodeVal: targetElementVal,
+          tryUpdateTargetNode: (key, value) => this.updateItemInTargetCollection(key, value),
+        }),
+    });
+  }
 
   // -----------------------------------
   // ISyncableCollection
@@ -105,8 +128,22 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   };
 
   public tryDeleteItemFromTargetCollection = (key: string) => {
-    this._map$.delete(key);
-    return CollectionUtils.Array.deleteItem<D>({ collection: this._array$!, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
+    const itemToDelete = this._map$.get(key);
+    if (itemToDelete) {
+      this._map$.delete(key);
+
+      // Get index from array
+      const indexOfItemToDelete = this.array$.indexOf(itemToDelete);
+      if (indexOfItemToDelete !== -1) {
+        this.array$.splice(indexOfItemToDelete, 1);
+      } else {
+        logger.error(`tryDeleteItemFromTargetCollection - could not find array item for key ${key}. Rebuilding array`);
+        this._array$ = Array.from(this._map$.values());
+      }
+
+      return true;
+    }
+    return false;
   };
 
   public clear = () => {

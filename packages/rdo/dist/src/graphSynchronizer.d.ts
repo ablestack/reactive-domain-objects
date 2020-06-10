@@ -26,6 +26,8 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
      *
      */
     private trySynchronizeObject;
+    /** */
+    private trySynchronizeField;
     /**
      *
      */
@@ -62,6 +64,7 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
      *
      */
     private trySynchronizeObjectState;
+    private makeContinueSmartSyncFunction;
     /**
      *
      */
