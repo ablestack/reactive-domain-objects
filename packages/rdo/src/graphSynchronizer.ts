@@ -20,7 +20,7 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames, JsonNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoFieldTypeInfo } from './types';
+import { IsIHasCustomRdoFieldNames, JsonNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -263,35 +263,35 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private getRdoFieldType(rdoFieldVal: any): RdoFieldTypeInfo {
-    const builtInFieldType = toString.call(rdoFieldVal) as JavaScriptBuiltInType;
+  private getRdoNodeType(rdoNodeVal: any): RdoNodeTypeInfo {
+    const builtInNodeType = toString.call(rdoNodeVal) as JavaScriptBuiltInType;
 
-    if (IsISyncableCollection(rdoFieldVal)) {
-      return { type: 'ISyncableCollection', builtInType: builtInFieldType };
+    if (IsISyncableCollection(rdoNodeVal)) {
+      return { type: 'ISyncableCollection', builtInType: builtInNodeType };
     }
 
-    switch (builtInFieldType) {
+    switch (builtInNodeType) {
       case '[object Boolean]':
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        return { type: 'Primitive', builtInType: builtInFieldType };
+        return { type: 'Primitive', builtInType: builtInNodeType };
       }
       case '[object Object]': {
-        return { type: 'Object', builtInType: builtInFieldType };
+        return { type: 'Object', builtInType: builtInNodeType };
       }
       case '[object Array]': {
-        return { type: 'Array', builtInType: builtInFieldType };
+        return { type: 'Array', builtInType: builtInNodeType };
       }
       case '[object Map]': {
-        return { type: 'Map', builtInType: builtInFieldType };
+        return { type: 'Map', builtInType: builtInNodeType };
       }
       case '[object Set]': {
-        return { type: 'Set', builtInType: builtInFieldType };
+        return { type: 'Set', builtInType: builtInNodeType };
       }
       default: {
-        logger.warn(`Unable to find RDO Field Type for type: ${builtInFieldType}`, rdoFieldVal);
-        return { type: undefined, builtInType: builtInFieldType };
+        logger.warn(`Unable to find RDO Node Type for type: ${builtInNodeType}`, rdoNodeVal);
+        return { type: undefined, builtInType: builtInNodeType };
       }
     }
   }
@@ -302,17 +302,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private tryStepIntoNodeAndSync({
     sourceNodeKind,
     sourceNodeKey,
-    sourceNodeVal,
+    sourceParentNodeVal,
     targetNodeKey,
-    targetNodeVal,
-    tryUpdateTargetNode,
+    targetParentNodeVal,
   }: {
     sourceNodeKind: JsonNodeKind;
     sourceNodeKey: string;
-    sourceNodeVal: any;
+    sourceParentNodeVal: any;
     targetNodeKey: string;
-    targetNodeVal: any;
-    tryUpdateTargetNode: (key: string, value: any) => void;
+    targetParentNodeVal: any;
   }): boolean {
     logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`, { sourceNodeVal, targetNodeVal });
 
@@ -348,23 +346,53 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     } else {
       // Type specific node processing
       const sourceNodeTypeInfo = this.getSourceNodeType(sourceNodeVal);
-      const rdoFieldTypeInfo = this.getRdoFieldType(targetNodeVal);
+      const rdoNodeTypeInfo = this.getRdoNodeType(targetNodeVal);
 
-      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoFieldTypeInfo, sourceNodeVal, targetNodeVal, targetNodeKey, tryUpdateTargetNode });
+      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoNodeTypeInfo, sourceNodeVal, targetNodeVal, targetNodeKey, tryUpdateTargetNode });
+    }
+  }
+
+  private setRdoFieldValue({ rdoParentNode, rdoNodeTypeInfo, key, value }: { rdoParentNode: any; rdoNodeTypeInfo: RdoNodeTypeInfo; key: string; value: any }): void {
+    if (rdoNodeTypeInfo.type === 'ISyncableCollection') {
+      (rdoParentNode as ISyncableCollection<any>).updateItemInTargetCollection(key, value);
+    } else {
+      switch (rdoNodeTypeInfo.builtInType) {
+        case '[object Object]': {
+          (rdoParentNode as Record<string, any>)[key] = value;
+        }
+        case '[object Array]': {
+          CollectionUtils.Array.updateItem({ collection: rdoParentNode as Array<any>, makeCollectionKey:, value });
+        }
+        case '[object Map]': {
+          (rdoParentNode as Map<string, any>).set(key, value);
+        }
+        case '[object Set]': {
+          CollectionUtils.Set.tryUpdateItem({ collection: rdoParentNode as Set<any>, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, value });
+        }
+        case '[object Boolean]':
+        case '[object Date]':
+        case '[object Number]':
+        case '[object String]': {
+          throw new Error(`getTypeSpecificTargetNodeUpdateMethod - method not available for primitive types. Was called with: ${rdoNodeTypeInfo}`);
+        }
+        default: {
+          throw new Error(`getTypeSpecificTargetNodeUpdateMethod - unable to get method for type: ${rdoNodeTypeInfo}`);
+        }
+      }
     }
   }
 
   /** */
   private trySynchronizeNode_TypeSpecificProcessing({
     sourceNodeTypeInfo,
-    rdoFieldTypeInfo,
+    rdoNodeTypeInfo,
     sourceNodeVal,
     targetNodeVal,
     targetNodeKey,
     tryUpdateTargetNode,
   }: {
     sourceNodeTypeInfo: SourceNodeTypeInfo;
-    rdoFieldTypeInfo: RdoFieldTypeInfo;
+    rdoNodeTypeInfo: RdoNodeTypeInfo;
     sourceNodeVal: any;
     targetNodeVal: any;
     targetNodeKey: string;
@@ -374,8 +402,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     switch (sourceNodeTypeInfo.type) {
       case 'Primitive': {
-        if (sourceNodeTypeInfo.builtInType !== rdoFieldTypeInfo.builtInType && !!rdoFieldTypeInfo.type) {
-          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourceNodeTypeInfo.builtInType}', RDO field type: ${rdoFieldTypeInfo.builtInType}`);
+        if (sourceNodeTypeInfo.builtInType !== rdoNodeTypeInfo.builtInType && !!rdoNodeTypeInfo.type) {
+          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourceNodeTypeInfo.builtInType}', rdoNodeTypeInfo: ${rdoNodeTypeInfo.builtInType}`);
         }
         if (sourceNodeVal !== targetNodeVal) {
           logger.trace(`primitive value found in domainPropKey ${targetNodeKey}. Setting from old value to new value`, targetNodeVal, sourceNodeVal);
@@ -385,20 +413,20 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         break;
       }
       case 'Object': {
-        if (rdoFieldTypeInfo.type !== 'Object') {
+        if (rdoNodeTypeInfo.type !== 'Object') {
           throw Error(
-            `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourceNodeTypeInfo}', RDO field type: ${rdoFieldTypeInfo} `,
+            `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourceNodeTypeInfo}', rdoNodeTypeInfo: ${rdoNodeTypeInfo} `,
           );
         }
         changed = this.trySynchronizeObjectState({ key: targetNodeKey, sourceObject: sourceNodeVal, rdo: targetNodeVal });
         break;
       }
       case 'Array': {
-        changed = this.synchronizeTargetCollectionWithSourceArray({ rdoFieldTypeInfo: rdoFieldTypeInfo, sourceNodeTypeInfo: sourceNodeTypeInfo, targetCollection: targetNodeVal, sourceCollection: sourceNodeVal });
+        changed = this.synchronizeTargetCollectionWithSourceArray({ rdoNodeTypeInfo, sourceNodeTypeInfo: sourceNodeTypeInfo, targetCollection: targetNodeVal, sourceCollection: sourceNodeVal });
         break;
       }
       default: {
-        logger.trace(`Skipping item ${this.getSourceNodeInstancePath()}. Unable to reconcile synchronization for types - sourceNodeTypeInfo: ${sourceNodeTypeInfo}), rdoFieldTypeInfo: ${rdoFieldTypeInfo}`);
+        logger.trace(`Skipping item ${this.getSourceNodeInstancePath()}. Unable to reconcile synchronization for types - sourceNodeTypeInfo: ${sourceNodeTypeInfo}), rdoNodeTypeInfo: ${rdoNodeTypeInfo}`);
         break;
       }
     }
@@ -409,28 +437,28 @@ export class GraphSynchronizer implements IGraphSynchronizer {
    *
    */
   private synchronizeTargetCollectionWithSourceArray({
-    rdoFieldTypeInfo,
+    rdoNodeTypeInfo,
     sourceNodeTypeInfo,
     targetCollection,
     sourceCollection,
   }: {
-    rdoFieldTypeInfo: RdoFieldTypeInfo;
+    rdoNodeTypeInfo: RdoNodeTypeInfo;
     sourceNodeTypeInfo: SourceNodeTypeInfo;
     targetCollection: any;
     sourceCollection: Array<any>;
   }): boolean {
-    if (!rdoFieldTypeInfo.type) throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourceNodeTypeInfo}', RDO field type: ${rdoFieldTypeInfo} `);
+    if (!rdoNodeTypeInfo.type) throw Error(`Destination types must not be null when transforming Array source type. Source type: '${sourceNodeTypeInfo}', rdoNodeTypeInfo: ${rdoNodeTypeInfo} `);
 
     const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection: targetCollection });
 
     // VALIDATE
     if (sourceCollection.length > 0 && !makeRdoCollectionKey?.fromSourceElement) {
       throw new Error(
-        `Could not find 'makeRdoCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+        `Could not find 'makeRdoCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
       );
     }
     if (sourceCollection.length > 0 && !makeRdo) {
-      throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
+      throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
     }
 
     //
@@ -440,7 +468,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     //-----------------------------------------------------
     // ISYNCABLECOLLECTION SYNC
     //-----------------------------------------------------
-    if (rdoFieldTypeInfo.type === 'ISyncableCollection') {
+    if (rdoNodeTypeInfo.type === 'ISyncableCollection') {
       const rdoCollection = targetCollection as ISyncableCollection<any>;
 
       if (sourceCollection.length === 0 && rdoCollection.size > 0) {
@@ -452,7 +480,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       //-----------------------------------------------------
       // MAP SYNC
       //-----------------------------------------------------
-    } else if (rdoFieldTypeInfo.type === 'Map') {
+    } else if (rdoNodeTypeInfo.type === 'Map') {
       const rdoCollection = targetCollection as Map<string, any>;
 
       if (sourceCollection.length === 0 && rdoCollection.size > 0) {
@@ -464,7 +492,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       //-----------------------------------------------------
       // SET SYNC
       //-----------------------------------------------------
-    } else if (rdoFieldTypeInfo.type === 'Set') {
+    } else if (rdoNodeTypeInfo.type === 'Set') {
       const rdoCollection = targetCollection as Set<any>;
 
       if (sourceCollection.length === 0 && rdoCollection.size > 0) {
@@ -473,7 +501,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (rdoCollection.size > 0 && !makeRdoCollectionKey?.fromRdoElement)
         throw new Error(
-          `Could not find '!makeRdoCollectionKey?.fromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+          `Could not find '!makeRdoCollectionKey?.fromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
         );
       if (sourceCollection.length > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
         logger.warn(
@@ -492,7 +520,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       //-----------------------------------------------------
       // ARRAY SYNC
       //-----------------------------------------------------
-    } else if (rdoFieldTypeInfo.type === 'Array') {
+    } else if (rdoNodeTypeInfo.type === 'Array') {
       const rdoCollection = targetCollection as Array<any>;
 
       if (sourceCollection.length === 0 && rdoCollection.length > 0) {
@@ -501,7 +529,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
       if (rdoCollection.length > 0 && !makeRdoCollectionKey?.fromRdoElement)
         throw new Error(
-          `Could not find 'makeRdoCollectionKeyFromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoFieldTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+          `Could not find 'makeRdoCollectionKeyFromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
         );
       if (sourceCollection.length > 100)
         logger.warn(
@@ -641,7 +669,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // ASSUMPTION - all supported collection types implement Iterable<>
     const firstItemInTargetCollection = targetCollection[Symbol.iterator]().next().value;
     if (!firstItemInTargetCollection) return 'empty';
-    const rdoFieldTypeInfo = this.getRdoFieldType(firstItemInTargetCollection);
+    const rdoFieldTypeInfo = this.getRdoNodeType(firstItemInTargetCollection);
     if (rdoFieldTypeInfo.type === 'Primitive') return 'primitive';
     else return 'object';
   }
@@ -735,7 +763,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
           targetNodeVal: targetElementVal,
-          tryUpdateTargetNode: (key, value) => rdoCollection.updateItemInTargetCollection(key, value),
         }),
     });
   }
@@ -770,7 +797,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
           targetNodeVal: targetElementVal,
-          tryUpdateTargetNode: (key, value) => rdoCollection.set(key, value),
         }),
     });
   }
@@ -809,7 +835,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
           targetNodeVal: targetElementVal,
-          tryUpdateTargetNode: (key, value) => CollectionUtils.Set.tryUpdateItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, value }),
         }),
     });
   }
@@ -848,7 +873,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
           targetNodeVal: targetElementVal,
-          tryUpdateTargetNode: (key, value) => CollectionUtils.Array.insertItem({ collection: rdoCollection, key, value }),
         }),
     });
   }
