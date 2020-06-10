@@ -54,11 +54,11 @@ export class QueryWatcher<Q> {
     }
   }
 
-  //
-  public start(apolloClient: ApolloClient<object>) {
+  // The force parameter will trigger a refetch of data even if already available
+  public start(apolloClient: ApolloClient<object>, force: boolean = true) {
     if (this.active) return;
 
-    this.initiateWatch({ apolloClient, runOnce: false });
+    this.initiateWatch({ apolloClient, runOnce: false, force });
 
     logger.trace(`${this._name} - Started`);
 
@@ -69,7 +69,7 @@ export class QueryWatcher<Q> {
   public runOnce(apolloClient: ApolloClient<object>) {
     if (this.active) return;
 
-    this.initiateWatch({ apolloClient, runOnce: true });
+    this.initiateWatch({ apolloClient, runOnce: true, force: true });
 
     logger.trace(`${this._name} - RunOnce`);
 
@@ -88,15 +88,15 @@ export class QueryWatcher<Q> {
     }
   }
 
-  //
-  private initiateWatch({ apolloClient, runOnce }: { apolloClient: ApolloClient<object>; runOnce: boolean }) {
+  // The force parameter will trigger a refetch of data even if already available
+  private initiateWatch({ apolloClient, runOnce, force }: { apolloClient: ApolloClient<object>; runOnce: boolean; force: boolean }) {
     if (!this._watchedQuery) {
       logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
       return;
     }
     logger.trace(`${this._name} - Starting`);
 
-    this._watchedQuery.resetLastResults();
+    if (force) this._watchedQuery.resetLastResults();
 
     this._watchedQuerySubscription = this._watchedQuery.subscribe(
       (next) => {

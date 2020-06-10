@@ -25,7 +25,7 @@ export declare const CollectionUtils: {
             collection: T_4[];
             makeCollectionKey: IMakeRdoCollectionKey<T_4>;
             key: string;
-        }) => void;
+        }) => boolean;
         clear: <T_5>({ collection }: {
             collection: T_5[];
         }) => T_5[];
@@ -54,7 +54,7 @@ export declare const CollectionUtils: {
             collection: Set<T_10>;
             makeCollectionKey: IMakeRdoCollectionKey<T_10>;
             key: string;
-        }) => void;
+        }) => boolean;
     };
     Record: {
         getKeys: <T_11>({ record }: {
@@ -77,7 +77,7 @@ export declare const CollectionUtils: {
         tryDeleteItem: <T_15>({ record, key }: {
             record: Record<string, T_15>;
             key: string;
-        }) => void;
+        }) => boolean;
     };
     isIterable: typeof isIterable;
 };

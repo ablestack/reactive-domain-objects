@@ -371,12 +371,18 @@ class GraphSynchronizer {
         else {
             const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, targetCollection });
             const typeDerivedOptions = _1.IsISyncableRDOCollection(targetCollection)
-                ? { makeRdoCollectionKey: targetCollection.makeRdoCollectionKey, makeRdo: targetCollection.makeRdo }
-                : { makeRdoCollectionKeyFromSourceElement: undefined, makeRdoCollectionKeyFromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement, makeRdo: undefined };
+                ? {
+                    makeRdoCollectionKey: {
+                        fromSourceElement: targetCollection.makeRdoCollectionKeyFromSourceElement,
+                        fromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement,
+                    },
+                    makeRdo: targetCollection.makeRdo,
+                }
+                : undefined;
             // GET CONFIG ITEM: makeRdoCollectionKeyFromSourceElement
-            makeRdoCollectionKey = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdoCollectionKey) || typeDerivedOptions.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
+            makeRdoCollectionKey = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdoCollectionKey) || (typeDerivedOptions === null || typeDerivedOptions === void 0 ? void 0 : typeDerivedOptions.makeRdoCollectionKey) || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
             // GET CONFIG ITEM: makeRdo
-            makeRdo = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdo) || (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdo) || typeDerivedOptions.makeRdo;
+            makeRdo = (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdo) || (targetDerivedOptions === null || targetDerivedOptions === void 0 ? void 0 : targetDerivedOptions.makeRdo) || (typeDerivedOptions === null || typeDerivedOptions === void 0 ? void 0 : typeDerivedOptions.makeRdo);
         }
         return { makeRdoCollectionKey, makeRdo };
     }

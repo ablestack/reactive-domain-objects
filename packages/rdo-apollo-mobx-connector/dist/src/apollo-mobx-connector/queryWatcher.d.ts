@@ -20,6 +20,8 @@ export declare class QueryWatcher<Q> {
         onAfterStop?: (apolloClient: ApolloClient<object>) => void;
     });
     initialize(apolloClient: ApolloClient<object>): Promise<void>;
-    start(apolloClient: ApolloClient<object>): void;
+    start(apolloClient: ApolloClient<object>, force?: boolean): void;
+    runOnce(apolloClient: ApolloClient<object>): void;
     stop(apolloClient: ApolloClient<object>): void;
+    private initiateWatch;
 }

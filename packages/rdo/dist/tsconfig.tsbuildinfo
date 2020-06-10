@@ -207,13 +207,13 @@
         "affectsGlobalScope": false
       },
       "../src/types/general-types.ts": {
-        "version": "25343a1b6b9cee41d237bedfc9a525e5187efce0539417ebe3f881a1857111ba",
-        "signature": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
+        "version": "c07e570fc37e52712e7be88b56515ee66bdd10df76c251078a972b90794a3584",
+        "signature": "aced7bacc1e1e69c8e44ec2c1358162c8b65238761a1fc0741fc90acc1676b6c",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-collection-types.ts": {
-        "version": "e47e53d7199178d1188ef55de37111a9339fbb5324e3e02e618a10ad696a4851",
-        "signature": "a64fa94831c8583382bd12c3472c9849b83841a78eabe38c3a5027536caefc5a",
+        "version": "0dbcbb2e31b5530167575e5a425c8910e9805101acd278c40b2ee286fb9852bb",
+        "signature": "12c67d8af0fcd23897cebb3d798edc89a3ee857bfbec84c056d61aa57f723520",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-config-option-types.ts": {
@@ -562,8 +562,8 @@
         "affectsGlobalScope": false
       },
       "../src/utilities/collection.utils.ts": {
-        "version": "8fa8de1dba1ff4c0cef759728e1b0d2acf4dee814867a69ccbd1e3913e4a5111",
-        "signature": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
+        "version": "295bb2510b7e35c664c821003f7d75b7325a456fec9a4ddc5724e07ab4d1401e",
+        "signature": "6370ac887f10f3af1e00cf888d4a6bc8acc30ba4fc8d9fcd5760a2cf16fedd40",
         "affectsGlobalScope": false
       },
       "../node_modules/@wry/equality/lib/equality.d.ts": {
@@ -592,8 +592,8 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "a60a4b68a1ef784cbebe75aa817842b887edfbd208a9fe42ca8a540dbf9863fa",
-        "signature": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
+        "version": "0e10133f47a627f47ab465b8705f1bd209050e8218d1bbd63b00b2b95731ae80",
+        "signature": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
         "affectsGlobalScope": false
       },
       "../node_modules/@babel/types/lib/index.d.ts": {

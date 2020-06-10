@@ -11,18 +11,13 @@ function IsISyncableCollection(o) {
         o.insertItemToTargetCollection &&
         typeof o.insertItemToTargetCollection === 'function' &&
         o.tryDeleteItemFromTargetCollection &&
-        typeof o.tryDeleteItemFromTargetCollection === 'function');
+        typeof o.tryDeleteItemFromTargetCollection === 'function' &&
+        o.clear &&
+        typeof o.clear === 'function');
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {
-    return (o &&
-        o.makeRdoCollectionKeyFromSourceElement &&
-        typeof o.makeRdoCollectionKeyFromSourceElement === 'function' &&
-        o.makeRdoCollectionKeyFromRdoElement &&
-        typeof o.makeRdoCollectionKeyFromRdoElement === 'function' &&
-        o.makeRdo &&
-        typeof o.makeRdo === 'function' &&
-        IsISyncableCollection(o));
+    return o && o.makeRdo && typeof o.makeRdo === 'function' && IsISyncableCollection(o);
 }
 exports.IsISyncableRDOCollection = IsISyncableRDOCollection;
 /***************************************************************************

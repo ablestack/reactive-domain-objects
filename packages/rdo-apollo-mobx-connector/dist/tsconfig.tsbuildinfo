@@ -212,13 +212,13 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/general-types.d.ts": {
-        "version": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
-        "signature": "23dd2bd121647b4612f19f90a566c5a4edb7548f64f54b40d6def9c3c3bae0e9",
+        "version": "aced7bacc1e1e69c8e44ec2c1358162c8b65238761a1fc0741fc90acc1676b6c",
+        "signature": "aced7bacc1e1e69c8e44ec2c1358162c8b65238761a1fc0741fc90acc1676b6c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-collection-types.d.ts": {
-        "version": "a64fa94831c8583382bd12c3472c9849b83841a78eabe38c3a5027536caefc5a",
-        "signature": "a64fa94831c8583382bd12c3472c9849b83841a78eabe38c3a5027536caefc5a",
+        "version": "3956bd4fa7011b5a535d1aead80b5a8f397b6de2f7a1c0877021d54787079301",
+        "signature": "3956bd4fa7011b5a535d1aead80b5a8f397b6de2f7a1c0877021d54787079301",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-config-option-types.d.ts": {
@@ -227,8 +227,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": {
-        "version": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
-        "signature": "37778ed81e69f1c8775bf325c7d65d13267db6806b08f00c04ff360dbcea2ec3",
+        "version": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
+        "signature": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/index.d.ts": {
@@ -237,8 +237,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/collection.utils.d.ts": {
-        "version": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
-        "signature": "208633b133346dcedea2e1317bc27ef3da6e770d0cb107adeb6148aff176a027",
+        "version": "6370ac887f10f3af1e00cf888d4a6bc8acc30ba4fc8d9fcd5760a2cf16fedd40",
+        "signature": "6370ac887f10f3af1e00cf888d4a6bc8acc30ba4fc8d9fcd5760a2cf16fedd40",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/comparers.d.ts": {
@@ -257,8 +257,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/graphsynchronizer.d.ts": {
-        "version": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
-        "signature": "29266d2bfd455e3061abca07443cbec116440e7b28827b6d728f5fca48bdab3f",
+        "version": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
+        "signature": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/index.d.ts": {
@@ -1627,8 +1627,8 @@
         "affectsGlobalScope": false
       },
       "../src/apollo-mobx-connector/querywatcher.ts": {
-        "version": "91c761a95edb6f44cd52462acd2c1db7f7932342832eee0411de629f16eac80b",
-        "signature": "00d93938db379de9193c75fc626751bf9f9cbc67db6b060f9fca62276b8dfb97",
+        "version": "0c830b56c267f6ae9e535c0b3e8160c92e6c77fc01a95ea03ce3eda639104130",
+        "signature": "1579dabf418786e844611ee36e30dd1365b810375a18ebe024dbbb5866da324a",
         "affectsGlobalScope": false
       },
       "../src/apollo-mobx-connector/index.ts": {
@@ -1637,8 +1637,8 @@
         "affectsGlobalScope": false
       },
       "../src/collections/syncablecollection.ts": {
-        "version": "7c4b4c521c1de66cf62ce1e70111b611045e678dd3d9a3394a5859f48bc42b52",
-        "signature": "967fe9cf27ba2c466b0520563f8a0503f79573efaba578982bdbb4cd99d7e577",
+        "version": "c7074e5ce7c974ef54732de47270459d624cb6dd0a069e4ac2a6b913ae370ea8",
+        "signature": "bb33a627bf4afeb9659b6ac1d0cf1a80421c20aea5d4d21dd7dc11329fa111b4",
         "affectsGlobalScope": false
       },
       "../src/collections/index.ts": {

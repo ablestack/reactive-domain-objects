@@ -21,11 +21,13 @@ const _Array = {
     }
   },
   deleteItem: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) => {
-    if (collection.length === 0) return;
-    collection.splice(
-      collection.findIndex((item) => makeCollectionKey(item) === key),
-      1,
-    );
+    if (collection.length === 0) return false;
+    const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
+    if (existingItemIndex !== -1) {
+      collection.splice(existingItemIndex, 1);
+      return true;
+    }
+    return false;
   },
   clear: <T>({ collection }: { collection: Array<T> }) => collection.splice(0, collection.length),
 };
@@ -48,9 +50,13 @@ const _Set = {
     collection.add(value);
   },
   tryDeleteItem: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: IMakeRdoCollectionKey<T>; key: string }) => {
-    if (collection.size === 0) return;
+    if (collection.size === 0) return false;
     const item = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
-    if (item) collection.delete(item);
+    if (item) {
+      collection.delete(item);
+      return true;
+    }
+    return false;
   },
 };
 
@@ -64,7 +70,11 @@ const _Record = {
     record[key] = value;
   },
   tryDeleteItem: <T>({ record, key }: { record: Record<string, T>; key: string }) => {
-    delete record[key];
+    if (key in record) {
+      delete record[key];
+      return true;
+    }
+    return false;
   },
 };
 

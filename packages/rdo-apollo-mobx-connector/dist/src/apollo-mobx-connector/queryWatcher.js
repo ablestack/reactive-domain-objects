@@ -19,6 +19,7 @@ class QueryWatcher {
     get active() {
         return this._active;
     }
+    //
     async initialize(apolloClient) {
         if (!this._watchedQuery) {
             this._watchedQuery = await this._makeObservableQuery(apolloClient);
@@ -28,27 +29,21 @@ class QueryWatcher {
             await this._onAfterInitialized(apolloClient);
         }
     }
-    start(apolloClient) {
+    // The force parameter will trigger a refetch of data even if already available
+    start(apolloClient, force = true) {
         if (this.active)
             return;
-        if (!this._watchedQuery) {
-            logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
-            return;
-        }
-        logger.trace(`${this._name} - Starting`);
-        this._watchedQuery.resetLastResults();
-        this._watchedQuerySubscription = this._watchedQuery.subscribe((next) => {
-            logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
-            if (next.data) {
-                this._handleDataChange(next.data);
-            }
-        }, (error) => {
-            logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
-        }, () => {
-            logger.error(`${this._name} - watchedQuerySubscription - Completed`);
-        });
-        this._active = true;
+        this.initiateWatch({ apolloClient, runOnce: false, force });
         logger.trace(`${this._name} - Started`);
+        if (this._onAfterStart)
+            this._onAfterStart(apolloClient);
+    }
+    //
+    runOnce(apolloClient) {
+        if (this.active)
+            return;
+        this.initiateWatch({ apolloClient, runOnce: true, force: true });
+        logger.trace(`${this._name} - RunOnce`);
         if (this._onAfterStart)
             this._onAfterStart(apolloClient);
     }
@@ -62,6 +57,31 @@ class QueryWatcher {
             if (this._onAfterStop)
                 this._onAfterStop(apolloClient);
         }
+    }
+    // The force parameter will trigger a refetch of data even if already available
+    initiateWatch({ apolloClient, runOnce, force }) {
+        if (!this._watchedQuery) {
+            logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
+            return;
+        }
+        logger.trace(`${this._name} - Starting`);
+        if (force)
+            this._watchedQuery.resetLastResults();
+        this._watchedQuerySubscription = this._watchedQuery.subscribe((next) => {
+            logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
+            if (next.data) {
+                this._handleDataChange(next.data);
+                if (runOnce)
+                    this.stop(apolloClient);
+            }
+        }, (error) => {
+            logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
+            this.stop(apolloClient);
+        }, () => {
+            logger.info(`${this._name} - watchedQuerySubscription - Completed`);
+            this.stop(apolloClient);
+        });
+        this._active = true;
     }
 }
 exports.QueryWatcher = QueryWatcher;

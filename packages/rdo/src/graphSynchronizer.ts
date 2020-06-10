@@ -20,36 +20,10 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames } from './types';
+import { IsIHasCustomRdoFieldNames, JsonNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoFieldTypeInfo } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
-
-/**
- * INTERNAL TYPES
- *
- */
-
-export type JavaScriptBuiltInType =
-  | '[object Array]'
-  | '[object Boolean]'
-  | '[object Date]'
-  | '[object Error]'
-  | '[object Map]'
-  | '[object Number]'
-  | '[object Object]'
-  | '[object RegExp]'
-  | '[object Set]'
-  | '[object String]'
-  | '[object Undefined]';
-
-export type JsonNodeKind = 'objectProperty' | 'arrayElement';
-
-export type SourceNodeType = 'Primitive' | 'Array' | 'Object';
-export type SourceNodeTypeInfo = { type: SourceNodeType | undefined; builtInType: JavaScriptBuiltInType };
-
-export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
-export type RdoFieldTypeInfo = { type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
 
 /**
  *
@@ -534,15 +508,21 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       makeRdo = (primitive) => primitive;
     } else {
       const targetDerivedOptions = this.getMatchingOptionsForCollectionNode({ sourceCollection, targetCollection });
-      const typeDerivedOptions = IsISyncableRDOCollection(targetCollection)
-        ? { makeRdoCollectionKey: targetCollection.makeRdoCollectionKey, makeRdo: targetCollection.makeRdo }
-        : { makeRdoCollectionKeyFromSourceElement: undefined, makeRdoCollectionKeyFromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement, makeRdo: undefined };
+      const typeDerivedOptions: Partial<INodeSyncOptions<any, any>> | undefined = IsISyncableRDOCollection(targetCollection)
+        ? {
+            makeRdoCollectionKey: {
+              fromSourceElement: targetCollection.makeRdoCollectionKeyFromSourceElement,
+              fromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement,
+            },
+            makeRdo: targetCollection.makeRdo,
+          }
+        : undefined;
 
       // GET CONFIG ITEM: makeRdoCollectionKeyFromSourceElement
-      makeRdoCollectionKey = targetDerivedOptions?.makeRdoCollectionKey || typeDerivedOptions.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
+      makeRdoCollectionKey = targetDerivedOptions?.makeRdoCollectionKey || typeDerivedOptions?.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
 
       // GET CONFIG ITEM: makeRdo
-      makeRdo = targetDerivedOptions?.makeRdo || targetDerivedOptions?.makeRdo || typeDerivedOptions.makeRdo;
+      makeRdo = targetDerivedOptions?.makeRdo || targetDerivedOptions?.makeRdo || typeDerivedOptions?.makeRdo;
     }
 
     return { makeRdoCollectionKey, makeRdo };

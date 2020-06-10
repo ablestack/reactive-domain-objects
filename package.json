@@ -13,10 +13,10 @@
     "bootstrap": "lerna bootstrap",
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose",
-    "publish": "yarn run build && lerna publish --forcePublish",
-    "local-publish": "yarn run build && lerna run prepublishOnly --stream && yalc publish packages/rdo/dist/src --force && yalc publish packages/rdo-apollo-mobx-connector/dist/src --force",
-    "local-push": "yarn run build && lerna run prepublishOnly --stream && yalc push packages/rdo/dist/src --force && yalc push packages/rdo-apollo-mobx-connector/dist/src --force",
-    "test": "jest"
+    "pub": "npm run build && lerna publish --forcePublish",
+    "lpub": "npm run build && lerna run prepublishOnly --stream && yalc publish packages/rdo/dist/src --force && yalc publish packages/rdo-apollo-mobx-connector/dist/src --force",
+    "lpush": "npm run build && lerna run prepublishOnly --stream && yalc push packages/rdo/dist/src --force && yalc push packages/rdo-apollo-mobx-connector/dist/src --force",
+    "test": "npm run build && jest"
   },
   "devDependencies": {
     "@ablestack/rdo": "^0.3.1",

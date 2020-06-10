@@ -9,6 +9,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
     constructor({ makeRdoCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRdo, }) {
         this._array$ = new Array();
+        this[Symbol.toStringTag] = '[object Map]';
         // -----------------------------------
         // IRdoFactory
         // -----------------------------------
@@ -40,7 +41,7 @@ class SyncableCollection {
         };
         this.tryDeleteItemFromTargetCollection = (key) => {
             this._map$.delete(key);
-            rdo_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
+            return rdo_1.CollectionUtils.Array.deleteItem({ collection: this._array$, key, makeCollectionKey: this._makeRdoCollectionKeyFromRdoElement });
         };
         this.clear = () => {
             this._map$.clear();
@@ -54,14 +55,39 @@ class SyncableCollection {
     get size() {
         return this._map$.size;
     }
-    get map$() {
-        return this._map$;
-    }
     get array$() {
         return this._array$;
     }
+    // -----------------------------------
+    // Map Interface
+    // -----------------------------------
+    delete(key) {
+        return this.tryDeleteItemFromTargetCollection(key);
+    }
+    forEach(callbackfn, thisArg) {
+        this._map$.forEach(callbackfn);
+    }
+    get(key) {
+        return this._map$.get(key);
+    }
+    has(key) {
+        return this._map$.has(key);
+    }
+    set(key, value) {
+        this.insertItemToTargetCollection(key, value);
+        return this;
+    }
     [Symbol.iterator]() {
-        return this.array$[Symbol.iterator]();
+        return this._map$.entries();
+    }
+    entries() {
+        return this._map$.entries();
+    }
+    keys() {
+        return this._map$.keys();
+    }
+    values() {
+        return this._map$.values();
     }
 }
 tslib_1.__decorate([
@@ -73,11 +99,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Number),
     tslib_1.__metadata("design:paramtypes", [])
 ], SyncableCollection.prototype, "size", null);
-tslib_1.__decorate([
-    mobx_1.computed,
-    tslib_1.__metadata("design:type", Map),
-    tslib_1.__metadata("design:paramtypes", [])
-], SyncableCollection.prototype, "map$", null);
 tslib_1.__decorate([
     mobx_1.observable.shallow,
     tslib_1.__metadata("design:type", Object)

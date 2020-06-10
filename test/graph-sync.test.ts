@@ -562,8 +562,8 @@ test('Synchronize collection element edit', () => {
   expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------
@@ -608,8 +608,8 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesRDO.customCollectionOfObjects.map$.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------

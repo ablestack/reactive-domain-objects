@@ -22,8 +22,13 @@ const _Array = {
     },
     deleteItem: ({ collection, makeCollectionKey, key }) => {
         if (collection.length === 0)
-            return;
-        collection.splice(collection.findIndex((item) => makeCollectionKey(item) === key), 1);
+            return false;
+        const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
+        if (existingItemIndex !== -1) {
+            collection.splice(existingItemIndex, 1);
+            return true;
+        }
+        return false;
     },
     clear: ({ collection }) => collection.splice(0, collection.length),
 };
@@ -45,10 +50,13 @@ const _Set = {
     },
     tryDeleteItem: ({ collection, makeCollectionKey, key }) => {
         if (collection.size === 0)
-            return;
+            return false;
         const item = Array.from(collection.values()).find((domainItem) => makeCollectionKey(domainItem) === key);
-        if (item)
+        if (item) {
             collection.delete(item);
+            return true;
+        }
+        return false;
     },
 };
 const _Record = {
@@ -61,7 +69,11 @@ const _Record = {
         record[key] = value;
     },
     tryDeleteItem: ({ record, key }) => {
-        delete record[key];
+        if (key in record) {
+            delete record[key];
+            return true;
+        }
+        return false;
     },
 };
 function isIterable(obj) {

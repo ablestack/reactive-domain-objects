@@ -19,11 +19,11 @@ export interface IRdoCollectionKeyFactoryStrict<S, D> {
 }
 
 export interface IRdoCollectionKeyFactory<S, D> {
-  fromSourceElement: IMakeRdoCollectionKey<S>;
+  fromSourceElement?: IMakeRdoCollectionKey<S>;
   fromRdoElement?: IMakeRdoCollectionKey<D>;
 }
 
-export interface ISyncableCollection<T> extends Iterable<T> {
+export interface ISyncableCollection<T> extends Iterable<[string, T]> {
   readonly size: number;
   getKeys: () => string[];
   tryGetItemFromTargetCollection: (key: string) => T | null | undefined;
@@ -43,26 +43,20 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
     o.insertItemToTargetCollection &&
     typeof o.insertItemToTargetCollection === 'function' &&
     o.tryDeleteItemFromTargetCollection &&
-    typeof o.tryDeleteItemFromTargetCollection === 'function'
+    typeof o.tryDeleteItemFromTargetCollection === 'function' &&
+    o.clear &&
+    typeof o.clear === 'function'
   );
 }
 
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-  makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>;
+  makeRdoCollectionKeyFromSourceElement?: IMakeRdoCollectionKey<S>;
+  makeRdoCollectionKeyFromRdoElement?: IMakeRdoCollectionKey<D>;
   makeRdo: IMakeRDO<S, D>;
 }
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
-  return (
-    o &&
-    o.makeRdoCollectionKeyFromSourceElement &&
-    typeof o.makeRdoCollectionKeyFromSourceElement === 'function' &&
-    o.makeRdoCollectionKeyFromRdoElement &&
-    typeof o.makeRdoCollectionKeyFromRdoElement === 'function' &&
-    o.makeRdo &&
-    typeof o.makeRdo === 'function' &&
-    IsISyncableCollection(o)
-  );
+  return o && o.makeRdo && typeof o.makeRdo === 'function' && IsISyncableCollection(o);
 }
 
 /***************************************************************************
