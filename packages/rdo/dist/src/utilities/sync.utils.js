@@ -6,7 +6,7 @@ const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const logger_1 = require("../infrastructure/logger");
 const logger = logger_1.Logger.make('SyncUtils');
 /** */
-function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeRdoCollectionKeyFromSourceElement, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, trySyncElement, }) {
+function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getTargetCollectionKeys, makeRdoCollectionKeyFromSourceElement, makeItemForTargetCollection, tryGetItemFromTargetCollection, insertItemToTargetCollection, tryDeleteItemFromTargetCollection, tryStepIntoElementAndSync, }) {
     let changed = false;
     const sourceKeys = new Array();
     const targetCollectionStartedEmpty = getTargetCollectionSize() === 0;
@@ -35,7 +35,7 @@ function synchronizeCollection({ sourceCollection, getTargetCollectionSize, getT
         // Sync Item
         //
         logger.trace(`Syncing item ${key} in collection`, sourceItem);
-        changed = trySyncElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem });
+        changed = tryStepIntoElementAndSync({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem });
         continue;
     }
     // short-cutting this check when initial collection was empty.

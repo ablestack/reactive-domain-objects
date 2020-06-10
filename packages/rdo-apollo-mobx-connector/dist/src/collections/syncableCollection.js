@@ -24,6 +24,30 @@ class SyncableCollection {
         // -----------------------------------
         // ISyncableCollection
         // -----------------------------------
+        // public synchronizeCollection({ sourceCollection }: { sourceCollection: Array<S> }) {
+        //   SyncUtils.synchronizeCollection({
+        //     sourceCollection,
+        //     getTargetCollectionSize: () => this.size,
+        //     getTargetCollectionKeys: this.getKeys,
+        //     makeRdoCollectionKeyFromSourceElement: this.makeRdoCollectionKeyFromSourceElement, //TODO
+        //     tryGetItemFromTargetCollection: (key) => this.tryGetItemFromTargetCollection(key),
+        //     insertItemToTargetCollection: (key, value) => this.insertItemToTargetCollection(key, value),
+        //     tryDeleteItemFromTargetCollection: (key) => this.tryDeleteItemFromTargetCollection(key),
+        //     makeItemForTargetCollection: this.makeRdo,
+        //     tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        //       this.tryStepIntoNodeAnSync({
+        //         sourceNodeKind: 'arrayElement',
+        //         sourceNodeKey: sourceElementKey,
+        //         sourceNodeVal: sourceElementVal,
+        //         targetNodeKey: targetElementKey,
+        //         targetNodeVal: targetElementVal,
+        //         tryUpdateTargetNode: (key, value) => this.updateItemInTargetCollection(key, value),
+        //       }),
+        //   });
+        // }
+        // -----------------------------------
+        // ISyncableCollection
+        // -----------------------------------
         this.getKeys = () => {
             return Array.from(this._map$.keys());
         };

@@ -43,6 +43,8 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
+    private tryStepIntoNodeAndSync;
+    /** */
     private trySynchronizeNode;
     /** */
     private trySynchronizeNode_TypeSpecificProcessing;

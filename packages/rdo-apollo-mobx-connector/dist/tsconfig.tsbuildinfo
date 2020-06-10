@@ -227,8 +227,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": {
-        "version": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
-        "signature": "3f4ab79ebd15f002a5bf4f8d7501dc4618a5effef4f16f3131450e9628b66721",
+        "version": "0f1f2f29757d9ba6d3d0b48b757c63e0505f6a16ab6eddb9a2c1adaec94ea679",
+        "signature": "0f1f2f29757d9ba6d3d0b48b757c63e0505f6a16ab6eddb9a2c1adaec94ea679",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/index.d.ts": {
@@ -247,8 +247,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/sync.utils.d.ts": {
-        "version": "deedfea2da0d32ed28e14c7095e8ec6dd99275d09be8ac7d971dd1191decfabc",
-        "signature": "deedfea2da0d32ed28e14c7095e8ec6dd99275d09be8ac7d971dd1191decfabc",
+        "version": "92bfd67ef1ce00feb474974d6abd22d84f889217b7122125de6f550a60faac5d",
+        "signature": "92bfd67ef1ce00feb474974d6abd22d84f889217b7122125de6f550a60faac5d",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/utilities/index.d.ts": {
@@ -257,8 +257,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/graphsynchronizer.d.ts": {
-        "version": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
-        "signature": "1c3c3f248f0502c36eac21b640c58d646ce5ef8ac9d768bd856a39112e33cb6a",
+        "version": "6d7d53c82cab8a3cc438dd8dba01bcbcccadaf31128edf3b140ba4387c98a53f",
+        "signature": "6d7d53c82cab8a3cc438dd8dba01bcbcccadaf31128edf3b140ba4387c98a53f",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/index.d.ts": {
@@ -1637,7 +1637,7 @@
         "affectsGlobalScope": false
       },
       "../src/collections/syncablecollection.ts": {
-        "version": "a151ed9be2b1f7db082d612da6247743b3798379204869606589c73021b89965",
+        "version": "9e44485ad6e54b8693b150aebd34ac0831a811b5ba425b43cfe3cd1df836b15a",
         "signature": "414a9a8d9cd39f2e7b0a539655b538bef4be01436e74d293ee3ced9e603e6896",
         "affectsGlobalScope": false
       },
@@ -5370,7 +5370,6 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": [
-        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -8860,7 +8859,6 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": [
-        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",

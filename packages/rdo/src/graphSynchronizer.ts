@@ -152,7 +152,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceObject: S;
     sourceFieldname: string;
   }) {
-    return this.trySynchronizeNode({
+    return this.tryStepIntoNodeAndSync({
       sourceNodeKind: 'objectProperty',
       sourceNodeKey: sourceFieldname,
       sourceNodeVal: sourceObject[sourceFieldname],
@@ -299,7 +299,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private trySynchronizeNode({
+  private tryStepIntoNodeAndSync({
     sourceNodeKind,
     sourceNodeKey,
     sourceNodeVal,
@@ -316,28 +316,42 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): boolean {
     logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`, { sourceNodeVal, targetNodeVal });
 
-    // Setup
-    let changed = false;
-
     // Node traversal tracking - step-in
     this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, sourceNodeKind);
 
+    const changed = this.trySynchronizeNode({ sourceNodeVal, targetNodeKey, targetNodeVal, tryUpdateTargetNode });
+
+    // Node traversal tracking - step-out
+    this.setLastSourceNodeInstancePathValue(sourceNodeVal);
+    this.popSourceNodeInstancePathFromStack(sourceNodeKind);
+
+    return changed;
+  }
+
+  /** */
+  private trySynchronizeNode({
+    sourceNodeVal,
+    targetNodeKey,
+    targetNodeVal,
+    tryUpdateTargetNode,
+  }: {
+    sourceNodeVal: any;
+    targetNodeKey: string;
+    targetNodeVal: any;
+    tryUpdateTargetNode: (key: string, value: any) => void;
+  }): boolean {
     // Test to see if node should be ignored
     const matchingOptions = this.getMatchingOptionsForNode();
     if (matchingOptions?.ignore) {
       logger.trace(`synchronizeProperty (${targetNodeKey}) - ignore node`);
+      return false;
     } else {
       // Type specific node processing
       const sourceNodeTypeInfo = this.getSourceNodeType(sourceNodeVal);
       const rdoFieldTypeInfo = this.getRdoFieldType(targetNodeVal);
 
-      changed = this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoFieldTypeInfo, sourceNodeVal, targetNodeVal, targetNodeKey, tryUpdateTargetNode });
+      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoFieldTypeInfo, sourceNodeVal, targetNodeVal, targetNodeKey, tryUpdateTargetNode });
     }
-
-    // Node traversal tracking - step-out
-    this.setLastSourceNodeInstancePathValue(sourceNodeVal);
-    this.popSourceNodeInstancePathFromStack(sourceNodeKind);
-    return changed;
   }
 
   /** */
@@ -536,7 +550,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       makeRdoCollectionKey = targetDerivedOptions?.makeRdoCollectionKey || typeDerivedOptions?.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
 
       // GET CONFIG ITEM: makeRdo
-      makeRdo = targetDerivedOptions?.makeRdo || targetDerivedOptions?.makeRdo || typeDerivedOptions?.makeRdo;
+      makeRdo = targetDerivedOptions?.makeRdo || typeDerivedOptions?.makeRdo;
     }
 
     return { makeRdoCollectionKey, makeRdo };
@@ -714,8 +728,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => rdoCollection.insertItemToTargetCollection(key, value),
       tryDeleteItemFromTargetCollection: (key) => rdoCollection.tryDeleteItemFromTargetCollection(key),
       makeItemForTargetCollection: makeRdo,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-        this.trySynchronizeNode({
+      tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        this.tryStepIntoNodeAndSync({
           sourceNodeKind: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
@@ -749,8 +763,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       insertItemToTargetCollection: (key, value) => rdoCollection.set(key, value),
       tryDeleteItemFromTargetCollection: (key) => rdoCollection.delete(key),
       makeItemForTargetCollection: makeRdo,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-        this.trySynchronizeNode({
+      tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        this.tryStepIntoNodeAndSync({
           sourceNodeKind: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
@@ -788,8 +802,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
       makeItemForTargetCollection: makeRdo,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-        this.trySynchronizeNode({
+      tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        this.tryStepIntoNodeAndSync({
           sourceNodeKind: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
@@ -827,8 +841,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       tryDeleteItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
         ? (key) => CollectionUtils.Array.deleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
-      trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-        this.trySynchronizeNode({
+      tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
+        this.tryStepIntoNodeAndSync({
           sourceNodeKind: 'arrayElement',
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,

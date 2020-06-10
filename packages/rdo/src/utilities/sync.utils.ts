@@ -13,7 +13,7 @@ function synchronizeCollection<S, T>({
   tryGetItemFromTargetCollection,
   insertItemToTargetCollection,
   tryDeleteItemFromTargetCollection,
-  trySyncElement,
+  tryStepIntoElementAndSync,
 }: {
   sourceCollection: Iterable<S>;
   getTargetCollectionSize: () => number;
@@ -23,7 +23,7 @@ function synchronizeCollection<S, T>({
   tryGetItemFromTargetCollection?: (key: string) => T | undefined;
   insertItemToTargetCollection: (key: string, value: T) => void;
   tryDeleteItemFromTargetCollection?: (key: string) => void;
-  trySyncElement: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
+  tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
@@ -54,7 +54,7 @@ function synchronizeCollection<S, T>({
     // Sync Item
     //
     logger.trace(`Syncing item ${key} in collection`, sourceItem);
-    changed = trySyncElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem! });
+    changed = tryStepIntoElementAndSync({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem! });
     continue;
   }
 
