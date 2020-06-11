@@ -534,9 +534,21 @@ interface IRdoFactory<S, D> {
 
 For clarity, this is a brief reference for some terminology that is used throughout the documentation and the source code. Please feel free to update if you see any terms being used incorrectly:
 
-- Element: an item of a collection
-- Node: An Property of an Object, or an Element of a collection
-- Field: A Property of an Object Node
-- Source: JSON source data, and the 'source of truth'
-- RDO: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-objects/blob/master/README.md)
-- Target: Usually synonymous with Domain, but used in the context of collection manipulation (abstracted)
+- **Node**: An Property of an Object, or an Element of a collection. Has:
+  - _Value_: The contained value
+  - _Key_: A unique identifier for the node within the parent Node. Is Either the Fieldname (for object Nodes), or the collection key (for collection Nodes). Note, that for non-keyed collections, such as Arrays and Sets, the collection key is still relevant. However, it does not exist on the collection itself, but is still a unique identifier for the item, which can be used to locate it
+  - _Parent_: unless the Toot node, in which case this is null
+- **Internal Node**: A Node with child nodes
+- **Leaf Node**: A Node without any child nodes, such as one with a Primitive value
+- **Source**: JSON source data, and the 'source of truth'
+- **RDO**: Reactive Domain Object. See definition in [README](https://github.com/ablestack/reactive-domain-objects/blob/master/README.md)
+- **Target**: Usually synonymous with RDO, but used in the context of collection manipulation (so no specific to RDOs)
+- **Element**: a member of a collection
+- **Field**: A Property of an Object Node
+- **Item**: A child member of an Object or a collection. So, essentially, a Element or a Field.
+- **Operations** There is surprising importance in the nuance of each operation:
+  - _Set_: essentially an _upsert_ operation. Only valid on collection Node types
+  - _Update_: trus to update value on Node for given key. If key does not exist, no change occurs. If value is identical, no change is made. Returns true if change occurs, els false.
+  - _Insert_: adds value to Node with given key. Only valid on collection Node types. Does not check for duplicates. May end up with unexpected behavior or errors if item already exists
+  - _Get_: gets value from Node for given key. May return undefined if key not present on Node
+  - _Delete_: trys to remove given key from Node. If not present, no change is made. Returns true if deletion occurs, otherwise false.

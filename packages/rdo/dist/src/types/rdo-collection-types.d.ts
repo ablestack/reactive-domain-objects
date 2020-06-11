@@ -1,31 +1,31 @@
 export interface IMakeRdoCollectionKey<T> {
-    (item: T): string;
+  (item: T): string;
 }
 export interface IMakeRDO<S, D> {
-    (sourceObject: S): D;
+  (sourceObject: S): D;
 }
 export interface IRdoCollectionKeyFactoryStrict<S, D> {
-    fromSourceElement: IMakeRdoCollectionKey<S>;
-    fromRdoElement: IMakeRdoCollectionKey<D>;
+  fromSourceElement: IMakeRdoCollectionKey<S>;
+  fromRdoElement: IMakeRdoCollectionKey<D>;
 }
 export interface IRdoCollectionKeyFactory<S, D> {
-    fromSourceElement?: IMakeRdoCollectionKey<S>;
-    fromRdoElement?: IMakeRdoCollectionKey<D>;
+  fromSourceElement?: IMakeRdoCollectionKey<S>;
+  fromRdoElement?: IMakeRdoCollectionKey<D>;
 }
 export interface ISyncableCollection<T> extends Iterable<[string, T]> {
-    readonly size: number;
-    getKeys: () => string[];
-    tryGetItemFromTargetCollection: (key: string) => T | null | undefined;
-    insertItemToTargetCollection: (key: string, value: T) => void;
-    updateItemInTargetCollection: (key: string, value: T) => void;
-    tryDeleteItemFromTargetCollection: (key: string) => void;
-    clear: () => void;
+  readonly size: number;
+  getKeys: () => string[];
+  get: (key: string) => T | null | undefined;
+  insertItemToTargetCollection: (key: string, value: T) => void;
+  updateItemInTargetCollection: (key: string, value: T) => void;
+  tryDeleteItemFromTargetCollection: (key: string) => void;
+  clear: () => void;
 }
 export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-    makeRdoCollectionKeyFromSourceElement?: IMakeRdoCollectionKey<S>;
-    makeRdoCollectionKeyFromRdoElement?: IMakeRdoCollectionKey<D>;
-    makeRdo: IMakeRDO<S, D>;
+  makeRdoCollectionKeyFromSourceElement?: IMakeRdoCollectionKey<S>;
+  makeRdoCollectionKeyFromRdoElement?: IMakeRdoCollectionKey<D>;
+  makeRdo: IMakeRDO<S, D>;
 }
 export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;
 /***************************************************************************

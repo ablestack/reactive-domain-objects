@@ -2,17 +2,19 @@
 
 ## Overview
 
-The [reactive-domain-objects](https://github.com/ablestack/reactive-domain-objects) library intelligently synchronizes any source of JSON data with rich observable Domain Models. A primary use case is connecting GraphQL client libraries (such as [ApolloGraphQL](https://github.com/apollographql/apollo-client)) with reactive client libraries (such as [MobX](https://mobx.js.org/)). However, it can also be useful tool for connecting any source of JSON data reactive client applications.
+The [reactive-domain-objects](https://github.com/ablestack/reactive-domain-objects) library intelligently synchronizes any source of JSON data with rich observable Domain Models, providing a bridge from an _Imperative programming model_ of stateful objects to a _Reactive programming model_ of observables, data streams, and reactive user interfaces.
 
-This library does not exclusively support an _Imperative_ or _Reactive_ coding model. Rather, it acts a bridge from an _Imperative programming model_ of stateful objects to a _Reactive programming model_ of observables and data streams.
+A primary use case is connecting GraphQL client libraries (such as [ApolloGraphQL](https://github.com/apollographql/apollo-client)) to reactive client libraries (such as [React](https://reactjs.org/)) with Observables (such as [MobX](https://mobx.js.org/)).
 
 ## The Problems Being Solved
 
 The problems being solved primarily revolve around consuming and using JSON data in TypeScript/JavaScript client applications:
 
-- Most modern state management frameworks rely on plain JavaScript object trees. This makes encapsulation (of data, logic, and behavior) difficult which, in turn, makes managing complexity in large codebases or complex business domains much more challenging
-- When working directly with plain JavaScript trees of any non-trivial complexity, denormalization (and corresponding normalization) is usually required for efficient graph traversal. This adds additional complexity and maintenance requirements
-- Many client UI frameworks, such as React, rely on referential equality of state data. Results returned from external data sources, including REST and GraphQL, will never be referentially equal, even if their structures and values are actually the same. Extensive memoization code, or poor performance result
+- **The Encapsulation Problem**: Most modern state management frameworks rely on plain JavaScript object trees. This makes encapsulation (of data, logic, and behavior) difficult which, in turn, makes managing complexity in large codebases or complex business domains much more challenging
+
+- **The Denormalization Difficulty**: When working directly with plain JavaScript trees of any non-trivial complexity, denormalization (and corresponding normalization) is usually required for efficient graph traversal. This adds additional complexity and maintenance requirements
+
+- **External Data Sync**: Many client UI frameworks, such as React, rely on referential equality of state data. Results returned from external data sources, including REST and GraphQL, will never be referentially equal, even if their structures and values are actually the same. Extensive memoization code, or poor performance result
 
 <!-- TODO: For an in-depth review of these issues, and to contribute to the discussion, see the [following article](TODO). Feedback, input, and contributions welcomed and encouraged. -->
 

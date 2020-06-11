@@ -20,7 +20,7 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames, JsonNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo } from './types';
+import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -46,7 +46,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
-  private pushSourceNodeInstancePathOntoStack(key: string, sourceNodeKind: JsonNodeKind) {
+  private pushSourceNodeInstancePathOntoStack(key: string, sourceNodeKind: InternalNodeKind) {
     logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
     this._sourceNodeInstancePathStack.push(key);
     // reset locally cached dependencies
@@ -60,7 +60,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
   }
 
-  private popSourceNodeInstancePathFromStack(sourceNodeKind: JsonNodeKind) {
+  private popSourceNodeInstancePathFromStack(sourceNodeKind: InternalNodeKind) {
     const key = this._sourceNodeInstancePathStack.pop();
     logger.trace(`Popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
     // reset locally cached dependencies
@@ -302,22 +302,32 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private tryStepIntoNodeAndSync({
     sourceNodeKind,
     sourceNodeKey,
-    sourceParentNodeVal,
+    sourceNodeVal,
     targetNodeKey,
-    targetParentNodeVal,
+    targetParentNode,
+    updateTargetNode,
+    getTargetNodeValue,
   }: {
-    sourceNodeKind: JsonNodeKind;
+    sourceNodeKind: InternalNodeKind;
     sourceNodeKey: string;
-    sourceParentNodeVal: any;
+    sourceNodeVal: any;
     targetNodeKey: string;
-    targetParentNodeVal: any;
+    targetParentNode: any;
+    updateTargetNode: ({ parentNode, key, value }: { parentNode: any; key: string; value: any }) => void;
+    getTargetNodeValue: ({ parentNode, key }: { parentNode: any; key: string }) => any;
   }): boolean {
-    logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`, { sourceNodeVal, targetNodeVal });
+    logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`);
 
     // Node traversal tracking - step-in
     this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, sourceNodeKind);
 
-    const changed = this.trySynchronizeNode({ sourceNodeVal, targetNodeKey, targetNodeVal, tryUpdateTargetNode });
+    const changed = this.trySynchronizeNode({
+      sourceNodeVal,
+      targetNodeKey,
+      targetParentNode,
+      updateTargetNode,
+      getTargetNodeValue,
+    });
 
     // Node traversal tracking - step-out
     this.setLastSourceNodeInstancePathValue(sourceNodeVal);
@@ -330,13 +340,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private trySynchronizeNode({
     sourceNodeVal,
     targetNodeKey,
-    targetNodeVal,
-    tryUpdateTargetNode,
+    targetParentNode,
+    updateTargetNode,
+    getTargetNodeValue,
   }: {
     sourceNodeVal: any;
     targetNodeKey: string;
-    targetNodeVal: any;
-    tryUpdateTargetNode: (key: string, value: any) => void;
+    targetParentNode: any;
+    updateTargetNode: ({ parentNode, key, value }: { parentNode: any; key: string; value: any }) => void;
+    getTargetNodeValue: ({ parentNode, key }: { parentNode: any; key: string }) => any;
   }): boolean {
     // Test to see if node should be ignored
     const matchingOptions = this.getMatchingOptionsForNode();
@@ -346,39 +358,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     } else {
       // Type specific node processing
       const sourceNodeTypeInfo = this.getSourceNodeType(sourceNodeVal);
-      const rdoNodeTypeInfo = this.getRdoNodeType(targetNodeVal);
+      const rdoNodeTypeInfo = this.getRdoNodeType(getTargetNodeValue({ parentNode: targetParentNode, key: targetNodeKey }));
 
-      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoNodeTypeInfo, sourceNodeVal, targetNodeVal, targetNodeKey, tryUpdateTargetNode });
-    }
-  }
-
-  private setRdoFieldValue({ rdoParentNode, rdoNodeTypeInfo, key, value }: { rdoParentNode: any; rdoNodeTypeInfo: RdoNodeTypeInfo; key: string; value: any }): void {
-    if (rdoNodeTypeInfo.type === 'ISyncableCollection') {
-      (rdoParentNode as ISyncableCollection<any>).updateItemInTargetCollection(key, value);
-    } else {
-      switch (rdoNodeTypeInfo.builtInType) {
-        case '[object Object]': {
-          (rdoParentNode as Record<string, any>)[key] = value;
-        }
-        case '[object Array]': {
-          CollectionUtils.Array.updateItem({ collection: rdoParentNode as Array<any>, makeCollectionKey:, value });
-        }
-        case '[object Map]': {
-          (rdoParentNode as Map<string, any>).set(key, value);
-        }
-        case '[object Set]': {
-          CollectionUtils.Set.tryUpdateItem({ collection: rdoParentNode as Set<any>, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, value });
-        }
-        case '[object Boolean]':
-        case '[object Date]':
-        case '[object Number]':
-        case '[object String]': {
-          throw new Error(`getTypeSpecificTargetNodeUpdateMethod - method not available for primitive types. Was called with: ${rdoNodeTypeInfo}`);
-        }
-        default: {
-          throw new Error(`getTypeSpecificTargetNodeUpdateMethod - unable to get method for type: ${rdoNodeTypeInfo}`);
-        }
-      }
+      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoNodeTypeInfo, sourceNodeVal, targetParentNode, targetNodeKey, getTargetNodeValue, updateTargetNode });
     }
   }
 
@@ -387,18 +369,21 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     sourceNodeTypeInfo,
     rdoNodeTypeInfo,
     sourceNodeVal,
-    targetNodeVal,
+    targetParentNode,
     targetNodeKey,
-    tryUpdateTargetNode,
+    updateTargetNode,
+    getTargetNodeValue,
   }: {
     sourceNodeTypeInfo: SourceNodeTypeInfo;
     rdoNodeTypeInfo: RdoNodeTypeInfo;
     sourceNodeVal: any;
-    targetNodeVal: any;
+    targetParentNode: any;
     targetNodeKey: string;
-    tryUpdateTargetNode: (key: string, value: any) => void;
+    updateTargetNode: ({ parentNode, key, value }: { parentNode: any; key: string; value: any }) => void;
+    getTargetNodeValue: ({ parentNode, key }: { parentNode: any; key: string }) => any;
   }) {
     let changed = false;
+    const targetNodeVal = getTargetNodeValue({ parentNode: targetParentNode, key: targetNodeKey });
 
     switch (sourceNodeTypeInfo.type) {
       case 'Primitive': {
@@ -407,7 +392,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         }
         if (sourceNodeVal !== targetNodeVal) {
           logger.trace(`primitive value found in domainPropKey ${targetNodeKey}. Setting from old value to new value`, targetNodeVal, sourceNodeVal);
-          tryUpdateTargetNode(targetNodeKey, sourceNodeVal);
+          updateTargetNode({ parentNode: targetParentNode, key: targetNodeKey, value: sourceNodeVal });
           changed = true;
         }
         break;
@@ -752,7 +737,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       getTargetCollectionSize: () => rdoCollection.size,
       getTargetCollectionKeys: rdoCollection.getKeys,
       makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement!,
-      tryGetItemFromTargetCollection: (key) => rdoCollection.tryGetItemFromTargetCollection(key),
+      tryGetItemFromTargetCollection: (key) => rdoCollection.get(key),
       insertItemToTargetCollection: (key, value) => rdoCollection.insertItemToTargetCollection(key, value),
       tryDeleteItemFromTargetCollection: (key) => rdoCollection.tryDeleteItemFromTargetCollection(key),
       makeItemForTargetCollection: makeRdo,
@@ -762,7 +747,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
           sourceNodeKey: sourceElementKey,
           sourceNodeVal: sourceElementVal,
           targetNodeKey: targetElementKey,
-          targetNodeVal: targetElementVal,
+          targetParentNode: sourceCollection,
+          getTargetNodeValue: rdoCollection.get(),
         }),
     });
   }
@@ -820,12 +806,10 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       getTargetCollectionSize: () => rdoCollection.size,
       getTargetCollectionKeys: makeRdoCollectionKey?.fromRdoElement ? () => CollectionUtils.Set.getKeys({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement! }) : undefined,
       makeRdoCollectionKeyFromSourceElement: makeRdoCollectionKey?.fromSourceElement,
-      tryGetItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Set.tryGetItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
-        : undefined,
+      tryGetItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement ? (key) => CollectionUtils.Set.getItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key }) : undefined,
       insertItemToTargetCollection: (key, value) => CollectionUtils.Set.insertItem({ collection: rdoCollection, key, value }),
       tryDeleteItemFromTargetCollection: makeRdoCollectionKey?.fromRdoElement
-        ? (key) => CollectionUtils.Set.tryDeleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
+        ? (key) => CollectionUtils.Set.deleteItem({ collection: rdoCollection, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key })
         : undefined,
       makeItemForTargetCollection: makeRdo,
       tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
@@ -905,3 +889,63 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._sourceObjectMap.clear();
   }
 }
+
+// private getRdoFieldValue({ rdoParentNode, rdoParentNodeTypeInfo, key }: { rdoParentNode: any; rdoParentNodeTypeInfo: RdoNodeTypeInfo; key: string; }): void {
+//   if (rdoParentNodeTypeInfo.type === 'ISyncableCollection') {
+//     return (rdoParentNode as ISyncableCollection<any>).tryGetItemFromTargetCollection(key);
+//   } else {
+//     switch (rdoParentNodeTypeInfo.builtInType) {
+//       case '[object Object]': {
+//         return (rdoParentNode as Record<string, any>)[key];
+//       }
+//       case '[object Array]': {
+//         return CollectionUtils.Array.getItem({ collection: rdoParentNode as Array<any>, makeCollectionKey:, key });
+//       }
+//       case '[object Map]': {
+//         (rdoParentNode as Map<string, any>).get(key);
+//       }
+//       case '[object Set]': {
+//         CollectionUtils.Set.tryGetItem({ collection: rdoParentNode as Set<any>, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, key });
+//       }
+//       case '[object Boolean]':
+//       case '[object Date]':
+//       case '[object Number]':
+//       case '[object String]': {
+//         throw new Error(`getTypeSpecificTargetNodeUpdateMethod - method not available for primitive types. Was called with: ${rdoParentNodeTypeInfo}`);
+//       }
+//       default: {
+//         throw new Error(`getTypeSpecificTargetNodeUpdateMethod - unable to get method for type: ${rdoParentNodeTypeInfo}`);
+//       }
+//     }
+//   }
+// }
+
+// private setRdoNodeValue({ rdoParentNode, rdoNodeTypeInfo, key, value }: { rdoParentNode: any; rdoNodeTypeInfo: RdoNodeTypeInfo; key: string; value: any }): void {
+//   if (rdoNodeTypeInfo.type === 'ISyncableCollection') {
+//     (rdoParentNode as ISyncableCollection<any>).updateItemInTargetCollection(key, value);
+//   } else {
+//     switch (rdoNodeTypeInfo.builtInType) {
+//       case '[object Object]': {
+//         (rdoParentNode as Record<string, any>)[key] = value;
+//       }
+//       case '[object Array]': {
+//         CollectionUtils.Array.updateItem({ collection: rdoParentNode as Array<any>, makeCollectionKey:, value });
+//       }
+//       case '[object Map]': {
+//         (rdoParentNode as Map<string, any>).set(key, value);
+//       }
+//       case '[object Set]': {
+//         CollectionUtils.Set.tryUpdateItem({ collection: rdoParentNode as Set<any>, makeCollectionKey: makeRdoCollectionKey.fromRdoElement!, value });
+//       }
+//       case '[object Boolean]':
+//       case '[object Date]':
+//       case '[object Number]':
+//       case '[object String]': {
+//         throw new Error(`getTypeSpecificTargetNodeUpdateMethod - method not available for primitive types. Was called with: ${rdoNodeTypeInfo}`);
+//       }
+//       default: {
+//         throw new Error(`getTypeSpecificTargetNodeUpdateMethod - unable to get method for type: ${rdoNodeTypeInfo}`);
+//       }
+//     }
+//   }
+// }

@@ -52,7 +52,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   // Map Interface
   // -----------------------------------
   delete(key: string): boolean {
-    return this.tryDeleteItemFromTargetCollection(key);
+    return this.deleteItem(key);
   }
   forEach(callbackfn: (value: D, key: string, map: Map<string, D>) => void, thisArg?: any): void {
     this._map$.forEach(callbackfn);
@@ -64,7 +64,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     return this._map$.has(key);
   }
   set(key: string, value: D): this {
-    this.insertItemToTargetCollection(key, value);
+    this.insertItem(key, value);
     return this;
   }
   [Symbol.iterator](): IterableIterator<[string, D]> {
@@ -84,50 +84,41 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   // -----------------------------------
   // ISyncableCollection
   // -----------------------------------
-  // public synchronizeCollection({ sourceCollection }: { sourceCollection: Array<S> }) {
-  //   SyncUtils.synchronizeCollection({
-  //     sourceCollection,
-  //     getTargetCollectionSize: () => this.size,
-  //     getTargetCollectionKeys: this.getKeys,
-  //     makeRdoCollectionKeyFromSourceElement: this.makeRdoCollectionKeyFromSourceElement, //TODO
-  //     tryGetItemFromTargetCollection: (key) => this.tryGetItemFromTargetCollection(key),
-  //     insertItemToTargetCollection: (key, value) => this.insertItemToTargetCollection(key, value),
-  //     tryDeleteItemFromTargetCollection: (key) => this.tryDeleteItemFromTargetCollection(key),
-  //     makeItemForTargetCollection: this.makeRdo,
-  //     tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-  //       this.tryStepIntoNodeAnSync({
-  //         sourceNodeKind: 'arrayElement',
-  //         sourceNodeKey: sourceElementKey,
-  //         sourceNodeVal: sourceElementVal,
-  //         targetNodeKey: targetElementKey,
-  //         targetNodeVal: targetElementVal,
-  //         tryUpdateTargetNode: (key, value) => this.updateItemInTargetCollection(key, value),
-  //       }),
-  //   });
-  // }
-
-  // -----------------------------------
-  // ISyncableCollection
-  // -----------------------------------
   public getKeys = () => {
     return Array.from(this._map$.keys());
   };
 
-  public tryGetItemFromTargetCollection = (key: string) => {
+  public getItem = (key: string) => {
     return this._map$.get(key);
   };
 
-  public insertItemToTargetCollection = (key: string, value: D) => {
-    this._map$.set(key, value);
-    CollectionUtils.Array.insertItem<D>({ collection: this._array$!, key, value });
+  public insertItem = (value: D) => {
+    if (this.makeRdoCollectionKeyFromRdoElement) {
+      const key = this.makeRdoCollectionKeyFromRdoElement(value);
+      if (!this._map$.has(key)) {
+        this._map$.set(key, value);
+        CollectionUtils.Array.insertItem<D>({ collection: this._array$!, key, value });
+        return true;
+      } else return false;
+    } else {
+      throw new Error('makeRdoCollectionKeyFromRdoElement element must be available for ISyncableRDOCollection insert operations');
+    }
   };
 
-  public updateItemInTargetCollection = (key: string, value: D) => {
-    this._map$.set(key, value);
-    CollectionUtils.Array.insertItem<D>({ collection: this._array$!, key, value });
+  public updateItem = (value: D) => {
+    if (this.makeRdoCollectionKeyFromRdoElement) {
+      const key = this.makeRdoCollectionKeyFromRdoElement(value);
+      if (!this._map$.has(key)) {
+        this._map$.set(key, value);
+        CollectionUtils.Array.updateItem<D>({ collection: this._array$!, makeCollectionKey: this.makeRdoCollectionKeyFromRdoElement, value });
+        return true;
+      } else return false;
+    } else {
+      throw new Error('makeRdoCollectionKeyFromRdoElement element must be available for ISyncableRDOCollection update operations');
+    }
   };
 
-  public tryDeleteItemFromTargetCollection = (key: string) => {
+  public deleteItem = (key: string) => {
     const itemToDelete = this._map$.get(key);
     if (itemToDelete) {
       this._map$.delete(key);
@@ -137,7 +128,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
       if (indexOfItemToDelete !== -1) {
         this.array$.splice(indexOfItemToDelete, 1);
       } else {
-        logger.error(`tryDeleteItemFromTargetCollection - could not find array item for key ${key}. Rebuilding array`);
+        logger.error(`tryDeleteItemFromTargetCollection - could not find array item for ISyncableRDOCollection ${key}. Rebuilding array`);
         this._array$ = Array.from(this._map$.values());
       }
 
@@ -146,7 +137,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     return false;
   };
 
-  public clear = () => {
+  public clearItems = () => {
     this._map$.clear();
     CollectionUtils.Array.clear({ collection: this._array$! });
   };
