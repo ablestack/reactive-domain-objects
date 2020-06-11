@@ -1,24 +1,25 @@
-import { ISourceInternalNodeWrapper, IMakeCollectionKey } from '../types';
+import { IMakeCollectionKey, ISourceNodeWrapper } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { SourceObjectINW } from './source-object-inw';
 import { SourceArrayINW } from './source-array-inw';
+import { SourceObjectINW } from './source-object-inw';
+import { SourcePrimitiveINW } from './source-primitive-inw';
 
 export class SourceInternalNodeWrapperFactory {
-  public static make<D>(node: any, makeKey: IMakeCollectionKey<D>): ISourceInternalNodeWrapper<D> {
-    const sourceNodeType = NodeTypeUtils.getSourceNodeType(node);
+  public static make<D>(node: any, makeKey: IMakeCollectionKey<D>): ISourceNodeWrapper {
+    const typeInfo = NodeTypeUtils.getSourceNodeType(node);
 
-    switch (sourceNodeType.type) {
+    switch (typeInfo.type) {
+      case 'Primitive': {
+        return new SourcePrimitiveINW({ node, typeInfo });
+      }
       case 'Object': {
         return new SourceObjectINW({ node, makeKey });
       }
-      case 'Collection': {
+      case 'Array': {
         return new SourceArrayINW({ node, makeKey });
       }
-      case 'Primitive': {
-        throw new Error(`IRdoInternalNodeWrapper not available for primitive types. Was attempted with: ${sourceNodeType.builtInType}`);
-      }
       default: {
-        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${sourceNodeType.builtInType}`);
+        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);
       }
     }
   }

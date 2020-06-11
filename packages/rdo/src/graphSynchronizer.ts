@@ -20,7 +20,7 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from './types';
+import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IRdoInternalNodeWrapper, ISourceInternalNodeWrapper } from './types';
 import { NodeTypeUtils } from './utilities/node-type.utils';
 
 const logger = Logger.make('GraphSynchronizer');
@@ -149,78 +149,60 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 /**
    *
    */
-  private tryStepIntoNodeAndSync({
+  private stepIntoChildNodeAndSync({
     targetParentNode,
     targetNodeKey,
     parentSourceNode,
     sourceNodeKey,
   }: {
-    targetParentNode: any;
+    targetParentNode: IRdoInternalNodeWrapper<any>;
     targetNodeKey: string;
-    parentSourceNode: any;
+    parentSourceNode: ISourceInternalNodeWrapper<any>;
     sourceNodeKey: string;
-    updateTargetNode: ({ parentNode, key, value }: { parentNode: any; key: string; value: any }) => void;
-    getTargetNodeValue: ({ parentNode, key }: { parentNode: any; key: string }) => any;
   }): boolean {
     logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`);
 
     // Node traversal tracking - step-in
-    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, sourceNodeKind);
+    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, parentSourceNode.typeInfo.type as InternalNodeKind);
 
-    const changed = this.trySynchronizeNode({
-      sourceNodeVal,
-      targetNodeKey,
-      targetParentNode,
-      updateTargetNode,
-      getTargetNodeValue,
-    });
-
-    // Node traversal tracking - step-out
-    this.setLastSourceNodeInstancePathValue(sourceNodeVal);
-    this.popSourceNodeInstancePathFromStack(sourceNodeKind);
-
-    return changed;
-  }
-}
-
-
-  /** */
-  private trySynchronizeNode({ targetParentNode, targetNodeKey, sourceNodeVal }: { targetParentNode: IRdoInternalNodeWrapper<any>; targetNodeKey: string; sourceNodeVal: any }): boolean {
     // Test to see if node should be ignored
     const matchingOptions = this.getMatchingOptionsForNode();
+    
     if (matchingOptions?.ignore) {
       logger.trace(`synchronizeProperty (${targetNodeKey}) - ignore node`);
       return false;
     } else {
-      // Type specific node processing
-      const sourceNodeTypeInfo = NodeTypeUtils.getSourceNodeType(sourceNodeVal);
-      const rdoNodeTypeInfo = NodeTypeUtils.getRdoNodeType(getTargetNodeValue({ parentNode: targetParentNode, key: targetNodeKey }));
+      
 
-      return this.trySynchronizeNode_TypeSpecificProcessing({ sourceNodeTypeInfo, rdoNodeTypeInfo, sourceNodeVal, targetParentNode, targetNodeKey, getTargetNodeValue, updateTargetNode });
+
     }
+
+    // Node traversal tracking - step-out
+    this.setLastSourceNodeInstancePathValue(parentSourceNode.node);
+    this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.type as InternalNodeKind);
+
+    return changed;
   }
 
+
+
   /** */
-  private trySynchronizeNode_TypeSpecificProcessing({
-    sourceNodeTypeInfo,
-    rdoNodeTypeInfo,
-    sourceNodeVal,
+  private synchChildNode({
     targetParentNode,
     targetNodeKey,
-    updateTargetNode,
-    getTargetNodeValue,
+    parentSourceNode,
+    sourceNodeKey,
   }: {
-    sourceNodeTypeInfo: SourceNodeTypeInfo;
-    rdoNodeTypeInfo: RdoNodeTypeInfo;
-    sourceNodeVal: any;
-    targetParentNode: any;
+    targetParentNode: IRdoInternalNodeWrapper<any>;
     targetNodeKey: string;
-    updateTargetNode: ({ parentNode, key, value }: { parentNode: any; key: string; value: any }) => void;
-    getTargetNodeValue: ({ parentNode, key }: { parentNode: any; key: string }) => any;
+    parentSourceNode: ISourceInternalNodeWrapper<any>;
+    sourceNodeKey: string;
   }) {
     let changed = false;
     const targetNodeVal = getTargetNodeValue({ parentNode: targetParentNode, key: targetNodeKey });
 
+
+    
     switch (sourceNodeTypeInfo.type) {
       case 'Primitive': {
         if (sourceNodeTypeInfo.builtInType !== rdoNodeTypeInfo.builtInType && !!rdoNodeTypeInfo.type) {

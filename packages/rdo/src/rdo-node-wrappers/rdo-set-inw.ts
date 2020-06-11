@@ -1,4 +1,4 @@
-import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo } from '..';
 
 export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _set: Set<D>;
@@ -12,6 +12,14 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get node() {
+    return this._set;
+  }
+
+  public get typeInfo(): RdoNodeTypeInfo {
+    return { type: 'Set', builtInType: '[object Set]' };
+  }
+
   public keys() {
     if (this._makeKey) return CollectionUtils.Set.getKeys({ collection: this._set, makeCollectionKey: this._makeKey });
     else return [];

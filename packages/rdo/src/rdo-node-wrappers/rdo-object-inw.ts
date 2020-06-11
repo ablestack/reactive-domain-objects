@@ -1,5 +1,5 @@
 import { IRdoInternalNodeWrapper } from '..';
-import { IMakeCollectionKey } from '../types';
+import { IMakeCollectionKey, RdoNodeTypeInfo } from '../types';
 
 export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
   private _object: object;
@@ -13,6 +13,14 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get node() {
+    return this._object;
+  }
+
+  public get typeInfo(): RdoNodeTypeInfo {
+    return { type: 'Object', builtInType: '[object Object]' };
+  }
+
   public keys() {
     return Object.keys(this._object);
   }

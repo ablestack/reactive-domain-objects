@@ -1,4 +1,4 @@
-import { IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo } from '..';
 
 export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _map: Map<string, D>;
@@ -12,6 +12,14 @@ export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get node() {
+    return this._map;
+  }
+
+  public get typeInfo(): RdoNodeTypeInfo {
+    return { type: 'Map', builtInType: '[object Map]' };
+  }
+
   public keys() {
     return this._map.keys();
   }

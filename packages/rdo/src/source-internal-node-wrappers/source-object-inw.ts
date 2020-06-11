@@ -1,5 +1,5 @@
 import { ISourceInternalNodeWrapper } from '..';
-import { IMakeCollectionKey } from '../types';
+import { IMakeCollectionKey, SourceNodeTypeInfo } from '../types';
 
 export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
   private _object: object;
@@ -13,6 +13,14 @@ export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get node() {
+    return this._object;
+  }
+
+  public get typeInfo(): SourceNodeTypeInfo {
+    return { type: 'Object', builtInType: '[object Object]' };
+  }
+
   public keys() {
     return Object.keys(this._object);
   }

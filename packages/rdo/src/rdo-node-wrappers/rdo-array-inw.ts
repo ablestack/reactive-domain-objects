@@ -1,4 +1,4 @@
-import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo } from '..';
 
 export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _array: Array<D>;
@@ -12,6 +12,14 @@ export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get node() {
+    return this._array;
+  }
+
+  public get typeInfo(): RdoNodeTypeInfo {
+    return { type: 'Array', builtInType: '[object Array]' };
+  }
+
   public keys() {
     if (this._makeKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeCollectionKey: this._makeKey });
     else return [];
