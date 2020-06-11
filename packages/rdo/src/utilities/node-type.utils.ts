@@ -14,17 +14,17 @@ function getSourceNodeType(sourceNodeVal: any): SourceNodeTypeInfo {
     case '[object Date]':
     case '[object Number]':
     case '[object String]': {
-      return { type: 'Primitive', builtInType: sourceNodeBuiltInType };
+      return { kind: 'Primitive', builtInType: sourceNodeBuiltInType };
     }
     case '[object Object]': {
-      return { type: 'Object', builtInType: sourceNodeBuiltInType };
+      return { kind: 'Object', builtInType: sourceNodeBuiltInType };
     }
     case '[object Array]': {
-      return { type: 'Collection', builtInType: sourceNodeBuiltInType };
+      return { kind: 'Collection', builtInType: sourceNodeBuiltInType };
     }
     default: {
       logger.warn(`Unable to find Source type for sourceNodeBuiltInType: ${sourceNodeBuiltInType}`, sourceNodeVal);
-      return { type: undefined, builtInType: sourceNodeBuiltInType };
+      return { kind: undefined, builtInType: sourceNodeBuiltInType };
     }
   }
 }
@@ -36,7 +36,7 @@ function getRdoNodeType(rdoNodeVal: any): RdoNodeTypeInfo {
   const builtInNodeType = toString.call(rdoNodeVal) as JavaScriptBuiltInType;
 
   if (IsISyncableCollection(rdoNodeVal)) {
-    return { type: 'ISyncableCollection', builtInType: builtInNodeType };
+    return { kind: 'Collection', type: 'ISyncableCollection', builtInType: builtInNodeType };
   }
 
   switch (builtInNodeType) {
@@ -44,23 +44,23 @@ function getRdoNodeType(rdoNodeVal: any): RdoNodeTypeInfo {
     case '[object Date]':
     case '[object Number]':
     case '[object String]': {
-      return { type: 'Primitive', builtInType: builtInNodeType };
+      return { kind: 'Primitive', type: 'Primitive', builtInType: builtInNodeType };
     }
     case '[object Object]': {
-      return { type: 'Object', builtInType: builtInNodeType };
+      return { kind: 'Object', type: 'Object', builtInType: builtInNodeType };
     }
     case '[object Array]': {
-      return { type: 'Array', builtInType: builtInNodeType };
+      return { kind: 'Collection', type: 'Array', builtInType: builtInNodeType };
     }
     case '[object Map]': {
-      return { type: 'Map', builtInType: builtInNodeType };
+      return { kind: 'Collection', type: 'Map', builtInType: builtInNodeType };
     }
     case '[object Set]': {
-      return { type: 'Set', builtInType: builtInNodeType };
+      return { kind: 'Collection', type: 'Set', builtInType: builtInNodeType };
     }
     default: {
       logger.warn(`Unable to find RDO Node Type for type: ${builtInNodeType}`, rdoNodeVal);
-      return { type: undefined, builtInType: builtInNodeType };
+      return { kind: undefined, type: undefined, builtInType: builtInNodeType };
     }
   }
 }

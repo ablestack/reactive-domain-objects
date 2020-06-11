@@ -1,10 +1,12 @@
-import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo } from '..';
+import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
 
 export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
+  private _wrappedSourceNode: ISourceNodeWrapper;
 
-  constructor({ node }: { node: ISyncableCollection<D> }) {
+  constructor({ node, wrappedSourceNode }: { node: ISyncableCollection<D>; wrappedSourceNode: ISourceNodeWrapper }) {
     this._isyncableCollection = node;
+    this._wrappedSourceNode = wrappedSourceNode;
   }
 
   //------------------------------
@@ -15,7 +17,7 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
-    return { type: 'ISyncableCollection', builtInType: '[object Map]' };
+    return { kind: 'Collection', type: 'ISyncableCollection', builtInType: '[object Map]' };
   }
 
   public keys() {

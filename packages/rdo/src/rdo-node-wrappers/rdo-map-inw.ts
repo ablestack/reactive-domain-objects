@@ -1,12 +1,14 @@
-import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo } from '..';
+import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
 
 export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _map: Map<string, D>;
   private _makeKey?: IMakeCollectionKey<D>;
+  private _wrappedSourceNode: ISourceNodeWrapper;
 
-  constructor({ node, makeKey }: { node: Map<string, D>; makeKey: IMakeCollectionKey<D> }) {
+  constructor({ node, wrappedSourceNode, makeKey }: { node: Map<string, D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any> }) {
     this._map = node;
     this._makeKey = makeKey;
+    this._wrappedSourceNode = wrappedSourceNode;
   }
 
   //------------------------------
@@ -17,7 +19,7 @@ export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
-    return { type: 'Map', builtInType: '[object Map]' };
+    return { kind: 'Collection', type: 'Map', builtInType: '[object Map]' };
   }
 
   public keys() {

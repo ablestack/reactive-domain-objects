@@ -1,12 +1,14 @@
-import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
 
 export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _array: Array<D>;
   private _makeKey?: IMakeCollectionKey<D>;
+  private _wrappedSourceNode: ISourceNodeWrapper;
 
-  constructor({ node, makeKey }: { node: Array<D>; makeKey?: IMakeCollectionKey<D> }) {
+  constructor({ node, wrappedSourceNode, makeKey }: { node: Array<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any> }) {
     this._array = node;
     this._makeKey = makeKey;
+    this._wrappedSourceNode = wrappedSourceNode;
   }
 
   //------------------------------
@@ -17,7 +19,7 @@ export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
-    return { type: 'Array', builtInType: '[object Array]' };
+    return { kind: 'Collection', type: 'Array', builtInType: '[object Array]' };
   }
 
   public keys() {

@@ -17,7 +17,7 @@ export class SourceArrayINW<D> implements ISourceInternalNodeWrapper<D> {
   }
 
   public get typeInfo(): SourceNodeTypeInfo {
-    return { type: 'Array', builtInType: '[object Array]' };
+    return { kind: 'Array', builtInType: '[object Array]' };
   }
 
   public keys() {

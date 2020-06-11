@@ -4,11 +4,11 @@ import { SourceArrayINW } from './source-array-inw';
 import { SourceObjectINW } from './source-object-inw';
 import { SourcePrimitiveINW } from './source-primitive-inw';
 
-export class SourceInternalNodeWrapperFactory {
+export class SourceNodeWrapperFactory {
   public static make<D>(node: any, makeKey: IMakeCollectionKey<D>): ISourceNodeWrapper {
     const typeInfo = NodeTypeUtils.getSourceNodeType(node);
 
-    switch (typeInfo.type) {
+    switch (typeInfo.kind) {
       case 'Primitive': {
         return new SourcePrimitiveINW({ node, typeInfo });
       }

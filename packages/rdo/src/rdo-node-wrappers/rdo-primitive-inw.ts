@@ -1,12 +1,14 @@
-import { IRdoNodeWrapper, RdoNodeTypeInfo } from '../types';
+import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '../types';
 
 export class RdoPrimitiveINW implements IRdoNodeWrapper {
   private _object: object;
   private _typeInfo: RdoNodeTypeInfo;
+  private _wrappedSourceNode: ISourceNodeWrapper;
 
-  constructor({ node, typeInfo }: { node: Record<string, any>; typeInfo: RdoNodeTypeInfo }) {
+  constructor({ node, wrappedSourceNode, typeInfo }: { node: Record<string, any>; wrappedSourceNode: ISourceNodeWrapper; typeInfo: RdoNodeTypeInfo }) {
     this._object = node;
     this._typeInfo = typeInfo;
+    this._wrappedSourceNode = wrappedSourceNode;
   }
 
   //------------------------------

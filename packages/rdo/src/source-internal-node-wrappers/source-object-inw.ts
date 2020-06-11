@@ -18,7 +18,7 @@ export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
   }
 
   public get typeInfo(): SourceNodeTypeInfo {
-    return { type: 'Object', builtInType: '[object Object]' };
+    return { kind: 'Object', builtInType: '[object Object]' };
   }
 
   public keys() {

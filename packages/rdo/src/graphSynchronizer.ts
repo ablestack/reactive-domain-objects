@@ -20,8 +20,10 @@ import {
   SyncUtils,
 } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IRdoInternalNodeWrapper, ISourceInternalNodeWrapper } from './types';
+import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IRdoInternalNodeWrapper, ISourceInternalNodeWrapper, isIRdoInternalNodeWrapper, isISourceInternalNodeWrapper } from './types';
 import { NodeTypeUtils } from './utilities/node-type.utils';
+import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
+import { SourceNodeWrapperFactory } from './source-internal-node-wrappers/source-node-wrapper-factory';
 
 const logger = Logger.make('GraphSynchronizer');
 const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
@@ -146,82 +148,127 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // PRIVATE METHODS
   // ------------------------------------------------------------------------------------------------------------------
 
+ /**
+   *
+   */
+  private trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode }: { sourceNodePath, wrappedSourceNode: ISourceInternalNodeWrapper<any>, wrappedRdoNode:IRdoInternalNodeWrapper<any> }): boolean {
+    let changed = false;
+
+    // Loop properties
+    for (const sourceFieldname of wrappedSourceNode.keys()) {
+      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname) ;
+      const rdoFieldname = this.getRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal, parentObject: rdo });
+
+      // Check to see if key exists
+      if (!rdoFieldname) {
+        logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
+        continue;
+      }
+
+      changed = this.stepIntoChildNodeAndSync({
+        sourceNodeKind: 'objectProperty',
+        sourceNodeKey: sourceFieldname,
+        sourceNodeVal: sourceObject[sourceFieldname],
+        targetNodeKey: rdoFieldname,
+        targetNodeVal: rdo[rdoFieldname],
+        tryUpdateTargetNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
+      });
+    }
+
+    return changed;
+  }
+
 /**
    *
    */
   private stepIntoChildNodeAndSync({
-    targetParentNode,
-    targetNodeKey,
+    parentRdoNode,
+    rdoNodeKey,
     parentSourceNode,
     sourceNodeKey,
   }: {
-    targetParentNode: IRdoInternalNodeWrapper<any>;
-    targetNodeKey: string;
+    parentRdoNode: IRdoInternalNodeWrapper<any>;
+    rdoNodeKey: string;
     parentSourceNode: ISourceInternalNodeWrapper<any>;
     sourceNodeKey: string;
   }): boolean {
-    logger.trace(`synchronizeProperty (${targetNodeKey}) - enter`);
+    logger.trace(`stepIntoChildNodeAndSync (${rdoNodeKey}) - enter`);
+    let changed = false;
 
     // Node traversal tracking - step-in
-    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, parentSourceNode.typeInfo.type as InternalNodeKind);
+    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Test to see if node should be ignored
     const matchingOptions = this.getMatchingOptionsForNode();
     
     if (matchingOptions?.ignore) {
-      logger.trace(`synchronizeProperty (${targetNodeKey}) - ignore node`);
+      logger.trace(`stepIntoChildNodeAndSync (${rdoNodeKey}) - ignore node`);
       return false;
     } else {
-      
-
-
+      changed = this.synchChildNode({parentRdoNode, rdoNodeKey, parentSourceNode, sourceNodeKey});
     }
 
     // Node traversal tracking - step-out
     this.setLastSourceNodeInstancePathValue(parentSourceNode.node);
-    this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.type as InternalNodeKind);
+    this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;
   }
 
-
-
   /** */
   private synchChildNode({
-    targetParentNode,
-    targetNodeKey,
+    parentRdoNode,
+    rdoNodeKey,
     parentSourceNode,
     sourceNodeKey,
   }: {
-    targetParentNode: IRdoInternalNodeWrapper<any>;
-    targetNodeKey: string;
+    parentRdoNode: IRdoInternalNodeWrapper<any>;
+    rdoNodeKey: string;
     parentSourceNode: ISourceInternalNodeWrapper<any>;
     sourceNodeKey: string;
   }) {
     let changed = false;
-    const targetNodeVal = getTargetNodeValue({ parentNode: targetParentNode, key: targetNodeKey });
-
-
     
-    switch (sourceNodeTypeInfo.type) {
+    const rdoNode = parentRdoNode.getItem(rdoNodeKey);
+    if(!rdoNode === undefined){
+      //TODO LOG
+      return false;
+    }
+
+    const sourceNode = parentSourceNode.getItem(sourceNodeKey);
+    if(!sourceNode === undefined){
+      //TODO LOG
+      return false;
+    }
+
+    const wrappedRdoNode = RdoNodeWrapperFactory.make({ node: rdoNode, makeKey });
+    const wrappedSourceNode = SourceNodeWrapperFactory.make(sourceNode, makeKey);
+    
+    switch (wrappedRdoNode.typeInfo.kind) {
       case 'Primitive': {
-        if (sourceNodeTypeInfo.builtInType !== rdoNodeTypeInfo.builtInType && !!rdoNodeTypeInfo.type) {
-          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${sourceNodeTypeInfo.builtInType}', rdoNodeTypeInfo: ${rdoNodeTypeInfo.builtInType}`);
+        if (wrappedSourceNode.typeInfo.builtInType !== wrappedRdoNode.typeInfo.builtInType) {
+          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${wrappedSourceNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoNode.typeInfo.builtInType}`);
         }
-        if (sourceNodeVal !== targetNodeVal) {
-          logger.trace(`primitive value found in domainPropKey ${targetNodeKey}. Setting from old value to new value`, targetNodeVal, sourceNodeVal);
-          updateTargetNode({ parentNode: targetParentNode, key: targetNodeKey, value: sourceNodeVal });
-          changed = true;
+        if (wrappedSourceNode.node !== wrappedRdoNode.node) {
+          logger.trace(`primitive value found in domainPropKey ${rdoNodeKey}. Setting from old value to new value`, wrappedRdoNode.node, wrappedSourceNode.node);
+          changed = parentRdoNode.updateItem(wrappedSourceNode.node)          
         }
         break;
       }
       case 'Object': {
-        if (rdoNodeTypeInfo.type !== 'Object') {
+        if (wrappedRdoNode.typeInfo.kind !== 'Object') {
           throw Error(
-            `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${sourceNodeTypeInfo}', rdoNodeTypeInfo: ${rdoNodeTypeInfo} `,
+            `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${wrappedSourceNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoNode.typeInfo.builtInType} `,
           );
         }
-        changed = this.trySynchronizeObjectState({ key: targetNodeKey, sourceObject: sourceNodeVal, rdo: targetNodeVal });
+        if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) {
+          throw Error(            `[${this.getSourceNodeInstancePath()}] Rdo Node should be of type RdoInternalNodeWrapper.`         );
+        }
+        if (!isISourceInternalNodeWrapper(wrappedSourceNode)) {
+          throw Error(            `[${this.getSourceNodeInstancePath()}] Rdo Node should be of type RdoInternalNodeWrapper.`         );
+        }
+        
+        changed = this.trySynchronizeRdo({ sourceNode, rdoNode });
         break;
       }
       case 'Array': {
@@ -464,7 +511,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     if (sourceCollection && sourceCollection.length > 0) {
       const firstItemInSourceCollection = sourceCollection[0];
       const sourceNodeTypeInfo = NodeTypeUtils.getSourceNodeType(firstItemInSourceCollection);
-      if (sourceNodeTypeInfo.type === 'Primitive') return 'primitive';
+      if (sourceNodeTypeInfo.kind === 'Primitive') return 'primitive';
       else return 'object';
     }
 
@@ -480,10 +527,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private trySynchronizeObjectState<S extends Record<string, any>, D extends Record<string, any>>({ key, sourceObject, rdo }: { key: string; sourceObject: S; rdo: D; options?: IGraphSyncOptions }): boolean {
+  private trySynchronizeRdo({ wrappedSourceNode, wrappedRdoNode }: { wrappedSourceNode: ISourceInternalNodeWrapper<any>, wrappedRdoNode:IRdoInternalNodeWrapper<any> }): boolean {
     let changed = false;
     const sourceNodePath = this.getSourceNodePath();
     const lastSourceObject = this.getLastSourceNodeInstancePathValue();
+    const rdo = wrappedSourceNode.node;
+    const sourceObject = wrappedSourceNode.node;
 
     // Check if previous source state and new source state are equal
     const isAlreadyInSync = IsICustomEqualityRDO(rdo) ? rdo.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
@@ -494,7 +543,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Call lifecycle methods if found
     if (IsIBeforeSyncUpdate(rdo)) rdo.beforeSyncUpdate({ sourceObject });
 
-    //logger.debug(`'${this.getSourceNodeInstancePath()}':isInSync ${isInSync}`, { sourceObject, lastSourceObject });
     if (!isAlreadyInSync) {
       // Call lifecycle methods if found
       if (IsIBeforeSyncUpdate(rdo)) rdo.beforeSyncUpdate({ sourceObject });
@@ -505,7 +553,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.trySynchronizeObject({ sourceNodePath, sourceObject, rdo });
+        changed = this.trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode });
       }
 
       // Call lifecycle methods if found
@@ -679,121 +727,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     });
   }
 
-  /**
-   *
-   */
-  private trySynchronizeObject<S extends Record<string, any>, D extends Record<string, any>>({ sourceNodePath, sourceObject, rdo }: { sourceNodePath: string; sourceObject: S; rdo: D }): boolean {
-    let changed = false;
-
-    // Loop properties
-    for (const sourceFieldname of Object.keys(sourceObject)) {
-      const sourceFieldVal = sourceObject[sourceFieldname];
-      const rdoFieldname = this.getRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal, parentObject: rdo });
-
-      // Check to see if key exists
-      if (!rdoFieldname) {
-        logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
-        continue;
-      }
-
-      changed = this.trySynchronizeField<S, D>({ rdo, rdoFieldname, sourceObject, sourceFieldname });
-    }
-
-    return changed;
-  }
-
-  /** */
-  private trySynchronizeField<S extends Record<string, any>, D extends Record<string, any>>({
-    rdo,
-    rdoFieldname,
-    sourceObject,
-    sourceFieldname,
-  }: {
-    rdo: D;
-    rdoFieldname: string;
-    sourceObject: S;
-    sourceFieldname: string;
-  }) {
-    return this.tryStepIntoNodeAndSync({
-      sourceNodeKind: 'objectProperty',
-      sourceNodeKey: sourceFieldname,
-      sourceNodeVal: sourceObject[sourceFieldname],
-      targetNodeKey: rdoFieldname,
-      targetNodeVal: rdo[rdoFieldname],
-      tryUpdateTargetNode: (key, value) => CollectionUtils.Record.tryUpdateItem({ record: rdo, key, value }),
-    });
-  }
-
-  /**
-   *
-   */
-  private getRdoFieldname<S extends Record<string, any>, D extends Record<string, any>>({
-    sourceNodePath,
-    sourceFieldname,
-    sourceFieldVal,
-    parentObject,
-  }: {
-    sourceNodePath: string;
-    sourceFieldname: string;
-    sourceFieldVal: any;
-    parentObject: D;
-  }): string | undefined {
-    // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-    let rdoFieldname: string | undefined;
-
-    //
-    // Try IHasCustomRdoFieldNames
-    //
-    if (!rdoFieldname && IsIHasCustomRdoFieldNames(parentObject)) {
-      rdoFieldname = parentObject.tryGetRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal });
-      // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
-        rdoFieldname = undefined;
-      } else {
-        logger.trace(`rdoFieldname '${rdoFieldname}' found with IHasCustomRdoFieldNames`);
-      }
-    }
-
-    //
-    // Try _globalNodeOptions
-    //
-    if (!rdoFieldname && this._globalNodeOptions?.tryGetRdoFieldname) {
-      rdoFieldname = this._globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal });
-      // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
-        rdoFieldname = undefined;
-      } else {
-        logger.trace(`rdoFieldname '${rdoFieldname}' found with _globalNodeOptions.tryGetRdoFieldname`);
-      }
-    }
-
-    //
-    // Try stright match for sourceFieldname
-    if (!rdoFieldname) {
-      rdoFieldname = sourceFieldname;
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
-        rdoFieldname = undefined;
-      } else {
-        logger.trace(`rdoFieldname '${rdoFieldname}' found - straight match for sourceFieldname`);
-      }
-    }
-
-    //
-    // Try commonRdoFieldnamePostfix
-    //
-    if (!rdoFieldname && this._globalNodeOptions?.commonRdoFieldnamePostfix) {
-      const domainPropKeyWithPostfix = `${sourceFieldname}${this._globalNodeOptions.commonRdoFieldnamePostfix}`;
-      rdoFieldname = domainPropKeyWithPostfix;
-
-      // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
-        rdoFieldname = undefined;
-      } else {
-        logger.trace(`rdoFieldname '${rdoFieldname}' found with commonRdoFieldnamePostfix`);
-      }
-    }
-
-    return rdoFieldname;
-  }
+ 
+  
 
   

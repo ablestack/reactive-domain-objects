@@ -13,13 +13,13 @@ export type JavaScriptBuiltInType =
   | '[object String]'
   | '[object Undefined]';
 
-export type NodeKind = 'Primitive' | 'Array' | 'Object';
+export type NodeKind = 'Primitive' | 'Collection' | 'Object' | undefined;
 export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 
-export type SourceNodeTypeInfo = { type: NodeKind | undefined; builtInType: JavaScriptBuiltInType };
+export type SourceNodeTypeInfo = { kind: NodeKind | undefined; builtInType: JavaScriptBuiltInType };
 
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
-export type RdoNodeTypeInfo = { type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
+export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
 
 export interface ISourceNodeWrapper {
   readonly typeInfo: SourceNodeTypeInfo;
