@@ -1,12 +1,18 @@
-import { CollectionUtils, IMakeCollectionKey, ISourceInternalNodeWrapper, SourceNodeTypeInfo } from '..';
+import { CollectionUtils, IMakeCollectionKey, ISourceInternalNodeWrapper, SourceNodeTypeInfo, ISourceCollectionNodeWrapper } from '..';
 
-export class SourceArrayINW<D> implements ISourceInternalNodeWrapper<D> {
+export class SourceArrayINW<D> implements ISourceCollectionNodeWrapper<D> {
   private _array: Array<D>;
   private _makeKey?: IMakeCollectionKey<D>;
+  private _sourceNodePath: string;
 
-  constructor({ node, makeKey }: { node: Array<D>; makeKey?: IMakeCollectionKey<D> }) {
+  public get sourceNodePath(): string {
+    return this._sourceNodePath;
+  }
+
+  constructor({ node, sourceNodePath, makeKey }: { node: Array<D>; sourceNodePath: string; makeKey?: IMakeCollectionKey<D> }) {
     this._array = node;
     this._makeKey = makeKey;
+    this._sourceNodePath = sourceNodePath;
   }
 
   //------------------------------
@@ -17,7 +23,7 @@ export class SourceArrayINW<D> implements ISourceInternalNodeWrapper<D> {
   }
 
   public get typeInfo(): SourceNodeTypeInfo {
-    return { kind: 'Array', builtInType: '[object Array]' };
+    return { kind: 'Collection', builtInType: '[object Array]' };
   }
 
   public keys() {
@@ -36,6 +42,14 @@ export class SourceArrayINW<D> implements ISourceInternalNodeWrapper<D> {
   }
 
   public getNode(): any {
+    return this._array;
+  }
+
+  size(): number {
+    return this._array.length;
+  }
+
+  values(): Iterable<D> {
     return this._array;
   }
 }

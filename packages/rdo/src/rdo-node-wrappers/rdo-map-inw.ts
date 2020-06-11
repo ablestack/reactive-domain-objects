@@ -1,4 +1,4 @@
-import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
+import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isISourceCollectionNodeWrapper, SyncUtils } from '..';
 
 export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _map: Map<string, D>;
@@ -43,10 +43,28 @@ export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   //------------------------------
+  // IRdoInternalNodeWrapper
+  //------------------------------
+
+  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoMapINW can only sync with collection source types');
+
+    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+      return this.clearItems();
+    } else {
+      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: todo });
+    }
+  }
+
+  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public size(): number {
     return this._map.size;
+  }
+
+  public get makeKey() {
+    return this._makeKey;
   }
 
   public insertItem(value: D) {
@@ -60,5 +78,11 @@ export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
 
   public deleteItem(key: string): boolean {
     return this._map.delete(key);
+  }
+
+  public clearItems(): boolean {
+    if (this.size() === 0) return false;
+    this._map.clear();
+    return true;
   }
 }

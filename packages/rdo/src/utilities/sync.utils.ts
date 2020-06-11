@@ -1,53 +1,42 @@
 import _ from 'lodash';
 import { Logger } from '../infrastructure/logger';
+import { IRdoCollectionNodeWrapper } from '../types';
 
 const logger = Logger.make('SyncUtils');
 
 /** */
 function synchronizeCollection<S, T>({
   sourceCollection,
-  getTargetCollectionSize,
-  getTargetCollectionKeys,
-  makeRdoCollectionKeyFromSourceElement,
-  makeItemForTargetCollection,
-  tryGetItemFromTargetCollection,
-  insertItemToTargetCollection,
-  tryDeleteItemFromTargetCollection,
+  targetRdoCollectionNodeWrapper,
   tryStepIntoElementAndSync,
 }: {
   sourceCollection: Iterable<S>;
-  getTargetCollectionSize: () => number;
-  getTargetCollectionKeys?: () => string[];
-  makeRdoCollectionKeyFromSourceElement?: (sourceItem: S) => string;
-  makeItemForTargetCollection: (s) => T;
-  tryGetItemFromTargetCollection?: (key: string) => T | undefined;
-  insertItemToTargetCollection: (key: string, value: T) => void;
-  tryDeleteItemFromTargetCollection?: (key: string) => void;
+  targetRdoCollectionNodeWrapper: IRdoCollectionNodeWrapper<T>;
   tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: T }) => boolean;
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
-  const targetCollectionStartedEmpty = getTargetCollectionSize() === 0;
+  const targetCollectionStartedEmpty = targetRdoCollectionNodeWrapper.size() === 0;
 
   for (const sourceItem of sourceCollection) {
     if (sourceItem === null || sourceItem === undefined) continue;
     // Make key
-    if (!makeRdoCollectionKeyFromSourceElement) throw Error(`makeRdoCollectionKeyFromSourceElement wan null or undefined. It must be defined when sourceCollection.length > 0`);
-    const key = makeRdoCollectionKeyFromSourceElement(sourceItem);
+
+    if (!makeTargetCollectionKeyFromSourceElement) throw Error(`makeTargetCollectionKeyFromSourceElement wan null or undefined. It must be defined when sourceCollection.length > 0`);
+    const key = makeTargetCollectionKeyFromSourceElement(sourceItem);
 
     // Track keys so can be used in target item removal later
     sourceKeys.push(key);
 
     // Get or create target item
-    let targetItem: T | undefined = undefined;
+    let targetItem: T | null | undefined = undefined;
     if (!targetCollectionStartedEmpty) {
-      if (!tryGetItemFromTargetCollection) throw Error(`tryGetItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
-      targetItem = tryGetItemFromTargetCollection(key);
+      targetItem = targetRdoCollectionNodeWrapper.getItem(key);
     }
     if (!targetItem) {
-      targetItem = makeItemForTargetCollection(sourceItem);
+      targetItem = targetRdoCollectionNodeWrapper.makeItem(sourceItem);
       logger.trace(`Adding item ${key} to collection`, targetItem);
-      insertItemToTargetCollection(key, targetItem);
+      targetRdoCollectionNodeWrapper.insertItem(targetItem);
     }
 
     //
@@ -62,14 +51,14 @@ function synchronizeCollection<S, T>({
   // This id a performance optimization and also (indirectly)
   // allows for auto collection methods based on target item types
   if (!targetCollectionStartedEmpty) {
-    if (!getTargetCollectionKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
-    if (!tryDeleteItemFromTargetCollection) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
+    if (!targetRdoCollectionNodeWrapper.keys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
+    if (!targetRdoCollectionNodeWrapper.deleteItem) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
     // If destination item missing from source - remove from destination
-    const destinationInstanceIds = getTargetCollectionKeys();
-    const instanceIdsInDestinationOnly = _.difference(destinationInstanceIds, sourceKeys);
-    if (instanceIdsInDestinationOnly.length > 0) {
-      instanceIdsInDestinationOnly.forEach((itemId) => {
-        tryDeleteItemFromTargetCollection(itemId);
+    const targetCollectionKeys = Array.from(targetRdoCollectionNodeWrapper.keys());
+    const targetCollectionKeysInDestinationOnly = _.difference(targetCollectionKeys, sourceKeys);
+    if (targetCollectionKeysInDestinationOnly.length > 0) {
+      targetCollectionKeysInDestinationOnly.forEach((itemId) => {
+        targetRdoCollectionNodeWrapper.deleteItem(itemId);
       });
       changed = true;
     }

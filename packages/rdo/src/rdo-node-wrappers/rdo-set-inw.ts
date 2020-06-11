@@ -1,4 +1,4 @@
-import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isISourceCollectionNodeWrapper, SyncUtils } from '..';
 
 export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _set: Set<D>;
@@ -38,10 +38,39 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   //------------------------------
+  // IRdoInternalNodeWrapper
+  //------------------------------
+
+  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoMapINW can only sync with collection source types');
+
+    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+      this.clearItems();
+    } else {
+      if (this.size() > 0 && !this.makeKey)
+        throw new Error(
+          `Could not find '!makeRdoCollectionKey?.fromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+        );
+      if (wrappedSourceNode.size() > NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD)
+        logger.warn(
+          `Path: '${this.getSourceNodePath()}', collectionSize:${
+            sourceCollection.lastIndexOf
+          }, Target collection type: Set - It is recommended that the Map or Custom collections types are used in the RDOs for large collections. Set and Array collections will perform poorly with large collections`,
+        );
+
+      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: todo });
+    }
+  }
+
+  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public size(): number {
     return this._set.size;
+  }
+
+  public get makeKey() {
+    return this._makeKey;
   }
 
   public insertItem(value: D) {
@@ -59,5 +88,11 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
     } else {
       throw new Error('make key from RDO element must be available for Array delete operations');
     }
+  }
+
+  public clearItems(): boolean {
+    if (this.size() === 0) return false;
+    this._set.clear();
+    return true;
   }
 }

@@ -1,4 +1,4 @@
-import { IRdoInternalNodeWrapper, IMakeCollectionKey, IRdoNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper } from '../types';
+import { IRdoInternalNodeWrapper, IMakeCollectionKey, IRdoNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper, IGraphSyncOptions } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
 import { RdoSyncableCollectionINW } from './rdo-synchable-collection-inw';
 import { RdoObjectINW } from './rdo-object-inw';
@@ -8,7 +8,7 @@ import { RdoSetINW } from './rdo-set-inw';
 import { RdoPrimitiveINW } from './rdo-primitive-inw';
 
 export class RdoNodeWrapperFactory {
-  public static make<D>({ node, wrappedSourceNode, makeKey }: { node: any; wrappedSourceNode: ISourceNodeWrapper; makeKey?: IMakeCollectionKey<D> }): IRdoNodeWrapper {
+  public static make<D>({ node, wrappedSourceNode, options }: { node: any; wrappedSourceNode: ISourceNodeWrapper; options?: IGraphSyncOptions }): IRdoNodeWrapper {
     const typeInfo = NodeTypeUtils.getRdoNodeType(node);
 
     if (typeInfo.type === 'ISyncableCollection') {
@@ -23,7 +23,7 @@ export class RdoNodeWrapperFactory {
         }
         case '[object Object]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoObjectINW({ node, wrappedSourceNode, makeKey });
+          return new RdoObjectINW({ node, wrappedSourceNode, makeKey, globalNodeOptions: options?.globalNodeOptions });
         }
         case '[object Array]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');

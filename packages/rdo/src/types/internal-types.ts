@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
+import { IMakeCollectionKey } from '.';
+
 export type JavaScriptBuiltInType =
   | '[object Array]'
   | '[object Boolean]'
@@ -24,6 +26,7 @@ export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; 
 export interface ISourceNodeWrapper {
   readonly typeInfo: SourceNodeTypeInfo;
   readonly node: any;
+  readonly sourceNodePath: string;
 }
 
 export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper {
@@ -40,6 +43,15 @@ export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWr
   return o && o.keys && o.getItem && o.updateItem && isISourceNodeWrapper(o);
 }
 
+export interface ISourceCollectionNodeWrapper<D> extends ISourceInternalNodeWrapper<D> {
+  size(): number;
+  values(): Iterable<D>;
+}
+
+export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any> {
+  return o && o.size && o.values && isISourceInternalNodeWrapper(o);
+}
+
 export interface IRdoNodeWrapper {
   readonly node: any;
   readonly typeInfo: RdoNodeTypeInfo;
@@ -53,6 +65,7 @@ export interface IRdoInternalNodeWrapper<D> extends IRdoNodeWrapper {
   keys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
   updateItem(value: D): boolean;
+  smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any> {
@@ -61,8 +74,10 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 
 export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D> {
   size(): number;
+  makeKey: IMakeCollectionKey<D> | undefined;
   insertItem(value: D): void;
   deleteItem(key: string): boolean;
+  clearItems(): boolean;
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any> {

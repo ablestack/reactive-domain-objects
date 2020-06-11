@@ -4,10 +4,16 @@ import { IMakeCollectionKey, SourceNodeTypeInfo } from '../types';
 export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
   private _object: object;
   private _makeKey?: IMakeCollectionKey<any>;
+  private _sourceNodePath: string;
 
-  constructor({ node, makeKey }: { node: Record<string, any>; makeKey: IMakeCollectionKey<any> }) {
+  public get sourceNodePath(): string {
+    return this._sourceNodePath;
+  }
+
+  constructor({ node, sourceNodePath, makeKey }: { node: Record<string, any>; sourceNodePath: string; makeKey: IMakeCollectionKey<any> }) {
     this._object = node;
     this._makeKey = makeKey;
+    this._sourceNodePath = sourceNodePath;
   }
 
   //------------------------------

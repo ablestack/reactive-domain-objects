@@ -1,4 +1,6 @@
 import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
+import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper } from '../types';
+import { SyncUtils } from '../utilities';
 
 export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
@@ -33,10 +35,28 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   }
 
   //------------------------------
+  // IRdoInternalNodeWrapper
+  //------------------------------
+
+  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoSyncableCollectionINW can only sync with collection source types');
+
+    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+      return this.clearItems();
+    } else {
+      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: todo });
+    }
+  }
+
+  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public size(): number {
     return this._isyncableCollection.size;
+  }
+
+  public get makeKey() {
+    return this._isyncableCollection.makeKey;
   }
 
   public insertItem(value: D) {
@@ -45,5 +65,9 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
 
   public deleteItem(key: string): boolean {
     return this._isyncableCollection.deleteItem(key);
+  }
+
+  public clearItems(): boolean {
+    return this._isyncableCollection.clearItems();
   }
 }

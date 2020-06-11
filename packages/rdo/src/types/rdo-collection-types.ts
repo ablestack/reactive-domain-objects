@@ -25,12 +25,13 @@ export interface IRdoCollectionKeyFactory<S, D> {
 
 export interface ISyncableCollection<T> extends Iterable<[string, T]> {
   readonly size: number;
+  makeKey: IMakeCollectionKey<T>;
   getKeys: () => string[];
   getItem: (key: string) => T | null | undefined;
   insertItem: (value: T) => void;
   updateItem: (value: T) => boolean;
   deleteItem: (key: string) => boolean;
-  clearItems: () => void;
+  clearItems: () => boolean;
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {

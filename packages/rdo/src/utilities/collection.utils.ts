@@ -31,7 +31,7 @@ const _Array = {
     }
     return false;
   },
-  clear: <T>({ collection }: { collection: Array<T> }) => collection.splice(0, collection.length),
+  clear: <T>({ collection }: { collection: Array<T> }) => collection.splice(0, collection.length).length > 0,
 };
 
 const _Set = {

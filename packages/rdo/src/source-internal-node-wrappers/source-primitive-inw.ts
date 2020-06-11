@@ -3,10 +3,16 @@ import { SourceNodeTypeInfo, ISourceNodeWrapper } from '../types';
 export class SourcePrimitiveINW implements ISourceNodeWrapper {
   private _object: object;
   private _typeInfo: SourceNodeTypeInfo;
+  private _sourceNodePath: string;
 
-  constructor({ node, typeInfo }: { node: Record<string, any>; typeInfo: SourceNodeTypeInfo }) {
+  public get sourceNodePath(): string {
+    return this._sourceNodePath;
+  }
+
+  constructor({ node, sourceNodePath, typeInfo }: { node: Record<string, any>; sourceNodePath: string; typeInfo: SourceNodeTypeInfo }) {
     this._object = node;
     this._typeInfo = typeInfo;
+    this._sourceNodePath = sourceNodePath;
   }
 
   //------------------------------

@@ -1,15 +1,42 @@
 import { IRdoInternalNodeWrapper } from '..';
-import { IMakeCollectionKey, ISourceNodeWrapper, RdoNodeTypeInfo, IsIHasCustomRdoFieldNames } from '../types';
+import {
+  IMakeCollectionKey,
+  ISourceNodeWrapper,
+  RdoNodeTypeInfo,
+  IsIHasCustomRdoFieldNames,
+  IGlobalPropertyNameTransformation,
+  IsICustomEqualityRDO,
+  IsIBeforeSyncIfNeeded,
+  IsIBeforeSyncUpdate,
+  IsICustomSync,
+  IsIAfterSyncUpdate,
+  IsIAfterSyncIfNeeded,
+} from '../types';
+import { Logger } from '../infrastructure/logger';
+
+const logger = Logger.make('RdoObjectINW');
 
 export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
   private _object: object;
   private _makeKey?: IMakeCollectionKey<any>;
   private _wrappedSourceNode: ISourceNodeWrapper;
+  private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
 
-  constructor({ node, wrappedSourceNode, makeKey }: { node: Record<string, any>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any> }) {
+  constructor({
+    node,
+    wrappedSourceNode,
+    makeKey,
+    globalNodeOptions,
+  }: {
+    node: Record<string, any>;
+    wrappedSourceNode: ISourceNodeWrapper;
+    makeKey: IMakeCollectionKey<any>;
+    globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+  }) {
     this._object = node;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
+    this._globalNodeOptions = globalNodeOptions;
   }
 
   //------------------------------
@@ -43,10 +70,53 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
     }
   }
 
+  //------------------------------
+  // IRdoInternalNodeWrapper
+  //------------------------------
+  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+    let changed = false;
+    const sourceNodePath = this._wrappedSourceNode.node;
+    const rdo = wrappedSourceNode.node;
+    const sourceObject = wrappedSourceNode.node;
+
+    // Check if previous source state and new source state are equal
+    const isAlreadyInSync = IsICustomEqualityRDO(rdo) ? rdo.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+
+    // Call lifecycle methods if found
+    if (IsIBeforeSyncIfNeeded(rdo)) rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
+
+    // Call lifecycle methods if found
+    if (IsIBeforeSyncUpdate(rdo)) rdo.beforeSyncUpdate({ sourceObject });
+
+    if (!isAlreadyInSync) {
+      // Call lifecycle methods if found
+      if (IsIBeforeSyncUpdate(rdo)) rdo.beforeSyncUpdate({ sourceObject });
+
+      // Synchronize
+      if (IsICustomSync(rdo)) {
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
+        changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
+      } else {
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
+        changed = this.trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode });
+      }
+
+      // Call lifecycle methods if found
+      if (IsIAfterSyncUpdate(rdo)) rdo.afterSyncUpdate({ sourceObject });
+    } else {
+      logger.trace(`synchronizeObjectState - ${sourceNodePath} - already in sync. Skipping`);
+    }
+
+    // Call lifecycle methods if found
+    if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
+
+    return changed;
+  }
+
   /**
    *
    */
-  public getRdoFieldname(): string | undefined {
+  public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: string; sourceFieldVal: string }): string | undefined {
     // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
     let rdoFieldname: string | undefined;
 
@@ -56,7 +126,7 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
     if (!rdoFieldname && IsIHasCustomRdoFieldNames(this._object)) {
       rdoFieldname = this._object.tryGetRdoFieldname({ sourceNodePath: this._wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
       // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
+      if (rdoFieldname && !(rdoFieldname in this._object)) {
         rdoFieldname = undefined;
       } else {
         logger.trace(`rdoFieldname '${rdoFieldname}' found with IHasCustomRdoFieldNames`);
@@ -67,9 +137,9 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
     // Try _globalNodeOptions
     //
     if (!rdoFieldname && this._globalNodeOptions?.tryGetRdoFieldname) {
-      rdoFieldname = this._globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal });
+      rdoFieldname = this._globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath: this._wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
       // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
+      if (rdoFieldname && !(rdoFieldname in this._object)) {
         rdoFieldname = undefined;
       } else {
         logger.trace(`rdoFieldname '${rdoFieldname}' found with _globalNodeOptions.tryGetRdoFieldname`);
@@ -80,7 +150,7 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
     // Try stright match for sourceFieldname
     if (!rdoFieldname) {
       rdoFieldname = sourceFieldname;
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
+      if (rdoFieldname && !(rdoFieldname in this._object)) {
         rdoFieldname = undefined;
       } else {
         logger.trace(`rdoFieldname '${rdoFieldname}' found - straight match for sourceFieldname`);
@@ -95,7 +165,7 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
       rdoFieldname = domainPropKeyWithPostfix;
 
       // If fieldName not in parent, set to null
-      if (rdoFieldname && !(rdoFieldname in parentObject)) {
+      if (rdoFieldname && !(rdoFieldname in this._object)) {
         rdoFieldname = undefined;
       } else {
         logger.trace(`rdoFieldname '${rdoFieldname}' found with commonRdoFieldnamePostfix`);
@@ -103,5 +173,21 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
     }
 
     return rdoFieldname;
+  }
+
+  //--------------------------------------
+  // Private Methods
+  //--------------------------------------
+  private makeContinueSmartSyncFunction({
+    originalSourceNodePath,
+  }: {
+    originalSourceNodePath: string;
+  }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceObject, rdo }: { sourceNodeSubPath: string; sourceObject: S; rdo: D }) => boolean {
+    return ({ sourceNodeSubPath: sourceNodeSubpath, sourceObject, rdo }) => {
+      if (!sourceNodeSubpath) throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
+
+      const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
+      return this.trySynchronizeObject({ sourceNodePath, sourceObject, rdo });
+    };
   }
 }
