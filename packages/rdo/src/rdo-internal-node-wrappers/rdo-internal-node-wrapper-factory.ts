@@ -1,30 +1,30 @@
-import { IRdoInternalNodeWrapper, IMakeRdoCollectionKey } from '../types';
+import { IRdoInternalNodeWrapper, IMakeCollectionKey } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { SyncableRDOCollectionINW } from './syncable-rdo-collection-inw';
-import { ObjectINW } from './object-inw';
-import { RdoArrayINW } from './array-inw';
-import { MapINW } from './map-inw';
-import { SetINW } from './set-inw';
+import { RdoSyncableCollectionINW } from './rdo-synchable-collection-inw';
+import { RdoObjectINW } from './rdo-object-inw';
+import { RdoArrayINW } from './rdo-array-inw';
+import { RdoMapINW } from './rdo-map-inw';
+import { RdoSetINW } from './rdo-set-inw';
 
 export class RdoInternalNodeWrapperFactory {
-  public static make<D>(node: any, makeKey: IMakeRdoCollectionKey<D>): IRdoInternalNodeWrapper<D> {
+  public static make<D>(node: any, makeKey: IMakeCollectionKey<D>): IRdoInternalNodeWrapper<D> {
     const rdoNodeType = NodeTypeUtils.getRdoNodeType(node);
 
     if (rdoNodeType.type === 'ISyncableCollection') {
-      return new SyncableRDOCollectionINW({ node });
+      return new RdoSyncableCollectionINW({ node });
     } else {
       switch (rdoNodeType.builtInType) {
         case '[object Object]': {
-          return new ObjectINW({ node, makeKey });
+          return new RdoObjectINW({ node, makeKey });
         }
         case '[object Array]': {
           return new RdoArrayINW({ node, makeKey });
         }
         case '[object Map]': {
-          return new MapINW({ node, makeKey });
+          return new RdoMapINW({ node, makeKey });
         }
         case '[object Set]': {
-          return new SetINW({ node, makeKey });
+          return new RdoSetINW({ node, makeKey });
         }
         case '[object Boolean]':
         case '[object Date]':

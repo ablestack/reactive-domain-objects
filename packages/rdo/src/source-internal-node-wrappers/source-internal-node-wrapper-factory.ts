@@ -1,40 +1,24 @@
-import { IRdoInternalNodeWrapper, IMakeRdoCollectionKey } from '../types';
+import { ISourceInternalNodeWrapper, IMakeCollectionKey } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { SyncableRDOCollectionINW } from './syncable-rdo-collection-inw';
-import { ObjectINW } from './object-inw';
-import { RdoArrayINW } from './array-inw';
-import { MapINW } from './map-inw';
-import { SetINW } from './set-inw';
+import { SourceObjectINW } from './source-object-inw';
+import { SourceArrayINW } from './source-array-inw';
 
-export class RdoInternalNodeWrapperFactory {
-  public static make<D>(node: any, makeKey: IMakeRdoCollectionKey<D>): IRdoInternalNodeWrapper<D> {
-    const rdoNodeType = NodeTypeUtils.getRdoNodeType(node);
+export class SourceInternalNodeWrapperFactory {
+  public static make<D>(node: any, makeKey: IMakeCollectionKey<D>): ISourceInternalNodeWrapper<D> {
+    const sourceNodeType = NodeTypeUtils.getSourceNodeType(node);
 
-    if (rdoNodeType.type === 'ISyncableCollection') {
-      return new SyncableRDOCollectionINW({ node });
-    } else {
-      switch (rdoNodeType.builtInType) {
-        case '[object Object]': {
-          return new ObjectINW({ node, makeKey });
-        }
-        case '[object Array]': {
-          return new RdoArrayINW({ node, makeKey });
-        }
-        case '[object Map]': {
-          return new MapINW({ node, makeKey });
-        }
-        case '[object Set]': {
-          return new SetINW({ node, makeKey });
-        }
-        case '[object Boolean]':
-        case '[object Date]':
-        case '[object Number]':
-        case '[object String]': {
-          throw new Error(`IRdoInternalNodeWrapper not available for primitive types. Was attempted with: ${rdoNodeType.builtInType}`);
-        }
-        default: {
-          throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${rdoNodeType.builtInType}`);
-        }
+    switch (sourceNodeType.type) {
+      case 'Object': {
+        return new SourceObjectINW({ node, makeKey });
+      }
+      case 'Collection': {
+        return new SourceArrayINW({ node, makeKey });
+      }
+      case 'Primitive': {
+        throw new Error(`IRdoInternalNodeWrapper not available for primitive types. Was attempted with: ${sourceNodeType.builtInType}`);
+      }
+      default: {
+        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${sourceNodeType.builtInType}`);
       }
     }
   }

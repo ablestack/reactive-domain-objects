@@ -1,10 +1,10 @@
-import { CollectionUtils, IMakeRdoCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
 
 export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _array: Array<D>;
-  private _makeKey?: IMakeRdoCollectionKey<D>;
+  private _makeKey?: IMakeCollectionKey<D>;
 
-  constructor({ node, makeKey }: { node: Array<D>; makeKey?: IMakeRdoCollectionKey<D> }) {
+  constructor({ node, makeKey }: { node: Array<D>; makeKey?: IMakeCollectionKey<D> }) {
     this._array = node;
     this._makeKey = makeKey;
   }

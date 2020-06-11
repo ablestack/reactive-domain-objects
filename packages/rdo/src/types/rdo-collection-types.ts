@@ -4,7 +4,7 @@
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
 
-export interface IMakeRdoCollectionKey<T> {
+export interface IMakeCollectionKey<T> {
   (item: T): string;
 }
 
@@ -14,13 +14,13 @@ export interface IMakeRDO<S, D> {
 
 // *See `Strict` note above top of file
 export interface IRdoCollectionKeyFactoryStrict<S, D> {
-  fromSourceElement: IMakeRdoCollectionKey<S>;
-  fromRdoElement: IMakeRdoCollectionKey<D>;
+  fromSourceElement: IMakeCollectionKey<S>;
+  fromRdoElement: IMakeCollectionKey<D>;
 }
 
 export interface IRdoCollectionKeyFactory<S, D> {
-  fromSourceElement?: IMakeRdoCollectionKey<S>;
-  fromRdoElement?: IMakeRdoCollectionKey<D>;
+  fromSourceElement?: IMakeCollectionKey<S>;
+  fromRdoElement?: IMakeCollectionKey<D>;
 }
 
 export interface ISyncableCollection<T> extends Iterable<[string, T]> {
@@ -50,8 +50,8 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
 }
 
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-  makeRdoCollectionKeyFromSourceElement?: IMakeRdoCollectionKey<S>;
-  makeRdoCollectionKeyFromRdoElement?: IMakeRdoCollectionKey<D>;
+  makeRdoCollectionKeyFromSourceElement?: IMakeCollectionKey<S>;
+  makeRdoCollectionKeyFromRdoElement?: IMakeCollectionKey<D>;
   makeRdo: IMakeRDO<S, D>;
 }
 

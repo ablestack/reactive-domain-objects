@@ -1,11 +1,11 @@
-import { IRdoInternalNodeWrapper } from '..';
-import { IMakeRdoCollectionKey } from '../types';
+import { ISourceInternalNodeWrapper } from '..';
+import { IMakeCollectionKey } from '../types';
 
-export class ObjectINW implements IRdoInternalNodeWrapper<any> {
+export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
   private _object: object;
-  private _makeKey?: IMakeRdoCollectionKey<D>;
+  private _makeKey?: IMakeCollectionKey<any>;
 
-  constructor({ node, makeKey }: { node: Record<string, any>; makeKey: IMakeRdoCollectionKey<D> }) {
+  constructor({ node, makeKey }: { node: Record<string, any>; makeKey: IMakeCollectionKey<any> }) {
     this._object = node;
     this._makeKey = makeKey;
   }

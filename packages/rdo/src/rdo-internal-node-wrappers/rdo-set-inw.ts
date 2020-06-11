@@ -1,10 +1,10 @@
-import { CollectionUtils, IMakeRdoCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
 
-export class SetINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _set: Set<D>;
-  private _makeKey?: IMakeRdoCollectionKey<D>;
+  private _makeKey?: IMakeCollectionKey<D>;
 
-  constructor({ node, makeKey }: { node: Set<D>; makeKey?: IMakeRdoCollectionKey<D> }) {
+  constructor({ node, makeKey }: { node: Set<D>; makeKey?: IMakeCollectionKey<D> }) {
     this._set = node;
     this._makeKey = makeKey;
   }

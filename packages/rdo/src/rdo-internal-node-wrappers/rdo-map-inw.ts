@@ -1,10 +1,10 @@
-import { IMakeRdoCollectionKey, IRdoCollectionNodeWrapper } from '..';
+import { IMakeCollectionKey, IRdoCollectionNodeWrapper } from '..';
 
-export class MapINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class RdoMapINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _map: Map<string, D>;
-  private _makeKey?: IMakeRdoCollectionKey<D>;
+  private _makeKey?: IMakeCollectionKey<D>;
 
-  constructor({ node, makeKey }: { node: Map<string, D>; makeKey: IMakeRdoCollectionKey<D> }) {
+  constructor({ node, makeKey }: { node: Map<string, D>; makeKey: IMakeCollectionKey<D> }) {
     this._map = node;
     this._makeKey = makeKey;
   }

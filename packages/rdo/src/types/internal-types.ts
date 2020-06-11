@@ -21,6 +21,12 @@ export type SourceNodeTypeInfo = { type: NodeKind | undefined; builtInType: Java
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type RdoNodeTypeInfo = { type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
 
+export interface ISourceInternalNodeWrapper<D> {
+  keys(): Iterable<string>;
+  getItem(key: string): D | null | undefined;
+  updateItem(value: D): boolean;
+}
+
 export interface IRdoInternalNodeWrapper<D> {
   keys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
