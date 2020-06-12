@@ -47,14 +47,10 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public updateItem(key: string, value: D) {
-    if (this.makeItemKey) {
-      if (this._value.has(key)) {
-        this._value.set(key, value);
-        return true;
-      } else return false;
-    } else {
-      throw new Error('make key from RDO element must be available for Map update operations');
-    }
+    if (this._value.has(key)) {
+      this._value.set(key, value);
+      return true;
+    } else return false;
   }
 
   //------------------------------

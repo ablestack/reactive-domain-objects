@@ -25,7 +25,7 @@ export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; 
 
 export interface ISourceNodeWrapper<S> {
   readonly typeInfo: SourceNodeTypeInfo;
-  readonly value: S | null | undefined;
+  readonly value: S | Iterable<S> | null | undefined;
   readonly key: string | undefined;
   readonly sourceNodePath: string;
   readonly lastSourceNode: S | undefined;
@@ -56,7 +56,7 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
 }
 
 export interface IRdoNodeWrapper<S, D> {
-  readonly value: Iterable<D> | Iterable<[string, D]>;
+  readonly value: D | Iterable<D> | Iterable<[string, D]> | null | undefined;
   readonly key: string | undefined;
   readonly parent: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
