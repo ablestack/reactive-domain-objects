@@ -24,4 +24,8 @@ export class RdoPrimitiveINW implements IRdoNodeWrapper {
   public get typeInfo(): RdoNodeTypeInfo {
     return this._typeInfo;
   }
+
+  childElementCount(): number {
+    return 0;
+  }
 }

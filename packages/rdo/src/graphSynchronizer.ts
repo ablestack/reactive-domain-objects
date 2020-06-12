@@ -1,29 +1,8 @@
-import {
-  CollectionUtils,
-  comparers,
-  IEqualityComparer,
-  IGlobalPropertyNameTransformation,
-  IGraphSynchronizer,
-  IGraphSyncOptions,
-  IMakeRDO,
-  INodeSyncOptions,
-  IRdoCollectionKeyFactory,
-  IsIAfterSyncIfNeeded,
-  IsIAfterSyncUpdate,
-  IsIBeforeSyncIfNeeded,
-  IsIBeforeSyncUpdate,
-  IsICustomEqualityRDO,
-  IsICustomSync,
-  IsISyncableCollection,
-  IsISyncableRDOCollection,
-  ISyncableCollection,
-  SyncUtils,
-} from '.';
+import { comparers, IEqualityComparer, IGlobalPropertyNameTransformation, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions } from '.';
 import { Logger } from './infrastructure/logger';
-import { IsIHasCustomRdoFieldNames, InternalNodeKind, SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IRdoInternalNodeWrapper, ISourceInternalNodeWrapper, isIRdoInternalNodeWrapper, isISourceInternalNodeWrapper, IRdoCollectionNodeWrapper, ISourceNodeWrapper } from './types';
-import { NodeTypeUtils } from './utilities/node-type.utils';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 import { SourceNodeWrapperFactory } from './source-internal-node-wrappers/source-node-wrapper-factory';
+import { InternalNodeKind, IRdoCollectionNodeWrapper, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper, isISourceInternalNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -147,40 +126,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // PRIVATE METHODS
   // ------------------------------------------------------------------------------------------------------------------
 
- /**
-   *
-   */
-  private trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode }: { sourceNodePath, wrappedSourceNode: ISourceInternalNodeWrapper<any>, wrappedRdoNode:IRdoInternalNodeWrapper<any> }): boolean {
-    let changed = false;
-
-    // Loop properties
-    for (const sourceFieldname of wrappedSourceNode.keys()) {
-      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname) ;
-      const rdoFieldname = this.getRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal, parentObject: rdo });
-
-      // Check to see if key exists
-      if (!rdoFieldname) {
-        logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
-        continue;
-      }
-
-      changed = this.stepIntoChildNodeAndSync({
-        
-        sourceNodeKey: sourceFieldname,
-        sourceNodeVal: sourceObject[sourceFieldname],
-        targetNodeKey: rdoFieldname,
-        targetNodeVal: rdo[rdoFieldname],
-
-      });
-    }
-
-    return changed;
-  }
 
 /**
    *
    */
-  private stepIntoChildNodeAndSync({
+  private stepIntoNodeAndSync({
     parentRdoNode,
     rdoNodeKey,
     parentSourceNode,
@@ -204,7 +154,26 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       logger.trace(`stepIntoChildNodeAndSync (${rdoNodeKey}) - ignore node`);
       return false;
     } else {
-      changed = this.synchChildNode({parentRdoNode, rdoNodeKey, parentSourceNode, sourceNodeKey});
+
+
+
+      const rdoNode = parentRdoNode.getItem(rdoNodeKey);
+    if(!rdoNode === undefined){
+      //TODO LOG
+      return false;
+    }
+
+    const sourceNode = parentSourceNode.getItem(sourceNodeKey);
+    if(!sourceNode === undefined){
+      //TODO LOG
+      return false;
+    }
+
+    const wrappedSourceNode = SourceNodeWrapperFactory.make({ sourceNodePath:this.getSourceNodePath(), node: sourceNode, lastSourceNode:this.getLastSourceNodeInstancePathValue() });
+    const wrappedRdoNode = RdoNodeWrapperFactory.make({ wrappedSourceNode, node: rdoNode });
+
+      
+      changed = wrappedRdoNode.smartSync();
     }
 
     // Node traversal tracking - step-out
@@ -215,7 +184,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   /** */
-  private synchChildNode({
+  private synchInternalNode({
     parentRdoNode,
     rdoNodeKey,
     parentSourceNode,
@@ -228,20 +197,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }) {
     let changed = false;
     
-    const rdoNode = parentRdoNode.getItem(rdoNodeKey);
-    if(!rdoNode === undefined){
-      //TODO LOG
-      return false;
-    }
-
-    const sourceNode = parentSourceNode.getItem(sourceNodeKey);
-    if(!sourceNode === undefined){
-      //TODO LOG
-      return false;
-    }
-
-    const wrappedRdoNode = RdoNodeWrapperFactory.make({ node: rdoNode, makeKey });
-    const wrappedSourceNode = SourceNodeWrapperFactory.make({ node: sourceNode, makeKey });
+    
     
     switch (wrappedRdoNode.typeInfo.kind) {
       case 'Primitive': {
@@ -303,43 +259,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
     }
 
-    //
-    // Execute the sync based on collection type
-    //
-    return wrappedRdoCollectionNode.smartSync({ wrappedSourceNode: wrappedSourceCollectionNode, lastSourceObject: wrappedSourceCollectionNode.node})
 
- if (rdoNodeTypeInfo.type === 'Set') {
-      
-      //-----------------------------------------------------
-      // ARRAY SYNC
-      //-----------------------------------------------------
-    } else if (rdoNodeTypeInfo.type === 'Array') {
-      const rdoCollection = targetCollection as Array<any>;
-
-      if (sourceCollection.length === 0 && rdoCollection.length > 0) {
-        CollectionUtils.Array.clear({ collection: rdoCollection });
-      }
-
-      if (rdoCollection.length > 0 && !makeRdoCollectionKey?.fromRdoElement)
-        throw new Error(
-          `Could not find 'makeRdoCollectionKeyFromRdoElement' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
-        );
-      if (sourceCollection.length > 100)
-        logger.warn(
-          `Path: '${this.getSourceNodePath()}', collectionSize:${
-            sourceCollection.lastIndexOf
-          }, Target collection type: Array - It is recommended that the Map or Custom collections types are used in RDOs for large collections. Set and Array collections will perform poorly with large collections`,
-        );
-
-      return this.synchronizeTargetArray({
-        sourceCollection,
-        rdoCollection,
-        makeRdoCollectionKey: makeRdoCollectionKey!,
-        makeRdo: makeRdo!,
-      });
-    }
-
-    return false;
+    // Execute
+    return wrappedRdoCollectionNode.smartSync({ lastSourceObject: wrappedSourceCollectionNode.node})
   }
 
   

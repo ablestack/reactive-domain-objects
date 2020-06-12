@@ -5,7 +5,7 @@ import { RdoWrapperValidationUtils } from './rdo-wrapper-validation.utils';
 
 const logger = Logger.make('RdoSetINW');
 
-export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class RdoSetINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   private _set: Set<D>;
   private _makeKey?: IMakeCollectionKey<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
@@ -49,25 +49,25 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
 
   public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
-    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoMapINW can only sync with collection source types');
-
-    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+    if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
       // Validation
-      if (this.size() > 0 && !this.makeKey)
+      if (this.childElementCount() > 0 && !this.makeKey)
         throw new Error(`Could not find 'makeKey' (Path: '${this._wrappedSourceNode.sourceNodePath}', type: ${this.typeInfo.builtInType}). Please see instructions for how to configure`);
-      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ collectionSize: this.size(), collectionType: this.typeInfo.builtInType });
+      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this._wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+
+      if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: syncChildElement });
+      return SyncUtils.synchronizeCollection({ sourceCollection: this._wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
-  public size(): number {
+  public childElementCount(): number {
     return this._set.size;
   }
 
@@ -93,7 +93,7 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public clearItems(): boolean {
-    if (this.size() === 0) return false;
+    if (this.childElementCount() === 0) return false;
     this._set.clear();
     return true;
   }

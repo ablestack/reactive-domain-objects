@@ -16,7 +16,7 @@ function synchronizeCollection<S, T>({
 }) {
   let changed = false;
   const sourceKeys = new Array<string>();
-  const targetCollectionStartedEmpty = targetRdoCollectionNodeWrapper.size() === 0;
+  const targetCollectionStartedEmpty = targetRdoCollectionNodeWrapper.childElementCount() === 0;
 
   for (const sourceItem of sourceCollection) {
     if (sourceItem === null || sourceItem === undefined) continue;

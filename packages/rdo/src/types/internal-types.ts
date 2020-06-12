@@ -27,11 +27,12 @@ export interface ISourceNodeWrapper {
   readonly typeInfo: SourceNodeTypeInfo;
   readonly node: any;
   readonly sourceNodePath: string;
-  size(): number;
+  readonly lastSourceNode: any;
+  childElementCount(): number;
 }
 
 export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper {
-  return o && o.typeInfo && o.node !== undefined && o.sourceElementVal && o.size;
+  return o && o.typeInfo && o.node !== undefined && o.sourceNodePath && o.lastSourceNode && o.childElementCount;
 }
 
 export interface ISourceInternalNodeWrapper<D> extends ISourceNodeWrapper {
@@ -55,22 +56,22 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
 export interface IRdoNodeWrapper {
   readonly node: any;
   readonly typeInfo: RdoNodeTypeInfo;
-  size(): number;
+  childElementCount(): number;
+  smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean;
 }
 
 export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper {
-  return o && o.typeInfo && o.node !== undefined && o.size;
+  return o && o.typeInfo && o.node !== undefined && o.size && o.smartSync;
 }
 
 export interface IRdoInternalNodeWrapper<D> extends IRdoNodeWrapper {
   keys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
   updateItem(value: D): boolean;
-  smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any> {
-  return o && o.keys && o.getItem && o.updateItem && o.smartSync && isIRdoNodeWrapper(o);
+  return o && o.keys && o.getItem && o.updateItem && isIRdoNodeWrapper(o);
 }
 
 export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D> {

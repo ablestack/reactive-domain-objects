@@ -1,31 +1,48 @@
 import { ISourceInternalNodeWrapper } from '..';
 import { IMakeCollectionKey, SourceNodeTypeInfo } from '../types';
 
-export class SourceObjectINW implements ISourceInternalNodeWrapper<any> {
-  private _object: object;
-  private _makeKey?: IMakeCollectionKey<any>;
+export class SourceObjectINW<S> implements ISourceInternalNodeWrapper<S> {
+  private _object: Record<string, S>;
+  private _typeInfo: SourceNodeTypeInfo;
   private _sourceNodePath: string;
+  private _lastSourceNode: any;
+  private _makeKey?: IMakeCollectionKey<S>;
+
+  constructor({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey }: { node: Record<string, S>; sourceNodePath: string; typeInfo: SourceNodeTypeInfo; lastSourceNode: any; makeKey: IMakeCollectionKey<S> }) {
+    this._object = node;
+    this._typeInfo = typeInfo;
+    this._sourceNodePath = sourceNodePath;
+    this._lastSourceNode = lastSourceNode;
+    this._makeKey = makeKey;
+  }
+
+  //------------------------------
+  // ISourceNodeWrapper
+  //------------------------------
+
+  public get typeInfo(): SourceNodeTypeInfo {
+    return this._typeInfo;
+  }
+
+  public get node() {
+    return this._object;
+  }
 
   public get sourceNodePath(): string {
     return this._sourceNodePath;
   }
 
-  constructor({ node, sourceNodePath, makeKey }: { node: Record<string, any>; sourceNodePath: string; makeKey: IMakeCollectionKey<any> }) {
-    this._object = node;
-    this._makeKey = makeKey;
-    this._sourceNodePath = sourceNodePath;
+  public get lastSourceNode() {
+    return this._lastSourceNode;
+  }
+
+  childElementCount(): number {
+    return 0;
   }
 
   //------------------------------
-  // IRdoNodeWrapper
+  // ISourceInternalNodeWrapper
   //------------------------------
-  public get node() {
-    return this._object;
-  }
-
-  public get typeInfo(): SourceNodeTypeInfo {
-    return { kind: 'Object', builtInType: '[object Object]' };
-  }
 
   public keys() {
     return Object.keys(this._object);

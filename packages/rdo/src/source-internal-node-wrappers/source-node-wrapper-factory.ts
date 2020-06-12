@@ -5,18 +5,18 @@ import { SourceObjectINW } from './source-object-inw';
 import { SourcePrimitiveINW } from './source-primitive-inw';
 
 export class SourceNodeWrapperFactory {
-  public static make<D>({ node, sourceNodePath, makeKey }: { node: any; sourceNodePath: string; makeKey: IMakeCollectionKey<D> }): ISourceNodeWrapper {
+  public static make<D>({ sourceNodePath, node, lastSourceNode }: { sourceNodePath: string; node: any; lastSourceNode: any }): ISourceNodeWrapper {
     const typeInfo = NodeTypeUtils.getSourceNodeType(node);
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return new SourcePrimitiveINW({ node, sourceNodePath, typeInfo });
+        return new SourcePrimitiveINW({ node, sourceNodePath, typeInfo, lastSourceNode });
       }
       case 'Object': {
-        return new SourceObjectINW({ node, sourceNodePath, makeKey });
+        return new SourceObjectINW({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
       }
       case 'Collection': {
-        return new SourceArrayINW({ node, sourceNodePath, makeKey });
+        return new SourceArrayINW({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

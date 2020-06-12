@@ -48,27 +48,27 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
 
   public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
-    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+    if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
       // Validation
-      if (this.size() > 0 && !this.makeKey) {
+      if (this.childElementCount() > 0 && !this.makeKey) {
         throw new Error(`Could not find 'makeKey' (Path: '${this._wrappedSourceNode.sourceNodePath}', type: ${this.typeInfo.builtInType}). Please see instructions for how to configure`);
       }
 
-      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ collectionSize: this.size(), collectionType: this.typeInfo.builtInType });
+      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this._wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
 
       if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
+      return SyncUtils.synchronizeCollection({ sourceCollection: this._wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
-  public size(): number {
+  public childElementCount(): number {
     return this._array.length;
   }
 

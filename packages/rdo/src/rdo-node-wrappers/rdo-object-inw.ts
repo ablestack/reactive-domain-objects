@@ -15,6 +15,8 @@ import {
   ISourceInternalNodeWrapper,
   ISyncChildElement,
   isIRdoInternalNodeWrapper,
+  isISourceNodeWrapper,
+  isISourceInternalNodeWrapper,
 } from '../types';
 import { Logger } from '../infrastructure/logger';
 
@@ -87,9 +89,9 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
   //------------------------------
   public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
     let changed = false;
-    const sourceNodePath = this._wrappedSourceNode.node;
-    const rdo = wrappedSourceNode.node;
-    const sourceObject = wrappedSourceNode.node;
+    const sourceNodePath = this._wrappedSourceNode.sourceNodePath;
+    const rdo = this._wrappedSourceNode.node;
+    const sourceObject = this._wrappedSourceNode.node;
 
     // Check if previous source state and new source state are equal
     const isAlreadyInSync = this._equalityComparer(sourceObject, lastSourceObject);
@@ -110,8 +112,7 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
         changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
-
-        if (isIRdoInternalNodeWrapper) changed = this.trySynchronizeObject({ sourceNodePath, wrappedSourceNode });
+        changed = this.sync();
       }
 
       // Call lifecycle methods if found
@@ -129,13 +130,15 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
   /**
    *
    */
-  private trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode }: { sourceNodePath; wrappedSourceNode: ISourceInternalNodeWrapper<any>; wrappedRdoNode: IRdoInternalNodeWrapper<any> }): boolean {
+  private sync(): boolean {
     let changed = false;
 
+    if (!isISourceInternalNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
+
     // Loop properties
-    for (const sourceFieldname of wrappedSourceNode.keys()) {
-      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname);
-      const rdoFieldname = this.getRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal, parentObject: rdo });
+    for (const sourceFieldname of this._wrappedSourceNode.keys()) {
+      const sourceFieldVal = this._wrappedSourceNode.getItem(sourceFieldname);
+      const rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 
       // Check to see if key exists
       if (!rdoFieldname) {
@@ -143,11 +146,11 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
         continue;
       }
 
-      changed = this.stepIntoChildNodeAndSync({
-        sourceNodeKey: sourceFieldname,
-        sourceNodeVal: sourceObject[sourceFieldname],
-        targetNodeKey: rdoFieldname,
-        targetNodeVal: rdo[rdoFieldname],
+      changed = this._syncChildElement({
+        sourceElementKey: sourceFieldname,
+        sourceElementVal: sourceObject[sourceFieldname],
+        targetElementKey: rdoFieldname,
+        targetElementVal: rdo[rdoFieldname],
       });
     }
 

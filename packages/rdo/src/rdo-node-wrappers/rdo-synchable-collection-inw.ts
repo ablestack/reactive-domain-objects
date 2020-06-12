@@ -5,7 +5,7 @@ import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('RdoSyncableCollectionINW');
 
-export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _syncChildElement: ISyncChildElement<S, D>;
@@ -44,19 +44,18 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   //------------------------------
 
   public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
-    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoSyncableCollectionINW can only sync with collection source types');
-
-    if (wrappedSourceNode.size() === 0 && this.size() > 0) {
+    if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
-      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: syncChildElement });
+      if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
+      return SyncUtils.synchronizeCollection({ sourceCollection: this._wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
-  public size(): number {
+  public childElementCount(): number {
     return this._isyncableCollection.size;
   }
 

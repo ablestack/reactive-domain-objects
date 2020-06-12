@@ -52,7 +52,7 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
 
   public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
-    if (this._wrappedSourceNode.size() === 0 && this.size() > 0) {
+    if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
       // Validate
@@ -66,7 +66,7 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
-  public size(): number {
+  public childElementCount(): number {
     return this._map.size;
   }
 
@@ -88,7 +88,7 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public clearItems(): boolean {
-    if (this.size() === 0) return false;
+    if (this.childElementCount() === 0) return false;
     this._map.clear();
     return true;
   }
