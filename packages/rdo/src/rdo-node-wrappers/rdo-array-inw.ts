@@ -1,17 +1,35 @@
-import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isISourceCollectionNodeWrapper, SyncUtils, ISyncChildElement } from '..';
+import { CollectionUtils, IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isISourceCollectionNodeWrapper, SyncUtils, ISyncChildElement, IRdoNodeWrapper } from '..';
 import { Logger } from '../infrastructure/logger';
 import { RdoWrapperValidationUtils } from './rdo-wrapper-validation.utils';
 
 const logger = Logger.make('RdoArrayINW');
 
 export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
-  private _array: Array<D>;
+  private _value: Array<D>;
+  private _key: string | undefined;
+  private _parent: IRdoNodeWrapper | undefined;
   private _makeKey?: IMakeCollectionKey<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode, makeKey, syncChildElement }: { node: Array<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any>; syncChildElement: ISyncChildElement<S, D> }) {
-    this._array = node;
+  constructor({
+    value,
+    key,
+    parent,
+    wrappedSourceNode,
+    makeKey,
+    syncChildElement,
+  }: {
+    value: Array<D>;
+    key: string | undefined;
+    parent: IRdoNodeWrapper | undefined;
+    wrappedSourceNode: ISourceNodeWrapper;
+    makeKey: IMakeCollectionKey<any>;
+    syncChildElement: ISyncChildElement<S, D>;
+  }) {
+    this._value = value;
+    this._key = key;
+    this._parent = parent;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
     this._syncChildElement = syncChildElement;
@@ -20,8 +38,16 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get node() {
-    return this._array;
+  public get value() {
+    return this._value;
+  }
+
+  public get key() {
+    return this.key;
+  }
+
+  public get parent() {
+    return this._parent;
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
@@ -29,17 +55,17 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public keys() {
-    if (this._makeKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeCollectionKey: this._makeKey });
+    if (this._makeKey) return CollectionUtils.Array.getKeys({ collection: this._value, makeCollectionKey: this._makeKey });
     else return [];
   }
 
   public getItem(key: string) {
-    if (this._makeKey) return CollectionUtils.Array.getItem({ collection: this._array, makeCollectionKey: this._makeKey!, key });
+    if (this._makeKey) return CollectionUtils.Array.getItem({ collection: this._value, makeCollectionKey: this._makeKey!, key });
     else return undefined;
   }
 
   public updateItem(value: any) {
-    if (this._makeKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeCollectionKey: this._makeKey!, value });
+    if (this._makeKey) return CollectionUtils.Array.updateItem({ collection: this._value, makeCollectionKey: this._makeKey!, value });
     else throw new Error('make key from RDO element must be available for Array update operations');
   }
 
@@ -47,7 +73,7 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
+  public smartSync(): boolean {
     if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
@@ -69,7 +95,7 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoCollectionNodeWrapper
   //------------------------------
   public childElementCount(): number {
-    return this._array.length;
+    return this._value.length;
   }
 
   public get makeKey() {
@@ -79,7 +105,7 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   public insertItem(value: D) {
     if (this._makeKey) {
       const key = this._makeKey(value);
-      CollectionUtils.Array.insertItem({ collection: this._array, key, value });
+      CollectionUtils.Array.insertItem({ collection: this._value, key, value });
     } else {
       throw new Error('make key from source element must be available for insert operations');
     }
@@ -87,13 +113,13 @@ export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
 
   public deleteItem(key: string): boolean {
     if (this._makeKey) {
-      return CollectionUtils.Array.deleteItem({ collection: this._array, makeCollectionKey: this._makeKey, key });
+      return CollectionUtils.Array.deleteItem({ collection: this._value, makeCollectionKey: this._makeKey, key });
     } else {
       throw new Error('make key from RDO element must be available for Array delete operations');
     }
   }
 
   public clearItems(): boolean {
-    return CollectionUtils.Array.clear({ collection: this._array });
+    return CollectionUtils.Array.clear({ collection: this._value });
   }
 }

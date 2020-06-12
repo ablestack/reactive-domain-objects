@@ -21,7 +21,7 @@ export class SourcePrimitiveINW implements ISourceNodeWrapper {
     return this._typeInfo;
   }
 
-  public get node() {
+  public get value() {
     return this._primitive;
   }
 

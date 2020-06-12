@@ -1,17 +1,35 @@
 import { IMakeCollectionKey, IRdoCollectionNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isISourceCollectionNodeWrapper, SyncUtils, ISyncChildElement } from '..';
 import { Logger } from '../infrastructure/logger';
-import { isISourceInternalNodeWrapper } from '../types';
+import { isISourceInternalNodeWrapper, IRdoNodeWrapper } from '../types';
 
 const logger = Logger.make('RdoMapINW');
 export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
-  private _map: Map<string, D>;
-  private _makeKey?: IMakeCollectionKey<D>;
+  private _value: Map<string, D>;
+  private _key: string | undefined;
+  private _parent: IRdoNodeWrapper | undefined;
+  private _makeCollectionKey?: IMakeCollectionKey<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode, makeKey, syncChildElement }: { node: Map<string, D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any>; syncChildElement: ISyncChildElement<S, D> }) {
-    this._map = node;
-    this._makeKey = makeKey;
+  constructor({
+    value,
+    key,
+    parent,
+    wrappedSourceNode,
+    makeKey,
+    syncChildElement,
+  }: {
+    value: Map<string, D>;
+    key: string | undefined;
+    parent: IRdoNodeWrapper | undefined;
+    wrappedSourceNode: ISourceNodeWrapper;
+    makeKey: IMakeCollectionKey<any>;
+    syncChildElement: ISyncChildElement<S, D>;
+  }) {
+    this._value = value;
+    this._key = key;
+    this._parent = parent;
+    this._makeCollectionKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
     this._syncChildElement = syncChildElement;
   }
@@ -19,8 +37,16 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get node() {
-    return this._map;
+  public get value() {
+    return this._value;
+  }
+
+  public get key() {
+    return this.key;
+  }
+
+  public get parent() {
+    return this._parent;
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
@@ -28,18 +54,17 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   }
 
   public keys() {
-    return this._map.keys();
+    return this._value.keys();
   }
 
   public getItem(key: string) {
-    return this._map.get(key);
+    return this._value.get(key);
   }
 
-  public updateItem(value: D) {
-    if (this._makeKey) {
-      const key = this._makeKey(value);
-      if (this._map.has(key)) {
-        this._map.set(key, value);
+  public updateItem(key: string, value: D) {
+    if (this._makeCollectionKey) {
+      if (this._value.has(key)) {
+        this._value.set(key, value);
         return true;
       } else return false;
     } else {
@@ -51,7 +76,7 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
+  public smartSync(): boolean {
     if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
@@ -67,29 +92,29 @@ export class RdoMapINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoCollectionNodeWrapper
   //------------------------------
   public childElementCount(): number {
-    return this._map.size;
+    return this._value.size;
   }
 
   public get makeKey() {
-    return this._makeKey;
+    return this._makeCollectionKey;
   }
 
   public insertItem(value: D) {
-    if (this._makeKey) {
-      const key = this._makeKey(value);
-      this._map.set(key, value);
+    if (this._makeCollectionKey) {
+      const key = this._makeCollectionKey(value);
+      this._value.set(key, value);
     } else {
       throw new Error('make key from source element must be available for Map insert operations');
     }
   }
 
   public deleteItem(key: string): boolean {
-    return this._map.delete(key);
+    return this._value.delete(key);
   }
 
   public clearItems(): boolean {
     if (this.childElementCount() === 0) return false;
-    this._map.clear();
+    this._value.clear();
     return true;
   }
 }

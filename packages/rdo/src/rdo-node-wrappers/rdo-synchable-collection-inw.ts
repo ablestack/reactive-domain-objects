@@ -1,17 +1,33 @@
 import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
-import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildElement } from '../types';
+import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildElement, IRdoNodeWrapper } from '../types';
 import { SyncUtils } from '../utilities';
 import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('RdoSyncableCollectionINW');
 
 export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper<D> {
-  private _isyncableCollection: ISyncableCollection<D>;
+  private _value: ISyncableCollection<D>;
+  private _key: string | undefined;
+  private _parent: IRdoNodeWrapper | undefined;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode, syncChildElement }: { node: ISyncableCollection<D>; wrappedSourceNode: ISourceNodeWrapper; syncChildElement: ISyncChildElement<S, D> }) {
-    this._isyncableCollection = node;
+  constructor({
+    value,
+    key,
+    parent,
+    wrappedSourceNode,
+    syncChildElement,
+  }: {
+    value: ISyncableCollection<D>;
+    key: string | undefined;
+    parent: IRdoNodeWrapper | undefined;
+    wrappedSourceNode: ISourceNodeWrapper;
+    syncChildElement: ISyncChildElement<S, D>;
+  }) {
+    this._value = value;
+    this._key = key;
+    this._parent = parent;
     this._wrappedSourceNode = wrappedSourceNode;
     this._syncChildElement = syncChildElement;
   }
@@ -19,8 +35,16 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get node() {
-    return this._isyncableCollection;
+  public get value() {
+    return this._value;
+  }
+
+  public get key() {
+    return this.key;
+  }
+
+  public get parent() {
+    return this._parent;
   }
 
   public get typeInfo(): RdoNodeTypeInfo {
@@ -28,22 +52,22 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
   }
 
   public keys() {
-    return this._isyncableCollection.getKeys();
+    return this._value.getKeys();
   }
 
   public getItem(key: string) {
-    return this._isyncableCollection.getItem(key);
+    return this._value.getItem(key);
   }
 
-  public updateItem(value: D) {
-    return this._isyncableCollection.updateItem(value);
+  public updateItem(key: string, value: D) {
+    return this._value.updateItem(key, value);
   }
 
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
+  public smartSync(): boolean {
     if (this._wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
@@ -56,22 +80,22 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
   // IRdoCollectionNodeWrapper
   //------------------------------
   public childElementCount(): number {
-    return this._isyncableCollection.size;
+    return this._value.size;
   }
 
   public get makeKey() {
-    return this._isyncableCollection.makeKey;
+    return this._value.makeKey;
   }
 
   public insertItem(value: D) {
-    this._isyncableCollection.insertItem(value);
+    this._value.insertItem(value);
   }
 
   public deleteItem(key: string): boolean {
-    return this._isyncableCollection.deleteItem(key);
+    return this._value.deleteItem(key);
   }
 
   public clearItems(): boolean {
-    return this._isyncableCollection.clearItems();
+    return this._value.clearItems();
   }
 }

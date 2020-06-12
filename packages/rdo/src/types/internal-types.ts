@@ -25,7 +25,8 @@ export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; 
 
 export interface ISourceNodeWrapper {
   readonly typeInfo: SourceNodeTypeInfo;
-  readonly node: any;
+  readonly value: any;
+  readonly key: string;
   readonly sourceNodePath: string;
   readonly lastSourceNode: any;
   childElementCount(): number;
@@ -54,10 +55,12 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
 }
 
 export interface IRdoNodeWrapper {
-  readonly node: any;
+  readonly value: any;
+  readonly key: string | undefined;
+  readonly parent: IRdoNodeWrapper | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   childElementCount(): number;
-  smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean;
+  smartSync(): boolean;
 }
 
 export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper {
@@ -67,7 +70,7 @@ export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper {
 export interface IRdoInternalNodeWrapper<D> extends IRdoNodeWrapper {
   keys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
-  updateItem(value: D): boolean;
+  updateItem(key: string, value: D): boolean;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any> {

@@ -9,6 +9,7 @@ import {
   IMakeRDO,
   INodeSyncOptions,
   IsISyncableRDOCollection,
+  ISyncChildElement,
 } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
 import { RdoSyncableCollectionINW } from './rdo-synchable-collection-inw';
@@ -21,7 +22,21 @@ import { Logger } from '../infrastructure/logger';
 const logger = Logger.make('RdoCollectionNodeWrapperFactory');
 
 export class RdoCollectionNodeWrapperFactory {
-  public static make<D>({ node, wrappedSourceNode, options }: { node: any; wrappedSourceNode: ISourceNodeWrapper; options?: IGraphSyncOptions }): IRdoNodeWrapper {
+  public static make<S, D>({
+    value,
+    key,
+    parent,
+    wrappedSourceNode,
+    syncChildElement,
+    options,
+  }: {
+    value: any;
+    key: string | undefined;
+    parent: IRdoNodeWrapper | undefined;
+    wrappedSourceNode: ISourceNodeWrapper;
+    syncChildElement: ISyncChildElement<S, D>;
+    options?: IGraphSyncOptions;
+  }): IRdoNodeWrapper {
     const typeInfo = NodeTypeUtils.getRdoNodeType(node);
 
     if (typeInfo.type === 'ISyncableCollection') {
@@ -30,15 +45,15 @@ export class RdoCollectionNodeWrapperFactory {
       switch (typeInfo.builtInType) {
         case '[object Array]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoArrayINW({ node, wrappedSourceNode, makeKey });
+          return new RdoArrayINW({ value, key, parent, wrappedSourceNode, syncChildElement, makeKey });
         }
         case '[object Map]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoMapINW({ node, wrappedSourceNode, makeKey });
+          return new RdoMapINW({ value, key, parent, wrappedSourceNode, syncChildElement makeKey });
         }
         case '[object Set]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoSetINW({ node, wrappedSourceNode, makeKey });
+          return new RdoSetINW({ value, key, parent, wrappedSourceNode, syncChildElement makeKey });
         }
         default: {
           throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

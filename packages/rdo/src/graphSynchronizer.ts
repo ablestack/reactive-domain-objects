@@ -170,14 +170,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     const wrappedSourceNode = SourceNodeWrapperFactory.make({ sourceNodePath:this.getSourceNodePath(), node: sourceNode, lastSourceNode:this.getLastSourceNodeInstancePathValue() });
-    const wrappedRdoNode = RdoNodeWrapperFactory.make({ wrappedSourceNode, node: rdoNode });
+    const wrappedRdoNode = RdoNodeWrapperFactory.make({ wrappedSourceNode, value: rdoNode });
 
       
       changed = wrappedRdoNode.smartSync();
     }
 
     // Node traversal tracking - step-out
-    this.setLastSourceNodeInstancePathValue(parentSourceNode.node);
+    this.setLastSourceNodeInstancePathValue(parentSourceNode.value);
     this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;
@@ -200,16 +200,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     
     
     switch (wrappedRdoNode.typeInfo.kind) {
-      case 'Primitive': {
-        if (wrappedSourceNode.typeInfo.builtInType !== wrappedRdoNode.typeInfo.builtInType) {
-          throw Error(`For primitive types, the source type and the domain type must match. Source type: '${wrappedSourceNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoNode.typeInfo.builtInType}`);
-        }
-        if (wrappedSourceNode.node !== wrappedRdoNode.node) {
-          logger.trace(`primitive value found in domainPropKey ${rdoNodeKey}. Setting from old value to new value`, wrappedRdoNode.node, wrappedSourceNode.node);
-          changed = parentRdoNode.updateItem(wrappedSourceNode.node)          
-        }
-        break;
-      }
+     
       case 'Object': {
         if (wrappedRdoNode.typeInfo.kind !== 'Object') {
           throw Error(
@@ -247,7 +238,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private synchronizeTargetCollectionWithSourceArray({    wrappedRdoCollectionNode,    wrappedSourceCollectionNode  }: {    wrappedRdoCollectionNode: IRdoCollectionNodeWrapper<any>,    wrappedSourceCollectionNode: ISourceNodeWrapper  }): boolean {
     if (wrappedRdoCollectionNode.typeInfo.builtInType !== '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${wrappedSourceCollectionNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoCollectionNode.typeInfo.builtInType} `);
 
-    const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection:wrappedRdoCollectionNode.node, targetCollection: wrappedRdoCollectionNode.node });
+    const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection:wrappedRdoCollectionNode.value, targetCollection: wrappedRdoCollectionNode.value });
 
     // VALIDATE
     if (wrappedSourceCollectionNode.length > 0 && !makeRdoCollectionKey?.fromSourceElement) {
@@ -261,7 +252,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
 
     // Execute
-    return wrappedRdoCollectionNode.smartSync({ lastSourceObject: wrappedSourceCollectionNode.node})
+    return wrappedRdoCollectionNode.smartSync({ lastSourceObject: wrappedSourceCollectionNode.value})
   }
 
   

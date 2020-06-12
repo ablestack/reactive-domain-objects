@@ -24,7 +24,7 @@ export class SourceObjectINW<S> implements ISourceInternalNodeWrapper<S> {
     return this._typeInfo;
   }
 
-  public get node() {
+  public get value() {
     return this._object;
   }
 

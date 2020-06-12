@@ -23,7 +23,7 @@ export class SourceArrayINW<S> implements ISourceCollectionNodeWrapper<S> {
     return this._typeInfo;
   }
 
-  public get node() {
+  public get value() {
     return this._array;
   }
 

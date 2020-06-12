@@ -29,7 +29,7 @@ export interface ISyncableCollection<T> extends Iterable<[string, T]> {
   getKeys: () => string[];
   getItem: (key: string) => T | null | undefined;
   insertItem: (value: T) => void;
-  updateItem: (value: T) => boolean;
+  updateItem: (key: string, value: T) => boolean;
   deleteItem: (key: string) => boolean;
   clearItems: () => boolean;
 }
