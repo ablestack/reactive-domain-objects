@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IEqualityComparer, IRdoCollectionKeyFactory, IMakeRDO, IRdoCollectionKeyFactoryStrict } from '.';
+import { IEqualityComparer, IRdoCollectionKeyFactory, IMakeRdo, IRdoCollectionKeyFactoryStrict } from '.';
 
 //---------------------------------------------
 //  GRAPH SYNCHRONIZER CONFIG OPTION TYPES
@@ -25,14 +25,14 @@ export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
   makeRdoCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRdoFactory
-  makeRdo?: IMakeRDO<S, D>; // Match IRdoFactory except optional
+  makeRdo?: IMakeRdo<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSyncOptionsStrict<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
   makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>; // Match IRDOFactorsStrict
-  makeRdo?: IMakeRDO<S, D>; // Match IRdoFactory except optional
+  makeRdo?: IMakeRdo<S, D>; // Match IRdoFactory except optional
 }
 
 export interface INodeSelector<S> {

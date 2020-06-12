@@ -81,6 +81,10 @@ export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
     return { kind: 'Object', type: 'Object', builtInType: '[object Object]' };
   }
 
+  public get wrappedSourceNode(): ISourceNodeWrapper {
+    return this._wrappedSourceNode;
+  }
+
   public childElementCount(): number {
     return 0;
   }
@@ -130,7 +134,7 @@ export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public keys() {
+  public itemKeys() {
     return Object.keys(this._value);
   }
 
@@ -161,7 +165,7 @@ export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
     if (!isISourceInternalNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
 
     // Loop properties
-    for (const sourceFieldname of this._wrappedSourceNode.keys()) {
+    for (const sourceFieldname of this._wrappedSourceNode.itemKeys()) {
       const sourceFieldVal = this._wrappedSourceNode.getItem(sourceFieldname);
       const rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 

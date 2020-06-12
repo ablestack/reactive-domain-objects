@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IMakeCollectionKey } from '.';
+import { IMakeCollectionKey, IMakeRdo } from '.';
 
 export type JavaScriptBuiltInType =
   | '[object Array]'
@@ -23,69 +23,72 @@ export type SourceNodeTypeInfo = { kind: NodeKind | undefined; builtInType: Java
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
 
-export interface ISourceNodeWrapper {
+export interface ISourceNodeWrapper<S> {
   readonly typeInfo: SourceNodeTypeInfo;
-  readonly value: any;
-  readonly key: string;
+  readonly value: S | null | undefined;
+  readonly key: string | undefined;
   readonly sourceNodePath: string;
-  readonly lastSourceNode: any;
+  readonly lastSourceNode: S | undefined;
   childElementCount(): number;
 }
 
-export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper {
+export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any> {
   return o && o.typeInfo && o.node !== undefined && o.sourceNodePath && o.lastSourceNode && o.childElementCount;
 }
 
-export interface ISourceInternalNodeWrapper<D> extends ISourceNodeWrapper {
-  keys(): Iterable<string>;
-  getItem(key: string): D | null | undefined;
-  updateItem(value: D): boolean;
+export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
+  itemKeys(): Iterable<string>;
+  getItem(key: string): S | null | undefined;
+  updateItem(value: S): boolean;
 }
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any> {
-  return o && o.keys && o.getItem && o.updateItem && isISourceNodeWrapper(o);
+  return o && o.itemKeys && o.getItem && o.updateItem && isISourceNodeWrapper(o);
 }
 
-export interface ISourceCollectionNodeWrapper<D> extends ISourceInternalNodeWrapper<D> {
-  values(): Iterable<D>;
+export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S> {
+  elements(): Iterable<S>;
+  makeItemKey: IMakeCollectionKey<S> | undefined;
 }
 
 export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any> {
-  return o && o.values && isISourceInternalNodeWrapper(o);
+  return o && o.elements && o.makeItemKey && isISourceInternalNodeWrapper(o);
 }
 
-export interface IRdoNodeWrapper {
-  readonly value: any;
+export interface IRdoNodeWrapper<S, D> {
+  readonly value: D;
   readonly key: string | undefined;
-  readonly parent: IRdoNodeWrapper | undefined;
+  readonly parent: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
+  readonly wrappedSourceNode: ISourceNodeWrapper<S>;
   childElementCount(): number;
   smartSync(): boolean;
 }
 
-export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper {
-  return o && o.typeInfo && o.node !== undefined && o.size && o.smartSync;
+export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any> {
+  return o && o.value !== undefined && o.key && o.parent && o.typeInfo && o.wrappedSourceNode && o.childElementCount && o.smartSync;
 }
 
-export interface IRdoInternalNodeWrapper<D> extends IRdoNodeWrapper {
-  keys(): Iterable<string>;
+export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
+  itemKeys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
   updateItem(key: string, value: D): boolean;
 }
 
-export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any> {
-  return o && o.keys && o.getItem && o.updateItem && isIRdoNodeWrapper(o);
+export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any> {
+  return o && o.itemKeys && o.getItem && o.updateItem && isIRdoNodeWrapper(o);
 }
 
-export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D> {
-  makeKey: IMakeCollectionKey<D> | undefined;
+export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D> {
+  makeItem: IMakeRdo<S, D>;
+  makeItemKey: IMakeCollectionKey<D> | undefined;
   insertItem(value: D): void;
   deleteItem(key: string): boolean;
   clearItems(): boolean;
 }
 
-export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any> {
-  return o && o.makeKey && o.insertItem && o.deleteItem && o.clearItems && isIRdoInternalNodeWrapper(o);
+export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
+  return o && o.makeItemKey && o.insertItem && o.deleteItem && o.clearItems && isIRdoInternalNodeWrapper(o);
 }
 
 export type ISyncChildElement<S, D> = ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: D }) => boolean;

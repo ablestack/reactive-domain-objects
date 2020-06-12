@@ -10,13 +10,13 @@ export class SourceNodeWrapperFactory {
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return new SourcePrimitiveINW({ node, sourceNodePath, typeInfo, lastSourceNode });
+        return new SourcePrimitiveINW({ value: node, sourceNodePath, typeInfo, lastSourceNode });
       }
       case 'Object': {
-        return new SourceObjectINW({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
+        return new SourceObjectINW({ value: node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
       }
       case 'Collection': {
-        return new SourceArrayINW({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
+        return new SourceArrayINW({ node, sourceNodePath, typeInfo, lastSourceNode, makeItemKey: makeKey });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

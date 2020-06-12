@@ -6,7 +6,7 @@ import {
   ISourceNodeWrapper,
   IGraphSyncOptions,
   IRdoCollectionKeyFactory,
-  IMakeRDO,
+  IMakeRdo,
   INodeSyncOptions,
   IsISyncableRDOCollection,
   ISyncChildElement,
@@ -65,7 +65,7 @@ export class RdoCollectionNodeWrapperFactory {
   /** */
   private tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection }: { sourceCollection: Array<any>; targetCollection: any }) {
     let makeRdoCollectionKey: IRdoCollectionKeyFactory<any, any> | undefined;
-    let makeRdo: IMakeRDO<any, any> | undefined;
+    let makeRdo: IMakeRdo<any, any> | undefined;
 
     const collectionElementType = this.getCollectionElementType({ sourceCollection, targetCollection });
 

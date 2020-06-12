@@ -10,7 +10,7 @@ export class SyncableRDOCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public keys() {
+  public itemKeys() {
     return this._isyncableCollection.getKeys();
   }
 

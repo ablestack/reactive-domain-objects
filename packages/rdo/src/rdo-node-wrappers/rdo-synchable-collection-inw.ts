@@ -51,7 +51,11 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
     return { kind: 'Collection', type: 'ISyncableCollection', builtInType: '[object Map]' };
   }
 
-  public keys() {
+  public get wrappedSourceNode(): ISourceNodeWrapper {
+    return this._wrappedSourceNode;
+  }
+
+  public itemKeys() {
     return this._value.getKeys();
   }
 
@@ -72,7 +76,7 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
       return this.clearItems();
     } else {
       if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
-      return SyncUtils.synchronizeCollection({ sourceCollection: this._wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
+      return SyncUtils.synchronizeCollection({ targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 
@@ -83,7 +87,7 @@ export class RdoSyncableCollectionINW<S, D> implements IRdoCollectionNodeWrapper
     return this._value.size;
   }
 
-  public get makeKey() {
+  public get makeItemKey() {
     return this._value.makeKey;
   }
 

@@ -1,16 +1,32 @@
 import { ISourceInternalNodeWrapper } from '..';
 import { IMakeCollectionKey, SourceNodeTypeInfo } from '../types';
 
-export class SourceObjectINW<S> implements ISourceInternalNodeWrapper<S> {
-  private _object: Record<string, S>;
+export class SourceObjectINW implements ISourceInternalNodeWrapper<Record<string, any>> {
+  private _object: Record<string, any>;
   private _typeInfo: SourceNodeTypeInfo;
+  private _key: string | undefined;
   private _sourceNodePath: string;
   private _lastSourceNode: any;
-  private _makeKey?: IMakeCollectionKey<S>;
+  private _makeKey?: IMakeCollectionKey<Record<string, any>>;
 
-  constructor({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey }: { node: Record<string, S>; sourceNodePath: string; typeInfo: SourceNodeTypeInfo; lastSourceNode: any; makeKey: IMakeCollectionKey<S> }) {
-    this._object = node;
+  constructor({
+    value,
+    sourceNodePath,
+    key,
+    typeInfo,
+    lastSourceNode,
+    makeKey,
+  }: {
+    value: Record<string, any>;
+    sourceNodePath: string;
+    key: string | undefined;
+    typeInfo: SourceNodeTypeInfo;
+    lastSourceNode: any;
+    makeKey: IMakeCollectionKey<Record<string, any>>;
+  }) {
+    this._object = value;
     this._typeInfo = typeInfo;
+    this._key = key;
     this._sourceNodePath = sourceNodePath;
     this._lastSourceNode = lastSourceNode;
     this._makeKey = makeKey;
@@ -26,6 +42,10 @@ export class SourceObjectINW<S> implements ISourceInternalNodeWrapper<S> {
 
   public get value() {
     return this._object;
+  }
+
+  public get key() {
+    return this._key;
   }
 
   public get sourceNodePath(): string {
@@ -44,7 +64,7 @@ export class SourceObjectINW<S> implements ISourceInternalNodeWrapper<S> {
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public keys() {
+  public itemKeys() {
     return Object.keys(this._object);
   }
 

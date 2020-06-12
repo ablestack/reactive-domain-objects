@@ -1,14 +1,16 @@
 import { SourceNodeTypeInfo, ISourceNodeWrapper } from '../types';
 
-export class SourcePrimitiveINW implements ISourceNodeWrapper {
-  private _primitive: object | null | undefined;
+export class SourcePrimitiveINW<S> implements ISourceNodeWrapper<S> {
+  private _primitive: S | null | undefined;
+  private _key: string | undefined;
   private _typeInfo: SourceNodeTypeInfo;
   private _sourceNodePath: string;
-  private _lastSourceNode: any;
+  private _lastSourceNode: S | undefined;
 
-  constructor({ node, sourceNodePath, typeInfo, lastSourceNode }: { node: object | null | undefined; sourceNodePath: string; typeInfo: SourceNodeTypeInfo; lastSourceNode: any }) {
-    this._primitive = node;
+  constructor({ value, sourceNodePath, key, typeInfo, lastSourceNode }: { value: S | null | undefined; sourceNodePath: string; key: string | undefined; typeInfo: SourceNodeTypeInfo; lastSourceNode: any }) {
+    this._primitive = value;
     this._typeInfo = typeInfo;
+    this._key = key;
     this._sourceNodePath = sourceNodePath;
     this._lastSourceNode = lastSourceNode;
   }
@@ -23,6 +25,10 @@ export class SourcePrimitiveINW implements ISourceNodeWrapper {
 
   public get value() {
     return this._primitive;
+  }
+
+  public get key() {
+    return this._key;
   }
 
   public get sourceNodePath(): string {

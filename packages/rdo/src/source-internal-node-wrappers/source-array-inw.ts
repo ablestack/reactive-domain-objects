@@ -1,18 +1,34 @@
 import { CollectionUtils, IMakeCollectionKey, ISourceInternalNodeWrapper, SourceNodeTypeInfo, ISourceCollectionNodeWrapper } from '..';
 
-export class SourceArrayINW<S> implements ISourceCollectionNodeWrapper<S> {
-  private _array: Array<S>;
+export class SourceArrayINW<S extends Array<S>> implements ISourceCollectionNodeWrapper<S> {
+  private _array: S;
   private _typeInfo: SourceNodeTypeInfo;
+  private _key: string | undefined;
   private _sourceNodePath: string;
   private _lastSourceNode: any;
-  private _makeKey?: IMakeCollectionKey<any>;
+  private _makeItemKey?: IMakeCollectionKey<any>;
 
-  constructor({ node, sourceNodePath, typeInfo, lastSourceNode, makeKey }: { node: Array<S>; sourceNodePath: string; typeInfo: SourceNodeTypeInfo; lastSourceNode: any; makeKey: IMakeCollectionKey<S> }) {
+  constructor({
+    node,
+    sourceNodePath,
+    key,
+    typeInfo,
+    lastSourceNode,
+    makeItemKey,
+  }: {
+    node: S;
+    sourceNodePath: string;
+    key: string | undefined;
+    typeInfo: SourceNodeTypeInfo;
+    lastSourceNode: any;
+    makeItemKey: IMakeCollectionKey<S>;
+  }) {
     this._array = node;
     this._typeInfo = typeInfo;
+    this._key = key;
     this._sourceNodePath = sourceNodePath;
     this._lastSourceNode = lastSourceNode;
-    this._makeKey = makeKey;
+    this._makeItemKey = makeItemKey;
   }
 
   //------------------------------
@@ -25,6 +41,10 @@ export class SourceArrayINW<S> implements ISourceCollectionNodeWrapper<S> {
 
   public get value() {
     return this._array;
+  }
+
+  public get key() {
+    return this._key;
   }
 
   public get sourceNodePath(): string {
@@ -43,18 +63,18 @@ export class SourceArrayINW<S> implements ISourceCollectionNodeWrapper<S> {
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public keys() {
-    if (this._makeKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeCollectionKey: this._makeKey });
+  public itemKeys() {
+    if (this._makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeCollectionKey: this._makeItemKey });
     else return [];
   }
 
   public getItem(key: string) {
-    if (this._makeKey) return CollectionUtils.Array.getItem({ collection: this._array, makeCollectionKey: this._makeKey!, key });
+    if (this._makeItemKey) return CollectionUtils.Array.getItem({ collection: this._array, makeCollectionKey: this._makeItemKey!, key });
     else return undefined;
   }
 
   public updateItem(value: any) {
-    if (this._makeKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeCollectionKey: this._makeKey!, value });
+    if (this._makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeCollectionKey: this._makeItemKey!, value });
     else throw new Error('make key from RDO element must be available for Array update operations');
   }
 
@@ -66,7 +86,11 @@ export class SourceArrayINW<S> implements ISourceCollectionNodeWrapper<S> {
   // ISourceCollectionNodeWrapper
   //------------------------------
 
-  values(): Iterable<S> {
+  public elements(): Iterable<S> {
     return this._array;
+  }
+
+  public get makeItemKey(): IMakeCollectionKey<S> | undefined {
+    return this._makeItemKey;
   }
 }

@@ -55,7 +55,11 @@ export class RdoSetINW<S, D> implements IRdoCollectionNodeWrapper<D> {
     return { kind: 'Collection', type: 'Set', builtInType: '[object Set]' };
   }
 
-  public keys() {
+  public get wrappedSourceNode(): ISourceNodeWrapper {
+    return this._wrappedSourceNode;
+  }
+
+  public itemKeys() {
     if (this._makeKey) return CollectionUtils.Set.getKeys({ collection: this._value, makeCollectionKey: this._makeKey });
     else return [];
   }
@@ -79,14 +83,14 @@ export class RdoSetINW<S, D> implements IRdoCollectionNodeWrapper<D> {
       return this.clearItems();
     } else {
       // Validation
-      if (this.childElementCount() > 0 && !this.makeKey)
+      if (this.childElementCount() > 0 && !this.makeItemKey)
         throw new Error(`Could not find 'makeKey' (Path: '${this._wrappedSourceNode.sourceNodePath}', type: ${this.typeInfo.builtInType}). Please see instructions for how to configure`);
       RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this._wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
 
       if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return SyncUtils.synchronizeCollection({ sourceCollection: this._wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
+      return SyncUtils.synchronizeCollection({ targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 
@@ -97,7 +101,7 @@ export class RdoSetINW<S, D> implements IRdoCollectionNodeWrapper<D> {
     return this._value.size;
   }
 
-  public get makeKey() {
+  public get makeItemKey() {
     return this._makeKey;
   }
 

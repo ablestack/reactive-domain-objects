@@ -48,6 +48,10 @@ export class RdoPrimitiveINW implements IRdoNodeWrapper {
     return this._typeInfo;
   }
 
+  public get wrappedSourceNode(): ISourceNodeWrapper {
+    return this._wrappedSourceNode;
+  }
+
   childElementCount(): number {
     return 0;
   }

@@ -8,7 +8,7 @@ export interface IMakeCollectionKey<T> {
   (item: T): string;
 }
 
-export interface IMakeRDO<S, D> {
+export interface IMakeRdo<S, D> {
   (sourceObject: S): D;
 }
 
@@ -53,7 +53,7 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
 export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
   makeRdoCollectionKeyFromSourceElement?: IMakeCollectionKey<S>;
   makeRdoCollectionKeyFromRdoElement?: IMakeCollectionKey<D>;
-  makeRdo: IMakeRDO<S, D>;
+  makeRdo: IMakeRdo<S, D>;
 }
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
