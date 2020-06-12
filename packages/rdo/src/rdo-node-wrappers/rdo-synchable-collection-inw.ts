@@ -8,10 +8,12 @@ const logger = Logger.make('RdoSyncableCollectionINW');
 export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
+  private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode }: { node: ISyncableCollection<D>; wrappedSourceNode: ISourceNodeWrapper }) {
+  constructor({ node, wrappedSourceNode, syncChildElement }: { node: ISyncableCollection<D>; wrappedSourceNode: ISourceNodeWrapper; syncChildElement: ISyncChildElement<S, D> }) {
     this._isyncableCollection = node;
     this._wrappedSourceNode = wrappedSourceNode;
+    this._syncChildElement = syncChildElement;
   }
 
   //------------------------------
@@ -41,7 +43,7 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ wrappedSourceNode, lastSourceObject, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
+  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
     if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoSyncableCollectionINW can only sync with collection source types');
 
     if (wrappedSourceNode.size() === 0 && this.size() > 0) {

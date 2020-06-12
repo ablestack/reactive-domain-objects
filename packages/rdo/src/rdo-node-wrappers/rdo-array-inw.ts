@@ -4,15 +4,17 @@ import { RdoWrapperValidationUtils } from './rdo-wrapper-validation.utils';
 
 const logger = Logger.make('RdoArrayINW');
 
-export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class RdoArrayINW<S, D> implements IRdoCollectionNodeWrapper<D> {
   private _array: Array<D>;
   private _makeKey?: IMakeCollectionKey<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
+  private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode, makeKey }: { node: Array<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any> }) {
+  constructor({ node, wrappedSourceNode, makeKey, syncChildElement }: { node: Array<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any>; syncChildElement: ISyncChildElement<S, D> }) {
     this._array = node;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
+    this._syncChildElement = syncChildElement;
   }
 
   //------------------------------
@@ -45,19 +47,21 @@ export class RdoArrayINW<D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ wrappedSourceNode, lastSourceObject, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
-    if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoMapINW can only sync with collection source types');
-
+  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
     if (wrappedSourceNode.size() === 0 && this.size() > 0) {
       return this.clearItems();
     } else {
       // Validation
-      if (this.size() > 0 && !this.makeKey)
+      if (this.size() > 0 && !this.makeKey) {
         throw new Error(`Could not find 'makeKey' (Path: '${this._wrappedSourceNode.sourceNodePath}', type: ${this.typeInfo.builtInType}). Please see instructions for how to configure`);
+      }
+
       RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ collectionSize: this.size(), collectionType: this.typeInfo.builtInType });
 
+      if (!isISourceCollectionNodeWrapper(this._wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this._wrappedSourceNode.sourceNodePath}'`);
+
       // Execute
-      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: syncChildElement });
+      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: this._syncChildElement });
     }
   }
 

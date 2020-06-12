@@ -27,10 +27,11 @@ export interface ISourceNodeWrapper {
   readonly typeInfo: SourceNodeTypeInfo;
   readonly node: any;
   readonly sourceNodePath: string;
+  size(): number;
 }
 
 export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper {
-  return o && o.typeInfo && o.node !== undefined;
+  return o && o.typeInfo && o.node !== undefined && o.sourceElementVal && o.size;
 }
 
 export interface ISourceInternalNodeWrapper<D> extends ISourceNodeWrapper {
@@ -44,36 +45,35 @@ export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWr
 }
 
 export interface ISourceCollectionNodeWrapper<D> extends ISourceInternalNodeWrapper<D> {
-  size(): number;
   values(): Iterable<D>;
 }
 
 export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any> {
-  return o && o.size && o.values && isISourceInternalNodeWrapper(o);
+  return o && o.values && isISourceInternalNodeWrapper(o);
 }
 
 export interface IRdoNodeWrapper {
   readonly node: any;
   readonly typeInfo: RdoNodeTypeInfo;
+  size(): number;
 }
 
 export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper {
-  return o && o.typeInfo && o.node !== undefined;
+  return o && o.typeInfo && o.node !== undefined && o.size;
 }
 
 export interface IRdoInternalNodeWrapper<D> extends IRdoNodeWrapper {
   keys(): Iterable<string>;
   getItem(key: string): D | null | undefined;
   updateItem(value: D): boolean;
-  smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean;
+  smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any> {
-  return o && o.keys && o.getItem && o.updateItem && isIRdoNodeWrapper(o);
+  return o && o.keys && o.getItem && o.updateItem && o.smartSync && isIRdoNodeWrapper(o);
 }
 
 export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D> {
-  size(): number;
   makeKey: IMakeCollectionKey<D> | undefined;
   insertItem(value: D): void;
   deleteItem(key: string): boolean;
@@ -81,7 +81,7 @@ export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D>
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any> {
-  return o && o.size && o.insertItem && o.deleteItem && isIRdoInternalNodeWrapper(o);
+  return o && o.makeKey && o.insertItem && o.deleteItem && o.clearItems && isIRdoInternalNodeWrapper(o);
 }
 
 export type ISyncChildElement<S, D> = ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: D }) => boolean;

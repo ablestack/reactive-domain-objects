@@ -14,6 +14,7 @@ import {
   IEqualityComparer,
   ISourceInternalNodeWrapper,
   ISyncChildElement,
+  isIRdoInternalNodeWrapper,
 } from '../types';
 import { Logger } from '../infrastructure/logger';
 
@@ -25,6 +26,7 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
   private _equalityComparer: IEqualityComparer;
+  private _syncChildElement: ISyncChildElement<S, D>;
 
   constructor({
     node,
@@ -32,18 +34,21 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
     makeKey,
     globalNodeOptions,
     defaultEqualityComparer,
+    syncChildElement,
   }: {
     node: Record<string, any>;
     wrappedSourceNode: ISourceNodeWrapper;
     makeKey: IMakeCollectionKey<any>;
     globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
     defaultEqualityComparer: IEqualityComparer;
+    syncChildElement: ISyncChildElement<S, D>;
   }) {
     this._object = node;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
     this._globalNodeOptions = globalNodeOptions;
     this._equalityComparer = IsICustomEqualityRDO(node) ? node.isStateEqual : defaultEqualityComparer;
+    this._syncChildElement = syncChildElement;
   }
 
   //------------------------------
@@ -80,7 +85,7 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
-  public smartSync<S>({ wrappedSourceNode, lastSourceObject, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
+  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
     let changed = false;
     const sourceNodePath = this._wrappedSourceNode.node;
     const rdo = wrappedSourceNode.node;
@@ -105,7 +110,8 @@ export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
         changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
-        changed = this.trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode });
+
+        if (isIRdoInternalNodeWrapper) changed = this.trySynchronizeObject({ sourceNodePath, wrappedSourceNode });
       }
 
       // Call lifecycle methods if found

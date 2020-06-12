@@ -1,4 +1,15 @@
-import { IRdoInternalNodeWrapper, IMakeCollectionKey, IRdoNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper, IGraphSyncOptions } from '../types';
+import {
+  IRdoInternalNodeWrapper,
+  IMakeCollectionKey,
+  IRdoNodeWrapper,
+  ISourceInternalNodeWrapper,
+  ISourceNodeWrapper,
+  IGraphSyncOptions,
+  IRdoCollectionKeyFactory,
+  IMakeRDO,
+  INodeSyncOptions,
+  IsISyncableRDOCollection,
+} from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
 import { RdoSyncableCollectionINW } from './rdo-synchable-collection-inw';
 import { RdoObjectINW } from './rdo-object-inw';

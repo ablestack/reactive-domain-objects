@@ -9,11 +9,13 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _set: Set<D>;
   private _makeKey?: IMakeCollectionKey<D>;
   private _wrappedSourceNode: ISourceNodeWrapper;
+  private _syncChildElement: ISyncChildElement<S, D>;
 
-  constructor({ node, wrappedSourceNode, makeKey }: { node: Set<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any> }) {
+  constructor({ node, wrappedSourceNode, makeKey, syncChildElement }: { node: Set<D>; wrappedSourceNode: ISourceNodeWrapper; makeKey: IMakeCollectionKey<any>; syncChildElement: ISyncChildElement<S, D> }) {
     this._set = node;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
+    this._syncChildElement = syncChildElement;
   }
 
   //------------------------------
@@ -46,7 +48,7 @@ export class RdoSetINW<D> implements IRdoCollectionNodeWrapper<D> {
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync<S>({ wrappedSourceNode, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
+  public smartSync<S>({ lastSourceObject }: { lastSourceObject: any }): boolean {
     if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoMapINW can only sync with collection source types');
 
     if (wrappedSourceNode.size() === 0 && this.size() > 0) {
