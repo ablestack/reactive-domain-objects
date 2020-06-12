@@ -1,11 +1,11 @@
 import { IRdoInternalNodeWrapper, IMakeCollectionKey, IRdoNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper, IGraphSyncOptions, ISyncChildElement } from '../types';
 import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { RdoSyncableCollectionINW } from './rdo-synchable-collection-inw';
-import { RdoObjectINW } from './rdo-object-inw';
-import { RdoArrayINW } from './rdo-array-inw';
-import { RdoMapINW } from './rdo-map-inw';
-import { RdoSetINW } from './rdo-set-inw';
-import { RdoPrimitiveINW } from './rdo-primitive-inw';
+import { RdoSyncableCollectionNW } from './rdo-synchable-collection-inw';
+import { RdoObjectNW } from './rdo-object-inw';
+import { RdoArrayNW } from './rdo-array-inw';
+import { RdoMapNW } from './rdo-map-inw';
+import { RdoSetNW } from './rdo-set-inw';
+import { RdoPrimitiveNW } from './rdo-primitive-inw';
 import { Logger } from '../infrastructure/logger';
 import { RdoCollectionNodeWrapperFactory } from './rdo-collection-node-wrapper-factory';
 
@@ -33,11 +33,11 @@ export class RdoNodeWrapperFactory {
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        return new RdoPrimitiveINW({ value, wrappedSourceNode, typeInfo });
+        return new RdoPrimitiveNW({ value, wrappedSourceNode, typeInfo });
       }
       case '[object Object]': {
         if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-        return new RdoObjectINW({ value, key, parent, wrappedSourceNode, syncChildElement, globalNodeOptions: options?.globalNodeOptions });
+        return new RdoObjectNW({ value, key, parent, wrappedSourceNode, syncChildElement, globalNodeOptions: options?.globalNodeOptions });
       }
       case '[object Array]':
       case '[object Map]':

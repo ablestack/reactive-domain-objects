@@ -21,13 +21,13 @@ import {
 } from '../types';
 import { Logger } from '../infrastructure/logger';
 
-const logger = Logger.make('RdoObjectINW');
+const logger = Logger.make('RdoObjectNW');
 
-export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
+export class RdoObjectNW<S, D> implements IRdoInternalNodeWrapper<D> {
   private _value: object;
   private _key: string | undefined;
   private _parent: IRdoNodeWrapper | undefined;
-  private _makeCollectionKey?: IMakeCollectionKey<any>;
+  private _makeItemKey?: IMakeCollectionKey<any>;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
   private _equalityComparer: IEqualityComparer;
@@ -55,7 +55,7 @@ export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
     this._value = value;
     this._key = key;
     this._parent = parent;
-    this._makeCollectionKey = makeKey;
+    this._makeItemKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
     this._globalNodeOptions = globalNodeOptions;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
@@ -143,8 +143,8 @@ export class RdoObjectINW<S, D> implements IRdoInternalNodeWrapper<D> {
   }
 
   public updateItem(value: any) {
-    if (this._makeCollectionKey) {
-      const key = this._makeCollectionKey(value);
+    if (this._makeItemKey) {
+      const key = this._makeItemKey(value);
       if (key in this._value) {
         this._value[key] = value;
         return true;

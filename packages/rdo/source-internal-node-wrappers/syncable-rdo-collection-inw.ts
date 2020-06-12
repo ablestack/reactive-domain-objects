@@ -1,6 +1,6 @@
 import { IMakeRdoCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection } from '..';
 
-export class SyncableRDOCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
+export class SyncableRDOCollectionNW<D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
 
   constructor({ node }: { node: ISyncableCollection<D> }) {

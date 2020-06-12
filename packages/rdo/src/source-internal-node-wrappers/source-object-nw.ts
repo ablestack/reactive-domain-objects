@@ -1,7 +1,7 @@
 import { ISourceInternalNodeWrapper } from '..';
 import { IMakeCollectionKey, SourceNodeTypeInfo } from '../types';
 
-export class SourceObjectINW implements ISourceInternalNodeWrapper<Record<string, any>> {
+export class SourceObjectNW implements ISourceInternalNodeWrapper<Record<string, any>> {
   private _object: Record<string, any>;
   private _typeInfo: SourceNodeTypeInfo;
   private _key: string | undefined;

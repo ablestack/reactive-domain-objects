@@ -1,6 +1,6 @@
 import { SourceNodeTypeInfo, ISourceNodeWrapper } from '../types';
 
-export class SourcePrimitiveINW<S> implements ISourceNodeWrapper<S> {
+export class SourcePrimitiveNW<S> implements ISourceNodeWrapper<S> {
   private _primitive: S | null | undefined;
   private _key: string | undefined;
   private _typeInfo: SourceNodeTypeInfo;

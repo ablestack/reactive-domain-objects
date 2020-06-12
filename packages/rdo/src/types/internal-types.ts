@@ -56,7 +56,7 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
 }
 
 export interface IRdoNodeWrapper<S, D> {
-  readonly value: D;
+  readonly value: Iterable<D> | Iterable<[string, D]>;
   readonly key: string | undefined;
   readonly parent: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
@@ -80,7 +80,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 }
 
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D> {
-  makeItem: IMakeRdo<S, D>;
+  makeItem: IMakeRdo<S, D> | undefined;
   makeItemKey: IMakeCollectionKey<D> | undefined;
   insertItem(value: D): void;
   deleteItem(key: string): boolean;

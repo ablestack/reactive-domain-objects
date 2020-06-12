@@ -110,7 +110,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
       const key = this.makeRdoCollectionKeyFromRdoElement(value);
       if (!this._map$.has(key)) {
         this._map$.set(key, value);
-        CollectionUtils.Array.updateItem<D>({ collection: this._array$!, makeCollectionKey: this.makeRdoCollectionKeyFromRdoElement, value });
+        CollectionUtils.Array.updateItem<D>({ collection: this._array$!, makeItemKey: this.makeRdoCollectionKeyFromRdoElement, value });
         return true;
       } else return false;
     } else {

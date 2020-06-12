@@ -1,6 +1,6 @@
 import { CollectionUtils, IMakeCollectionKey, ISourceInternalNodeWrapper, SourceNodeTypeInfo, ISourceCollectionNodeWrapper } from '..';
 
-export class SourceArrayINW<S extends Array<S>> implements ISourceCollectionNodeWrapper<S> {
+export class SourceArrayNW<S extends Array<S>> implements ISourceCollectionNodeWrapper<S> {
   private _array: S;
   private _typeInfo: SourceNodeTypeInfo;
   private _key: string | undefined;
@@ -64,17 +64,17 @@ export class SourceArrayINW<S extends Array<S>> implements ISourceCollectionNode
   //------------------------------
 
   public itemKeys() {
-    if (this._makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeCollectionKey: this._makeItemKey });
+    if (this._makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeItemKey: this._makeItemKey });
     else return [];
   }
 
   public getItem(key: string) {
-    if (this._makeItemKey) return CollectionUtils.Array.getItem({ collection: this._array, makeCollectionKey: this._makeItemKey!, key });
+    if (this._makeItemKey) return CollectionUtils.Array.getItem({ collection: this._array, makeItemKey: this._makeItemKey!, key });
     else return undefined;
   }
 
   public updateItem(value: any) {
-    if (this._makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeCollectionKey: this._makeItemKey!, value });
+    if (this._makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeItemKey: this._makeItemKey!, value });
     else throw new Error('make key from RDO element must be available for Array update operations');
   }
 

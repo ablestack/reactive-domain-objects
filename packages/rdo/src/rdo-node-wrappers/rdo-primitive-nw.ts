@@ -1,9 +1,9 @@
 import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isIRdoInternalNodeWrapper } from '../types';
 import { Logger } from '../infrastructure/logger';
 
-const logger = Logger.make('RdoPrimitiveINW');
+const logger = Logger.make('RdoPrimitiveNW');
 
-export class RdoPrimitiveINW implements IRdoNodeWrapper {
+export class RdoPrimitiveNW implements IRdoNodeWrapper {
   private _value: object;
   private _key: string | undefined;
   private _parent: IRdoNodeWrapper | undefined;
