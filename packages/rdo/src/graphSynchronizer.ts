@@ -26,7 +26,6 @@ import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-fact
 import { SourceNodeWrapperFactory } from './source-internal-node-wrappers/source-node-wrapper-factory';
 
 const logger = Logger.make('GraphSynchronizer');
-const NON_MAP_COLLECTION_SIZE_WARNING_THREASHOLD = 100;
 
 /**
  *

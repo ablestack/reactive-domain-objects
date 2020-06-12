@@ -83,3 +83,5 @@ export interface IRdoCollectionNodeWrapper<D> extends IRdoInternalNodeWrapper<D>
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any> {
   return o && o.size && o.insertItem && o.deleteItem && isIRdoInternalNodeWrapper(o);
 }
+
+export type ISyncChildElement<S, D> = ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: D }) => boolean;

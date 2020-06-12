@@ -11,32 +11,39 @@ import {
   IsICustomSync,
   IsIAfterSyncUpdate,
   IsIAfterSyncIfNeeded,
+  IEqualityComparer,
+  ISourceInternalNodeWrapper,
+  ISyncChildElement,
 } from '../types';
 import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('RdoObjectINW');
 
-export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
+export class RdoObjectINW<D> implements IRdoInternalNodeWrapper<D> {
   private _object: object;
   private _makeKey?: IMakeCollectionKey<any>;
   private _wrappedSourceNode: ISourceNodeWrapper;
   private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+  private _equalityComparer: IEqualityComparer;
 
   constructor({
     node,
     wrappedSourceNode,
     makeKey,
     globalNodeOptions,
+    defaultEqualityComparer,
   }: {
     node: Record<string, any>;
     wrappedSourceNode: ISourceNodeWrapper;
     makeKey: IMakeCollectionKey<any>;
     globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+    defaultEqualityComparer: IEqualityComparer;
   }) {
     this._object = node;
     this._makeKey = makeKey;
     this._wrappedSourceNode = wrappedSourceNode;
     this._globalNodeOptions = globalNodeOptions;
+    this._equalityComparer = IsICustomEqualityRDO(node) ? node.isStateEqual : defaultEqualityComparer;
   }
 
   //------------------------------
@@ -73,14 +80,14 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
-  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+  public smartSync<S>({ wrappedSourceNode, lastSourceObject, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
     let changed = false;
     const sourceNodePath = this._wrappedSourceNode.node;
     const rdo = wrappedSourceNode.node;
     const sourceObject = wrappedSourceNode.node;
 
     // Check if previous source state and new source state are equal
-    const isAlreadyInSync = IsICustomEqualityRDO(rdo) ? rdo.isStateEqual(sourceObject, lastSourceObject) : this._defaultEqualityComparer(sourceObject, lastSourceObject);
+    const isAlreadyInSync = this._equalityComparer(sourceObject, lastSourceObject);
 
     // Call lifecycle methods if found
     if (IsIBeforeSyncIfNeeded(rdo)) rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
@@ -109,6 +116,34 @@ export class RdoObjectINW implements IRdoInternalNodeWrapper<any> {
 
     // Call lifecycle methods if found
     if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
+
+    return changed;
+  }
+
+  /**
+   *
+   */
+  private trySynchronizeObject({ sourceNodePath, wrappedSourceNode, wrappedRdoNode }: { sourceNodePath; wrappedSourceNode: ISourceInternalNodeWrapper<any>; wrappedRdoNode: IRdoInternalNodeWrapper<any> }): boolean {
+    let changed = false;
+
+    // Loop properties
+    for (const sourceFieldname of wrappedSourceNode.keys()) {
+      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname);
+      const rdoFieldname = this.getRdoFieldname({ sourceNodePath, sourceFieldname, sourceFieldVal, parentObject: rdo });
+
+      // Check to see if key exists
+      if (!rdoFieldname) {
+        logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
+        continue;
+      }
+
+      changed = this.stepIntoChildNodeAndSync({
+        sourceNodeKey: sourceFieldname,
+        sourceNodeVal: sourceObject[sourceFieldname],
+        targetNodeKey: rdoFieldname,
+        targetNodeVal: rdo[rdoFieldname],
+      });
+    }
 
     return changed;
   }

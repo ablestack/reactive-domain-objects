@@ -1,6 +1,9 @@
 import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
-import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper } from '../types';
+import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildElement } from '../types';
 import { SyncUtils } from '../utilities';
+import { Logger } from '../infrastructure/logger';
+
+const logger = Logger.make('RdoSyncableCollectionINW');
 
 export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D> {
   private _isyncableCollection: ISyncableCollection<D>;
@@ -38,13 +41,13 @@ export class RdoSyncableCollectionINW<D> implements IRdoCollectionNodeWrapper<D>
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync({ wrappedSourceNode, lastSourceObject }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any }): boolean {
+  public smartSync<S>({ wrappedSourceNode, lastSourceObject, syncChildElement }: { wrappedSourceNode: ISourceNodeWrapper; lastSourceObject: any; syncChildElement: ISyncChildElement<S, D> }): boolean {
     if (!isISourceCollectionNodeWrapper(wrappedSourceNode)) throw new Error('RdoSyncableCollectionINW can only sync with collection source types');
 
     if (wrappedSourceNode.size() === 0 && this.size() > 0) {
       return this.clearItems();
     } else {
-      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: todo });
+      return SyncUtils.synchronizeCollection({ sourceCollection: wrappedSourceNode.values(), targetRdoCollectionNodeWrapper: this, tryStepIntoElementAndSync: syncChildElement });
     }
   }
 

@@ -5,7 +5,9 @@ import { RdoObjectINW } from './rdo-object-inw';
 import { RdoArrayINW } from './rdo-array-inw';
 import { RdoMapINW } from './rdo-map-inw';
 import { RdoSetINW } from './rdo-set-inw';
-import { RdoPrimitiveINW } from './rdo-primitive-inw';
+import { Logger } from '../infrastructure/logger';
+
+const logger = Logger.make('RdoCollectionNodeWrapperFactory');
 
 export class RdoCollectionNodeWrapperFactory {
   public static make<D>({ node, wrappedSourceNode, options }: { node: any; wrappedSourceNode: ISourceNodeWrapper; options?: IGraphSyncOptions }): IRdoNodeWrapper {
