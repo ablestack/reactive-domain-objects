@@ -1,13 +1,9 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKey } from '../..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKey, INodeSyncOptions, IGlobalNameOptions } from '../..';
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
+import { SourceBaseNW } from '../base/source-base-nw';
 
-export class SourceArrayNW<S> implements ISourceCollectionNodeWrapper<S> {
-  private _array: Array<S>;
-  private _typeInfo: SourceNodeTypeInfo;
-  private _key: string | undefined;
-  private _sourceNodePath: string;
-  private _lastSourceNode: any;
-  private _makeItemKey?: IMakeCollectionKey<any>;
+export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollectionNodeWrapper<S> {
+  private _value: Array<S>;
 
   constructor({
     value,
@@ -15,48 +11,30 @@ export class SourceArrayNW<S> implements ISourceCollectionNodeWrapper<S> {
     key,
     typeInfo,
     lastSourceNode,
-    makeItemKey,
+    matchingNodeOptions,
+    globalNodeOptions,
   }: {
     value: Array<S>;
     sourceNodePath: string;
     key: string | undefined;
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
-    makeItemKey: IMakeCollectionKey<S>;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    globalNodeOptions: IGlobalNameOptions | undefined;
   }) {
-    this._array = value;
-    this._typeInfo = typeInfo;
-    this._key = key;
-    this._sourceNodePath = sourceNodePath;
-    this._lastSourceNode = lastSourceNode;
-    this._makeItemKey = makeItemKey;
+    super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
+    this._value = value;
   }
 
   //------------------------------
   // ISourceNodeWrapper
   //------------------------------
 
-  public get typeInfo(): SourceNodeTypeInfo {
-    return this._typeInfo;
-  }
-
   public get value() {
-    return this._array;
+    return this._value;
   }
 
-  public get key() {
-    return this._key;
-  }
-
-  public get sourceNodePath(): string {
-    return this._sourceNodePath;
-  }
-
-  public get lastSourceNode() {
-    return this._lastSourceNode;
-  }
-
-  childElementCount(): number {
+  public childElementCount(): number {
     return 0;
   }
 
@@ -65,22 +43,22 @@ export class SourceArrayNW<S> implements ISourceCollectionNodeWrapper<S> {
   //------------------------------
 
   public itemKeys() {
-    if (this._makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._array, makeItemKey: this._makeItemKey });
+    if (this.makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._value, makeItemKey: this.makeItemKey });
     else return [];
   }
 
   public getItem(key: string) {
-    if (this._makeItemKey) return CollectionUtils.Array.getItem({ collection: this._array, makeItemKey: this._makeItemKey!, key });
+    if (this.makeItemKey) return CollectionUtils.Array.getItem({ collection: this._value, makeItemKey: this.makeItemKey!, key });
     else return undefined;
   }
 
   public updateItem(value: any) {
-    if (this._makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._array, makeItemKey: this._makeItemKey!, value });
+    if (this.makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._value, makeItemKey: this.makeItemKey!, value });
     else throw new Error('make key from RDO element must be available for Array update operations');
   }
 
   public getNode(): any {
-    return this._array;
+    return this._value;
   }
 
   //------------------------------
@@ -88,10 +66,10 @@ export class SourceArrayNW<S> implements ISourceCollectionNodeWrapper<S> {
   //------------------------------
 
   public elements(): Iterable<S> {
-    return this._array;
+    return this._value;
   }
 
   public get makeItemKey(): IMakeCollectionKey<S> | undefined {
-    return this._makeItemKey;
+    return this.makeItemKey;
   }
 }

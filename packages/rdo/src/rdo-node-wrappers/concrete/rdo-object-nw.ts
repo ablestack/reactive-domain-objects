@@ -1,7 +1,7 @@
 import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from '..';
 import {
-  IGlobalPropertyNameTransformation,
+  IGlobalNameOptions,
   IEqualityComparer,
   RdoNodeTypeInfo,
   IRdoNodeWrapper,
@@ -15,38 +15,45 @@ import {
   IsIAfterSyncIfNeeded,
   isISourceInternalNodeWrapper,
   IsIHasCustomRdoFieldNames,
+  IWrapRdoNode,
+  IContinueSmartSync,
 } from '../..';
+import { isIRdoInternalNodeWrapper, INodeSyncOptions } from '../../types';
 
 const logger = Logger.make('RdoObjectNW');
 
-export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
-  private _value: object;
-  private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
+  private _value: D;
   private _equalityComparer: IEqualityComparer;
+  private _wrapRdoNode: IWrapRdoNode;
 
   constructor({
     value,
     typeInfo,
     key,
-    parent,
+    wrappedParentRdoNode,
     wrappedSourceNode,
-    globalNodeOptions,
     defaultEqualityComparer,
     syncChildNode,
+    wrapRdoNode,
+    globalNodeOptions,
+    matchingNodeOptions,
   }: {
-    value: Record<string, any>;
+    value: D;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
-    parent: IRdoNodeWrapper<S, D> | undefined;
+    wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
-    globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode<S, D>;
+    wrapRdoNode: IWrapRdoNode;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    globalNodeOptions: IGlobalNameOptions | undefined;
   }) {
-    super({ typeInfo, key, parent, wrappedSourceNode, syncChildNode });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
     this._value = value;
-    this._globalNodeOptions = globalNodeOptions;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
+    this._wrapRdoNode = wrapRdoNode;
   }
 
   //------------------------------
@@ -115,6 +122,7 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
 
   public updateItem(key: string, value: any) {
     if (key in this._value) {
+      //@ts-ignore
       this._value[key] = value;
       return true;
     } else return false;
@@ -159,7 +167,7 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     //
     if (!rdoFieldname && IsIHasCustomRdoFieldNames(this._value)) {
       rdoFieldname = this._value.tryGetRdoFieldname({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
-      // If fieldName not in parent, set to null
+      // If fieldName not in wrappedParentRdoNode, set to null
       if (rdoFieldname && !(rdoFieldname in this._value)) {
         rdoFieldname = undefined;
       } else {
@@ -170,9 +178,9 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     //
     // Try _globalNodeOptions
     //
-    if (!rdoFieldname && this._globalNodeOptions?.tryGetRdoFieldname) {
-      rdoFieldname = this._globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
-      // If fieldName not in parent, set to null
+    if (!rdoFieldname && this.globalNodeOptions?.tryGetRdoFieldname) {
+      rdoFieldname = this.globalNodeOptions?.tryGetRdoFieldname({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
+      // If fieldName not in wrappedParentRdoNode, set to null
       if (rdoFieldname && !(rdoFieldname in this._value)) {
         rdoFieldname = undefined;
       } else {
@@ -194,11 +202,11 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     //
     // Try commonRdoFieldnamePostfix
     //
-    if (!rdoFieldname && this._globalNodeOptions?.commonRdoFieldnamePostfix) {
-      const domainPropKeyWithPostfix = `${sourceFieldname}${this._globalNodeOptions.commonRdoFieldnamePostfix}`;
+    if (!rdoFieldname && this.globalNodeOptions?.commonRdoFieldnamePostfix) {
+      const domainPropKeyWithPostfix = `${sourceFieldname}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
       rdoFieldname = domainPropKeyWithPostfix;
 
-      // If fieldName not in parent, set to null
+      // If fieldName not in wrappedParentRdoNode, set to null
       if (rdoFieldname && !(rdoFieldname in this._value)) {
         rdoFieldname = undefined;
       } else {
@@ -210,22 +218,16 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
   }
 
   /** */
-  private makeContinueSmartSyncFunction({
-    originalSourceNodePath,
-  }: {
-    originalSourceNodePath: string;
-  }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceParentObject, sourceNodeItemKey, rdoParentObject, rdoNodeItemKey }: { sourceNodeSubPath: string; sourceParentObject: S; sourceNodeItemKey:string, rdoParentObject: D; rdoNodeItemKey:string }) => boolean {
-    
+  private makeContinueSmartSyncFunction = ({ originalSourceNodePath }: { originalSourceNodePath: string }): IContinueSmartSync => {
     // Build method
-    return ({ sourceNodeSubPath: sourceNodeSubpath, sourceParentObject, sourceNodeItemKey, rdoParentObject, rdoNodeItemKey }) => {
-      if (!sourceNodeSubpath) throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
+    return ({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoItemValue }) => {
+      if (!sourceNodeSubPath) throw new Error('continueSync sourceNodeSubPath must not be null or empty. continueSync can only be called on child objects');
 
-      const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
-      
-      
+      const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubPath}`;
+      const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoItemValue, rdoNodeItemKey: rdoNodeItemKey });
+      if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
-      
-      return this._syncChildNode({ parentRdoNode: , rdoNodeItemKey, sourceNodeItemKey });
+      return this._syncChildNode({ parentRdoNode: wrappedRdoNode, rdoNodeItemKey, sourceNodeItemKey });
     };
-  }
+  };
 }

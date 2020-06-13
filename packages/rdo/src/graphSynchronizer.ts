@@ -1,7 +1,7 @@
 import {
   comparers,
   IEqualityComparer,
-  IGlobalPropertyNameTransformation,
+  IGlobalNameOptions,
   IGraphSynchronizer,
   IGraphSyncOptions,
   INodeSyncOptions,
@@ -28,7 +28,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
-  private _globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+  private _globalNodeOptions: IGlobalNameOptions | undefined;
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();
@@ -125,7 +125,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
 
-    const wrappedRdoNode = this.wrapRdoNode({ currentPath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
     wrappedRdoNode.smartSync();
 
     logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
@@ -148,11 +148,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private wrapRdoNode: IWrapRdoNode = ({ currentPath, rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
-    const matchingOptions = this._targetedOptionNodePathsMap.get(currentPath);
+  private wrapRdoNode: IWrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
+    const matchingOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
 
-    const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath: this.getSourceNodePath(), value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
-    const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, parent: parentRdoNode, wrappedSourceNode, matchingNodeOptions: matchingOptions });
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
+    const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions: matchingOptions });
 
     return wrappedRdoNode;
   };
@@ -183,7 +183,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ currentPath: this.getSourceNodePath(), rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {

@@ -12,11 +12,11 @@ export interface IGraphSynchronizer {
 
 export interface IGraphSyncOptions {
   customEqualityComparer?: IEqualityComparer; //customEqualityComparer is apolloComparer
-  globalNodeOptions?: IGlobalPropertyNameTransformation;
+  globalNodeOptions?: IGlobalNameOptions;
   targetedNodeOptions?: Array<INodeSyncOptionsStrict<any, any>>;
 }
 
-export interface IGlobalPropertyNameTransformation {
+export interface IGlobalNameOptions {
   commonRdoFieldnamePostfix?: string;
   tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string;
 }

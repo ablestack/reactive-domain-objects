@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IMakeCollectionKey, IMakeRdo } from '.';
+import { IMakeCollectionKey, IMakeRdo, INodeSyncOptions, IGlobalNameOptions } from '.';
+import { ISyncableRDOCollection } from './rdo-collection-types';
 
 export type JavaScriptBuiltInType =
   | '[object Array]'
@@ -29,6 +30,8 @@ export interface ISourceNodeWrapper<S> {
   readonly key: string | undefined;
   readonly sourceNodePath: string;
   readonly lastSourceNode: S | undefined;
+  readonly matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+  readonly globalNodeOptions: IGlobalNameOptions | undefined;
   childElementCount(): number;
 }
 
@@ -55,11 +58,13 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
 }
 
 export interface IRdoNodeWrapper<S, D> {
-  readonly value: D | Iterable<D> | Iterable<[string, D]> | null | undefined;
+  readonly value: D | Array<D> | Map<S, D> | Set<D> | ISyncableRDOCollection<S, D> | null | undefined;
   readonly key: string | undefined;
-  readonly parent: IRdoNodeWrapper<any, any> | undefined;
+  readonly wrappedParentRdoNode: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   readonly wrappedSourceNode: ISourceNodeWrapper<S>;
+  readonly matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+  readonly globalNodeOptions: IGlobalNameOptions | undefined;
   readonly ignore: boolean;
   childElementCount(): number;
   smartSync(): boolean;
@@ -92,15 +97,16 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;
+
 export type IWrapRdoNode = ({
-  currentPath,
+  sourceNodePath,
   rdoNode,
   sourceNode,
   wrappedParentRdoNode: parentRdoNode,
   rdoNodeItemKey,
   sourceNodeItemKey,
 }: {
-  currentPath: string;
+  sourceNodePath: string;
   rdoNode: object;
   sourceNode: object;
   wrappedParentRdoNode?: IRdoNodeWrapper<unknown, unknown> | undefined;

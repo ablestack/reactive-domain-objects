@@ -1,42 +1,36 @@
-import { ISourceNodeWrapper, SourceNodeTypeInfo } from '../..';
+import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { SourceBaseNW } from '../base/source-base-nw';
 
-export class SourcePrimitiveNW<S> implements ISourceNodeWrapper<S> {
-  private _primitive: S | null | undefined;
-  private _key: string | undefined;
-  private _typeInfo: SourceNodeTypeInfo;
-  private _sourceNodePath: string;
-  private _lastSourceNode: S | undefined;
+export class SourcePrimitiveNW<S> extends SourceBaseNW<S> implements ISourceNodeWrapper<S> {
+  private _value: S | null | undefined;
 
-  constructor({ value, sourceNodePath, key, typeInfo, lastSourceNode }: { value: S | null | undefined; sourceNodePath: string; key: string | undefined; typeInfo: SourceNodeTypeInfo; lastSourceNode: any }) {
-    this._primitive = value;
-    this._typeInfo = typeInfo;
-    this._key = key;
-    this._sourceNodePath = sourceNodePath;
-    this._lastSourceNode = lastSourceNode;
+  constructor({
+    value,
+    sourceNodePath,
+    key,
+    typeInfo,
+    lastSourceNode,
+    matchingNodeOptions,
+    globalNodeOptions,
+  }: {
+    value: S | null | undefined;
+    sourceNodePath: string;
+    key: string | undefined;
+    typeInfo: SourceNodeTypeInfo;
+    lastSourceNode: any;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    globalNodeOptions: IGlobalNameOptions | undefined;
+  }) {
+    super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
+    this._value = value;
   }
 
   //------------------------------
   // ISourceNodeWrapper
   //------------------------------
 
-  public get typeInfo(): SourceNodeTypeInfo {
-    return this._typeInfo;
-  }
-
   public get value() {
-    return this._primitive;
-  }
-
-  public get key() {
-    return this._key;
-  }
-
-  public get sourceNodePath(): string {
-    return this._sourceNodePath;
-  }
-
-  public get lastSourceNode() {
-    return this._lastSourceNode;
+    return this._value;
   }
 
   childElementCount(): number {

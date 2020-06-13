@@ -1,6 +1,6 @@
-import { Logger } from '../../infrastructure/logger';
 import { RdoCollectionNWBase } from '..';
-import { RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, IMakeCollectionKey, IMakeRdo, ISyncChildNode, isISourceCollectionNodeWrapper } from '../..';
+import { IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { Logger } from '../../infrastructure/logger';
 import { SyncUtils } from '../utils/sync.utils';
 
 const logger = Logger.make('RdoMapNW');
@@ -12,22 +12,22 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     value,
     typeInfo,
     key,
-    parent,
+    wrappedParentRdoNode,
     wrappedSourceNode,
-    makeItemKey,
-    makeItem,
     syncChildNode,
+    matchingNodeOptions,
+    globalNodeOptions,
   }: {
     value: Map<string, D>;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
-    parent: IRdoNodeWrapper<S, D> | undefined;
+    wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
-    makeItemKey: IMakeCollectionKey<D>;
-    makeItem: IMakeRdo<S, D> | undefined;
     syncChildNode: ISyncChildNode<S, D>;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    globalNodeOptions: IGlobalNameOptions | undefined;
   }) {
-    super({ typeInfo, key, parent, wrappedSourceNode, makeItemKey, makeItem, syncChildNode });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
     this._value = value;
   }
 
