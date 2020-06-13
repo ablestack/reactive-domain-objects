@@ -1,21 +1,21 @@
-import { Logger } from '../infrastructure/logger';
+import { Logger } from '../../infrastructure/logger';
+import { RdoInternalNWBase } from '..';
 import {
-  IEqualityComparer,
   IGlobalPropertyNameTransformation,
+  IEqualityComparer,
+  RdoNodeTypeInfo,
   IRdoNodeWrapper,
-  IsIAfterSyncIfNeeded,
-  IsIAfterSyncUpdate,
+  ISourceNodeWrapper,
+  ISyncChildNode,
+  IsICustomEqualityRDO,
   IsIBeforeSyncIfNeeded,
   IsIBeforeSyncUpdate,
-  IsICustomEqualityRDO,
   IsICustomSync,
-  IsIHasCustomRdoFieldNames,
+  IsIAfterSyncUpdate,
+  IsIAfterSyncIfNeeded,
   isISourceInternalNodeWrapper,
-  ISourceNodeWrapper,
-  ISyncChildElement,
-  RdoNodeTypeInfo,
-} from '../types';
-import { RdoInternalNWBase } from './rdo-internal-nw-base';
+  IsIHasCustomRdoFieldNames,
+} from '../..';
 
 const logger = Logger.make('RdoObjectNW');
 
@@ -32,7 +32,7 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     wrappedSourceNode,
     globalNodeOptions,
     defaultEqualityComparer,
-    syncChildElement,
+    syncChildNode,
   }: {
     value: Record<string, any>;
     typeInfo: RdoNodeTypeInfo;
@@ -41,9 +41,9 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
     defaultEqualityComparer: IEqualityComparer;
-    syncChildElement: ISyncChildElement<S, D>;
+    syncChildNode: ISyncChildNode<S, D>;
   }) {
-    super({ typeInfo, key, parent, wrappedSourceNode, syncChildElement });
+    super({ typeInfo, key, parent, wrappedSourceNode, syncChildNode });
     this._value = value;
     this._globalNodeOptions = globalNodeOptions;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
@@ -141,12 +141,7 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
         continue;
       }
 
-      changed = this._syncChildElement({
-        sourceElementKey: sourceFieldname,
-        sourceElementVal: sourceObject[sourceFieldname],
-        targetElementKey: rdoFieldname,
-        targetElementVal: rdo[rdoFieldname],
-      });
+      changed = this._syncChildNode({ parentRdoNode: this, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
     }
 
     return changed;
@@ -214,16 +209,23 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     return rdoFieldname;
   }
 
+  /** */
   private makeContinueSmartSyncFunction({
     originalSourceNodePath,
   }: {
     originalSourceNodePath: string;
   }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceObject, rdo }: { sourceNodeSubPath: string; sourceObject: S; rdo: D }) => boolean {
+    
+    // Build method
     return ({ sourceNodeSubPath: sourceNodeSubpath, sourceObject, rdo }) => {
       if (!sourceNodeSubpath) throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
 
       const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
-      return this._syncChildElement({ sourceNodePath, sourceObject, rdo });
+      
+      
+      //{ sourceNodePath, sourceObject, rdo }
+      
+      return this._syncChildNode({ parentRdoNode: , rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
     };
   }
 }

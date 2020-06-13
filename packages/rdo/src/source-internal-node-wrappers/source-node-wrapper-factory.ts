@@ -1,22 +1,21 @@
-import { IMakeCollectionKey, ISourceNodeWrapper } from '../types';
-import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { SourceArrayNW } from './source-array-inw';
-import { SourceObjectNW } from './source-object-inw';
-import { SourcePrimitiveNW } from './source-primitive-inw';
+import { ISourceNodeWrapper } from '..';
+import { NodeTypeUtils } from '../rdo-node-wrappers/utils/node-type.utils';
+import { SourcePrimitiveNW } from './concrete/source-primitive-nw';
+import { SourceObjectNW, SourceArrayNW } from '.';
 
 export class SourceNodeWrapperFactory {
-  public static make<D>({ sourceNodePath, node, lastSourceNode }: { sourceNodePath: string; node: any; lastSourceNode: any }): ISourceNodeWrapper {
-    const typeInfo = NodeTypeUtils.getSourceNodeType(node);
+  public static make<S>({ sourceNodePath, value, key, lastSourceNode }: { sourceNodePath: string; value: any; key: string | undefined; lastSourceNode: any }): ISourceNodeWrapper<S> {
+    const typeInfo = NodeTypeUtils.getSourceNodeType(value);
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return new SourcePrimitiveNW({ value: node, sourceNodePath, typeInfo, lastSourceNode });
+        return new SourcePrimitiveNW<S>({ value, key, sourceNodePath, typeInfo, lastSourceNode });
       }
       case 'Object': {
-        return new SourceObjectNW({ value: node, sourceNodePath, typeInfo, lastSourceNode, makeKey });
+        return new SourceObjectNW<S>({ value, sourceNodePath, key, typeInfo, lastSourceNode, makeKey });
       }
       case 'Collection': {
-        return new SourceArrayNW({ node, sourceNodePath, typeInfo, lastSourceNode, makeItemKey: makeKey });
+        return new SourceArrayNW<S>({ value, sourceNodePath, key, typeInfo, lastSourceNode, makeItemKey: makeKey });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

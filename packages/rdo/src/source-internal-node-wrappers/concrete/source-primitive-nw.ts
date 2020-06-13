@@ -1,4 +1,4 @@
-import { SourceNodeTypeInfo, ISourceNodeWrapper } from '../types';
+import { ISourceNodeWrapper, SourceNodeTypeInfo } from '../..';
 
 export class SourcePrimitiveNW<S> implements ISourceNodeWrapper<S> {
   private _primitive: S | null | undefined;

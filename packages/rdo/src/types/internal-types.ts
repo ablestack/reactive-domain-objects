@@ -39,7 +39,6 @@ export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any> {
 export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
   itemKeys(): Iterable<string>;
   getItem(key: string): S | null | undefined;
-  updateItem(value: S): boolean;
 }
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any> {
@@ -91,4 +90,4 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
   return o && o.makeItemKey && o.insertItem && o.deleteItem && o.clearItems && isIRdoInternalNodeWrapper(o);
 }
 
-export type ISyncChildElement<S, D> = ({ sourceElementKey, sourceElementVal, targetElementKey }: { sourceElementKey: string; sourceElementVal: S; targetElementKey: string; targetElementVal: D }) => boolean;
+export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;

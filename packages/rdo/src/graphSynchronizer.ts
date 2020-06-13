@@ -1,8 +1,18 @@
-import { comparers, IEqualityComparer, IGlobalPropertyNameTransformation, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions } from '.';
+import {
+  comparers,
+  IEqualityComparer,
+  IGlobalPropertyNameTransformation,
+  IGraphSynchronizer,
+  IGraphSyncOptions,
+  INodeSyncOptions,
+  InternalNodeKind,
+  IRdoInternalNodeWrapper,
+  IRdoNodeWrapper,
+  isISourceInternalNodeWrapper,
+  SourceNodeWrapperFactory,
+} from '.';
 import { Logger } from './infrastructure/logger';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
-import { SourceNodeWrapperFactory } from './source-internal-node-wrappers/source-node-wrapper-factory';
-import { InternalNodeKind, IRdoCollectionNodeWrapper, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper, isISourceInternalNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper } from './types';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -108,7 +118,10 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
-    this.trySynchronizeObject({ sourceNodePath: '', sourceObject: rootSourceNode, rdo: rootRdo });
+
+    const wrappedRdoNode = this.wrapRdoNode({ rdoNode: rootRdo, sourceNode: rootSourceNode });
+    wrappedRdoNode.smartSync();
+
     logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
   }
 
@@ -126,53 +139,67 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // PRIVATE METHODS
   // ------------------------------------------------------------------------------------------------------------------
 
-
-/**
+  /**
    *
    */
-  private stepIntoNodeAndSync({
-    parentRdoNode,
-    rdoNodeKey,
-    parentSourceNode,
-    sourceNodeKey,
+  private wrapRdoNode({
+    rdoNode,
+    sourceNode,
+    wrappedParentRdoNode: parentRdoNode,
+    rdoNodeItemKey,
   }: {
-    parentRdoNode: IRdoInternalNodeWrapper<any>;
-    rdoNodeKey: string;
-    parentSourceNode: ISourceInternalNodeWrapper<any>;
-    sourceNodeKey: string;
-  }): boolean {
-    logger.trace(`stepIntoChildNodeAndSync (${rdoNodeKey}) - enter`);
+    rdoNode: object;
+    sourceNode: object;
+    wrappedParentRdoNode?: IRdoNodeWrapper<unknown, unknown> | undefined;
+    rdoNodeItemKey?: string | undefined;
+  }) {
+    const matchingOptions = this.getMatchingOptionsForNode();
+    const wrappedSourceNode = SourceNodeWrapperFactory.make({ sourceNodePath: this.getSourceNodePath(), node: sourceNode, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
+    const wrappedRdoNode = RdoNodeWrapperFactory.make({
+      value: rdoNode,
+      key: rdoNodeItemKey,
+      parent: parentRdoNode,
+      wrappedSourceNode,
+      syncChildNode: this.syncChildNode,
+      globalNodeOptions: this._globalNodeOptions,
+      matchingNodeOptions: matchingOptions,
+    });
+    return wrappedRdoNode;
+  }
+
+  /**
+   *
+   */
+  private syncChildNode({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean {
+    logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
+    const parentSourceNode = parentRdoNode.wrappedSourceNode;
+
+    // Validate
+    if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
+    const rdoNode = parentRdoNode.getItem(rdoNodeItemKey);
+    if (!rdoNode === undefined) {
+      logger.trace(`Could not find child rdoNode with key ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+      return false;
+    }
+
+    const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
+    if (!sourceNode === undefined) {
+      logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+      return false;
+    }
 
     // Node traversal tracking - step-in
-    this.pushSourceNodeInstancePathOntoStack(sourceNodeKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
+    this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
-    // Test to see if node should be ignored
-    const matchingOptions = this.getMatchingOptionsForNode();
-    
-    if (matchingOptions?.ignore) {
-      logger.trace(`stepIntoChildNodeAndSync (${rdoNodeKey}) - ignore node`);
+    // Wrap Node
+    const wrappedRdoNode = this.wrapRdoNode({ rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey });
+
+    // Test to see if node should be ignored, if not, synchronize
+    if (wrappedRdoNode.ignore) {
+      logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
       return false;
     } else {
-
-
-
-      const rdoNode = parentRdoNode.getItem(rdoNodeKey);
-    if(!rdoNode === undefined){
-      //TODO LOG
-      return false;
-    }
-
-    const sourceNode = parentSourceNode.getItem(sourceNodeKey);
-    if(!sourceNode === undefined){
-      //TODO LOG
-      return false;
-    }
-
-    const wrappedSourceNode = SourceNodeWrapperFactory.make({ sourceNodePath:this.getSourceNodePath(), node: sourceNode, lastSourceNode:this.getLastSourceNodeInstancePathValue() });
-    const wrappedRdoNode = RdoNodeWrapperFactory.make({ wrappedSourceNode, value: rdoNode });
-
-      
       changed = wrappedRdoNode.smartSync();
     }
 
@@ -184,88 +211,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }
 
   /** */
-  private synchInternalNode({
-    parentRdoNode,
-    rdoNodeKey,
-    parentSourceNode,
-    sourceNodeKey,
-  }: {
-    parentRdoNode: IRdoInternalNodeWrapper<any>;
-    rdoNodeKey: string;
-    parentSourceNode: ISourceInternalNodeWrapper<any>;
-    sourceNodeKey: string;
-  }) {
-    let changed = false;
-    
-    
-    
-    switch (wrappedRdoNode.typeInfo.kind) {
-     
-      case 'Object': {
-        if (wrappedRdoNode.typeInfo.kind !== 'Object') {
-          throw Error(
-            `[${this.getSourceNodeInstancePath()}] Object source types can only be synchronized to Object destination types, and must not be null. Source type: '${wrappedSourceNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoNode.typeInfo.builtInType} `,
-          );
-        }
-        if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) {
-          throw Error(            `[${this.getSourceNodeInstancePath()}] Rdo Node should be of type RdoInternalNodeWrapper.`         );
-        }
-        if (!isISourceInternalNodeWrapper(wrappedSourceNode)) {
-          throw Error(            `[${this.getSourceNodeInstancePath()}] Rdo Node should be of type RdoInternalNodeWrapper.`         );
-        }
-        
-        changed = this.trySynchronizeRdo({ sourceNode, rdoNode });
-        break;
-      }
-      case 'Array': {
-        changed = this.synchronizeTargetCollectionWithSourceArray({ rdoNodeTypeInfo, sourceNodeTypeInfo: sourceNodeTypeInfo, targetCollection: targetNodeVal, sourceCollection: sourceNodeVal });
-        break;
-      }
-      default: {
-        logger.trace(`Skipping item ${this.getSourceNodeInstancePath()}. Unable to reconcile synchronization for types - sourceNodeTypeInfo: ${sourceNodeTypeInfo}), rdoNodeTypeInfo: ${rdoNodeTypeInfo}`);
-        break;
-      }
-    }
-    return changed;
-  }
-
-  /**
-   *
-   */
-
-// TODO - move these into collection methods
-
-  private synchronizeTargetCollectionWithSourceArray({    wrappedRdoCollectionNode,    wrappedSourceCollectionNode  }: {    wrappedRdoCollectionNode: IRdoCollectionNodeWrapper<any>,    wrappedSourceCollectionNode: ISourceNodeWrapper  }): boolean {
-    if (wrappedRdoCollectionNode.typeInfo.builtInType !== '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${wrappedSourceCollectionNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoCollectionNode.typeInfo.builtInType} `);
-
-    const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection:wrappedRdoCollectionNode.value, targetCollection: wrappedRdoCollectionNode.value });
-
-    // VALIDATE
-    if (wrappedSourceCollectionNode.length > 0 && !makeRdoCollectionKey?.fromSourceElement) {
-      throw new Error(
-        `Could not find 'makeRdoCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
-      );
-    }
-    if (sourceCollection.length > 0 && !makeRdo) {
-      throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
-    }
-
-
-    // Execute
-    return wrappedRdoCollectionNode.smartSync({ lastSourceObject: wrappedSourceCollectionNode.value})
-  }
-
-  
-
-  /** */
   private getMatchingOptionsForNode(): INodeSyncOptions<any, any> | undefined {
     const currentPath = this.getSourceNodePath();
     return this._targetedOptionNodePathsMap.get(currentPath);
   }
-
-  
-
-
-  
-
- 
+}

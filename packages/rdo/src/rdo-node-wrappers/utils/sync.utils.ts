@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import { Logger } from '../infrastructure/logger';
-import { IRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildElement } from '../types';
+import { IRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildNode } from '../types';
 
 const logger = Logger.make('SyncUtils');
 
 /** */
-function synchronizeCollection<S, D>({ rdo, syncChildElement }: { rdo: IRdoCollectionNodeWrapper<S, D>; syncChildElement: ISyncChildElement<S, D> }) {
+function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollectionNodeWrapper<S, D>; syncChildNode: ISyncChildNode<S, D> }) {
   let changed = false;
   const sourceKeys = new Array<string>();
   const targetCollectionStartedEmpty = rdo.childElementCount() === 0;
@@ -40,7 +40,7 @@ function synchronizeCollection<S, D>({ rdo, syncChildElement }: { rdo: IRdoColle
       // Sync Item
       //
       logger.trace(`Syncing item ${key} in collection`, sourceItem);
-      changed = syncChildElement({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem! });
+      changed = syncChildNode({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem! });
       continue;
     }
   }

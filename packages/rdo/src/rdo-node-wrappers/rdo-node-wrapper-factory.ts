@@ -1,13 +1,7 @@
-import { IRdoInternalNodeWrapper, IMakeCollectionKey, IRdoNodeWrapper, ISourceInternalNodeWrapper, ISourceNodeWrapper, IGraphSyncOptions, ISyncChildElement } from '../types';
-import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { RdoSyncableCollectionNW } from './rdo-synchable-collection-inw';
-import { RdoObjectNW } from './rdo-object-inw';
-import { RdoArrayNW } from './rdo-array-inw';
-import { RdoMapNW } from './rdo-map-inw';
-import { RdoSetNW } from './rdo-set-inw';
-import { RdoPrimitiveNW } from './rdo-primitive-inw';
 import { Logger } from '../infrastructure/logger';
-import { RdoCollectionNodeWrapperFactory } from './rdo-collection-node-wrapper-factory';
+import { IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IGlobalPropertyNameTransformation, INodeSyncOptions } from '..';
+import { NodeTypeUtils } from './utils/node-type.utils';
+import { RdoPrimitiveNW, RdoObjectNW, RdoCollectionNodeWrapperFactory } from '.';
 
 const logger = Logger.make('RdoNodeWrapperFactory');
 export class RdoNodeWrapperFactory {
@@ -16,16 +10,18 @@ export class RdoNodeWrapperFactory {
     key,
     parent,
     wrappedSourceNode,
-    syncChildElement,
-    options,
+    syncChildNode,
+    globalNodeOptions,
+    matchingNodeOptions,
   }: {
-    value: any;
+    value: D | Iterable<D>;
     key: string | undefined;
-    parent: IRdoNodeWrapper | undefined;
-    wrappedSourceNode: ISourceNodeWrapper;
-    syncChildElement: ISyncChildElement<S, D>;
-    options?: IGraphSyncOptions;
-  }): IRdoNodeWrapper {
+    parent: IRdoNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S>;
+    syncChildNode: ISyncChildNode<S, D>;
+    globalNodeOptions: IGlobalPropertyNameTransformation | undefined;
+    matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
+  }): IRdoNodeWrapper<S, D> {
     const typeInfo = NodeTypeUtils.getRdoNodeType(value);
 
     switch (typeInfo.builtInType) {
@@ -33,16 +29,15 @@ export class RdoNodeWrapperFactory {
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        return new RdoPrimitiveNW({ value, wrappedSourceNode, typeInfo });
+        return new RdoPrimitiveNW<S, D>({ value, key, parent, wrappedSourceNode, typeInfo });
       }
       case '[object Object]': {
-        if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-        return new RdoObjectNW({ value, key, parent, wrappedSourceNode, syncChildElement, globalNodeOptions: options?.globalNodeOptions });
+        return new RdoObjectNW({ value, key, parent, wrappedSourceNode, syncChildNode, globalNodeOptions: options?.globalNodeOptions });
       }
       case '[object Array]':
       case '[object Map]':
       case '[object Set]': {
-        return RdoCollectionNodeWrapperFactory.make({ value, key, parent, wrappedSourceNode, syncChildElement, options });
+        return RdoCollectionNodeWrapperFactory.make({ value, key, parent, wrappedSourceNode, syncChildNode, options });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

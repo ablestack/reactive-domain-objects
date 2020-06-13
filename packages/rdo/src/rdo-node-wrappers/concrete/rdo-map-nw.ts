@@ -1,13 +1,12 @@
-import { IMakeCollectionKey, IRdoCollectionNodeWrapper, ISyncableCollection, RdoNodeTypeInfo, ISourceNodeWrapper } from '..';
-import { isIRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildElement, IRdoNodeWrapper, ISyncableRDOCollection, IMakeRdo } from '../types';
-import { SyncUtils } from '../utilities';
-import { Logger } from '../infrastructure/logger';
-import { RdoCollectionNWBase } from '.';
+import { Logger } from '../../infrastructure/logger';
+import { RdoCollectionNWBase } from '..';
+import { RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, IMakeCollectionKey, IMakeRdo, ISyncChildNode, isISourceCollectionNodeWrapper } from '../..';
+import { SyncUtils } from '../utils/sync.utils';
 
-const logger = Logger.make('RdoSyncableCollectionNW');
+const logger = Logger.make('RdoMapNW');
 
-export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
-  private _value: ISyncableRDOCollection<S, D>;
+export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
+  private _value: Map<string, D>;
 
   constructor({
     value,
@@ -17,18 +16,18 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     wrappedSourceNode,
     makeItemKey,
     makeItem,
-    syncChildElement,
+    syncChildNode,
   }: {
-    value: ISyncableRDOCollection<S, D>;
+    value: Map<string, D>;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
     parent: IRdoNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     makeItemKey: IMakeCollectionKey<D>;
     makeItem: IMakeRdo<S, D> | undefined;
-    syncChildElement: ISyncChildElement<S, D>;
+    syncChildNode: ISyncChildNode<S, D>;
   }) {
-    super({ typeInfo, key, parent, wrappedSourceNode, makeItemKey, makeItem, syncChildElement });
+    super({ typeInfo, key, parent, wrappedSourceNode, makeItemKey, makeItem, syncChildNode });
     this._value = value;
   }
 
@@ -40,15 +39,18 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public itemKeys() {
-    return this._value.getKeys();
+    return this._value.keys();
   }
 
   public getItem(key: string) {
-    return this._value.getItem(key);
+    return this._value.get(key);
   }
 
   public updateItem(key: string, value: D) {
-    return this._value.updateItem(key, value);
+    if (this._value.has(key)) {
+      this._value.set(key, value);
+      return true;
+    } else return false;
   }
 
   //------------------------------
@@ -59,8 +61,11 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
       return this.clearItems();
     } else {
+      // Validate
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
-      return SyncUtils.synchronizeCollection({ rdo: this, syncChildElement: this._syncChildElement });
+
+      // Execute
+      return SyncUtils.synchronizeCollection({ rdo: this, syncChildNode: this._syncChildNode });
     }
   }
 
@@ -72,14 +77,21 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertItem(value: D) {
-    this._value.insertItem(value);
+    if (this.makeItemKey) {
+      const key = this.makeItemKey(value);
+      this._value.set(key, value);
+    } else {
+      throw new Error('make key from source element must be available for Map insert operations');
+    }
   }
 
   public deleteItem(key: string): boolean {
-    return this._value.deleteItem(key);
+    return this._value.delete(key);
   }
 
   public clearItems(): boolean {
-    return this._value.clearItems();
+    if (this.childElementCount() === 0) return false;
+    this._value.clear();
+    return true;
   }
 }

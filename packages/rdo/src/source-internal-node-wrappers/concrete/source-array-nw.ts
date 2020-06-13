@@ -1,7 +1,8 @@
-import { CollectionUtils, IMakeCollectionKey, ISourceInternalNodeWrapper, SourceNodeTypeInfo, ISourceCollectionNodeWrapper } from '..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKey } from '../..';
+import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 
-export class SourceArrayNW<S extends Array<S>> implements ISourceCollectionNodeWrapper<S> {
-  private _array: S;
+export class SourceArrayNW<S> implements ISourceCollectionNodeWrapper<S> {
+  private _array: Array<S>;
   private _typeInfo: SourceNodeTypeInfo;
   private _key: string | undefined;
   private _sourceNodePath: string;
@@ -9,21 +10,21 @@ export class SourceArrayNW<S extends Array<S>> implements ISourceCollectionNodeW
   private _makeItemKey?: IMakeCollectionKey<any>;
 
   constructor({
-    node,
+    value,
     sourceNodePath,
     key,
     typeInfo,
     lastSourceNode,
     makeItemKey,
   }: {
-    node: S;
+    value: Array<S>;
     sourceNodePath: string;
     key: string | undefined;
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
     makeItemKey: IMakeCollectionKey<S>;
   }) {
-    this._array = node;
+    this._array = value;
     this._typeInfo = typeInfo;
     this._key = key;
     this._sourceNodePath = sourceNodePath;

@@ -1,5 +1,5 @@
-import { config } from '../static.config';
-import { Logger } from '../infrastructure/logger';
+import { config } from '../../static.config';
+import { Logger } from '../../infrastructure/logger';
 
 const logger = Logger.make('RdoWrapperValidationUtils');
 

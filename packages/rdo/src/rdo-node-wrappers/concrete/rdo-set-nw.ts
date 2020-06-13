@@ -1,7 +1,8 @@
-import { RdoCollectionNWBase } from '.';
-import { CollectionUtils, IMakeCollectionKey, IMakeRdo, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildElement, RdoNodeTypeInfo, SyncUtils } from '..';
-import { Logger } from '../infrastructure/logger';
-import { RdoWrapperValidationUtils } from './rdo-wrapper-validation.utils';
+import { Logger } from '../../infrastructure/logger';
+import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
+import { RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, IMakeCollectionKey, IMakeRdo, ISyncChildNode, isISourceCollectionNodeWrapper } from '../..';
+import { CollectionUtils } from '../utils/collection.utils';
+import { SyncUtils } from '../utils/sync.utils';
 
 const logger = Logger.make('RdoSetNW');
 
@@ -16,7 +17,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     wrappedSourceNode,
     makeItemKey,
     makeItem,
-    syncChildElement,
+    syncChildNode,
   }: {
     value: Set<D>;
     typeInfo: RdoNodeTypeInfo;
@@ -25,9 +26,9 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     makeItemKey: IMakeCollectionKey<D>;
     makeItem: IMakeRdo<S, D> | undefined;
-    syncChildElement: ISyncChildElement<S, D>;
+    syncChildNode: ISyncChildNode<S, D>;
   }) {
-    super({ typeInfo, key, parent, wrappedSourceNode, makeItemKey, makeItem, syncChildElement });
+    super({ typeInfo, key, parent, wrappedSourceNode, makeItemKey, makeItem, syncChildNode });
     this._value = value;
   }
 
@@ -69,7 +70,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return SyncUtils.synchronizeCollection({ rdo: this, syncChildElement: this._syncChildElement });
+      return SyncUtils.synchronizeCollection({ rdo: this, syncChildNode: this._syncChildNode });
     }
   }
 

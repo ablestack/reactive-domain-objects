@@ -1,6 +1,5 @@
-import { ISourceNodeWrapper, RdoNodeTypeInfo } from '..';
-import { Logger } from '../infrastructure/logger';
-import { IRdoInternalNodeWrapper, IRdoNodeWrapper, ISyncChildElement } from '../types';
+import { Logger } from '../../infrastructure/logger';
+import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper } from '../..';
 
 const logger = Logger.make('RdoMapNW');
 

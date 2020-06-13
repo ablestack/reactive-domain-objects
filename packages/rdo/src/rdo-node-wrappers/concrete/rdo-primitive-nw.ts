@@ -1,7 +1,6 @@
-import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, isIRdoInternalNodeWrapper } from '../types';
-import { Logger } from '../infrastructure/logger';
-import { RdoNWBase } from './rdo-nw-base';
-import { SourceNodeWrapperFactory } from '../source-internal-node-wrappers/source-node-wrapper-factory';
+import { Logger } from '../../infrastructure/logger';
+import { RdoNWBase } from '..';
+import { IRdoNodeWrapper, ISourceNodeWrapper, RdoNodeTypeInfo, isIRdoInternalNodeWrapper } from '../..';
 
 const logger = Logger.make('RdoPrimitiveNW');
 
@@ -9,13 +8,13 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
   private _value: object;
 
   constructor({
-    node,
+    value,
     key,
     parent,
     wrappedSourceNode,
     typeInfo,
   }: {
-    node: Record<string, any>;
+    value: any;
     key: string | undefined;
     parent: IRdoNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -23,7 +22,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
   }) {
     super({ typeInfo, key, parent, wrappedSourceNode });
 
-    this._value = node;
+    this._value = value;
   }
 
   //------------------------------

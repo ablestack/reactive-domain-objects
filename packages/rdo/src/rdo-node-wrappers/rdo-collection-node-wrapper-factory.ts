@@ -1,23 +1,5 @@
-import {
-  IRdoInternalNodeWrapper,
-  IMakeCollectionKey,
-  IRdoNodeWrapper,
-  ISourceInternalNodeWrapper,
-  ISourceNodeWrapper,
-  IGraphSyncOptions,
-  IRdoCollectionKeyFactory,
-  IMakeRdo,
-  INodeSyncOptions,
-  IsISyncableRDOCollection,
-  ISyncChildElement,
-} from '../types';
-import { NodeTypeUtils } from '../utilities/node-type.utils';
-import { RdoSyncableCollectionNW } from './rdo-synchable-collection-inw';
-import { RdoObjectNW } from './rdo-object-inw';
-import { RdoArrayNW } from './rdo-array-inw';
-import { RdoMapNW } from './rdo-map-inw';
-import { RdoSetNW } from './rdo-set-inw';
-import { Logger } from '../infrastructure/logger';
+import { Logger } from '../infrastructure/logger';import { IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IGraphSyncOptions, IRdoCollectionKeyFactory, IMakeRdo, INodeSyncOptions, IsISyncableRDOCollection } from '..';import { NodeTypeUtils } from './utils/node-type.utils';import { RdoSyncableCollectionNW, RdoArrayNW, RdoMapNW, RdoSetNW } from '.';
+
 
 const logger = Logger.make('RdoCollectionNodeWrapperFactory');
 
@@ -27,16 +9,16 @@ export class RdoCollectionNodeWrapperFactory {
     key,
     parent,
     wrappedSourceNode,
-    syncChildElement,
+    syncChildNode,
     options,
   }: {
     value: any;
     key: string | undefined;
-    parent: IRdoNodeWrapper | undefined;
-    wrappedSourceNode: ISourceNodeWrapper;
-    syncChildElement: ISyncChildElement<S, D>;
+    parent: IRdoNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S>;
+    syncChildNode: ISyncChildNode<S, D>;
     options?: IGraphSyncOptions;
-  }): IRdoNodeWrapper {
+  }): IRdoNodeWrapper<S, D> {
     const typeInfo = NodeTypeUtils.getRdoNodeType(node);
 
     if (typeInfo.type === 'ISyncableCollection') {
@@ -45,15 +27,15 @@ export class RdoCollectionNodeWrapperFactory {
       switch (typeInfo.builtInType) {
         case '[object Array]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoArrayNW({ value, key, parent, wrappedSourceNode, syncChildElement, makeKey });
+          return new RdoArrayNW({ value, key, parent, wrappedSourceNode, syncChildNode, makeKey });
         }
         case '[object Map]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoMapNW({ value, key, parent, wrappedSourceNode, syncChildElement makeKey });
+          return new RdoMapNW({ value, key, parent, wrappedSourceNode, syncChildNode makeKey });
         }
         case '[object Set]': {
           if (!makeKey) throw new Error('RdoNodeWrapperFactory-make - makeKey required for non-primitive types');
-          return new RdoSetNW({ value, key, parent, wrappedSourceNode, syncChildElement makeKey });
+          return new RdoSetNW({ value, key, parent, wrappedSourceNode, syncChildNode makeKey });
         }
         default: {
           throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);
@@ -181,3 +163,25 @@ export class RdoCollectionNodeWrapperFactory {
     else return 'object';
   }
 }
+
+
+
+// private synchronizeTargetCollectionWithSourceArray({    wrappedRdoCollectionNode,    wrappedSourceCollectionNode  }: {    wrappedRdoCollectionNode: IRdoCollectionNodeWrapper<any>,    wrappedSourceCollectionNode: ISourceNodeWrapper  }): boolean {
+//   if (wrappedRdoCollectionNode.typeInfo.builtInType !== '[object Undefined]') throw Error(`Destination types must not be null when transforming Array source type. Source type: '${wrappedSourceCollectionNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${wrappedRdoCollectionNode.typeInfo.builtInType} `);
+
+//   const { makeRdoCollectionKey, makeRdo } = this.tryGetRdoCollectionProcessingMethods({ sourceCollection:wrappedRdoCollectionNode.value, targetCollection: wrappedRdoCollectionNode.value });
+
+//   // VALIDATE
+//   if (wrappedSourceCollectionNode.length > 0 && !makeRdoCollectionKey?.fromSourceElement) {
+//     throw new Error(
+//       `Could not find 'makeRdoCollectionKey?.fromSourceElement)' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`,
+//     );
+//   }
+//   if (sourceCollection.length > 0 && !makeRdo) {
+//     throw new Error(`Could not find 'makeRdo' (Path: '${this.getSourceNodePath()}', type: ${rdoNodeTypeInfo}). Please define in GraphSynchronizerOptions, or by implementing IRdoFactory on the contained type`);
+//   }
+
+
+//   // Execute
+//   return wrappedRdoCollectionNode.smartSync({ lastSourceObject: wrappedSourceCollectionNode.value})
+// }
