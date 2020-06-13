@@ -4,7 +4,10 @@ import { Logger } from '../infrastructure/logger';import { IRdoNodeWrapper, ISou
 const logger = Logger.make('RdoCollectionNodeWrapperFactory');
 
 export class RdoCollectionNodeWrapperFactory {
-  public static make<S, D>({
+  
+  
+  
+  public make<S, D>({
     value,
     key,
     parent,

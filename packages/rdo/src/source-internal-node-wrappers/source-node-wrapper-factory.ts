@@ -4,7 +4,9 @@ import { SourcePrimitiveNW } from './concrete/source-primitive-nw';
 import { SourceObjectNW, SourceArrayNW } from '.';
 
 export class SourceNodeWrapperFactory {
-  public static make<S>({ sourceNodePath, value, key, lastSourceNode }: { sourceNodePath: string; value: any; key: string | undefined; lastSourceNode: any }): ISourceNodeWrapper<S> {
+  constructor() {}
+
+  public make<S>({ sourceNodePath, value, key, lastSourceNode }: { sourceNodePath: string; value: any; key: string | undefined; lastSourceNode: any }): ISourceNodeWrapper<S> {
     const typeInfo = NodeTypeUtils.getSourceNodeType(value);
 
     switch (typeInfo.kind) {

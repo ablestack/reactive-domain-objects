@@ -214,18 +214,18 @@ export class RdoObjectNW<S, D> extends RdoInternalNWBase<S, D> {
     originalSourceNodePath,
   }: {
     originalSourceNodePath: string;
-  }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceObject, rdo }: { sourceNodeSubPath: string; sourceObject: S; rdo: D }) => boolean {
+  }): <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceParentObject, sourceNodeItemKey, rdoParentObject, rdoNodeItemKey }: { sourceNodeSubPath: string; sourceParentObject: S; sourceNodeItemKey:string, rdoParentObject: D; rdoNodeItemKey:string }) => boolean {
     
     // Build method
-    return ({ sourceNodeSubPath: sourceNodeSubpath, sourceObject, rdo }) => {
+    return ({ sourceNodeSubPath: sourceNodeSubpath, sourceParentObject, sourceNodeItemKey, rdoParentObject, rdoNodeItemKey }) => {
       if (!sourceNodeSubpath) throw new Error('continueSync sourceNodeSubpath must not be null or empty. continueSync can only be called on child objects');
 
       const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubpath}`;
       
       
-      //{ sourceNodePath, sourceObject, rdo }
+
       
-      return this._syncChildNode({ parentRdoNode: , rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
+      return this._syncChildNode({ parentRdoNode: , rdoNodeItemKey, sourceNodeItemKey });
     };
   }
 }

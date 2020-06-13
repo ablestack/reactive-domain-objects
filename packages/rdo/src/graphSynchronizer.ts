@@ -10,6 +10,7 @@ import {
   IRdoNodeWrapper,
   isISourceInternalNodeWrapper,
   SourceNodeWrapperFactory,
+  IWrapRdoNode,
 } from '.';
 import { Logger } from './infrastructure/logger';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
@@ -33,6 +34,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private _sourceObjectMap = new Map<string, any>();
   private _sourceNodeInstancePathStack = new Array<string>();
   private _sourceNodePathStack = new Array<string>();
+  private _sourceNodeWrapperFactory: SourceNodeWrapperFactory;
+  private _rdoNodeWrapperFactory: RdoNodeWrapperFactory;
 
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
@@ -102,6 +105,9 @@ export class GraphSynchronizer implements IGraphSynchronizer {
         this._targetedOptionMatchersArray.push(targetedNodeOptionsItem);
       });
     }
+
+    this._sourceNodeWrapperFactory = new SourceNodeWrapperFactory();
+    this._rdoNodeWrapperFactory = new RdoNodeWrapperFactory({ syncChildNode: this.syncChildNode, globalNodeOptions: this._globalNodeOptions, wrapRdoNode: this.wrapRdoNode });
   }
 
   // ------------------------------------------------------------------------------------------------------------------
@@ -119,7 +125,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
 
-    const wrappedRdoNode = this.wrapRdoNode({ rdoNode: rootRdo, sourceNode: rootSourceNode });
+    const wrappedRdoNode = this.wrapRdoNode({ currentPath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
     wrappedRdoNode.smartSync();
 
     logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
@@ -142,30 +148,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private wrapRdoNode({
-    rdoNode,
-    sourceNode,
-    wrappedParentRdoNode: parentRdoNode,
-    rdoNodeItemKey,
-  }: {
-    rdoNode: object;
-    sourceNode: object;
-    wrappedParentRdoNode?: IRdoNodeWrapper<unknown, unknown> | undefined;
-    rdoNodeItemKey?: string | undefined;
-  }) {
-    const matchingOptions = this.getMatchingOptionsForNode();
-    const wrappedSourceNode = SourceNodeWrapperFactory.make({ sourceNodePath: this.getSourceNodePath(), node: sourceNode, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
-    const wrappedRdoNode = RdoNodeWrapperFactory.make({
-      value: rdoNode,
-      key: rdoNodeItemKey,
-      parent: parentRdoNode,
-      wrappedSourceNode,
-      syncChildNode: this.syncChildNode,
-      globalNodeOptions: this._globalNodeOptions,
-      matchingNodeOptions: matchingOptions,
-    });
+  private wrapRdoNode: IWrapRdoNode = ({ currentPath, rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
+    const matchingOptions = this._targetedOptionNodePathsMap.get(currentPath);
+
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath: this.getSourceNodePath(), value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
+    const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, parent: parentRdoNode, wrappedSourceNode, matchingNodeOptions: matchingOptions });
+
     return wrappedRdoNode;
-  }
+  };
 
   /**
    *
@@ -193,7 +183,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({ currentPath: this.getSourceNodePath(), rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {
@@ -208,11 +198,5 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;
-  }
-
-  /** */
-  private getMatchingOptionsForNode(): INodeSyncOptions<any, any> | undefined {
-    const currentPath = this.getSourceNodePath();
-    return this._targetedOptionNodePathsMap.get(currentPath);
   }
 }

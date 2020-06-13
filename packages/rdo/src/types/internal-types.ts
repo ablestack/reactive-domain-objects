@@ -60,6 +60,7 @@ export interface IRdoNodeWrapper<S, D> {
   readonly parent: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   readonly wrappedSourceNode: ISourceNodeWrapper<S>;
+  readonly ignore: boolean;
   childElementCount(): number;
   smartSync(): boolean;
 }
@@ -91,3 +92,18 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;
+export type IWrapRdoNode = ({
+  currentPath,
+  rdoNode,
+  sourceNode,
+  wrappedParentRdoNode: parentRdoNode,
+  rdoNodeItemKey,
+  sourceNodeItemKey,
+}: {
+  currentPath: string;
+  rdoNode: object;
+  sourceNode: object;
+  wrappedParentRdoNode?: IRdoNodeWrapper<unknown, unknown> | undefined;
+  rdoNodeItemKey?: string | undefined;
+  sourceNodeItemKey?: string | undefined;
+}) => IRdoNodeWrapper<unknown, unknown>;
