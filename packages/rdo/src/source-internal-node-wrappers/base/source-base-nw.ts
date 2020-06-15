@@ -1,4 +1,4 @@
-import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNameOptions, IRdoNodeWrapper } from '../..';
 
 export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
   private _key: string | undefined;
@@ -7,6 +7,7 @@ export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
   private _lastSourceNode: S | undefined;
   private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
   private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _wrappedRdoNode: IRdoNodeWrapper<S, any> | undefined;
 
   constructor({
     sourceNodePath,
@@ -57,6 +58,14 @@ export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
 
   public get globalNodeOptions(): IGlobalNameOptions | undefined {
     return this._globalNodeOptions;
+  }
+
+  public get wrappedRdoNode() {
+    return this._wrappedRdoNode;
+  }
+
+  public setRdoNode(rdoNode: IRdoNodeWrapper<S, any>) {
+    this._wrappedRdoNode = rdoNode;
   }
 
   public abstract childElementCount(): number;

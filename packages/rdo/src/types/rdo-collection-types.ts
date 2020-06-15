@@ -4,28 +4,28 @@
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
 
-export interface IMakeCollectionKey<T> {
-  (item: T): string;
+export interface IMakeCollectionKeyMethod<T> {
+  (item: T): string | undefined;
+}
+export interface IRdoCollectionKeyFactory<S, D> {
+  makeKeyFromSourceElement: IMakeCollectionKeyMethod<S>;
+  makeKeyFromRdoElement: IMakeCollectionKeyMethod<D>;
+}
+
+export function isIRdoCollectionKeyFactory(o: any): o is IRdoCollectionKeyFactory<any, any> {
+  return o && o.makeKeyFromSourceElement && o.makeKeyFromRdoElement;
 }
 
 export interface IMakeRdo<S, D> {
-  (sourceObject: S): D;
+  makeRdo(sourceObject: S): D | undefined;
 }
 
-// *See `Strict` note above top of file
-export interface IRdoCollectionKeyFactoryStrict<S, D> {
-  fromSourceElement: IMakeCollectionKey<S>;
-  fromRdoElement: IMakeCollectionKey<D>;
+export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {
+  return o && o.makeRdo;
 }
 
-export interface IRdoCollectionKeyFactory<S, D> {
-  fromSourceElement?: IMakeCollectionKey<S>;
-  fromRdoElement?: IMakeCollectionKey<D>;
-}
-
-export interface ISyncableCollection<T> extends Iterable<[string, T]> {
+export interface ISyncableCollection<T> extends IMakeCollectionKeyMethod<T>, Iterable<T> {
   readonly size: number;
-  makeKey: IMakeCollectionKey<T>;
   getKeys: () => string[];
   getItem: (key: string) => T | null | undefined;
   insertItem: (value: T) => void;
@@ -50,23 +50,8 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
   );
 }
 
-export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-  makeRdoCollectionKeyFromSourceElement?: IMakeCollectionKey<S>;
-  makeRdoCollectionKeyFromRdoElement?: IMakeCollectionKey<D>;
-  makeRdo: IMakeRdo<S, D>;
-}
+export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<D> {}
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
-  return o && o.makeRdo && typeof o.makeRdo === 'function' && IsISyncableCollection(o);
+  return o && isIMakeRdo(o) && IsISyncableCollection(o);
 }
-
-/***************************************************************************
- * NOTES:
- *
- * Node Sync Options
- *
- * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
- *
- *****************************************************************************/

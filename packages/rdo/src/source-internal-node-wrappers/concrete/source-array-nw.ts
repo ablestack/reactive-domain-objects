@@ -1,6 +1,7 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKey, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions, NodeKind, isIRdoCollectionKeyFactory, config } from '../..';
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 import { SourceBaseNW } from '../base/source-base-nw';
+import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
 
 export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollectionNodeWrapper<S> {
   private _value: Array<S>;
@@ -35,7 +36,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   }
 
   public childElementCount(): number {
-    return 0;
+    return this._value.length;
   }
 
   //------------------------------
@@ -43,18 +44,11 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   //------------------------------
 
   public itemKeys() {
-    if (this.makeItemKey) return CollectionUtils.Array.getKeys({ collection: this._value, makeItemKey: this.makeItemKey });
-    else return [];
+    return CollectionUtils.Array.getKeys({ collection: this._value, makeItemKey: this.makeElementKey });
   }
 
-  public getItem(key: string) {
-    if (this.makeItemKey) return CollectionUtils.Array.getItem({ collection: this._value, makeItemKey: this.makeItemKey!, key });
-    else return undefined;
-  }
-
-  public updateItem(value: any) {
-    if (this.makeItemKey) return CollectionUtils.Array.updateItem({ collection: this._value, makeItemKey: this.makeItemKey!, value });
-    else throw new Error('make key from RDO element must be available for Array update operations');
+  public getItem({ key, makeKeyFromSourceElement }: { key: string; makeKeyFromSourceElement: IMakeCollectionKeyMethod<S> }) {
+    return CollectionUtils.Array.getItem({ collection: this._value, makeItemKey: makeKeyFromSourceElement!, key });
   }
 
   public getNode(): any {
@@ -65,11 +59,41 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   // ISourceCollectionNodeWrapper
   //------------------------------
 
-  public elements(): Iterable<S> {
-    return this._value;
+  // private _childElementsNodeKind: ChildElementsNodeKind | undefined;
+  // public get ChildElementsNodeKind(): ChildElementsNodeKind {
+  //   if (this._childElementsNodeKind === undefined) {
+  //     const firstElement = this.elements()[Symbol.iterator]().next().value;
+  //     if (firstElement) {
+  //       this._childElementsNodeKind = NodeTypeUtils.getSourceNodeType(firstElement).kind;
+  //     } else this._childElementsNodeKind = null;
+  //   }
+  //   return this._childElementsNodeKind;
+  // }
+
+  public makeElementKey(item: S) {
+    // Use IMakeCollectionKey provided on options if available
+    if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
+      return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
+    }
+
+    if (isIRdoCollectionKeyFactory(this.wrappedRdoNode)) {
+      return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
+    }
+
+    // If primitive, the item is the key
+    if (NodeTypeUtils.isPrimitive(item)) {
+      return String(item);
+    }
+
+    // Last option - look for idKey
+    if (item[config.defaultIdKey]) {
+      return item[config.defaultIdKey];
+    }
+
+    return undefined;
   }
 
-  public get makeItemKey(): IMakeCollectionKey<S> | undefined {
-    return this.makeItemKey;
+  public elements(): Iterable<S> {
+    return this._value;
   }
 }

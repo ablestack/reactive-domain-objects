@@ -1,13 +1,12 @@
-import { RdoInternalNWBase } from './rdo-internal-nw-base';
+import { IGlobalNameOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
 import { Logger } from '../../infrastructure/logger';
-import { IRdoCollectionNodeWrapper, IMakeCollectionKey, IMakeRdo, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { isIMakeRdo, isIRdoCollectionKeyFactory } from '../../types';
+import { RdoInternalNWBase } from './rdo-internal-nw-base';
+import { NodeTypeUtils } from '../utils/node-type.utils';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
 export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> implements IRdoCollectionNodeWrapper<S, D> {
-  private _makeItemKey: IMakeCollectionKey<D>;
-  private _makeItem: IMakeRdo<S, D> | undefined;
-
   constructor({
     typeInfo,
     key,
@@ -25,30 +24,61 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
   }) {
-    super({
-      typeInfo,
-      key,
-      wrappedParentRdoNode,
-      wrappedSourceNode,
-      syncChildNode,
-      matchingNodeOptions,
-      globalNodeOptions,
-    });
-    // this._makeItemKey = makeItemKey;
-    // this._makeItem = makeItem;
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
   }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
-  public get makeItemKey() {
-    return this._makeItemKey;
+  // private _childElementSourceNodeKind: ChildElementsNodeKind | undefined = undefined;
+  // public get childElementsNodeKind(): ChildElementsNodeKind {
+  //   if (!this._childElementSourceNodeKind) {
+  //     // Try and get element type from source collection
+  //     const firstElement = this.elements()[Symbol.iterator]().next().value;
+  //     if (firstElement) {
+  //       this._childElementSourceNodeKind = NodeTypeUtils.getRdoNodeType(firstElement).kind;
+  //     } else this._childElementSourceNodeKind = null;
+  //   }
+  //   return this._childElementSourceNodeKind;
+  // }
+
+  public makeKey(item: D) {
+    // Use IMakeCollectionKey provided on options if available
+    if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromRdoElement) {
+      return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
+    }
+
+    if (isIRdoCollectionKeyFactory(this.value)) {
+      return this.value.makeKeyFromRdoElement(item);
+    }
+
+    // If primitive, the item is the key
+    if (NodeTypeUtils.isPrimitive(item)) {
+      return String(item);
+    }
+
+    // Last option - look for idKey
+    if (item[config.defaultIdKey]) {
+      return item[config.defaultIdKey];
+    }
+
+    throw new Error(`could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
   }
 
-  public get makeItem() {
-    return this._makeItem;
+  public makeRdo(sourceObject) {
+    // Use IMakeCollectionKey provided on options if available
+    if (this.matchingNodeOptions?.makeRdo) {
+      return this.matchingNodeOptions.makeRdo(sourceObject);
+    }
+
+    if (isIMakeRdo(this.value)) {
+      return this.value.makeRdo(sourceObject);
+    }
+
+    return undefined;
   }
 
+  public abstract elements(): Iterable<D>;
   public abstract childElementCount();
   public abstract clearItems();
   public abstract insertItem(value: D);

@@ -66,6 +66,10 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
+  public elements(): Iterable<D> {
+    return this._value;
+  }
+
   public childElementCount(): number {
     return this._value.size;
   }

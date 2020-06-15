@@ -72,17 +72,17 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
+  public elements(): Iterable<D> {
+    return this._value.values();
+  }
+
   public childElementCount(): number {
     return this._value.size;
   }
 
   public insertItem(value: D) {
-    if (this.makeItemKey) {
-      const key = this.makeItemKey(value);
-      this._value.set(key, value);
-    } else {
-      throw new Error('make key from source element must be available for Map insert operations');
-    }
+    const key = this.makeKeyFromRdoElement(value);
+    this._value.set(key, value);
   }
 
   public deleteItem(key: string): boolean {

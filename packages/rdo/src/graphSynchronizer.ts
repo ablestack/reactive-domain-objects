@@ -106,8 +106,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       });
     }
 
-    this._sourceNodeWrapperFactory = new SourceNodeWrapperFactory();
-    this._rdoNodeWrapperFactory = new RdoNodeWrapperFactory({ syncChildNode: this.syncChildNode, globalNodeOptions: this._globalNodeOptions, wrapRdoNode: this.wrapRdoNode });
+    this._sourceNodeWrapperFactory = new SourceNodeWrapperFactory({ globalNodeOptions: this._globalNodeOptions });
+    this._rdoNodeWrapperFactory = new RdoNodeWrapperFactory({
+      syncChildNode: this.syncChildNode,
+      globalNodeOptions: this._globalNodeOptions,
+      wrapRdoNode: this.wrapRdoNode,
+      defaultEqualityComparer: this._defaultEqualityComparer,
+    });
   }
 
   // ------------------------------------------------------------------------------------------------------------------
@@ -149,10 +154,10 @@ export class GraphSynchronizer implements IGraphSynchronizer {
    *
    */
   private wrapRdoNode: IWrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
-    const matchingOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
+    const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
 
-    const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue() });
-    const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions: matchingOptions });
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
+    const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
 
     return wrappedRdoNode;
   };

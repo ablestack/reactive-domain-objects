@@ -32,6 +32,9 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     this._wrappedSourceNode = wrappedSourceNode;
     this._matchingNodeOptions = matchingNodeOptions;
     this._globalNodeOptions = globalNodeOptions;
+
+    // link Rdo node to source node
+    wrappedSourceNode.setRdoNode(this);
   }
 
   //------------------------------

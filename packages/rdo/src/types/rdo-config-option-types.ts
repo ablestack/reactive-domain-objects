@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IEqualityComparer, IRdoCollectionKeyFactory, IMakeRdo, IRdoCollectionKeyFactoryStrict } from '.';
+import { IEqualityComparer, IMakeRdo, IMakeCollectionKeyMethod, IRdoCollectionKeyFactory } from '.';
 
 //---------------------------------------------
 //  GRAPH SYNCHRONIZER CONFIG OPTION TYPES
@@ -13,7 +13,7 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
   customEqualityComparer?: IEqualityComparer; //customEqualityComparer is apolloComparer
   globalNodeOptions?: IGlobalNameOptions;
-  targetedNodeOptions?: Array<INodeSyncOptionsStrict<any, any>>;
+  targetedNodeOptions?: Array<INodeSyncOptions<any, any>>;
 }
 
 export interface IGlobalNameOptions {
@@ -24,29 +24,14 @@ export interface IGlobalNameOptions {
 export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
-  makeRdoCollectionKey?: IRdoCollectionKeyFactory<S, D>; // Match IRdoFactory
-  makeRdo?: IMakeRdo<S, D>; // Match IRdoFactory except optional
-}
-
-export interface INodeSyncOptionsStrict<S, D> {
-  sourceNodeMatcher: INodeSelector<S>;
-  ignore?: boolean;
-  makeRdoCollectionKey?: IRdoCollectionKeyFactoryStrict<S, D>; // Match IRDOFactorsStrict
-  makeRdo?: IMakeRdo<S, D>; // Match IRdoFactory except optional
+  makeRdoCollectionKey?: {
+    fromSourceElement: IMakeCollectionKeyMethod<S>;
+    fromRdoElement: IMakeCollectionKeyMethod<D>;
+  };
+  makeRdo?: IMakeRdo<S, D>['makeRdo'];
 }
 
 export interface INodeSelector<S> {
   nodePath?: string;
   nodeContent?: (sourceNode: S) => boolean;
 }
-
-/***************************************************************************
- * NOTES:
- *
- * Node Sync Options
- *
- * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
- *
- *****************************************************************************/

@@ -1,5 +1,5 @@
-import { Logger } from '../infrastructure/logger';
-import { SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IsISyncableCollection } from '..';
+import { Logger } from '../../infrastructure/logger';
+import { SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IsISyncableCollection } from '../..';
 
 const logger = Logger.make('node-type.utils');
 
@@ -23,8 +23,7 @@ function getSourceNodeType(sourceNodeVal: any): SourceNodeTypeInfo {
       return { kind: 'Collection', builtInType: sourceNodeBuiltInType };
     }
     default: {
-      logger.warn(`Unable to find Source type for sourceNodeBuiltInType: ${sourceNodeBuiltInType}`, sourceNodeVal);
-      return { kind: undefined, builtInType: sourceNodeBuiltInType };
+      throw new Error(`Unable to find Source type for sourceNodeBuiltInType: ${sourceNodeBuiltInType}`);
     }
   }
 }
@@ -59,10 +58,23 @@ function getRdoNodeType(rdoNodeVal: any): RdoNodeTypeInfo {
       return { kind: 'Collection', type: 'Set', builtInType: builtInNodeType };
     }
     default: {
-      logger.warn(`Unable to find RDO Node Type for type: ${builtInNodeType}`, rdoNodeVal);
-      return { kind: undefined, type: undefined, builtInType: builtInNodeType };
+      throw new Error(`Unable to find RDO Node Type for type: ${builtInNodeType}`);
     }
   }
 }
 
-export const NodeTypeUtils = { getSourceNodeType, getRdoNodeType };
+function isPrimitive(val: any): boolean {
+  switch (typeof val) {
+    case 'bigint':
+    case 'boolean':
+    case 'number':
+    case 'string':
+    case 'undefined':
+    case null:
+    default: {
+      return false;
+    }
+  }
+}
+
+export const NodeTypeUtils = { getSourceNodeType, getRdoNodeType, isPrimitive };

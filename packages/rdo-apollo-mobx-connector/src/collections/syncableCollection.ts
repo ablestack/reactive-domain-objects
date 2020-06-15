@@ -67,8 +67,8 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     this.insertItem(value);
     return this;
   }
-  [Symbol.iterator](): IterableIterator<[string, D]> {
-    return this._map$.entries();
+  [Symbol.iterator](): IterableIterator<D> {
+    return this._map$.values();
   }
   entries(): IterableIterator<[string, D]> {
     return this._map$.entries();
