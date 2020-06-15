@@ -12,13 +12,13 @@ export interface ICustomSync<S> {
         continueSmartSync: IContinueSmartSync;
     }) => boolean;
 }
-export interface IContinueSmartSync {
-    ({ sourceNodeSubPath, sourceObject, rdo }: {
-        sourceNodeSubPath: string;
-        sourceObject: Record<string, any>;
-        rdo: Record<string, any>;
-    }): boolean;
-}
+export declare type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoItemValue, }: {
+    sourceNodeSubPath: string;
+    sourceNodeItemKey: string;
+    sourceItemValue: any;
+    rdoNodeItemKey: string;
+    rdoItemValue: any;
+}) => boolean;
 export declare function IsICustomSync(o: any): o is ICustomSync<any>;
 export interface ICustomEqualityRDO<S> {
     isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;

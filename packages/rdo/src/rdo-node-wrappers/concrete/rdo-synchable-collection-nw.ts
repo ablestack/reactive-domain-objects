@@ -39,15 +39,15 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public itemKeys() {
-    return this._value.getKeys();
+    return this._value.getCollectionKeys();
   }
 
-  public getItem(key: string) {
-    return this._value.getItem(key);
+  public getElement(key: string) {
+    return this._value.getElement(key);
   }
 
-  public updateItem(key: string, value: D) {
-    return this._value.updateItem(key, value);
+  public updateElement(key: string, value: D) {
+    return this._value.updateElement(key, value);
   }
 
   //------------------------------
@@ -56,7 +56,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public smartSync(): boolean {
     if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearItems();
+      return this.clearElements();
     } else {
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
       return SyncUtils.synchronizeCollection({ rdo: this, syncChildNode: this._syncChildNode });
@@ -74,15 +74,15 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertItem(value: D) {
-    this._value.insertItem(value);
+  public insertElement(value: D) {
+    this._value.insertElement(value);
   }
 
-  public deleteItem(key: string): boolean {
-    return this._value.deleteItem(key);
+  public deleteElement(key: string): boolean {
+    return this._value.deleteElement(key);
   }
 
-  public clearItems(): boolean {
-    return this._value.clearItems();
+  public clearElements(): boolean {
+    return this._value.clearElements();
   }
 }

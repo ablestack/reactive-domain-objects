@@ -1,40 +1,24 @@
-export interface IMakeRdoCollectionKey<T> {
-  (item: T): string;
+export interface IMakeCollectionKeyMethod<T> {
+    (item: T): string | undefined;
 }
-export interface IMakeRDO<S, D> {
-  (sourceObject: S): D;
+export interface ICollectionKeyFactory<T> {
+    makeKey: IMakeCollectionKeyMethod<T>;
 }
-export interface IRdoCollectionKeyFactoryStrict<S, D> {
-  fromSourceElement: IMakeRdoCollectionKey<S>;
-  fromRdoElement: IMakeRdoCollectionKey<D>;
+export declare function isICollectionKeyFactory(o: any): o is ICollectionKeyFactory<any>;
+export interface IMakeRdo<S, D> {
+    makeRdo(sourceObject: S): D | undefined;
 }
-export interface IRdoCollectionKeyFactory<S, D> {
-  fromSourceElement?: IMakeRdoCollectionKey<S>;
-  fromRdoElement?: IMakeRdoCollectionKey<D>;
-}
-export interface ISyncableCollection<T> extends Iterable<[string, T]> {
-  readonly size: number;
-  getKeys: () => string[];
-  get: (key: string) => T | null | undefined;
-  insertItemToTargetCollection: (key: string, value: T) => void;
-  updateItemInTargetCollection: (key: string, value: T) => void;
-  tryDeleteItemFromTargetCollection: (key: string) => void;
-  clear: () => void;
+export declare function isIMakeRdo(o: any): o is IMakeRdo<any, any>;
+export interface ISyncableCollection<T> extends IMakeCollectionKeyMethod<T>, Iterable<T> {
+    readonly size: number;
+    getCollectionKeys: () => string[];
+    getElement: (key: string) => T | null | undefined;
+    insertElement: (value: T) => void;
+    updateElement: (key: string, value: T) => boolean;
+    deleteElement: (key: string) => boolean;
+    clearElements: () => boolean;
 }
 export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
-export interface ISyncableRDOCollection<S, D> extends ISyncableCollection<D> {
-  makeRdoCollectionKeyFromSourceElement?: IMakeRdoCollectionKey<S>;
-  makeRdoCollectionKeyFromRdoElement?: IMakeRdoCollectionKey<D>;
-  makeRdo: IMakeRDO<S, D>;
+export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<D> {
 }
 export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;
-/***************************************************************************
- * NOTES:
- *
- * Node Sync Options
- *
- * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
- *
- *****************************************************************************/

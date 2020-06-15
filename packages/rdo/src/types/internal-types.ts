@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
 import { IGlobalNameOptions, IMakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions } from '.';
-import { ISyncableRDOCollection, IRdoCollectionKeyFactory } from './rdo-collection-types';
+import { ISyncableRDOCollection, ICollectionKeyFactory, isICollectionKeyFactory } from './rdo-collection-types';
 
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 
@@ -32,21 +32,21 @@ export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any> {
 }
 
 export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
-  itemKeys({ makeKeyFromSourceElement }: { makeKeyFromSourceElement: IMakeCollectionKeyMethod<S> }): Iterable<string>;
-  getItem({ key, makeKeyFromSourceElement }: { key: string; makeKeyFromSourceElement: IMakeCollectionKeyMethod<S> }): S | null | undefined;
+  nodeKeys(): Iterable<string>;
+  getItem(key: string): S | null | undefined;
 }
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any> {
-  return o && o.itemKeys && o.getItem && o.updateItem && isISourceNodeWrapper(o);
+  return o && o.itemKeys && o.getElement && o.updateElement && isISourceNodeWrapper(o);
 }
 
-export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S> {
+export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S>, ICollectionKeyFactory<S> {
   //readonly childElementsNodeKind: NodeKind;
   elements(): Iterable<S>;
 }
 
 export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any> {
-  return o && o.childElementsNodeKind && o.elements && o.makeItemKey && isISourceInternalNodeWrapper(o);
+  return o && o.childElementsNodeKind && o.elements && o.makeElementKey && isISourceInternalNodeWrapper(o) && isICollectionKeyFactory(o);
 }
 
 export type RdoNodeTypes<S, D> = D | Array<D> | Map<string, D> | Set<D> | ISyncableRDOCollection<S, D> | null | undefined;
@@ -70,24 +70,24 @@ export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any> {
 
 export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
   itemKeys(): Iterable<string>;
-  getItem(key: string): D | null | undefined;
-  updateItem(key: string, value: D): boolean;
+  getElement(key: string): D | null | undefined;
+  updateElement(key: string, value: D): boolean;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any> {
-  return o && o.itemKeys && o.getItem && o.updateItem && isIRdoNodeWrapper(o);
+  return o && o.itemKeys && o.getElement && o.updateElement && isIRdoNodeWrapper(o);
 }
 
-export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, IRdoCollectionKeyFactory<S, D> {
+export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, ICollectionKeyFactory<D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D>;
-  insertItem(value: D): void;
-  deleteItem(key: string): boolean;
-  clearItems(): boolean;
+  insertElement(value: D): void;
+  deleteElement(key: string): boolean;
+  clearElements(): boolean;
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
-  return o && o.makeItem && o.childElementsNodeKind && o.makeItemKey && o.insertItem && o.deleteItem && o.clearItems && isIRdoInternalNodeWrapper(o);
+  return o && o.makeItem && o.childElementsNodeKind && o.makeElementKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isICollectionKeyFactory(o);
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;

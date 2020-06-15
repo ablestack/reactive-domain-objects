@@ -1,4 +1,4 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions, NodeKind, isIRdoCollectionKeyFactory, config } from '../..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions, NodeKind, isICollectionKeyFactory, config } from '../..';
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
@@ -43,12 +43,12 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public itemKeys() {
-    return CollectionUtils.Array.getKeys({ collection: this._value, makeItemKey: this.makeElementKey });
+  public nodeKeys() {
+    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
   }
 
-  public getItem({ key, makeKeyFromSourceElement }: { key: string; makeKeyFromSourceElement: IMakeCollectionKeyMethod<S> }) {
-    return CollectionUtils.Array.getItem({ collection: this._value, makeItemKey: makeKeyFromSourceElement!, key });
+  public getItem(key: string) {
+    return CollectionUtils.Array.getElement({ collection: this._value, makeElementKey: this.makeKey, key });
   }
 
   public getNode(): any {
@@ -70,13 +70,13 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   //   return this._childElementsNodeKind;
   // }
 
-  public makeElementKey(item: S) {
+  public makeKey(item: S) {
     // Use IMakeCollectionKey provided on options if available
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
     }
 
-    if (isIRdoCollectionKeyFactory(this.wrappedRdoNode)) {
+    if (isICollectionKeyFactory(this.wrappedRdoNode)) {
       return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
     }
 

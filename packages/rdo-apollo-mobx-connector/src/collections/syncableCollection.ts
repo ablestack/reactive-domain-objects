@@ -14,7 +14,7 @@ const logger = Logger.make('SyncableCollection');
  * @template D
  * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map in order to only trigger observable changes when necessary
  */
-export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, Map<string, D> {
+export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, Omit<Map<string, D>, 'Symbol.iterator'> {
   @observable.shallow private _map$: Map<string, D>;
 
   // -----------------------------------
@@ -52,52 +52,65 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   // Map Interface
   // -----------------------------------
   delete(key: string): boolean {
-    return this.deleteItem(key);
+    return this.deleteElement(key);
   }
+
   forEach(callbackfn: (value: D, key: string, map: Map<string, D>) => void, thisArg?: any): void {
     this._map$.forEach(callbackfn);
   }
+
   get(key: string): D | undefined {
     return this._map$.get(key);
   }
+
   has(key: string): boolean {
     return this._map$.has(key);
   }
+
   set(key: string, value: D): this {
-    this.insertItem(value);
+    this.insertElement(value);
     return this;
   }
-  [Symbol.iterator](): IterableIterator<D> {
-    return this._map$.values();
-  }
+
   entries(): IterableIterator<[string, D]> {
     return this._map$.entries();
   }
+
   keys(): IterableIterator<string> {
     return this._map$.keys();
   }
+
   values(): IterableIterator<D> {
     return this._map$.values();
   }
+
+  clear(): void {
+    this.clearElements();
+  }
+
   [Symbol.toStringTag]: string = '[object Map]';
+
+  [Symbol.iterator](): IterableIterator<D> {
+    return this._array$.values();
+  }
 
   // -----------------------------------
   // ISyncableCollection
   // -----------------------------------
-  public getKeys = () => {
+  public getCollectionKeys = () => {
     return Array.from(this._map$.keys());
   };
 
-  public getItem = (key: string) => {
+  public getElement = (key: string) => {
     return this._map$.get(key);
   };
 
-  public insertItem = (value: D) => {
+  public insertElement = (value: D) => {
     if (this.makeRdoCollectionKeyFromRdoElement) {
       const key = this.makeRdoCollectionKeyFromRdoElement(value);
       if (!this._map$.has(key)) {
         this._map$.set(key, value);
-        CollectionUtils.Array.insertItem<D>({ collection: this._array$!, key, value });
+        CollectionUtils.Array.insertElement<D>({ collection: this._array$!, key, value });
         return true;
       } else return false;
     } else {
@@ -105,12 +118,11 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     }
   };
 
-  public updateItem = (value: D) => {
+  public updateElement = (key: string, value: D) => {
     if (this.makeRdoCollectionKeyFromRdoElement) {
-      const key = this.makeRdoCollectionKeyFromRdoElement(value);
       if (!this._map$.has(key)) {
         this._map$.set(key, value);
-        CollectionUtils.Array.updateItem<D>({ collection: this._array$!, makeItemKey: this.makeRdoCollectionKeyFromRdoElement, value });
+        CollectionUtils.Array.updateElement<D>({ collection: this._array$!, makeElementKey: this.makeRdoCollectionKeyFromRdoElement, value });
         return true;
       } else return false;
     } else {
@@ -118,7 +130,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     }
   };
 
-  public deleteItem = (key: string) => {
+  public deleteElement = (key: string) => {
     const itemToDelete = this._map$.get(key);
     if (itemToDelete) {
       this._map$.delete(key);
@@ -137,8 +149,8 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     return false;
   };
 
-  public clearItems = () => {
+  public clearElements = () => {
     this._map$.clear();
-    CollectionUtils.Array.clear({ collection: this._array$! });
+    return CollectionUtils.Array.clear({ collection: this._array$! });
   };
 }

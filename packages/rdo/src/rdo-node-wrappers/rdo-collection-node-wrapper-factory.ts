@@ -1,5 +1,5 @@
 // import { Logger } from '../infrastructure/logger';
-// import { IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IGraphSyncOptions, IRdoCollectionKeyFactory, IMakeRdo, INodeSyncOptions, IsISyncableRDOCollection } from '..';
+// import { IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IGraphSyncOptions, ICollectionKeyFactory, IMakeRdo, INodeSyncOptions, IsISyncableRDOCollection } from '..';
 // import { NodeTypeUtils } from './utils/node-type.utils';
 // import { RdoSyncableCollectionNW, RdoArrayNW, RdoMapNW, RdoSetNW } from '.';
 
@@ -8,7 +8,7 @@
 // export class RdoCollectionNodeWrapperFactory {
 //   /** */
 //   private tryGetRdoCollectionProcessingMethods({ sourceCollection, targetCollection }: { sourceCollection: Array<any>; targetCollection: any }) {
-//     let makeRdoCollectionKey: IRdoCollectionKeyFactory<any, any> | undefined;
+//     let makeRdoCollectionKey: ICollectionKeyFactory<any, any> | undefined;
 //     let makeRdo: IMakeRdo<any, any> | undefined;
 
 //     const collectionElementType = this.getCollectionElementType({ sourceCollection, targetCollection });

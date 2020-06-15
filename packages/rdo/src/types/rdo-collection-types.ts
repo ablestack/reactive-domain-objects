@@ -7,13 +7,12 @@
 export interface IMakeCollectionKeyMethod<T> {
   (item: T): string | undefined;
 }
-export interface IRdoCollectionKeyFactory<S, D> {
-  makeKeyFromSourceElement: IMakeCollectionKeyMethod<S>;
-  makeKeyFromRdoElement: IMakeCollectionKeyMethod<D>;
+export interface ICollectionKeyFactory<T> {
+  makeKey: IMakeCollectionKeyMethod<T>;
 }
 
-export function isIRdoCollectionKeyFactory(o: any): o is IRdoCollectionKeyFactory<any, any> {
-  return o && o.makeKeyFromSourceElement && o.makeKeyFromRdoElement;
+export function isICollectionKeyFactory(o: any): o is ICollectionKeyFactory<any> {
+  return o && o.makeKey;
 }
 
 export interface IMakeRdo<S, D> {
@@ -26,19 +25,19 @@ export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {
 
 export interface ISyncableCollection<T> extends IMakeCollectionKeyMethod<T>, Iterable<T> {
   readonly size: number;
-  getKeys: () => string[];
-  getItem: (key: string) => T | null | undefined;
-  insertItem: (value: T) => void;
-  updateItem: (key: string, value: T) => boolean;
-  deleteItem: (key: string) => boolean;
-  clearItems: () => boolean;
+  getCollectionKeys: () => string[];
+  getElement: (key: string) => T | null | undefined;
+  insertElement: (value: T) => void;
+  updateElement: (key: string, value: T) => boolean;
+  deleteElement: (key: string) => boolean;
+  clearElements: () => boolean;
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
   return (
     o &&
-    o.getKeys &&
-    typeof o.getKeys === 'function' &&
+    o.getCollectionKeys &&
+    typeof o.getCollectionKeys === 'function' &&
     o.tryGetItemFromTargetCollection &&
     typeof o.tryGetItemFromTargetCollection === 'function' &&
     o.insertItemToTargetCollection &&

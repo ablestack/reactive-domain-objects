@@ -41,17 +41,17 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public itemKeys() {
     if (this.childElementCount() === 0) return [];
-    return CollectionUtils.Set.getKeys({ collection: this._value, makeItemKey: this.makeKeyFromRdoElement });
+    return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
   }
 
-  public getItem(key: string) {
+  public getElement(key: string) {
     if (this.childElementCount() === 0) return undefined;
-    return CollectionUtils.Set.getItem({ collection: this._value, makeItemKey: this.makeKeyFromRdoElement!, key });
+    return CollectionUtils.Set.getElement({ collection: this._value, makeElementKey: this.makeKey!, key });
   }
 
-  public updateItem(key: string, value: D) {
-    if (this.childElementCount() === 0) return;
-    return CollectionUtils.Set.updateItem<D>({ collection: this._value, makeItemKey: this.makeKeyFromRdoElement, value });
+  public updateElement(key: string, value: D) {
+    if (this.childElementCount() === 0) return false;
+    return CollectionUtils.Set.updateElement<D>({ collection: this._value, makeElementKey: this.makeKey, value });
   }
 
   //------------------------------
@@ -60,7 +60,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public smartSync(): boolean {
     if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearItems();
+      return this.clearElements();
     } else {
       RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
 
@@ -82,16 +82,16 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertItem(value: D) {
-    const key = this.makeKeyFromRdoElement(value);
-    CollectionUtils.Set.insertItem({ collection: this._value, key, value });
+  public insertElement(value: D) {
+    const key = this.makeKey(value);
+    CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 
-  public deleteItem(key: string): boolean {
-    return CollectionUtils.Set.deleteItem({ collection: this._value, makeItemKey: this.makeKeyFromRdoElement, key });
+  public deleteElement(key: string): boolean {
+    return CollectionUtils.Set.deleteElement({ collection: this._value, makeElementKey: this.makeKey, key });
   }
 
-  public clearItems(): boolean {
+  public clearElements(): boolean {
     if (this.childElementCount() === 0) return false;
     this._value.clear();
     return true;

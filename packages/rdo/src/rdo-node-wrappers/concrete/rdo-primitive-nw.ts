@@ -50,7 +50,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
       if (!isIRdoInternalNodeWrapper(this.wrappedParentRdoNode)) throw new Error('Parent RDO Node wrappers must implement IRdoInternalNodeWrapper');
       if (!this.key) throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching');
 
-      return this.wrappedParentRdoNode.updateItem(this.key, this.wrappedSourceNode.value);
+      return this.wrappedParentRdoNode.updateElement(this.key, this.wrappedSourceNode.value);
     }
     return false;
   }

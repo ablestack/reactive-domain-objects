@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { Logger } from '../infrastructure/logger';
-import { IRdoCollectionNodeWrapper, isISourceCollectionNodeWrapper, ISyncChildNode } from '../types';
+import { IRdoCollectionNodeWrapper, ISyncChildNode, isISourceCollectionNodeWrapper } from '../..';
+import { Logger } from '../../infrastructure/logger';
 
 const logger = Logger.make('SyncUtils');
 
@@ -18,8 +18,8 @@ function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollecti
       if (sourceItem === null || sourceItem === undefined) continue;
       // Make key
 
-      if (!rdo.wrappedSourceNode.makeItemKey) throw Error(`rdo.wrappedSourceNode.makeKey wan null or undefined. It must be defined when sourceCollection.length > 0`);
-      const key = rdo.wrappedSourceNode.makeItemKey(sourceItem);
+      const key = rdo.wrappedSourceNode.makeKey(sourceItem);
+      if (!key) throw Error(`rdo.wrappedSourceNode.makeKey produced null or undefined. It must be defined when sourceCollection.length > 0`);
 
       // Track keys so can be used in target item removal later
       sourceKeys.push(key);
@@ -27,20 +27,22 @@ function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollecti
       // Get or create target item
       let targetItem: D | null | undefined = undefined;
       if (!targetCollectionStartedEmpty) {
-        targetItem = rdo.getItem(key);
+        targetItem = rdo.getElement(key);
       }
       if (!targetItem) {
-        if (!rdo.makeItem) throw Error(`rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
-        targetItem = rdo.makeItem(sourceItem);
+        if (!rdo.makeRdo) throw Error(`rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
+        targetItem = rdo.makeRdo(sourceItem);
+        if (!targetItem) throw Error(`rdo.targetItem produced null or undefined`);
+
         logger.trace(`Adding item ${key} to collection`, targetItem);
-        rdo.insertItem(targetItem);
+        rdo.insertElement(targetItem);
       }
 
       //
       // Sync Item
       //
       logger.trace(`Syncing item ${key} in collection`, sourceItem);
-      changed = syncChildNode({ sourceElementKey: key, sourceElementVal: sourceItem, targetElementKey: key, targetElementVal: targetItem! });
+      changed = syncChildNode({ parentRdoNode: rdo, rdoNodeItemKey: key, sourceNodeItemKey: key });
       continue;
     }
   }
@@ -50,13 +52,13 @@ function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollecti
   // allows for auto collection methods based on target item types
   if (!targetCollectionStartedEmpty) {
     if (!rdo.itemKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
-    if (!rdo.deleteItem) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
+    if (!rdo.deleteElement) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
     // If destination item missing from source - remove from destination
     const targetCollectionKeys = Array.from(rdo.itemKeys());
     const targetCollectionKeysInDestinationOnly = _.difference(targetCollectionKeys, sourceKeys);
     if (targetCollectionKeysInDestinationOnly.length > 0) {
       targetCollectionKeysInDestinationOnly.forEach((itemId) => {
-        rdo.deleteItem(itemId);
+        rdo.deleteElement(itemId);
       });
       changed = true;
     }

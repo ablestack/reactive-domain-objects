@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IEqualityComparer, IMakeRdo, IMakeCollectionKeyMethod, IRdoCollectionKeyFactory } from '.';
+import { IEqualityComparer, IMakeRdo, IMakeCollectionKeyMethod, ICollectionKeyFactory } from '.';
 
 //---------------------------------------------
 //  GRAPH SYNCHRONIZER CONFIG OPTION TYPES

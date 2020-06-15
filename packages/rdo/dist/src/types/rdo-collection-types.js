@@ -1,11 +1,19 @@
 "use strict";
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IsISyncableRDOCollection = exports.IsISyncableCollection = void 0;
+exports.IsISyncableRDOCollection = exports.IsISyncableCollection = exports.isIMakeRdo = exports.isICollectionKeyFactory = void 0;
+function isICollectionKeyFactory(o) {
+    return o && o.makeKey;
+}
+exports.isICollectionKeyFactory = isICollectionKeyFactory;
+function isIMakeRdo(o) {
+    return o && o.makeRdo;
+}
+exports.isIMakeRdo = isIMakeRdo;
 function IsISyncableCollection(o) {
     return (o &&
-        o.getKeys &&
-        typeof o.getKeys === 'function' &&
+        o.getCollectionKeys &&
+        typeof o.getCollectionKeys === 'function' &&
         o.tryGetItemFromTargetCollection &&
         typeof o.tryGetItemFromTargetCollection === 'function' &&
         o.insertItemToTargetCollection &&
@@ -17,17 +25,7 @@ function IsISyncableCollection(o) {
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {
-    return o && o.makeRdo && typeof o.makeRdo === 'function' && IsISyncableCollection(o);
+    return o && isIMakeRdo(o) && IsISyncableCollection(o);
 }
 exports.IsISyncableRDOCollection = IsISyncableRDOCollection;
-/***************************************************************************
- * NOTES:
- *
- * Node Sync Options
- *
- * We have *Strict interfaces is because we want to support one internal
- * use case where a `fromRdoElement` factory does not need to be supplied, but in all user-config supplied
- * use cases, require both `fromSourceElement` and `fromRdoElement` for a DomainNodeKeyFactory config
- *
- *****************************************************************************/
 //# sourceMappingURL=rdo-collection-types.js.map

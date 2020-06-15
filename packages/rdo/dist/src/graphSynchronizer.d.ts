@@ -13,6 +13,8 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     private _sourceObjectMap;
     private _sourceNodeInstancePathStack;
     private _sourceNodePathStack;
+    private _sourceNodeWrapperFactory;
+    private _rdoNodeWrapperFactory;
     private pushSourceNodeInstancePathOntoStack;
     private popSourceNodeInstancePathFromStack;
     private _sourceNodeInstancePath;
@@ -22,67 +24,6 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     private setLastSourceNodeInstancePathValue;
     private getLastSourceNodeInstancePathValue;
     constructor(options?: IGraphSyncOptions);
-    /**
-     *
-     */
-    private trySynchronizeObject;
-    /** */
-    private trySynchronizeField;
-    /**
-     *
-     */
-    private getRdoFieldname;
-    /**
-     *
-     */
-    private getSourceNodeType;
-    /**
-     *
-     */
-    private getRdoFieldType;
-    /**
-     *
-     */
-    private tryStepIntoNodeAndSync;
-    /** */
-    private trySynchronizeNode;
-    /** */
-    private trySynchronizeNode_TypeSpecificProcessing;
-    /**
-     *
-     */
-    private synchronizeTargetCollectionWithSourceArray;
-    /** */
-    private tryGetRdoCollectionProcessingMethods;
-    /** */
-    private getMatchingOptionsForNode;
-    /** */
-    private getMatchingOptionsForCollectionNode;
-    /** */
-    private tryMakeAutoKeyMaker;
-    /** */
-    private getCollectionElementType;
-    /**
-     *
-     */
-    private trySynchronizeObjectState;
-    private makeContinueSmartSyncFunction;
-    /**
-     *
-     */
-    private synchronizeISyncableCollection;
-    /**
-     *
-     */
-    private synchronizeTargetMap;
-    /**
-     *
-     */
-    private synchronizeTargetSet;
-    /**
-     *
-     */
-    private synchronizeTargetArray;
     /**
      *
      */
@@ -97,4 +38,12 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
      * @description clears the previously tracked data
      */
     clearTrackedData(): void;
+    /**
+     *
+     */
+    private wrapRdoNode;
+    /**
+     *
+     */
+    private syncChildNode;
 }

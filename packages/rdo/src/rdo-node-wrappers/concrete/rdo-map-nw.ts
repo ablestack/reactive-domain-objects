@@ -42,11 +42,11 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.keys();
   }
 
-  public getItem(key: string) {
+  public getElement(key: string) {
     return this._value.get(key);
   }
 
-  public updateItem(key: string, value: D) {
+  public updateElement(key: string, value: D) {
     if (this._value.has(key)) {
       this._value.set(key, value);
       return true;
@@ -59,7 +59,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public smartSync(): boolean {
     if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearItems();
+      return this.clearElements();
     } else {
       // Validate
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
@@ -80,16 +80,16 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertItem(value: D) {
-    const key = this.makeKeyFromRdoElement(value);
+  public insertElement(value: D) {
+    const key = this.makeKey(value);
     this._value.set(key, value);
   }
 
-  public deleteItem(key: string): boolean {
+  public deleteElement(key: string): boolean {
     return this._value.delete(key);
   }
 
-  public clearItems(): boolean {
+  public clearElements(): boolean {
     if (this.childElementCount() === 0) return false;
     this._value.clear();
     return true;

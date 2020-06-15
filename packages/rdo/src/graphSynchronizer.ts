@@ -1,17 +1,4 @@
-import {
-  comparers,
-  IEqualityComparer,
-  IGlobalNameOptions,
-  IGraphSynchronizer,
-  IGraphSyncOptions,
-  INodeSyncOptions,
-  InternalNodeKind,
-  IRdoInternalNodeWrapper,
-  IRdoNodeWrapper,
-  isISourceInternalNodeWrapper,
-  SourceNodeWrapperFactory,
-  IWrapRdoNode,
-} from '.';
+import { comparers, IEqualityComparer, IGlobalNameOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, IRdoNodeWrapper, isISourceInternalNodeWrapper, SourceNodeWrapperFactory, IWrapRdoNode } from '.';
 import { Logger } from './infrastructure/logger';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 
@@ -172,7 +159,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     // Validate
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
-    const rdoNode = parentRdoNode.getItem(rdoNodeItemKey);
+    const rdoNode = parentRdoNode.getElement(rdoNodeItemKey);
     if (!rdoNode === undefined) {
       logger.trace(`Could not find child rdoNode with key ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
       return false;

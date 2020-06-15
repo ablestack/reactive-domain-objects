@@ -32,6 +32,6 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
   // IRdoInternalNodeWrapper
   //------------------------------
   public abstract itemKeys();
-  public abstract getItem(key: string);
-  public abstract updateItem(key: string, value: D);
+  public abstract getElement(key: string);
+  public abstract updateElement(key: string, value: D);
 }

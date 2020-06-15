@@ -116,11 +116,11 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     return Object.keys(this._value);
   }
 
-  public getItem(key: string) {
+  public getElement(key: string) {
     return this._value[key];
   }
 
-  public updateItem(key: string, value: any) {
+  public updateElement(key: string, value: any) {
     if (key in this._value) {
       //@ts-ignore
       this._value[key] = value;
@@ -139,7 +139,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
     // Loop properties
-    for (const sourceFieldname of this.wrappedSourceNode.itemKeys()) {
+    for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
       const sourceFieldVal = this.wrappedSourceNode.getItem(sourceFieldname);
       const rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 

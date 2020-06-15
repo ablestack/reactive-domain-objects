@@ -41,7 +41,7 @@ export class SourceObjectNW<S extends Record<string, any>> extends SourceBaseNW<
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public itemKeys() {
+  public nodeKeys() {
     return (this._value && Object.keys(this._value)) || [];
   }
 

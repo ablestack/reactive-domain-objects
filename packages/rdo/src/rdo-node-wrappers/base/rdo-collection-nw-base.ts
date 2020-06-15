@@ -1,6 +1,6 @@
 import { IGlobalNameOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
 import { Logger } from '../../infrastructure/logger';
-import { isIMakeRdo, isIRdoCollectionKeyFactory } from '../../types';
+import { isIMakeRdo, isICollectionKeyFactory } from '../../types';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { NodeTypeUtils } from '../utils/node-type.utils';
 
@@ -48,8 +48,8 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
     }
 
-    if (isIRdoCollectionKeyFactory(this.value)) {
-      return this.value.makeKeyFromRdoElement(item);
+    if (isICollectionKeyFactory(this.value)) {
+      return this.value.makeKey(item);
     }
 
     // If primitive, the item is the key
@@ -80,7 +80,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   public abstract elements(): Iterable<D>;
   public abstract childElementCount();
-  public abstract clearItems();
-  public abstract insertItem(value: D);
-  public abstract deleteItem(key: string);
+  public abstract clearElements();
+  public abstract insertElement(value: D);
+  public abstract deleteElement(key: string);
 }
