@@ -1,14 +1,14 @@
-import { IMakeCollectionKeyMethod } from '../..';
+import { MakeCollectionKeyMethod } from '../..';
 declare function isIterable(obj: any): boolean;
 export declare const CollectionUtils: {
     Array: {
-        getCollectionKeys: <T>({ collection, makeElementKey }: {
+        getCollectionKeys: <T>({ collection, makeCollectionKey }: {
             collection: T[];
-            makeElementKey: IMakeCollectionKeyMethod<T>;
+            makeCollectionKey: MakeCollectionKeyMethod<T>;
         }) => string[];
-        getElement: <T_1>({ collection, makeElementKey, key }: {
+        getElement: <T_1>({ collection, makeCollectionKey, key }: {
             collection: T_1[];
-            makeElementKey: IMakeCollectionKeyMethod<T_1>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_1>;
             key: string;
         }) => T_1 | undefined;
         insertElement: <T_2>({ collection, key, value }: {
@@ -16,14 +16,14 @@ export declare const CollectionUtils: {
             key: string;
             value: T_2;
         }) => number;
-        updateElement: <T_3>({ collection, makeElementKey, value }: {
+        updateElement: <T_3>({ collection, makeCollectionKey, value }: {
             collection: T_3[];
-            makeElementKey: IMakeCollectionKeyMethod<T_3>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_3>;
             value: T_3;
         }) => boolean;
-        deleteElement: <T_4>({ collection, makeElementKey, key }: {
+        deleteElement: <T_4>({ collection, makeCollectionKey, key }: {
             collection: T_4[];
-            makeElementKey: IMakeCollectionKeyMethod<T_4>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_4>;
             key: string;
         }) => boolean;
         clear: <T_5>({ collection }: {
@@ -31,13 +31,13 @@ export declare const CollectionUtils: {
         }) => boolean;
     };
     Set: {
-        getCollectionKeys: <T_6>({ collection, makeElementKey }: {
+        getCollectionKeys: <T_6>({ collection, makeCollectionKey }: {
             collection: Set<T_6>;
-            makeElementKey: IMakeCollectionKeyMethod<T_6>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_6>;
         }) => string[];
-        getElement: <T_7>({ collection, makeElementKey, key }: {
+        getElement: <T_7>({ collection, makeCollectionKey, key }: {
             collection: Set<T_7>;
-            makeElementKey: IMakeCollectionKeyMethod<T_7>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_7>;
             key: string;
         }) => T_7 | undefined;
         insertElement: <T_8>({ collection, key, value }: {
@@ -45,14 +45,14 @@ export declare const CollectionUtils: {
             key: string;
             value: T_8;
         }) => void;
-        updateElement: <T_9>({ collection, makeElementKey, value }: {
+        updateElement: <T_9>({ collection, makeCollectionKey, value }: {
             collection: Set<T_9>;
-            makeElementKey: IMakeCollectionKeyMethod<T_9>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_9>;
             value: T_9;
         }) => boolean;
-        deleteElement: <T_10>({ collection, makeElementKey, key }: {
+        deleteElement: <T_10>({ collection, makeCollectionKey, key }: {
             collection: Set<T_10>;
-            makeElementKey: IMakeCollectionKeyMethod<T_10>;
+            makeCollectionKey: MakeCollectionKeyMethod<T_10>;
             key: string;
         }) => boolean;
     };

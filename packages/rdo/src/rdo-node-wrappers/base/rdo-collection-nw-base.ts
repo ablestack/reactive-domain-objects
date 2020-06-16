@@ -42,7 +42,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   //   return this._childElementSourceNodeKind;
   // }
 
-  public makeKey(item: D) {
+  public makeCollectionKey(item: D) {
     // Use IMakeCollectionKey provided on options if available
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromRdoElement) {
       return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);

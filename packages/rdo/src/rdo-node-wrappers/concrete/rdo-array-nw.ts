@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNameOptions, IMakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNameOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { CollectionUtils } from '../utils/collection.utils';
 import { SyncUtils } from '../utils/sync.utils';
@@ -41,17 +41,17 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public itemKeys() {
     if (this.childElementCount() === 0) return [];
-    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
+    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
   public getElement(key: string) {
     if (this.childElementCount() === 0) return undefined;
-    return CollectionUtils.Array.getElement({ collection: this._value, makeElementKey: this.makeKey, key });
+    return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
   public updateElement(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
-    return CollectionUtils.Array.updateElement({ collection: this._value, makeElementKey: this.makeKey, value });
+    return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
   //------------------------------
@@ -82,12 +82,12 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertElement(value: D) {
-    const key = this.makeKey(value);
+    const key = this.makeCollectionKey(value);
     CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 
   public deleteElement(key: string): boolean {
-    return CollectionUtils.Array.deleteElement({ collection: this._value, makeElementKey: this.makeKey, key });
+    return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
   public clearElements(): boolean {

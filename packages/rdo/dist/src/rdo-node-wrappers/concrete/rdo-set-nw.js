@@ -21,17 +21,17 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
     itemKeys() {
         if (this.childElementCount() === 0)
             return [];
-        return collection_utils_1.CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
+        return collection_utils_1.CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
     }
     getElement(key) {
         if (this.childElementCount() === 0)
             return undefined;
-        return collection_utils_1.CollectionUtils.Set.getElement({ collection: this._value, makeElementKey: this.makeKey, key });
+        return collection_utils_1.CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
     }
     updateElement(key, value) {
         if (this.childElementCount() === 0)
             return false;
-        return collection_utils_1.CollectionUtils.Set.updateElement({ collection: this._value, makeElementKey: this.makeKey, value });
+        return collection_utils_1.CollectionUtils.Set.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
     }
     //------------------------------
     // IRdoInternalNodeWrapper
@@ -58,11 +58,11 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
         return this._value.size;
     }
     insertElement(value) {
-        const key = this.makeKey(value);
+        const key = this.makeCollectionKey(value);
         collection_utils_1.CollectionUtils.Set.insertElement({ collection: this._value, key, value });
     }
     deleteElement(key) {
-        return collection_utils_1.CollectionUtils.Set.deleteElement({ collection: this._value, makeElementKey: this.makeKey, key });
+        return collection_utils_1.CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
     }
     clearElements() {
         if (this.childElementCount() === 0)

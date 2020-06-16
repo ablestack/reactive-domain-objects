@@ -75,7 +75,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertElement(value: D) {
-    const key = this.makeKey(value);
+    const key = this.makeCollectionKey(value);
     if (!key) {
       this._value.insertElement(key, value);
     } else {

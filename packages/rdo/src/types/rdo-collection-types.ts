@@ -4,6 +4,8 @@
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
 
+export type MakeCollectionKeyMethod<T> = (item: T) => string | undefined;
+
 export interface IMakeCollectionKey<T> {
   makeCollectionKey: (item: T) => string | undefined;
 }

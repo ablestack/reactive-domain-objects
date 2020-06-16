@@ -81,7 +81,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertElement(value: D) {
-    const key = this.makeKey(value);
+    const key = this.makeCollectionKey(value);
     this._value.set(key, value);
   }
 

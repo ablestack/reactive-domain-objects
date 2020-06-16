@@ -45,11 +45,11 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   //------------------------------
 
   public nodeKeys() {
-    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
+    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
   public getItem(key: string) {
-    return CollectionUtils.Array.getElement({ collection: this._value, makeElementKey: this.makeKey, key });
+    return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
   public getNode(): any {
@@ -71,7 +71,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   //   return this._childElementsNodeKind;
   // }
 
-  public makeKey(item: S) {
+  public makeCollectionKey(item: S) {
     // Use IMakeCollectionKey provided on options if available
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);

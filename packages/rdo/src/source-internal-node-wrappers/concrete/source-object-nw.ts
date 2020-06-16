@@ -1,4 +1,4 @@
-import { ISourceInternalNodeWrapper, SourceNodeTypeInfo, IMakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { ISourceInternalNodeWrapper, SourceNodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 
 export class SourceObjectNW<S extends Record<string, any>> extends SourceBaseNW<S> implements ISourceInternalNodeWrapper<S> {

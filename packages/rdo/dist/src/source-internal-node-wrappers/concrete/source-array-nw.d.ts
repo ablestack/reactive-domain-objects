@@ -16,6 +16,6 @@ export declare class SourceArrayNW<S> extends SourceBaseNW<S> implements ISource
     nodeKeys(): string[];
     getItem(key: string): S | undefined;
     getNode(): any;
-    makeKey(item: S): any;
+    makeCollectionKey(item: S): any;
     elements(): Iterable<S>;
 }

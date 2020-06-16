@@ -87,7 +87,7 @@ export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
-  return o && o.makeItem && o.childElementsNodeKind && o.makeElementKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
+  return o && o.makeItem && o.childElementsNodeKind && o.makeCollectionKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;

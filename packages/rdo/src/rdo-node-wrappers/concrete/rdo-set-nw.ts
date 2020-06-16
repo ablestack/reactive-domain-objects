@@ -41,17 +41,17 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public itemKeys() {
     if (this.childElementCount() === 0) return [];
-    return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
+    return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
   public getElement(key: string) {
     if (this.childElementCount() === 0) return undefined;
-    return CollectionUtils.Set.getElement({ collection: this._value, makeElementKey: this.makeKey!, key });
+    return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
   }
 
   public updateElement(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
-    return CollectionUtils.Set.updateElement<D>({ collection: this._value, makeElementKey: this.makeKey, value });
+    return CollectionUtils.Set.updateElement<D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
   //------------------------------
@@ -83,12 +83,12 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertElement(value: D) {
-    const key = this.makeKey(value);
+    const key = this.makeCollectionKey(value);
     CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 
   public deleteElement(key: string): boolean {
-    return CollectionUtils.Set.deleteElement({ collection: this._value, makeElementKey: this.makeKey, key });
+    return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
   public clearElements(): boolean {

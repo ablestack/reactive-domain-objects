@@ -5,6 +5,7 @@ const __1 = require("../..");
 const collection_utils_1 = require("../../rdo-node-wrappers/utils/collection.utils");
 const source_base_nw_1 = require("../base/source-base-nw");
 const node_type_utils_1 = require("../../rdo-node-wrappers/utils/node-type.utils");
+const types_1 = require("../../types");
 class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     constructor({ value, sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions, }) {
         super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
@@ -23,10 +24,10 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     // ISourceInternalNodeWrapper
     //------------------------------
     nodeKeys() {
-        return collection_utils_1.CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeElementKey: this.makeKey });
+        return collection_utils_1.CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
     }
     getItem(key) {
-        return collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeElementKey: this.makeKey, key });
+        return collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
     }
     getNode() {
         return this._value;
@@ -44,13 +45,13 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     //   }
     //   return this._childElementsNodeKind;
     // }
-    makeKey(item) {
+    makeCollectionKey(item) {
         var _a, _b;
         // Use IMakeCollectionKey provided on options if available
         if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromSourceElement) {
             return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
         }
-        if (__1.isICollectionKeyFactory(this.wrappedRdoNode)) {
+        if (types_1.isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
             return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
         }
         // If primitive, the item is the key

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IEqualityComparer, IMakeRdo, IMakeCollectionKeyMethod, ICollectionKeyFactory } from '.';
+import { IEqualityComparer, IMakeRdo, MakeCollectionKeyMethod } from '.';
 
 //---------------------------------------------
 //  GRAPH SYNCHRONIZER CONFIG OPTION TYPES
@@ -25,8 +25,8 @@ export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
   makeRdoCollectionKey?: {
-    fromSourceElement: IMakeCollectionKeyMethod<S>;
-    fromRdoElement: IMakeCollectionKeyMethod<D>;
+    fromSourceElement: MakeCollectionKeyMethod<S>;
+    fromRdoElement: MakeCollectionKeyMethod<D>;
   };
   makeRdo?: IMakeRdo<S, D>['makeRdo'];
 }

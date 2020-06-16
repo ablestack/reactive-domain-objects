@@ -19,7 +19,7 @@ function synchronizeCollection({ rdo, syncChildNode }) {
             if (sourceItem === null || sourceItem === undefined)
                 continue;
             // Make key
-            const key = rdo.wrappedSourceNode.makeKey(sourceItem);
+            const key = rdo.wrappedSourceNode.makeCollectionKey(sourceItem);
             if (!key)
                 throw Error(`rdo.wrappedSourceNode.makeKey produced null or undefined. It must be defined when sourceCollection.length > 0`);
             // Track keys so can be used in target item removal later

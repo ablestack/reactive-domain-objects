@@ -12,7 +12,7 @@ function isISourceInternalNodeWrapper(o) {
 }
 exports.isISourceInternalNodeWrapper = isISourceInternalNodeWrapper;
 function isISourceCollectionNodeWrapper(o) {
-    return o && o.childElementsNodeKind && o.elements && o.makeElementKey && isISourceInternalNodeWrapper(o) && rdo_collection_types_1.isICollectionKeyFactory(o);
+    return o && o.elements && isISourceInternalNodeWrapper(o) && rdo_collection_types_1.isIMakeCollectionKey(o);
 }
 exports.isISourceCollectionNodeWrapper = isISourceCollectionNodeWrapper;
 function isIRdoNodeWrapper(o) {
@@ -24,7 +24,7 @@ function isIRdoInternalNodeWrapper(o) {
 }
 exports.isIRdoInternalNodeWrapper = isIRdoInternalNodeWrapper;
 function isIRdoCollectionNodeWrapper(o) {
-    return o && o.makeItem && o.childElementsNodeKind && o.makeElementKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && rdo_collection_types_1.isICollectionKeyFactory(o);
+    return o && o.makeItem && o.childElementsNodeKind && o.makeCollectionKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && rdo_collection_types_1.isIMakeCollectionKey(o);
 }
 exports.isIRdoCollectionNodeWrapper = isIRdoCollectionNodeWrapper;
 //# sourceMappingURL=internal-types.js.map

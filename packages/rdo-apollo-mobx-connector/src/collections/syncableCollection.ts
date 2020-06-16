@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import { ISyncableRDOCollection, CollectionUtils, SyncUtils, IMakeCollectionKeyMethod } from '@ablestack/rdo';
+import { ISyncableRDOCollection, CollectionUtils, SyncUtils, MakeCollectionKeyMethod } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
@@ -20,8 +20,8 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   // -----------------------------------
   // IRdoFactory
   // -----------------------------------
-  private _makeCollectionKeyFromSourceElement?: IMakeCollectionKeyMethod<S>;
-  private _makeCollectionKeyFromRdoElement?: IMakeCollectionKeyMethod<D>;
+  private _makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<S>;
+  private _makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<D>;
   private _makeRdo: (sourceItem: S) => D;
 
   @computed public get size(): number {
@@ -38,8 +38,8 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     makeCollectionKeyFromRdoElement,
     makeRdo,
   }: {
-    makeCollectionKeyFromSourceElement?: IMakeCollectionKeyMethod<S>;
-    makeCollectionKeyFromRdoElement?: IMakeCollectionKeyMethod<D>;
+    makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<S>;
+    makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<D>;
     makeRdo: (sourceNode: S) => D;
   }) {
     this._makeCollectionKeyFromSourceElement = makeCollectionKeyFromSourceElement;
@@ -68,7 +68,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   }
 
   set(key: string, value: D): this {
-    this.insertElement(value);
+    this.insertElement(key, value);
     return this;
   }
 
@@ -135,7 +135,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     if (this.makeCollectionKeyFromRdoElement) {
       if (!this._map$.has(key)) {
         this._map$.set(key, value);
-        CollectionUtils.Array.updateElement<D>({ collection: this._array$!, makeElementKey: this.makeCollectionKeyFromRdoElement, value });
+        CollectionUtils.Array.updateElement<D>({ collection: this._array$!, makeCollectionKey: this.makeCollectionKeyFromRdoElement, value });
         return true;
       } else return false;
     } else {

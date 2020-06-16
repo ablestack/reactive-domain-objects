@@ -4,35 +4,35 @@ exports.CollectionUtils = void 0;
 const logger_1 = require("../../infrastructure/logger");
 const logger = logger_1.Logger.make('CollectionUtils');
 const _Array = {
-    getCollectionKeys: ({ collection, makeElementKey }) => {
+    getCollectionKeys: ({ collection, makeCollectionKey }) => {
         return collection.length > 0
             ? collection.map((item) => {
-                const key = makeElementKey(item);
+                const key = makeCollectionKey(item);
                 if (!key)
-                    throw new Error('Array.getCollectionKeys - makeElementKey did not produce a value');
+                    throw new Error('Array.getCollectionKeys - makeCollectionKey did not produce a value');
                 return key;
             })
             : [];
     },
-    getElement: ({ collection, makeElementKey, key }) => {
-        return collection.length > 0 ? collection.find((item) => makeElementKey(item) === key) : undefined;
+    getElement: ({ collection, makeCollectionKey, key }) => {
+        return collection.length > 0 ? collection.find((item) => makeCollectionKey(item) === key) : undefined;
     },
     insertElement: ({ collection, key, value }) => collection.push(value),
-    updateElement: ({ collection, makeElementKey, value }) => {
+    updateElement: ({ collection, makeCollectionKey, value }) => {
         if (collection.length === 0)
             return false;
-        const key = makeElementKey(value);
-        const existingItemIndex = collection.findIndex((item) => makeElementKey(item) === key);
+        const key = makeCollectionKey(value);
+        const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
         if (existingItemIndex) {
             collection.splice(existingItemIndex, 1, value);
             return true;
         }
         return false;
     },
-    deleteElement: ({ collection, makeElementKey, key }) => {
+    deleteElement: ({ collection, makeCollectionKey, key }) => {
         if (collection.length === 0)
             return false;
-        const existingItemIndex = collection.findIndex((item) => makeElementKey(item) === key);
+        const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
         if (existingItemIndex !== -1) {
             collection.splice(existingItemIndex, 1);
             return true;
@@ -42,23 +42,23 @@ const _Array = {
     clear: ({ collection }) => collection.splice(0, collection.length).length > 0,
 };
 const _Set = {
-    getCollectionKeys: ({ collection, makeElementKey }) => collection.size > 0
+    getCollectionKeys: ({ collection, makeCollectionKey }) => collection.size > 0
         ? Array.from(collection.values()).map((item) => {
-            const key = makeElementKey(item);
+            const key = makeCollectionKey(item);
             if (!key)
-                throw new Error('Set.getCollectionKeys - makeElementKey did not produce a value');
+                throw new Error('Set.getCollectionKeys - makeCollectionKey did not produce a value');
             return key;
         })
         : [],
-    getElement: ({ collection, makeElementKey, key }) => (collection.size > 0 ? Array.from(collection.values()).find((item) => makeElementKey(item) == key) : undefined),
+    getElement: ({ collection, makeCollectionKey, key }) => collection.size > 0 ? Array.from(collection.values()).find((item) => makeCollectionKey(item) == key) : undefined,
     insertElement: ({ collection, key, value }) => {
         collection.add(value);
     },
-    updateElement: ({ collection, makeElementKey, value }) => {
+    updateElement: ({ collection, makeCollectionKey, value }) => {
         if (collection.size === 0)
             return false;
-        const key = makeElementKey(value);
-        const existingItem = Array.from(collection.values()).find((item) => makeElementKey(item) === key);
+        const key = makeCollectionKey(value);
+        const existingItem = Array.from(collection.values()).find((item) => makeCollectionKey(item) === key);
         if (existingItem) {
             collection.delete(existingItem);
             collection.add(value);
@@ -66,10 +66,10 @@ const _Set = {
         }
         return false;
     },
-    deleteElement: ({ collection, makeElementKey, key }) => {
+    deleteElement: ({ collection, makeCollectionKey, key }) => {
         if (collection.size === 0)
             return false;
-        const item = Array.from(collection.values()).find((item) => makeElementKey(item) === key);
+        const item = Array.from(collection.values()).find((item) => makeCollectionKey(item) === key);
         if (item) {
             collection.delete(item);
             return true;

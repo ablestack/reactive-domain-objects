@@ -15,54 +15,42 @@ const logger = logger_1.Logger.make('SyncableCollection');
  * @implements {Map<string, D>}
  * @template S
  * @template D
- * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map in order to only trigger observable changes when necessary
+ * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
 class SyncableCollection {
-    constructor({ makeRdoCollectionKeyFromSourceElement, makeRdoCollectionKeyFromRdoElement, makeRdo, }) {
+    constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, }) {
         this._array$ = new Array();
         this[Symbol.toStringTag] = '[object Map]';
-        // -----------------------------------
-        // ISyncableCollection
-        // -----------------------------------
-        // public synchronizeCollection({ sourceCollection }: { sourceCollection: Array<S> }) {
-        //   SyncUtils.synchronizeCollection({
-        //     sourceCollection,
-        //     getTargetCollectionSize: () => this.size,
-        //     getTargetCollectionKeys: this.getKeys,
-        //     makeRdoCollectionKeyFromSourceElement: this.makeRdoCollectionKeyFromSourceElement, //TODO
-        //     tryGetItemFromTargetCollection: (key) => this.tryGetItemFromTargetCollection(key),
-        //     insertItemToTargetCollection: (key, value) => this.insertItemToTargetCollection(key, value),
-        //     tryDeleteItemFromTargetCollection: (key) => this.tryDeleteItemFromTargetCollection(key),
-        //     makeItemForTargetCollection: this.makeRdo,
-        //     tryStepIntoElementAndSync: ({ sourceElementKey, sourceElementVal, targetElementKey, targetElementVal }) =>
-        //       this.tryStepIntoNodeAnSync({
-        //         sourceNodeKind: 'arrayElement',
-        //         sourceNodeKey: sourceElementKey,
-        //         sourceNodeVal: sourceElementVal,
-        //         targetNodeKey: targetElementKey,
-        //         targetNodeVal: targetElementVal,
-        //         tryUpdateTargetNode: (key, value) => this.updateItemInTargetCollection(key, value),
-        //       }),
-        //   });
-        // }
-        // -----------------------------------
-        // ISyncableCollection
-        // -----------------------------------
-        this.getKeys = () => {
+        this.getCollectionKeys = () => {
             return Array.from(this._map$.keys());
         };
-        this.tryGetItemFromTargetCollection = (key) => {
+        this.getElement = (key) => {
             return this._map$.get(key);
         };
-        this.insertItemToTargetCollection = (key, value) => {
-            this._map$.set(key, value);
-            rdo_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
+        this.insertElement = (key, value) => {
+            if (!this._map$.has(key)) {
+                this._map$.set(key, value);
+                rdo_1.CollectionUtils.Array.insertElement({ collection: this._array$, key, value });
+                return true;
+            }
+            else
+                return false;
         };
-        this.updateItemInTargetCollection = (key, value) => {
-            this._map$.set(key, value);
-            rdo_1.CollectionUtils.Array.insertItem({ collection: this._array$, key, value });
+        this.updateElement = (key, value) => {
+            if (this.makeCollectionKeyFromRdoElement) {
+                if (!this._map$.has(key)) {
+                    this._map$.set(key, value);
+                    rdo_1.CollectionUtils.Array.updateElement({ collection: this._array$, makeCollectionKey: this.makeCollectionKeyFromRdoElement, value });
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else {
+                throw new Error('makeCollectionKeyFromRdoElement element must be available for ISyncableRDOCollection update operations');
+            }
         };
-        this.tryDeleteItemFromTargetCollection = (key) => {
+        this.deleteElement = (key) => {
             const itemToDelete = this._map$.get(key);
             if (itemToDelete) {
                 this._map$.delete(key);
@@ -72,20 +60,20 @@ class SyncableCollection {
                     this.array$.splice(indexOfItemToDelete, 1);
                 }
                 else {
-                    logger.error(`tryDeleteItemFromTargetCollection - could not find array item for key ${key}. Rebuilding array`);
+                    logger.error(`tryDeleteItemFromTargetCollection - could not find array item for ISyncableRDOCollection ${key}. Rebuilding array`);
                     this._array$ = Array.from(this._map$.values());
                 }
                 return true;
             }
             return false;
         };
-        this.clear = () => {
+        this.clearElements = () => {
             this._map$.clear();
-            rdo_1.CollectionUtils.Array.clear({ collection: this._array$ });
+            return rdo_1.CollectionUtils.Array.clear({ collection: this._array$ });
         };
-        this.makeRdoCollectionKeyFromSourceElement = makeRdoCollectionKeyFromSourceElement;
-        this.makeRdoCollectionKeyFromRdoElement = makeRdoCollectionKeyFromRdoElement;
-        this.makeRdo = makeRdo;
+        this._makeCollectionKeyFromSourceElement = makeCollectionKeyFromSourceElement;
+        this._makeCollectionKeyFromRdoElement = makeCollectionKeyFromRdoElement;
+        this._makeRdo = makeRdo;
         this._map$ = new Map();
     }
     get size() {
@@ -98,7 +86,7 @@ class SyncableCollection {
     // Map Interface
     // -----------------------------------
     delete(key) {
-        return this.tryDeleteItemFromTargetCollection(key);
+        return this.deleteElement(key);
     }
     forEach(callbackfn, thisArg) {
         this._map$.forEach(callbackfn);
@@ -110,11 +98,8 @@ class SyncableCollection {
         return this._map$.has(key);
     }
     set(key, value) {
-        this.insertItemToTargetCollection(key, value);
+        this.insertElement(key, value);
         return this;
-    }
-    [Symbol.iterator]() {
-        return this._map$.entries();
     }
     entries() {
         return this._map$.entries();
@@ -123,6 +108,33 @@ class SyncableCollection {
         return this._map$.keys();
     }
     values() {
+        return this._map$.values();
+    }
+    clear() {
+        this.clearElements();
+    }
+    [Symbol.iterator]() {
+        return this._map$.entries();
+    }
+    // -----------------------------------
+    // ISyncableRdoCollection
+    // -----------------------------------
+    makeCollectionKeyFromSourceElement(item) {
+        if (this._makeCollectionKeyFromSourceElement)
+            return this._makeCollectionKeyFromSourceElement(item);
+        else
+            return undefined;
+    }
+    makeCollectionKeyFromRdoElement(item) {
+        if (this._makeCollectionKeyFromRdoElement)
+            return this._makeCollectionKeyFromRdoElement(item);
+        else
+            return undefined;
+    }
+    makeRdo(sourceItem) {
+        return this._makeRdo(sourceItem);
+    }
+    elements() {
         return this._map$.values();
     }
 }

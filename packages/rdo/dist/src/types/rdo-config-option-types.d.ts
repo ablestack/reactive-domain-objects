@@ -1,4 +1,4 @@
-import { IEqualityComparer, IMakeRdo, IMakeCollectionKeyMethod } from '.';
+import { IEqualityComparer, IMakeRdo, MakeCollectionKeyMethod } from '.';
 export interface IGraphSynchronizer {
     smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: {
         rootSourceNode: S;
@@ -22,8 +22,8 @@ export interface INodeSyncOptions<S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
     makeRdoCollectionKey?: {
-        fromSourceElement: IMakeCollectionKeyMethod<S>;
-        fromRdoElement: IMakeCollectionKeyMethod<D>;
+        fromSourceElement: MakeCollectionKeyMethod<S>;
+        fromRdoElement: MakeCollectionKeyMethod<D>;
     };
     makeRdo?: IMakeRdo<S, D>['makeRdo'];
 }

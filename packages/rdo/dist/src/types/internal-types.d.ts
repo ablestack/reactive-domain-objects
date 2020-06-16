@@ -1,5 +1,5 @@
 import { IGlobalNameOptions, IMakeRdo, INodeSyncOptions } from '.';
-import { ISyncableRDOCollection, ICollectionKeyFactory } from './rdo-collection-types';
+import { ISyncableRDOCollection, IMakeCollectionKey } from './rdo-collection-types';
 export declare type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 export declare type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export declare type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
@@ -31,7 +31,7 @@ export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
     getItem(key: string): S | null | undefined;
 }
 export declare function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any>;
-export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S>, ICollectionKeyFactory<S> {
+export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S>, IMakeCollectionKey<S> {
     elements(): Iterable<S>;
 }
 export declare function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any>;
@@ -55,7 +55,7 @@ export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
     updateElement(key: string, value: D): boolean;
 }
 export declare function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any>;
-export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, ICollectionKeyFactory<D> {
+export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, IMakeCollectionKey<D> {
     elements(): Iterable<D>;
     insertElement(value: D): void;
     deleteElement(key: string): boolean;

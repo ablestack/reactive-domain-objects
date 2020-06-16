@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoCollectionNWBase = void 0;
 const __1 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
-const types_1 = require("../../types");
 const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
 const node_type_utils_1 = require("../utils/node-type.utils");
+const types_1 = require("../../types");
 const logger = logger_1.Logger.make('RdoCollectionNWBase');
 class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, }) {
@@ -25,14 +25,14 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     //   }
     //   return this._childElementSourceNodeKind;
     // }
-    makeKey(item) {
+    makeCollectionKey(item) {
         var _a, _b;
         // Use IMakeCollectionKey provided on options if available
         if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromRdoElement) {
             return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
         }
-        if (types_1.isICollectionKeyFactory(this.value)) {
-            return this.value.makeKey(item);
+        if (types_1.isIMakeCollectionKeyFromRdoElement(this.value)) {
+            return this.value.makeCollectionKeyFromRdoElement(item);
         }
         // If primitive, the item is the key
         if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
