@@ -31,6 +31,43 @@ class GraphSynchronizer {
             const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
             return wrappedRdoNode;
         };
+        /**
+         *
+         */
+        this.syncChildNode = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
+            logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
+            let changed = false;
+            const parentSourceNode = parentRdoNode.wrappedSourceNode;
+            // Validate
+            if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
+                throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
+            const rdoNode = parentRdoNode.getElement(rdoNodeItemKey);
+            if (!rdoNode === undefined) {
+                logger.trace(`Could not find child rdoNode with key ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+                return false;
+            }
+            const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
+            if (!sourceNode === undefined) {
+                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+                return false;
+            }
+            // Node traversal tracking - step-in
+            this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
+            // Wrap Node
+            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+            // Test to see if node should be ignored, if not, synchronize
+            if (wrappedRdoNode.ignore) {
+                logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
+                return false;
+            }
+            else {
+                changed = wrappedRdoNode.smartSync();
+            }
+            // Node traversal tracking - step-out
+            this.setLastSourceNodeInstancePathValue(parentSourceNode.value);
+            this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
+            return changed;
+        };
         this._defaultEqualityComparer = (options === null || options === void 0 ? void 0 : options.customEqualityComparer) || _1.comparers.apollo;
         this._globalNodeOptions = options === null || options === void 0 ? void 0 : options.globalNodeOptions;
         this._targetedOptionNodePathsMap = new Map();
@@ -117,43 +154,6 @@ class GraphSynchronizer {
      */
     clearTrackedData() {
         this._sourceObjectMap.clear();
-    }
-    /**
-     *
-     */
-    syncChildNode({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) {
-        logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
-        let changed = false;
-        const parentSourceNode = parentRdoNode.wrappedSourceNode;
-        // Validate
-        if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
-            throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
-        const rdoNode = parentRdoNode.getElement(rdoNodeItemKey);
-        if (!rdoNode === undefined) {
-            logger.trace(`Could not find child rdoNode with key ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
-            return false;
-        }
-        const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
-        if (!sourceNode === undefined) {
-            logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
-            return false;
-        }
-        // Node traversal tracking - step-in
-        this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
-        // Wrap Node
-        const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
-        // Test to see if node should be ignored, if not, synchronize
-        if (wrappedRdoNode.ignore) {
-            logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
-            return false;
-        }
-        else {
-            changed = wrappedRdoNode.smartSync();
-        }
-        // Node traversal tracking - step-out
-        this.setLastSourceNodeInstancePathValue(parentSourceNode.value);
-        this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
-        return changed;
     }
 }
 exports.GraphSynchronizer = GraphSynchronizer;

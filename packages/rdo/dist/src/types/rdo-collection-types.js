@@ -19,19 +19,7 @@ function isIMakeRdo(o) {
 }
 exports.isIMakeRdo = isIMakeRdo;
 function IsISyncableCollection(o) {
-    return (o &&
-        o.size &&
-        o.fromRdoElement &&
-        o.insertItemToTargetCollection &&
-        o.elements &&
-        o.getCollectionKeys &&
-        o.getElement &&
-        o.insertElement &&
-        o.updateElement &&
-        o.deleteElement &&
-        o.clearElements &&
-        isIMakeCollectionKeyFromSourceElement(o) &&
-        isIMakeCollectionKeyFromRdoElement(o));
+    return o && o.size && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements && isIMakeCollectionKeyFromSourceElement(o) && isIMakeCollectionKeyFromRdoElement(o);
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {

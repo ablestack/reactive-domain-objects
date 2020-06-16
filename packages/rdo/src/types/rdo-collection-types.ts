@@ -50,21 +50,7 @@ export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceE
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any> {
-  return (
-    o &&
-    o.size &&
-    o.fromRdoElement &&
-    o.insertItemToTargetCollection &&
-    o.elements &&
-    o.getCollectionKeys &&
-    o.getElement &&
-    o.insertElement &&
-    o.updateElement &&
-    o.deleteElement &&
-    o.clearElements &&
-    isIMakeCollectionKeyFromSourceElement(o) &&
-    isIMakeCollectionKeyFromRdoElement(o)
-  );
+  return o && o.size && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements && isIMakeCollectionKeyFromSourceElement(o) && isIMakeCollectionKeyFromRdoElement(o);
 }
 
 export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<S, D> {}

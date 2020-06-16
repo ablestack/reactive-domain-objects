@@ -29,7 +29,7 @@ const CHANGE_SYNC_MAX_TIME_MS = 1000;
 // TEST
 // --------------------------------------------------------------
 
-test('Flat object demo', () => {
+test.only('Flat object demo', () => {
   const fooRDO = new FooRDO();
   const graphSynchronizer = new GraphSynchronizer();
 

@@ -1,4 +1,4 @@
-import { IGraphSynchronizer, IGraphSyncOptions } from '.';
+import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IWrapRdoNode } from '.';
 /**
  *
  *
@@ -41,9 +41,13 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    private wrapRdoNode;
+    wrapRdoNode: IWrapRdoNode;
     /**
      *
      */
-    private syncChildNode;
+    syncChildNode: ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: {
+        parentRdoNode: IRdoInternalNodeWrapper<any, any>;
+        rdoNodeItemKey: string;
+        sourceNodeItemKey: string;
+    }) => boolean;
 }

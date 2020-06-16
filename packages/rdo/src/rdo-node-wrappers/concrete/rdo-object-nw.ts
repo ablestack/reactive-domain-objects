@@ -136,7 +136,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   private sync(): boolean {
     let changed = false;
 
-    if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+    if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}')`);
 
     // Loop properties
     for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {

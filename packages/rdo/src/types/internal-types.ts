@@ -28,7 +28,7 @@ export interface ISourceNodeWrapper<S> {
 }
 
 export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any> {
-  return o && o.typeInfo && o.node !== undefined && o.sourceNodePath && o.lastSourceNode && o.childElementCount;
+  return o && o.typeInfo && 'value' in o && o.setRdoNode && o.childElementCount;
 }
 
 export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
@@ -37,7 +37,7 @@ export interface ISourceInternalNodeWrapper<S> extends ISourceNodeWrapper<S> {
 }
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any> {
-  return o && o.itemKeys && o.getElement && o.updateElement && isISourceNodeWrapper(o);
+  return o && o.nodeKeys && o.getItem && isISourceNodeWrapper(o);
 }
 
 export interface ISourceCollectionNodeWrapper<S> extends ISourceInternalNodeWrapper<S>, IMakeCollectionKey<S> {
@@ -65,7 +65,7 @@ export interface IRdoNodeWrapper<S, D> {
 }
 
 export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any> {
-  return o && o.value !== undefined && o.key && o.parent && o.typeInfo && o.wrappedSourceNode && o.childElementCount && o.smartSync;
+  return o && o.value !== undefined && o.typeInfo && o.wrappedSourceNode && 'ignore' in o && o.childElementCount && o.smartSync;
 }
 
 export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
@@ -87,7 +87,7 @@ export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
-  return o && o.makeItem && o.childElementsNodeKind && o.makeCollectionKey && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
+  return o && o.elements && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;

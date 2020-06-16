@@ -101,7 +101,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     sync() {
         let changed = false;
         if (!__2.isISourceInternalNodeWrapper(this.wrappedSourceNode))
-            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}')`);
         // Loop properties
         for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
             const sourceFieldVal = this.wrappedSourceNode.getItem(sourceFieldname);

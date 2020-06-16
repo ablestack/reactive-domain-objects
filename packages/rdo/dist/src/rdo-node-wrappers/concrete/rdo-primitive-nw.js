@@ -26,11 +26,13 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
         if (!Object.is(this.wrappedSourceNode.value, this.value)) {
             logger.trace(`primitive value found in domainPropKey ${this.key}. Setting from old value to new value`, this.value, this.wrappedSourceNode.value);
             if (!this.wrappedParentRdoNode)
-                throw new Error('Primitive RDO Node wrappers must have a Parent node, and can not be root Nodes');
+                throw new Error('Primitive RDO Node wrappers must have a Parent node, and can not be root Nodes. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
+            //@ts-ignore
+            console.log(`wrappedParentRdoNode.key`, this.wrappedParentRdoNode.key);
             if (!__2.isIRdoInternalNodeWrapper(this.wrappedParentRdoNode))
-                throw new Error('Parent RDO Node wrappers must implement IRdoInternalNodeWrapper');
+                throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
             if (!this.key)
-                throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching');
+                throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
             return this.wrappedParentRdoNode.updateElement(this.key, this.wrappedSourceNode.value);
         }
         return false;

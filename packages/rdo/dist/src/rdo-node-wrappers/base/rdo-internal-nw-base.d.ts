@@ -1,4 +1,4 @@
-import { RdoNWBase } from '.';
+import { RdoNWBase } from './rdo-nw-base';
 import { IRdoInternalNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNameOptions } from '../..';
 export declare abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements IRdoInternalNodeWrapper<S, D> {
     protected _syncChildNode: ISyncChildNode<S, D>;

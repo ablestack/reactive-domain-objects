@@ -1,5 +1,5 @@
 import { Logger } from '../../infrastructure/logger';
-import { RdoNWBase } from '.';
+import { RdoNWBase } from './rdo-nw-base';
 import { IRdoInternalNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNameOptions } from '../..';
 
 const logger = Logger.make('RdoMapNW');

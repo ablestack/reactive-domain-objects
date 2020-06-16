@@ -471,9 +471,14 @@
         "signature": "7c3ab15d69ca0a28ec5a53e8d540c65d0a436b60069e598deaa83d67102ffbbe",
         "affectsGlobalScope": false
       },
+      "../src/rdo-node-wrappers/base/rdo-nw-base.ts": {
+        "version": "5c071c6f5044e9eaed62457b69632d0242c6d57b71124e7a348bf5b1df5401e0",
+        "signature": "7891b639dd65f342871b1b5d3ae789933044e94c015e23bb7f52b691ecf70118",
+        "affectsGlobalScope": false
+      },
       "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": {
-        "version": "1b37d1036bacb0ca79e582cc8059bb33d3441e4b39e6bff4683978f357aee622",
-        "signature": "637e8d2d3501fa5f937c9b126b4a26df9d76498a3735a7dfad9b5d2a65a41c9c",
+        "version": "7ad11de138def776c47bb51793065e57fcd81920f949aacef32c1df53cc7c2cb",
+        "signature": "473f051b652d9d5d58110c26388100ee6f905bce380989ec51521ae19e7f0307",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/utils/node-type.utils.ts": {
@@ -487,12 +492,12 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-collection-types.ts": {
-        "version": "a00c7491f20fe02704861e44c61cebb201ecc56728e83bdd3587d32968908d2c",
+        "version": "c5a6fc4f6899e72e96cc805678680d5fd4cbc52a1f41f8f195ef57c7e057c3fa",
         "signature": "99be33175eb6787b164142e0b38212ed6fbfd9c0f15fc4aa87dbf526092947c4",
         "affectsGlobalScope": false
       },
       "../src/types/internal-types.ts": {
-        "version": "45f97e4424e70b991084f10c907bf5fca876be6f133a6198fc02c6ea0e984606",
+        "version": "fbc74e43415d415ca03d7e589547dddd3f29addc2ed18e41834299326810986e",
         "signature": "207c565a71783777feafac1ece7cf31bfab6c5a4a2efa4f29d12e15628ce904c",
         "affectsGlobalScope": false
       },
@@ -514,11 +519,6 @@
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
         "version": "d38dbbbb885f6f25ca514904e566c6651f80e4829bbde5e9cca668865b7b17ac",
         "signature": "f00dfca02f9e9cde892c7c113337855febc53dfdfa32f2a6ec200136fd785b83",
-        "affectsGlobalScope": false
-      },
-      "../src/rdo-node-wrappers/base/rdo-nw-base.ts": {
-        "version": "5c071c6f5044e9eaed62457b69632d0242c6d57b71124e7a348bf5b1df5401e0",
-        "signature": "7891b639dd65f342871b1b5d3ae789933044e94c015e23bb7f52b691ecf70118",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/index.ts": {
@@ -612,12 +612,12 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "c209d914d9cd33efcbcd569a7643ff917dde7f4b944b8c754ec4b396306d91f9",
+        "version": "28d6de95169979389d9cdcbab41643c7c727790707ae1d68102fe568baf8078e",
         "signature": "71fc9c59f5e2c9873a2628bb5699fb0bbe83d3c111870cebaf5a934b3a9b5528",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-primitive-nw.ts": {
-        "version": "3e7c5880af270ed93b2d099def27b4abad78c42d68ce8dcdc53b674ea1d43cdf",
+        "version": "63112c83bf95c9f56a5424031d70adf57a2ca5e1ccb7679d7b681bb6a8f6c3bd",
         "signature": "0f96407a18bdf63d8017c5f47d71708e691f4c3d7a8cf6841c02d281f2e334ab",
         "affectsGlobalScope": false
       },
@@ -717,8 +717,8 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "8fe38b0839e8b3cf8fcf4af02dd6299c9a600aeb0e62b3fb1570baef4caa97f2",
-        "signature": "d143ab062075a22c761098c3af8da50961a09e7116109ac8715eb1bea8ad7c70",
+        "version": "696b797ffa4dd0f24a63ddd4c857daee86417bceb03a8452868dc78dbaa4a9e4",
+        "signature": "82d247e34b8831d16100c2cde6872b93bfa6c1b027b95e17a3335e4f4b3aa19d",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-collection-node-wrapper-factory.ts": {
@@ -2198,7 +2198,7 @@
         "../node_modules/@types/node/util.d.ts",
         "../src/index.ts",
         "../src/infrastructure/logger.ts",
-        "../src/rdo-node-wrappers/base/index.ts"
+        "../src/rdo-node-wrappers/base/rdo-nw-base.ts"
       ],
       "../src/rdo-node-wrappers/base/rdo-nw-base.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -3769,7 +3769,7 @@
       ],
       "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": [
         "../src/index.ts",
-        "../src/rdo-node-wrappers/base/index.ts"
+        "../src/rdo-node-wrappers/base/rdo-nw-base.ts"
       ],
       "../src/rdo-node-wrappers/base/rdo-nw-base.ts": [
         "../src/index.ts"

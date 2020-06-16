@@ -140,7 +140,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private wrapRdoNode: IWrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
+  public wrapRdoNode: IWrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
     const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
 
     const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
@@ -152,7 +152,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  private syncChildNode({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean {
+  public syncChildNode = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
     const parentSourceNode = parentRdoNode.wrappedSourceNode;
@@ -190,5 +190,5 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;
-  }
+  };
 }
