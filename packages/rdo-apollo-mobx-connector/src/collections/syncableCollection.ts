@@ -92,20 +92,20 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     return this._map$.entries();
   }
 
-  [Symbol.toStringTag]: string = '[object Map]';
+  [Symbol.toStringTag]: string = 'Map';
 
   // -----------------------------------
   // ISyncableRdoCollection
   // -----------------------------------
-  public makeCollectionKeyFromSourceElement(item: S): string | undefined {
+  public makeCollectionKeyFromSourceElement = (item: S): string | undefined => {
     if (this._makeCollectionKeyFromSourceElement) return this._makeCollectionKeyFromSourceElement(item);
     else return undefined;
-  }
+  };
 
-  public makeCollectionKeyFromRdoElement(item: D): string | undefined {
+  public makeCollectionKeyFromRdoElement = (item: D): string | undefined => {
     if (this._makeCollectionKeyFromRdoElement) return this._makeCollectionKeyFromRdoElement(item);
     else return undefined;
-  }
+  };
 
   public makeRdo(sourceItem: S) {
     return this._makeRdo(sourceItem);

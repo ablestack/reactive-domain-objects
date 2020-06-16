@@ -9,6 +9,38 @@ const types_1 = require("../../types");
 class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     constructor({ value, sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions, }) {
         super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
+        //------------------------------
+        // ISourceCollectionNodeWrapper
+        //------------------------------
+        // private _childElementsNodeKind: ChildElementsNodeKind | undefined;
+        // public get ChildElementsNodeKind(): ChildElementsNodeKind {
+        //   if (this._childElementsNodeKind === undefined) {
+        //     const firstElement = this.elements()[Symbol.iterator]().next().value;
+        //     if (firstElement) {
+        //       this._childElementsNodeKind = NodeTypeUtils.getSourceNodeType(firstElement).kind;
+        //     } else this._childElementsNodeKind = null;
+        //   }
+        //   return this._childElementsNodeKind;
+        // }
+        this.makeCollectionKey = (item) => {
+            var _a, _b;
+            // Use IMakeCollectionKey provided on options if available
+            if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromSourceElement) {
+                return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
+            }
+            if (types_1.isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
+                return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
+            }
+            // If primitive, the item is the key
+            if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
+                return String(item);
+            }
+            // Last option - look for idKey
+            if (item[__1.config.defaultIdKey]) {
+                return item[__1.config.defaultIdKey];
+            }
+            return undefined;
+        };
         this._value = value;
     }
     //------------------------------
@@ -31,38 +63,6 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     }
     getNode() {
         return this._value;
-    }
-    //------------------------------
-    // ISourceCollectionNodeWrapper
-    //------------------------------
-    // private _childElementsNodeKind: ChildElementsNodeKind | undefined;
-    // public get ChildElementsNodeKind(): ChildElementsNodeKind {
-    //   if (this._childElementsNodeKind === undefined) {
-    //     const firstElement = this.elements()[Symbol.iterator]().next().value;
-    //     if (firstElement) {
-    //       this._childElementsNodeKind = NodeTypeUtils.getSourceNodeType(firstElement).kind;
-    //     } else this._childElementsNodeKind = null;
-    //   }
-    //   return this._childElementsNodeKind;
-    // }
-    makeCollectionKey(item) {
-        var _a, _b;
-        // Use IMakeCollectionKey provided on options if available
-        if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromSourceElement) {
-            return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
-        }
-        if (types_1.isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
-            return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
-        }
-        // If primitive, the item is the key
-        if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
-            return String(item);
-        }
-        // Last option - look for idKey
-        if (item[__1.config.defaultIdKey]) {
-            return item[__1.config.defaultIdKey];
-        }
-        return undefined;
     }
     elements() {
         return this._value;

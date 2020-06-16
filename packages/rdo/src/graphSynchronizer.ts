@@ -152,16 +152,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public syncChildNode = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
+  public syncChildNode = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
     const parentSourceNode = parentRdoNode.wrappedSourceNode;
 
     // Validate
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
-    const rdoNode = parentRdoNode.getElement(rdoNodeItemKey);
-    if (!rdoNode === undefined) {
-      logger.trace(`Could not find child rdoNode with key ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+    if (!rdoNodeItemValue === undefined) {
+      logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
       return false;
     }
 
@@ -175,18 +174,19 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {
       logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
       return false;
     } else {
+      logger.trace(`running smartSync on (${this.getSourceNodePath()})`);
       changed = wrappedRdoNode.smartSync();
     }
 
     // Node traversal tracking - step-out
-    this.setLastSourceNodeInstancePathValue(parentSourceNode.value);
+    this.setLastSourceNodeInstancePathValue(sourceNode);
     this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;

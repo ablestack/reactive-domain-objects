@@ -42,7 +42,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   //   return this._childElementSourceNodeKind;
   // }
 
-  public makeCollectionKey(item: D) {
+  public makeCollectionKey = (item: D) => {
     // Use IMakeCollectionKey provided on options if available
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromRdoElement) {
       return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
@@ -58,13 +58,12 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     }
 
     // Last option - look for idKey
-    console.log(`item`, item);
     if (item[config.defaultIdKey]) {
       return item[config.defaultIdKey];
     }
 
     throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
-  }
+  };
 
   public makeRdo(sourceObject) {
     // Use IMakeCollectionKey provided on options if available

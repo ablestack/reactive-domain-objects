@@ -1,7 +1,6 @@
 // -----------------------------------
 // FOO GRAPH - TEST SOURCE TYPES
 // -----------------------------------
-export type Foo = { id: string; name: string };
 export type FooSimple = { bar: Bar };
 export type FooWithCollection = { collectionOfBar: Bar[] };
 export type Bar = { id: string; name: string };

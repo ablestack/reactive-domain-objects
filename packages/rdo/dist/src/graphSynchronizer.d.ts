@@ -45,8 +45,9 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    syncChildNode: ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: {
+    syncChildNode: ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: {
         parentRdoNode: IRdoInternalNodeWrapper<any, any>;
+        rdoNodeItemValue: any;
         rdoNodeItemKey: string;
         sourceNodeItemKey: string;
     }) => boolean;

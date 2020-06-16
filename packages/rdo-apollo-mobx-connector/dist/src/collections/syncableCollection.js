@@ -20,7 +20,22 @@ const logger = logger_1.Logger.make('SyncableCollection');
 class SyncableCollection {
     constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, }) {
         this._array$ = new Array();
-        this[Symbol.toStringTag] = '[object Map]';
+        this[Symbol.toStringTag] = 'Map';
+        // -----------------------------------
+        // ISyncableRdoCollection
+        // -----------------------------------
+        this.makeCollectionKeyFromSourceElement = (item) => {
+            if (this._makeCollectionKeyFromSourceElement)
+                return this._makeCollectionKeyFromSourceElement(item);
+            else
+                return undefined;
+        };
+        this.makeCollectionKeyFromRdoElement = (item) => {
+            if (this._makeCollectionKeyFromRdoElement)
+                return this._makeCollectionKeyFromRdoElement(item);
+            else
+                return undefined;
+        };
         this.getCollectionKeys = () => {
             return Array.from(this._map$.keys());
         };
@@ -115,21 +130,6 @@ class SyncableCollection {
     }
     [Symbol.iterator]() {
         return this._map$.entries();
-    }
-    // -----------------------------------
-    // ISyncableRdoCollection
-    // -----------------------------------
-    makeCollectionKeyFromSourceElement(item) {
-        if (this._makeCollectionKeyFromSourceElement)
-            return this._makeCollectionKeyFromSourceElement(item);
-        else
-            return undefined;
-    }
-    makeCollectionKeyFromRdoElement(item) {
-        if (this._makeCollectionKeyFromRdoElement)
-            return this._makeCollectionKeyFromRdoElement(item);
-        else
-            return undefined;
     }
     makeRdo(sourceItem) {
         return this._makeRdo(sourceItem);

@@ -12,12 +12,12 @@ export interface ICustomSync<S> {
         continueSmartSync: IContinueSmartSync;
     }) => boolean;
 }
-export declare type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoItemValue, }: {
+export declare type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, }: {
     sourceNodeSubPath: string;
     sourceNodeItemKey: string;
     sourceItemValue: any;
     rdoNodeItemKey: string;
-    rdoItemValue: any;
+    rdoNodeItemValue: any;
 }) => boolean;
 export declare function IsICustomSync(o: any): o is ICustomSync<any>;
 export interface ICustomEqualityRDO<S> {

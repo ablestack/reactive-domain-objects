@@ -34,8 +34,8 @@ export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<
     clear(): void;
     [Symbol.iterator](): IterableIterator<[string, D]>;
     [Symbol.toStringTag]: string;
-    makeCollectionKeyFromSourceElement(item: S): string | undefined;
-    makeCollectionKeyFromRdoElement(item: D): string | undefined;
+    makeCollectionKeyFromSourceElement: (item: S) => string | undefined;
+    makeCollectionKeyFromRdoElement: (item: D) => string | undefined;
     makeRdo(sourceItem: S): D;
     getCollectionKeys: () => string[];
     elements(): Iterable<D>;

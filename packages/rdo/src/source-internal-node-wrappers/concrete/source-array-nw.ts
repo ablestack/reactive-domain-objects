@@ -71,7 +71,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   //   return this._childElementsNodeKind;
   // }
 
-  public makeCollectionKey(item: S) {
+  public makeCollectionKey = (item: S) => {
     // Use IMakeCollectionKey provided on options if available
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
@@ -92,7 +92,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
     }
 
     return undefined;
-  }
+  };
 
   public elements(): Iterable<S> {
     return this._value;

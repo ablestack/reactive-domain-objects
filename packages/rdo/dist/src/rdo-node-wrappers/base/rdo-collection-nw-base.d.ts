@@ -10,7 +10,7 @@ export declare abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBas
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNameOptions | undefined;
     });
-    makeCollectionKey(item: D): any;
+    makeCollectionKey: (item: D) => any;
     makeRdo(sourceObject: any): any;
     abstract elements(): Iterable<D>;
     abstract childElementCount(): any;

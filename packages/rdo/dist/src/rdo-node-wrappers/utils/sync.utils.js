@@ -27,6 +27,7 @@ function synchronizeCollection({ rdo, syncChildNode }) {
             // Get or create target item
             let targetItem = undefined;
             if (!targetCollectionStartedEmpty) {
+                logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Found item ${key} in rdoCollection`, targetItem);
                 targetItem = rdo.getElement(key);
             }
             if (!targetItem) {
@@ -35,14 +36,14 @@ function synchronizeCollection({ rdo, syncChildNode }) {
                 targetItem = rdo.makeRdo(sourceItem);
                 if (!targetItem)
                     throw Error(`rdo.targetItem produced null or undefined`);
-                logger.trace(`Adding item ${key} to collection`, targetItem);
+                logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
                 rdo.insertElement(key, targetItem);
             }
             //
             // Sync Item
             //
             logger.trace(`Syncing item ${key} in collection`, sourceItem);
-            changed = syncChildNode({ parentRdoNode: rdo, rdoNodeItemKey: key, sourceNodeItemKey: key });
+            changed = syncChildNode({ parentRdoNode: rdo, rdoNodeItemValue: targetItem, rdoNodeItemKey: key, sourceNodeItemKey: key });
             continue;
         }
     }

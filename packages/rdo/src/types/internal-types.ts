@@ -90,7 +90,7 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
   return o && o.elements && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
 }
 
-export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;
+export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;
 
 export type IWrapRdoNode = ({
   sourceNodePath,

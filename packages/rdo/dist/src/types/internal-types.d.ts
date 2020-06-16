@@ -62,8 +62,9 @@ export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper
     clearElements(): boolean;
 }
 export declare function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any>;
-export declare type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemKey, sourceNodeItemKey }: {
+export declare type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: {
     parentRdoNode: IRdoInternalNodeWrapper<any, any>;
+    rdoNodeItemValue: any;
     rdoNodeItemKey: string;
     sourceNodeItemKey: string;
 }) => boolean;

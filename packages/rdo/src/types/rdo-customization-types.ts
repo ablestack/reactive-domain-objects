@@ -21,13 +21,13 @@ export type IContinueSmartSync = <S extends Record<string, any>, D extends Recor
   sourceNodeItemKey,
   sourceItemValue,
   rdoNodeItemKey,
-  rdoItemValue,
+  rdoNodeItemValue,
 }: {
   sourceNodeSubPath: string;
   sourceNodeItemKey: string;
   sourceItemValue: any;
   rdoNodeItemKey: string;
-  rdoItemValue: any;
+  rdoNodeItemValue: any;
 }) => boolean;
 
 export function IsICustomSync(o: any): o is ICustomSync<any> {

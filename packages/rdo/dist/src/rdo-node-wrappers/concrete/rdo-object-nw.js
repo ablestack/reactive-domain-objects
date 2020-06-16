@@ -12,14 +12,14 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         /** */
         this.makeContinueSmartSyncFunction = ({ originalSourceNodePath }) => {
             // Build method
-            return ({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoItemValue }) => {
+            return ({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue }) => {
                 if (!sourceNodeSubPath)
                     throw new Error('continueSync sourceNodeSubPath must not be null or empty. continueSync can only be called on child objects');
                 const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubPath}`;
-                const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoItemValue, rdoNodeItemKey: rdoNodeItemKey });
+                const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
                 if (!types_1.isIRdoInternalNodeWrapper(wrappedRdoNode))
                     throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
-                return this._syncChildNode({ parentRdoNode: wrappedRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+                return this._syncChildNode({ parentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
             };
         };
         this._value = value;
@@ -108,10 +108,14 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             const rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
             // Check to see if key exists
             if (!rdoFieldname) {
-                logger.trace(`domainFieldname '${rdoFieldname}' not found in RDO. Skipping property`);
+                logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' key found in RDO. Skipping property`);
                 continue;
             }
-            changed = this._syncChildNode({ parentRdoNode: this, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
+            const rdoNodeItemValue = this.getElement(rdoFieldname);
+            if (!rdoFieldname) {
+                throw new Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' value not found in RDO. Skipping property`);
+            }
+            changed = this._syncChildNode({ parentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
         }
         return changed;
     }
