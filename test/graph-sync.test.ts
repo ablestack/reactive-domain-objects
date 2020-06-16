@@ -29,7 +29,7 @@ const CHANGE_SYNC_MAX_TIME_MS = 1000;
 // TEST
 // --------------------------------------------------------------
 
-test.only('Flat object demo', () => {
+test('Flat object demo', () => {
   const fooRDO = new FooRDO();
   const graphSynchronizer = new GraphSynchronizer();
 
@@ -61,7 +61,7 @@ test('Simple graph usage demo', () => {
 // TEST
 // --------------------------------------------------------------
 
-test('Collection usage demo', () => {
+test.only('Collection usage demo', () => {
   const fooRDO = new FooDomainGraphWithCollection();
   const syncOptions: IGraphSyncOptions = {
     targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'collectionOfBar' }, makeRdo: (sourceNode: Bar) => new BarRDO() }],

@@ -57,8 +57,7 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.length;
     }
-    insertElement(value) {
-        const key = this.makeCollectionKey(value);
+    insertElement(key, value) {
         collection_utils_1.CollectionUtils.Array.insertElement({ collection: this._value, key, value });
     }
     deleteElement(key) {

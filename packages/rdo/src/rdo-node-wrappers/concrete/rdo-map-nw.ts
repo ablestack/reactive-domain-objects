@@ -80,8 +80,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertElement(value: D) {
-    const key = this.makeCollectionKey(value);
+  public insertElement(key: string, value: D) {
     this._value.set(key, value);
   }
 

@@ -81,8 +81,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.length;
   }
 
-  public insertElement(value: D) {
-    const key = this.makeCollectionKey(value);
+  public insertElement(key: string, value: D) {
     CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 

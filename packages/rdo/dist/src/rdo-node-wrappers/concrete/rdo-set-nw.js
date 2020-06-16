@@ -57,8 +57,7 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.size;
     }
-    insertElement(value) {
-        const key = this.makeCollectionKey(value);
+    insertElement(key, value) {
         collection_utils_1.CollectionUtils.Set.insertElement({ collection: this._value, key, value });
     }
     deleteElement(key) {

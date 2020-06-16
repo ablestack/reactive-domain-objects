@@ -27,8 +27,6 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
             logger.trace(`primitive value found in domainPropKey ${this.key}. Setting from old value to new value`, this.value, this.wrappedSourceNode.value);
             if (!this.wrappedParentRdoNode)
                 throw new Error('Primitive RDO Node wrappers must have a Parent node, and can not be root Nodes. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
-            //@ts-ignore
-            console.log(`wrappedParentRdoNode.key`, this.wrappedParentRdoNode.key);
             if (!__2.isIRdoInternalNodeWrapper(this.wrappedParentRdoNode))
                 throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
             if (!this.key)

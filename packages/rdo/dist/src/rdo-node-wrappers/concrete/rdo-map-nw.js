@@ -55,8 +55,7 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.size;
     }
-    insertElement(value) {
-        const key = this.makeCollectionKey(value);
+    insertElement(key, value) {
         this._value.set(key, value);
     }
     deleteElement(key) {

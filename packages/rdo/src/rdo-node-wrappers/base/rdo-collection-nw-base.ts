@@ -58,11 +58,12 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     }
 
     // Last option - look for idKey
+    console.log(`item`, item);
     if (item[config.defaultIdKey]) {
       return item[config.defaultIdKey];
     }
 
-    throw new Error(`could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
+    throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
   }
 
   public makeRdo(sourceObject) {
@@ -81,6 +82,6 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   public abstract elements(): Iterable<D>;
   public abstract childElementCount();
   public abstract clearElements();
-  public abstract insertElement(value: D);
+  public abstract insertElement(key: string, value: D);
   public abstract deleteElement(key: string);
 }

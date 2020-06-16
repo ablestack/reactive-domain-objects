@@ -19,7 +19,7 @@ export declare class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    insertElement(value: D): void;
+    insertElement(key: string, value: D): void;
     deleteElement(key: string): boolean;
     clearElements(): boolean;
 }

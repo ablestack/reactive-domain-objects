@@ -35,7 +35,7 @@ function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollecti
         if (!targetItem) throw Error(`rdo.targetItem produced null or undefined`);
 
         logger.trace(`Adding item ${key} to collection`, targetItem);
-        rdo.insertElement(targetItem);
+        rdo.insertElement(key, targetItem);
       }
 
       //

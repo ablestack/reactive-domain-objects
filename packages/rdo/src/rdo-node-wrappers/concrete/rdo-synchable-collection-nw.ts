@@ -74,13 +74,8 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertElement(value: D) {
-    const key = this.makeCollectionKey(value);
-    if (!key) {
-      this._value.insertElement(key, value);
-    } else {
-      throw new Error('insertElement - makeKey did not return a value');
-    }
+  public insertElement(key: string, value: D) {
+    this._value.insertElement(key, value);
   }
 
   public deleteElement(key: string): boolean {

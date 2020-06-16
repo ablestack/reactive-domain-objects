@@ -82,8 +82,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertElement(value: D) {
-    const key = this.makeCollectionKey(value);
+  public insertElement(key: string, value: D) {
     CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 

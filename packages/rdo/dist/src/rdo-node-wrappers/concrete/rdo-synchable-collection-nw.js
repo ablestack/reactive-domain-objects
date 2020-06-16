@@ -48,14 +48,8 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.size;
     }
-    insertElement(value) {
-        const key = this.makeCollectionKey(value);
-        if (!key) {
-            this._value.insertElement(key, value);
-        }
-        else {
-            throw new Error('insertElement - makeKey did not return a value');
-        }
+    insertElement(key, value) {
+        this._value.insertElement(key, value);
     }
     deleteElement(key) {
         return this._value.deleteElement(key);

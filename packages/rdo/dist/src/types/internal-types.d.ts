@@ -57,7 +57,7 @@ export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
 export declare function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any>;
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, IMakeCollectionKey<D> {
     elements(): Iterable<D>;
-    insertElement(value: D): void;
+    insertElement(key: string, value: D): void;
     deleteElement(key: string): boolean;
     clearElements(): boolean;
 }

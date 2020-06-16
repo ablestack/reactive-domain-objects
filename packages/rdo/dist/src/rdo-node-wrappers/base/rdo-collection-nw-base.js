@@ -39,10 +39,11 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             return String(item);
         }
         // Last option - look for idKey
+        console.log(`item`, item);
         if (item[__1.config.defaultIdKey]) {
             return item[__1.config.defaultIdKey];
         }
-        throw new Error(`could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
+        throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
     }
     makeRdo(sourceObject) {
         var _a;
