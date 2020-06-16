@@ -4,15 +4,28 @@
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
 
-export interface IMakeCollectionKeyMethod<T> {
-  (item: T): string | undefined;
-}
-export interface ICollectionKeyFactory<T> {
-  makeKey: IMakeCollectionKeyMethod<T>;
+export interface IMakeCollectionKey<T> {
+  makeCollectionKey: (item: T) => string | undefined;
 }
 
-export function isICollectionKeyFactory(o: any): o is ICollectionKeyFactory<any> {
-  return o && o.makeKey;
+export function isIMakeCollectionKey(o: any): o is IMakeCollectionKey<any> {
+  return o && o.makeCollectionKey;
+}
+
+export interface IMakeCollectionKeyFromSourceElement<T> {
+  makeCollectionKeyFromSourceElement: IMakeCollectionKey<T>['makeCollectionKey'];
+}
+
+export function isIMakeCollectionKeyFromSourceElement(o: any): o is IMakeCollectionKeyFromSourceElement<any> {
+  return o && o.makeCollectionKeyFromSourceElement;
+}
+
+export interface IMakeCollectionKeyFromRdoElement<T> {
+  makeCollectionKeyFromRdoElement: IMakeCollectionKey<T>['makeCollectionKey'];
+}
+
+export function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollectionKeyFromRdoElement<any> {
+  return o && o.makeCollectionKeyFromRdoElement;
 }
 
 export interface IMakeRdo<S, D> {
@@ -23,33 +36,36 @@ export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {
   return o && o.makeRdo;
 }
 
-export interface ISyncableCollection<T> extends IMakeCollectionKeyMethod<T>, Iterable<T> {
+export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceElement<S>, IMakeCollectionKeyFromRdoElement<D> {
   readonly size: number;
+  elements(): Iterable<D>;
   getCollectionKeys: () => string[];
-  getElement: (key: string) => T | null | undefined;
-  insertElement: (value: T) => void;
-  updateElement: (key: string, value: T) => boolean;
+  getElement: (key: string) => D | null | undefined;
+  insertElement: (key: string, value: D) => void;
+  updateElement: (key: string, value: D) => boolean;
   deleteElement: (key: string) => boolean;
   clearElements: () => boolean;
 }
 
-export function IsISyncableCollection(o: any): o is ISyncableCollection<any> {
+export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any> {
   return (
     o &&
-    o.getCollectionKeys &&
-    typeof o.getCollectionKeys === 'function' &&
-    o.tryGetItemFromTargetCollection &&
-    typeof o.tryGetItemFromTargetCollection === 'function' &&
+    o.size &&
+    o.fromRdoElement &&
     o.insertItemToTargetCollection &&
-    typeof o.insertItemToTargetCollection === 'function' &&
-    o.tryDeleteItemFromTargetCollection &&
-    typeof o.tryDeleteItemFromTargetCollection === 'function' &&
-    o.clear &&
-    typeof o.clear === 'function'
+    o.elements &&
+    o.getCollectionKeys &&
+    o.getElement &&
+    o.insertElement &&
+    o.updateElement &&
+    o.deleteElement &&
+    o.clearElements &&
+    isIMakeCollectionKeyFromSourceElement(o) &&
+    isIMakeCollectionKeyFromRdoElement(o)
   );
 }
 
-export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<D> {}
+export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<S, D> {}
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
   return o && isIMakeRdo(o) && IsISyncableCollection(o);

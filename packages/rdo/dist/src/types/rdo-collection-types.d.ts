@@ -9,16 +9,19 @@ export interface IMakeRdo<S, D> {
     makeRdo(sourceObject: S): D | undefined;
 }
 export declare function isIMakeRdo(o: any): o is IMakeRdo<any, any>;
-export interface ISyncableCollection<T> extends IMakeCollectionKeyMethod<T>, Iterable<T> {
+export interface ISyncableCollection<S, D> {
     readonly size: number;
+    makeRdoCollectionKeyFromSourceElement: IMakeCollectionKeyMethod<S>;
+    makeRdoCollectionKeyFromRdoElement: IMakeCollectionKeyMethod<D>;
+    elements(): Iterable<D>;
     getCollectionKeys: () => string[];
-    getElement: (key: string) => T | null | undefined;
-    insertElement: (value: T) => void;
-    updateElement: (key: string, value: T) => boolean;
+    getElement: (key: string) => D | null | undefined;
+    insertElement: (value: D) => void;
+    updateElement: (key: string, value: D) => boolean;
     deleteElement: (key: string) => boolean;
     clearElements: () => boolean;
 }
-export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any>;
-export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<D> {
+export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any, any>;
+export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<S, D> {
 }
 export declare function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any>;

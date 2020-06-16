@@ -149,8 +149,8 @@ export class LibraryRDO {
   }
 
   public authors: SyncableCollection<Author, AuthorRDO> = new SyncableCollection({
-    makeRdoCollectionKeyFromSourceElement: (author: Author) => author.id,
-    makeRdoCollectionKeyFromRdoElement: (author: AuthorRDO) => author.id,
+    makeCollectionKeyFromSourceElement: (author: Author) => author.id,
+    makeCollectionKeyFromRdoElement: (author: AuthorRDO) => author.id,
     makeRdo: (book: Author) => new AuthorRDO(),
   });
 
@@ -165,8 +165,8 @@ export class AllCollectionTypesWithObjectsRDO {
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeRdoCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
-    makeRdoCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
+    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
 }
@@ -182,8 +182,8 @@ export class AllCollectionTypesRDO {
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeRdoCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
-    makeRdoCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
+    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
   public arrayOfNumbers = new Array<Number>();

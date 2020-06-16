@@ -24,14 +24,14 @@
 //       const typeDerivedOptions: Partial<INodeSyncOptions<any, any>> | undefined = IsISyncableRDOCollection(targetCollection)
 //         ? {
 //             makeRdoCollectionKey: {
-//               fromSourceElement: targetCollection.makeRdoCollectionKeyFromSourceElement,
-//               fromRdoElement: targetCollection.makeRdoCollectionKeyFromRdoElement,
+//               fromSourceElement: targetCollection.makeCollectionKeyFromSourceElement,
+//               fromRdoElement: targetCollection.makeCollectionKeyFromRdoElement,
 //             },
 //             makeRdo: targetCollection.makeRdo,
 //           }
 //         : undefined;
 
-//       // GET CONFIG ITEM: makeRdoCollectionKeyFromSourceElement
+//       // GET CONFIG ITEM: makeCollectionKeyFromSourceElement
 //       makeRdoCollectionKey = targetDerivedOptions?.makeRdoCollectionKey || typeDerivedOptions?.makeRdoCollectionKey || this.tryMakeAutoKeyMaker({ sourceCollection, targetCollection });
 
 //       // GET CONFIG ITEM: makeRdo

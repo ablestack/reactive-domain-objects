@@ -67,7 +67,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   // IRdoCollectionNodeWrapper
   //------------------------------
   public elements(): Iterable<D> {
-    return this._value;
+    return this._value.elements();
   }
 
   public childElementCount(): number {
@@ -75,7 +75,12 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
   }
 
   public insertElement(value: D) {
-    this._value.insertElement(value);
+    const key = this.makeKey(value);
+    if (!key) {
+      this._value.insertElement(key, value);
+    } else {
+      throw new Error('insertElement - makeKey did not return a value');
+    }
   }
 
   public deleteElement(key: string): boolean {

@@ -43,7 +43,7 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     // IRdoCollectionNodeWrapper
     //------------------------------
     elements() {
-        return this._value;
+        return this._value.elements();
     }
     childElementCount() {
         return this._value.size;

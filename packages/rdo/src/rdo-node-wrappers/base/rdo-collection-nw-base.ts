@@ -1,8 +1,8 @@
 import { IGlobalNameOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
 import { Logger } from '../../infrastructure/logger';
-import { isIMakeRdo, isICollectionKeyFactory } from '../../types';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { NodeTypeUtils } from '../utils/node-type.utils';
+import { isIMakeCollectionKeyFromRdoElement, isIMakeRdo } from '../../types';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
@@ -48,8 +48,8 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
     }
 
-    if (isICollectionKeyFactory(this.value)) {
-      return this.value.makeKey(item);
+    if (isIMakeCollectionKeyFromRdoElement(this.value)) {
+      return this.value.makeCollectionKeyFromRdoElement(item);
     }
 
     // If primitive, the item is the key

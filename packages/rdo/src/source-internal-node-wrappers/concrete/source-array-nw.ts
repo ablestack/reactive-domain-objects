@@ -1,7 +1,8 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, IMakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions, NodeKind, isICollectionKeyFactory, config } from '../..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNameOptions, NodeKind, config } from '../..';
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
+import { isIMakeCollectionKeyFromSourceElement } from '../../types';
 
 export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollectionNodeWrapper<S> {
   private _value: Array<S>;
@@ -76,7 +77,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
     }
 
-    if (isICollectionKeyFactory(this.wrappedRdoNode)) {
+    if (isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
       return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
     }
 

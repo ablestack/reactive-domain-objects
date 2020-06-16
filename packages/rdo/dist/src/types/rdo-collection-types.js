@@ -11,17 +11,7 @@ function isIMakeRdo(o) {
 }
 exports.isIMakeRdo = isIMakeRdo;
 function IsISyncableCollection(o) {
-    return (o &&
-        o.getCollectionKeys &&
-        typeof o.getCollectionKeys === 'function' &&
-        o.tryGetItemFromTargetCollection &&
-        typeof o.tryGetItemFromTargetCollection === 'function' &&
-        o.insertItemToTargetCollection &&
-        typeof o.insertItemToTargetCollection === 'function' &&
-        o.tryDeleteItemFromTargetCollection &&
-        typeof o.tryDeleteItemFromTargetCollection === 'function' &&
-        o.clear &&
-        typeof o.clear === 'function');
+    return o && o.size && o.fromRdoElement && o.insertItemToTargetCollection && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements;
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {

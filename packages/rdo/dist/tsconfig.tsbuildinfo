@@ -477,8 +477,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-collection-types.ts": {
-        "version": "a2beea15249e44026d27e8b86887106b2be94ed3744216d52007dd18234241e9",
-        "signature": "e41bb90e2b2cc0fcec4fee170456f3cc41782bbc8ccd790cf1dd85b71dae41b2",
+        "version": "6ee4a4da945f6cfa8bac90b7242c043f3eed8e03ddeafdb908896d2e36a11c0b",
+        "signature": "4b6da72a05539ce6d041ce6ce7c8e28d01aee3aee1c65c36abf6d6dfae6bd454",
         "affectsGlobalScope": false
       },
       "../src/types/internal-types.ts": {
@@ -627,7 +627,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.ts": {
-        "version": "559a65fc5a085779f0d2cc929071c15a9c0f93a01cd141d1b987762b2648d1a3",
+        "version": "6eb0785e1d82fb77213ab31e85cda8e556817ea8f2095427d1ca82110e17d32c",
         "signature": "2ea7ed135456c0a75b8acd4441ee7a0b87d5d96c3ffd2f3ba9755ce85df9e98b",
         "affectsGlobalScope": false
       },
