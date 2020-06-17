@@ -1,4 +1,4 @@
-import { ISyncableRDOCollection, MakeCollectionKeyMethod } from '@ablestack/rdo';
+import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper } from '@ablestack/rdo';
 /**
  *
  *
@@ -36,7 +36,7 @@ export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<
     [Symbol.toStringTag]: string;
     makeCollectionKeyFromSourceElement: (item: S) => string | undefined;
     makeCollectionKeyFromRdoElement: (item: D) => string | undefined;
-    makeRdo(sourceItem: S): D | undefined;
+    makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
     getCollectionKeys: () => string[];
     elements(): Iterable<D>;
     getElement: (key: string) => D | undefined;

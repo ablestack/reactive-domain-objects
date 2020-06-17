@@ -1,8 +1,8 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
 export declare class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     private _value;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, }: {
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }: {
         value: Set<D>;
         typeInfo: RdoNodeTypeInfo;
         key: string | undefined;
@@ -10,7 +10,8 @@ export declare class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
         wrappedSourceNode: ISourceNodeWrapper<S>;
         syncChildNode: ISyncChildNode<S, D>;
         matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
-        globalNodeOptions: IGlobalNameOptions | undefined;
+        globalNodeOptions: IGlobalNodeOptions | undefined;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     });
     get value(): Set<D>;
     itemKeys(): string[];

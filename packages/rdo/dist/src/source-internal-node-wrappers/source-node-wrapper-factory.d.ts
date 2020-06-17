@@ -1,8 +1,8 @@
-import { ISourceNodeWrapper, IGlobalNameOptions, INodeSyncOptions } from '..';
+import { ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '..';
 export declare class SourceNodeWrapperFactory {
     private _globalNodeOptions;
     constructor({ globalNodeOptions }: {
-        globalNodeOptions: IGlobalNameOptions | undefined;
+        globalNodeOptions: IGlobalNodeOptions | undefined;
     });
     make<S>({ sourceNodePath, value, key, lastSourceNode, matchingNodeOptions, }: {
         sourceNodePath: string;

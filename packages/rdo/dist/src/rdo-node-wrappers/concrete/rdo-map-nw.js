@@ -7,8 +7,8 @@ const logger_1 = require("../../infrastructure/logger");
 const sync_utils_1 = require("../utils/sync.utils");
 const logger = logger_1.Logger.make('RdoMapNW');
 class RdoMapNW extends __1.RdoCollectionNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
         this._value = value;
     }
     //------------------------------

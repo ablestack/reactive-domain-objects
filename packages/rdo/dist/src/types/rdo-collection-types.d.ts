@@ -1,3 +1,4 @@
+import { IMakeRdo } from './internal-types';
 export declare type MakeCollectionKeyMethod<T> = (item: T) => string | undefined;
 export interface IMakeCollectionKey<T> {
     makeCollectionKey: (item: T) => string | undefined;
@@ -11,10 +12,10 @@ export interface IMakeCollectionKeyFromRdoElement<T> {
     makeCollectionKeyFromRdoElement: IMakeCollectionKey<T>['makeCollectionKey'];
 }
 export declare function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollectionKeyFromRdoElement<any>;
-export interface IMakeRdo<S, D> {
-    makeRdo(sourceObject: S): D | undefined;
+export interface IMakeRdoElement<S, D> {
+    makeRdoElement(sourceObject: S): D | undefined;
 }
-export declare function isIMakeRdo(o: any): o is IMakeRdo<any, any>;
+export declare function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any>;
 export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceElement<S>, IMakeCollectionKeyFromRdoElement<D> {
     readonly size: number;
     elements(): Iterable<D>;

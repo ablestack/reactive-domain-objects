@@ -20,6 +20,10 @@ export interface IGlobalNodeOptions {
   commonRdoFieldnamePostfix?: string;
   tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string;
   makeRdo?: IMakeRdo<any, any>['makeRdo'];
+  autoInstantiateRdoItems?: {
+    objectFieldsAsObservableObjectLiterals: boolean;
+    collectionItemsAsObservableObjectLiterals: boolean;
+  };
 }
 
 export interface INodeSyncOptions<S, D> {

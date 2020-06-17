@@ -3,6 +3,7 @@ import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { NodeTypeUtils } from '../utils/node-type.utils';
 import { isIMakeCollectionKeyFromRdoElement, isIMakeRdo } from '../../types';
+import { observable } from 'mobx';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
@@ -46,8 +47,8 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   public makeCollectionKey = (item: D) => {
     // Use IMakeCollectionKey provided on options if available
-    if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromRdoElement) {
-      return this.matchingNodeOptions.makeRdoCollectionKey.fromRdoElement(item);
+    if (this.getNodeOptions()?.makeRdoCollectionKey?.fromRdoElement) {
+      return this.getNodeOptions()!.makeRdoCollectionKey!.fromRdoElement(item);
     }
 
     if (isIMakeCollectionKeyFromRdoElement(this.value)) {
@@ -67,18 +68,31 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
   };
 
-  public makeRdo(sourceObject) {
-    // Use IMakeCollectionKey provided on options if available
+  public makeRdoElement(sourceObject) {
+    let rdo: any = undefined;
     if (this.getNodeOptions()?.makeRdo) {
-      return this.getNodeOptions()!.makeRdo!(sourceObject, this);
+      rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
     }
 
-    if (isIMakeRdo(this.value)) {
-      return this.value.makeRdo(sourceObject, this);
+    if (!rdo && isIMakeRdo(this.value)) {
+      rdo = this.value.makeRdo(sourceObject, this);
     }
 
-    if (this.globalNodeOptions.makeRdo) {
-      return this.globalNodeOptions.makeRdo(sourceObject);
+    if (!rdo && this.globalNodeOptions?.makeRdo) {
+      return this.globalNodeOptions.makeRdo(sourceObject, this);
+    }
+
+    if (!rdo && this.globalNodeOptions?.makeRdo) {
+      return this.globalNodeOptions.makeRdo(sourceObject, this);
+    }
+
+    // Auto-create Rdo collectionItem if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
+    // Note: this uses MobX to create an observable tree in the exact shape
+    // of the source data, regardless of  original TypeScript typing of the collection items
+    // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
+    // Blending both can lead to unexpected behavior
+    if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
+      rdo = observable(sourceObject);
     }
 
     return undefined;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IGlobalNodeOptions, IMakeRdo, INodeSyncOptions } from '.';
-import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey } from './rdo-collection-types';
+import { IGlobalNodeOptions, INodeSyncOptions } from '.';
+import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey, IMakeRdoElement, isIMakeRdoElement } from './rdo-collection-types';
 
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 
@@ -78,7 +78,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
   return o && o.itemKeys && o.getElement && o.updateElement && isIRdoNodeWrapper(o);
 }
 
-export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdo<S, D>, IMakeCollectionKey<D> {
+export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdoElement<S, D>, IMakeCollectionKey<D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D>;
   insertElement(key: string, value: D): void;
@@ -87,7 +87,15 @@ export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
-  return o && o.elements && o.insertElement && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
+  return o && o.elements && o.insertElement && o.deleteElement && o.clearElements && isIMakeRdoElement(o) && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
+}
+
+export interface IMakeRdo<S, D> {
+  makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
+}
+
+export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {
+  return o && o.makeRdo;
 }
 
 export type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }) => boolean;

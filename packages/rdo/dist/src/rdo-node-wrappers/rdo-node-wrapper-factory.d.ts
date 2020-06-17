@@ -1,12 +1,14 @@
-import { IEqualityComparer, IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes } from '..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes } from '..';
 export declare class RdoNodeWrapperFactory {
     private _syncChildNode;
     private _globalNodeOptions;
+    private _targetedOptionMatchersArray;
     private _wrapRdoNode;
     private _defaultEqualityComparer;
-    constructor({ syncChildNode, globalNodeOptions, wrapRdoNode, defaultEqualityComparer, }: {
+    constructor({ syncChildNode, globalNodeOptions, targetedOptionMatchersArray, wrapRdoNode, defaultEqualityComparer, }: {
         syncChildNode: ISyncChildNode<any, any>;
-        globalNodeOptions: IGlobalNameOptions | undefined;
+        globalNodeOptions: IGlobalNodeOptions | undefined;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         wrapRdoNode: IWrapRdoNode;
         defaultEqualityComparer: IEqualityComparer;
     });

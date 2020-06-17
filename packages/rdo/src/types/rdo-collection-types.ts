@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IRdoNodeWrapper } from './internal-types';
+import { IRdoNodeWrapper, IMakeRdo } from './internal-types';
 
 //--------------------------------------------------------
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
@@ -32,12 +32,12 @@ export function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollection
   return o && o.makeCollectionKeyFromRdoElement;
 }
 
-export interface IMakeRdo<S, D> {
-  makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
+export interface IMakeRdoElement<S, D> {
+  makeRdoElement(sourceObject: S): D | undefined;
 }
 
-export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {
-  return o && o.makeRdo;
+export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
+  return o && o.makeRdoElement;
 }
 
 export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceElement<S>, IMakeCollectionKeyFromRdoElement<D> {
@@ -58,5 +58,5 @@ export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any
 export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<S, D> {}
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
-  return o && isIMakeRdo(o) && IsISyncableCollection(o);
+  return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }

@@ -19,6 +19,7 @@ import {
   IContinueSmartSync,
 } from '../..';
 import { isIRdoInternalNodeWrapper, INodeSyncOptions } from '../../types';
+import { observable } from 'mobx';
 
 const logger = Logger.make('RdoObjectNW');
 
@@ -147,13 +148,23 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
 
       // Check to see if key exists
       if (!rdoFieldname) {
-        logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' key found in RDO. Skipping property`);
+        logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' key not found in RDO. Skipping property`);
         continue;
       }
 
-      const rdoNodeItemValue = this.getElement(rdoFieldname);
+      let rdoNodeItemValue = this.getElement(rdoFieldname);
       if (!rdoFieldname) {
-        throw new Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' value not found in RDO. Skipping property`);
+        // Auto-create Rdo object field if autoInstantiateRdoItems.objectFieldsAsObservableObjectLiterals
+        // Note: this uses MobX to create an observable tree in the exact shape
+        // of the source data, regardless of  original TypeScript typing of the collection items
+        // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
+        // Blending both can lead to unexpected behavior
+        if (this.globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
+          logger.info(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' auto making RDO`);
+          rdoNodeItemValue = observable(sourceFieldVal);
+        } else {
+          throw new Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' value not found in RDO. Skipping property`);
+        }
       }
 
       changed = this._syncChildNode({ parentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });

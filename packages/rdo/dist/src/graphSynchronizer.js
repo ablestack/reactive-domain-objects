@@ -85,6 +85,7 @@ class GraphSynchronizer {
             globalNodeOptions: this._globalNodeOptions,
             wrapRdoNode: this.wrapRdoNode,
             defaultEqualityComparer: this._defaultEqualityComparer,
+            targetedOptionMatchersArray: this._targetedOptionMatchersArray,
         });
     }
     // ------------------------------------------------------------------------------------------------------------------

@@ -6,8 +6,8 @@ const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const logger = logger_1.Logger.make('RdoPrimitiveNW');
 class RdoPrimitiveNW extends __1.RdoNWBase {
-    constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions });
+    constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
         this._value = value;
     }
     //------------------------------

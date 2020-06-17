@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import { ISyncableRDOCollection, CollectionUtils, SyncUtils, MakeCollectionKeyMethod } from '@ablestack/rdo';
+import { ISyncableRDOCollection, CollectionUtils, SyncUtils, MakeCollectionKeyMethod, IRdoNodeWrapper } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
@@ -107,7 +107,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
     else return undefined;
   };
 
-  public makeRdo(sourceItem: S) {
+  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>) {
     if (!this._makeRdo) return undefined;
     return this._makeRdo(sourceItem);
   }

@@ -131,7 +131,7 @@ class SyncableCollection {
     [Symbol.iterator]() {
         return this._map$.entries();
     }
-    makeRdo(sourceItem) {
+    makeRdo(sourceItem, parentRdoNodeWrapper) {
         if (!this._makeRdo)
             return undefined;
         return this._makeRdo(sourceItem);

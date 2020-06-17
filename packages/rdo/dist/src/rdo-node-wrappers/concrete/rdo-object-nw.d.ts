@@ -1,11 +1,11 @@
 import { RdoInternalNWBase } from '..';
-import { IGlobalNameOptions, IEqualityComparer, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
+import { IGlobalNodeOptions, IEqualityComparer, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
 import { INodeSyncOptions } from '../../types';
 export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
     private _value;
     private _equalityComparer;
     private _wrapRdoNode;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, }: {
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, }: {
         value: D;
         typeInfo: RdoNodeTypeInfo;
         key: string | undefined;
@@ -15,7 +15,8 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
         syncChildNode: ISyncChildNode<S, D>;
         wrapRdoNode: IWrapRdoNode;
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-        globalNodeOptions: IGlobalNameOptions | undefined;
+        globalNodeOptions: IGlobalNodeOptions | undefined;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     });
     get value(): D;
     childElementCount(): number;
