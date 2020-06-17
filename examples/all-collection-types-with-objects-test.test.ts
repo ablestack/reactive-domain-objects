@@ -51,7 +51,9 @@ export class SimpleRDO {
 const config = {
   targetedNodeOptions: [
     {
-      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
+      sourceNodeMatcher: {
+        nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject',
+      },
       makeRdo: (o: SimpleObject) => new SimpleRDO(),
     },
     {

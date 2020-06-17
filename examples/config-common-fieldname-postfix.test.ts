@@ -59,19 +59,30 @@ export class Default_IdRDO {
 }
 
 // --------------------------------------------------------------
+// CONFIG A
+// --------------------------------------------------------------
+const configA = {
+  targetedNodeOptions: [
+    {
+      sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' },
+      makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO(),
+    },
+    {
+      sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' },
+      makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
+    },
+    { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
+  ],
+  globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
+};
+
+// --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
 test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
   const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
-  const graphSynchronizer = new GraphSynchronizer({
-    targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
-    ],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
-  });
+  const graphSynchronizer = new GraphSynchronizer(configA);
 
   // POSTURE VERIFICATION
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
@@ -123,23 +134,28 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test 
 });
 
 // --------------------------------------------------------------
+// CONFIG B
+// --------------------------------------------------------------
+const configB = {
+  targetedNodeOptions: [
+    { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, ignore: true },
+    { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, ignore: true },
+    {
+      sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
+      makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
+      makeRdoCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
+    },
+  ],
+  globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
+};
+
+// --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
 test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
   const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
-  const graphSynchronizer = new GraphSynchronizer({
-    targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, ignore: true },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, ignore: true },
-      {
-        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
-        makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
-        makeRdoCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
-      },
-    ],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
-  });
+  const graphSynchronizer = new GraphSynchronizer(configB);
 
   // POSTURE VERIFICATION
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();

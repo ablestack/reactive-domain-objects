@@ -1,8 +1,6 @@
 import { GraphSynchronizer } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { BookRDO, LibraryRDO } from './supporting-files/library-rdo-models';
 import { librarySourceJSON } from './supporting-files/library-source-data';
-import { Book } from './supporting-files/library-source-models';
 
 const logger = Logger.make('map-sync.test.ts');
 
@@ -22,22 +20,26 @@ const logger = Logger.make('map-sync.test.ts');
 // Reactive Domain Object Graph
 // -----------------------------------
 
-// Imported from ./supporting-files/library-rdo-models.ts
+// Auto-created
 
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
 const config = {
-  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
-  globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
+  globalNodeOptions: {
+    autoInstantiateRdoItems: {
+      objectFieldsAsObservableObjectLiterals: true,
+      collectionItemsAsObservableObjectLiterals: true,
+    },
+  },
 };
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
-test('Synchronize updates complex graph as expected', () => {
-  const libraryRDO = new LibraryRDO();
+test('Synchronize updates complex graph as expected with auto-create Rdo objects', () => {
+  const libraryRDO = {} as any;
   const graphSynchronizer = new GraphSynchronizer(config);
 
   // POSTURE VERIFICATION

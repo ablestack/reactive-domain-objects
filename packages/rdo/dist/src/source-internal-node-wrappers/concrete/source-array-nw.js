@@ -24,8 +24,10 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
         // }
         this.makeCollectionKey = (item) => {
             var _a, _b;
-            // Use IMakeCollectionKey provided on options if available
+            if (item === null || item === undefined)
+                return undefined;
             if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromSourceElement) {
+                // Use IMakeCollectionKey provided on options if available
                 return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
             }
             if (types_1.isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {

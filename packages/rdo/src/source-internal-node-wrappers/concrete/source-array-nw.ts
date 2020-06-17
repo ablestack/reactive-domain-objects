@@ -72,8 +72,10 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
   // }
 
   public makeCollectionKey = (item: S) => {
-    // Use IMakeCollectionKey provided on options if available
+    if (item === null || item === undefined) return undefined;
+
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
+      // Use IMakeCollectionKey provided on options if available
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
     }
 

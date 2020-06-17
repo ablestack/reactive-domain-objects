@@ -153,10 +153,10 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public syncChildNode = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { parentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
+  public syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
-    const parentSourceNode = parentRdoNode.wrappedSourceNode;
+    const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
 
     // Validate
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
@@ -175,12 +175,12 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {
       logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
-      return false;
+      changed = false;
     } else {
       logger.trace(`running smartSync on (${this.getSourceNodePath()})`);
       changed = wrappedRdoNode.smartSync();

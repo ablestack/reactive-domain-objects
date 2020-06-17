@@ -26,7 +26,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         //   return this._childElementSourceNodeKind;
         // }
         this.makeCollectionKey = (item) => {
-            var _a, _b;
+            var _a, _b, _c;
             // Use IMakeCollectionKey provided on options if available
             if ((_b = (_a = this.getNodeOptions()) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromRdoElement) {
                 return this.getNodeOptions().makeRdoCollectionKey.fromRdoElement(item);
@@ -38,37 +38,45 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
                 return String(item);
             }
-            // Last option - look for idKey
-            if (item[__1.config.defaultIdKey]) {
+            // Look for idKey
+            if (__1.config.defaultIdKey in item) {
                 return item[__1.config.defaultIdKey];
+            }
+            // Look for idKey with common postfix
+            if ((_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.commonRdoFieldnamePostfix) {
+                const defaultIdKeyWithPostfix = `${__1.config.defaultIdKey}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
+                if (defaultIdKeyWithPostfix in item) {
+                    return item[defaultIdKeyWithPostfix];
+                }
             }
             throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
         };
     }
     makeRdoElement(sourceObject) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         let rdo = undefined;
-        if ((_a = this.getNodeOptions()) === null || _a === void 0 ? void 0 : _a.makeRdo) {
+        console.log(`${this.wrappedSourceNode.sourceNodePath} - this.getNodeOptions()`, this.getNodeOptions(), (_a = this.getNodeOptions()) === null || _a === void 0 ? void 0 : _a.makeRdo, this.wrappedSourceNode.value);
+        if ((_b = this.getNodeOptions()) === null || _b === void 0 ? void 0 : _b.makeRdo) {
             rdo = this.getNodeOptions().makeRdo(sourceObject, this);
         }
         if (!rdo && types_1.isIMakeRdo(this.value)) {
             rdo = this.value.makeRdo(sourceObject, this);
         }
-        if (!rdo && ((_b = this.globalNodeOptions) === null || _b === void 0 ? void 0 : _b.makeRdo)) {
+        if (!rdo && ((_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.makeRdo)) {
             return this.globalNodeOptions.makeRdo(sourceObject, this);
         }
-        if (!rdo && ((_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.makeRdo)) {
+        if (!rdo && ((_d = this.globalNodeOptions) === null || _d === void 0 ? void 0 : _d.makeRdo)) {
             return this.globalNodeOptions.makeRdo(sourceObject, this);
         }
         // Auto-create Rdo collectionItem if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
         // Note: this uses MobX to create an observable tree in the exact shape
-        // of the source data, regardless of  original TypeScript typing of the collection items
+        // of the source data, regardless of original TypeScript typing of the collection items
         // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
         // Blending both can lead to unexpected behavior
-        if (!rdo && ((_e = (_d = this.globalNodeOptions) === null || _d === void 0 ? void 0 : _d.autoInstantiateRdoItems) === null || _e === void 0 ? void 0 : _e.collectionItemsAsObservableObjectLiterals)) {
+        if (!rdo && ((_f = (_e = this.globalNodeOptions) === null || _e === void 0 ? void 0 : _e.autoInstantiateRdoItems) === null || _f === void 0 ? void 0 : _f.collectionItemsAsObservableObjectLiterals)) {
             rdo = mobx_1.observable(sourceObject);
         }
-        return undefined;
+        return rdo;
     }
 }
 exports.RdoCollectionNWBase = RdoCollectionNWBase;

@@ -66,8 +66,8 @@ export interface IMakeRdo<S, D> {
     makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
 }
 export declare function isIMakeRdo(o: any): o is IMakeRdo<any, any>;
-export declare type ISyncChildNode<S, D> = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: {
-    parentRdoNode: IRdoInternalNodeWrapper<any, any>;
+export declare type ISyncChildNode<S, D> = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey, }: {
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any>;
     rdoNodeItemValue: any;
     rdoNodeItemKey: string;
     sourceNodeItemKey: string;

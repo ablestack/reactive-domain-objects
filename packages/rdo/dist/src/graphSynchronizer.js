@@ -34,10 +34,10 @@ class GraphSynchronizer {
         /**
          *
          */
-        this.syncChildNode = ({ parentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }) => {
+        this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }) => {
             logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
             let changed = false;
-            const parentSourceNode = parentRdoNode.wrappedSourceNode;
+            const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
             // Validate
             if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
                 throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
@@ -53,11 +53,11 @@ class GraphSynchronizer {
             // Node traversal tracking - step-in
             this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
             // Wrap Node
-            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
             // Test to see if node should be ignored, if not, synchronize
             if (wrappedRdoNode.ignore) {
                 logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
-                return false;
+                changed = false;
             }
             else {
                 logger.trace(`running smartSync on (${this.getSourceNodePath()})`);

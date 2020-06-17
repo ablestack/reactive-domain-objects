@@ -60,9 +60,17 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       return String(item);
     }
 
-    // Last option - look for idKey
-    if (item[config.defaultIdKey]) {
+    // Look for idKey
+    if (config.defaultIdKey in item) {
       return item[config.defaultIdKey];
+    }
+
+    // Look for idKey with common postfix
+    if (this.globalNodeOptions?.commonRdoFieldnamePostfix) {
+      const defaultIdKeyWithPostfix = `${config.defaultIdKey}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
+      if (defaultIdKeyWithPostfix in item) {
+        return item[defaultIdKeyWithPostfix];
+      }
     }
 
     throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
@@ -70,6 +78,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   public makeRdoElement(sourceObject) {
     let rdo: any = undefined;
+    console.log(`${this.wrappedSourceNode.sourceNodePath} - this.getNodeOptions()`, this.getNodeOptions(), this.getNodeOptions()?.makeRdo, this.wrappedSourceNode.value);
     if (this.getNodeOptions()?.makeRdo) {
       rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
     }
@@ -88,14 +97,14 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
     // Auto-create Rdo collectionItem if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
     // Note: this uses MobX to create an observable tree in the exact shape
-    // of the source data, regardless of  original TypeScript typing of the collection items
+    // of the source data, regardless of original TypeScript typing of the collection items
     // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
     // Blending both can lead to unexpected behavior
     if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
       rdo = observable(sourceObject);
     }
 
-    return undefined;
+    return rdo;
   }
 
   public abstract elements(): Iterable<D>;
