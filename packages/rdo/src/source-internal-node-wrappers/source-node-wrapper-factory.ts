@@ -1,12 +1,12 @@
-import { ISourceNodeWrapper, IGlobalNameOptions, INodeSyncOptions } from '..';
+import { ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '..';
 import { NodeTypeUtils } from '../rdo-node-wrappers/utils/node-type.utils';
 import { SourcePrimitiveNW } from './concrete/source-primitive-nw';
 import { SourceObjectNW, SourceArrayNW } from '.';
 
 export class SourceNodeWrapperFactory {
-  private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _globalNodeOptions: IGlobalNodeOptions | undefined;
 
-  constructor({ globalNodeOptions }: { globalNodeOptions: IGlobalNameOptions | undefined }) {
+  constructor({ globalNodeOptions }: { globalNodeOptions: IGlobalNodeOptions | undefined }) {
     this._globalNodeOptions = globalNodeOptions;
   }
 

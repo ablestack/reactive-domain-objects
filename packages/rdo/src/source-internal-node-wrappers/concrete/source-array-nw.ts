@@ -1,4 +1,4 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNameOptions, NodeKind, config } from '../..';
+import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, NodeKind, config } from '../..';
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
@@ -22,7 +22,7 @@ export class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollecti
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
     this._value = value;

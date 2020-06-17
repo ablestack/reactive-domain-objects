@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IGlobalNameOptions, IMakeRdo, INodeSyncOptions } from '.';
+import { IGlobalNodeOptions, IMakeRdo, INodeSyncOptions } from '.';
 import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey } from './rdo-collection-types';
 
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
@@ -21,7 +21,7 @@ export interface ISourceNodeWrapper<S> {
   readonly sourceNodePath: string;
   readonly lastSourceNode: S | undefined;
   readonly matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-  readonly globalNodeOptions: IGlobalNameOptions | undefined;
+  readonly globalNodeOptions: IGlobalNodeOptions | undefined;
   readonly wrappedRdoNode: IRdoNodeWrapper<S, any> | undefined;
   setRdoNode(rdoNode: IRdoNodeWrapper<S, any>): void;
   childElementCount(): number;
@@ -57,7 +57,7 @@ export interface IRdoNodeWrapper<S, D> {
   readonly wrappedParentRdoNode: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   readonly wrappedSourceNode: ISourceNodeWrapper<S>;
-  readonly globalNodeOptions: IGlobalNameOptions | undefined;
+  readonly globalNodeOptions: IGlobalNodeOptions | undefined;
   readonly ignore: boolean;
   getNodeOptions(): INodeSyncOptions<any, any> | null;
   childElementCount(): number;

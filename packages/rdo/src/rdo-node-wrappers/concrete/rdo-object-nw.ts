@@ -1,7 +1,7 @@
 import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from '..';
 import {
-  IGlobalNameOptions,
+  IGlobalNodeOptions,
   IEqualityComparer,
   RdoNodeTypeInfo,
   IRdoNodeWrapper,
@@ -49,7 +49,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     syncChildNode: ISyncChildNode<S, D>;
     wrapRdoNode: IWrapRdoNode;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });

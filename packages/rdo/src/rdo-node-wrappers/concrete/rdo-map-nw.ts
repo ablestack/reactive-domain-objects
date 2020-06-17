@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { SyncUtils } from '../utils/sync.utils';
 
@@ -26,7 +26,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });

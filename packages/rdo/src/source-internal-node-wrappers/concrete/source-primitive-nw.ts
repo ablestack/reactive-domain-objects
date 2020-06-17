@@ -1,4 +1,4 @@
-import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 
 export class SourcePrimitiveNW<S> extends SourceBaseNW<S> implements ISourceNodeWrapper<S> {
@@ -19,7 +19,7 @@ export class SourcePrimitiveNW<S> extends SourceBaseNW<S> implements ISourceNode
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
     this._value = value;

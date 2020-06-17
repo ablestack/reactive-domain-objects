@@ -1,5 +1,5 @@
 import { Logger } from '../../infrastructure/logger';
-import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, IGlobalNameOptions, INodeSyncOptions } from '../..';
+import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
 
 const logger = Logger.make('RdoMapNW');
 
@@ -9,7 +9,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
   private _parent: IRdoNodeWrapper<S, D> | undefined;
   private _wrappedSourceNode: ISourceNodeWrapper<S>;
   private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-  private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
 
   constructor({
@@ -26,7 +26,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     this._typeInfo = typeInfo;
@@ -64,7 +64,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     return this._wrappedSourceNode;
   }
 
-  public get globalNodeOptions(): IGlobalNameOptions | undefined {
+  public get globalNodeOptions(): IGlobalNodeOptions | undefined {
     return this._globalNodeOptions;
   }
 

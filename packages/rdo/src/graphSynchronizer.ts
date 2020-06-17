@@ -1,4 +1,4 @@
-import { comparers, IEqualityComparer, IGlobalNameOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, IRdoNodeWrapper, isISourceInternalNodeWrapper, SourceNodeWrapperFactory, IWrapRdoNode } from '.';
+import { comparers, IEqualityComparer, IGlobalNodeOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, IRdoNodeWrapper, isISourceInternalNodeWrapper, SourceNodeWrapperFactory, IWrapRdoNode } from '.';
 import { Logger } from './infrastructure/logger';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 
@@ -15,7 +15,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
   private _defaultEqualityComparer: IEqualityComparer;
-  private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _sourceObjectMap = new Map<string, any>();

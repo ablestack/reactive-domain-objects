@@ -1,5 +1,5 @@
 import { RdoNWBase } from '..';
-import { IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, isIRdoInternalNodeWrapper, ISourceNodeWrapper, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isIRdoInternalNodeWrapper, ISourceNodeWrapper, RdoNodeTypeInfo } from '../..';
 import { Logger } from '../../infrastructure/logger';
 
 const logger = Logger.make('RdoPrimitiveNW');
@@ -23,7 +23,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     typeInfo: RdoNodeTypeInfo;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });

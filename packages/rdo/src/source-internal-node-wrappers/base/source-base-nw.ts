@@ -1,4 +1,4 @@
-import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNameOptions, IRdoNodeWrapper } from '../..';
+import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
 
 export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
   private _key: string | undefined;
@@ -6,7 +6,7 @@ export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
   private _sourceNodePath: string;
   private _lastSourceNode: S | undefined;
   private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-  private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _wrappedRdoNode: IRdoNodeWrapper<S, any> | undefined;
 
   constructor({
@@ -22,7 +22,7 @@ export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     this._typeInfo = typeInfo;
     this._key = key;
@@ -56,7 +56,7 @@ export abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
     return this._matchingNodeOptions;
   }
 
-  public get globalNodeOptions(): IGlobalNameOptions | undefined {
+  public get globalNodeOptions(): IGlobalNodeOptions | undefined {
     return this._globalNodeOptions;
   }
 

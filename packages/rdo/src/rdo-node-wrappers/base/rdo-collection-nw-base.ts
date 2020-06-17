@@ -1,4 +1,4 @@
-import { IGlobalNameOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { NodeTypeUtils } from '../utils/node-type.utils';
@@ -23,7 +23,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     wrappedSourceNode: ISourceNodeWrapper<S>;
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });

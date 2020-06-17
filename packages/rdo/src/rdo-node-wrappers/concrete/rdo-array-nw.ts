@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNameOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { CollectionUtils } from '../utils/collection.utils';
 import { SyncUtils } from '../utils/sync.utils';
@@ -27,7 +27,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });

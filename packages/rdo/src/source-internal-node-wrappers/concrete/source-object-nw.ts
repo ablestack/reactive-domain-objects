@@ -1,4 +1,4 @@
-import { ISourceInternalNodeWrapper, SourceNodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNameOptions } from '../..';
+import { ISourceInternalNodeWrapper, SourceNodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 
 export class SourceObjectNW<S extends Record<string, any>> extends SourceBaseNW<S> implements ISourceInternalNodeWrapper<S> {
@@ -19,7 +19,7 @@ export class SourceObjectNW<S extends Record<string, any>> extends SourceBaseNW<
     typeInfo: SourceNodeTypeInfo;
     lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
     this._value = value;

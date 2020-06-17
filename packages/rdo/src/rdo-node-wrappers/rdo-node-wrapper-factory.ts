@@ -1,5 +1,5 @@
 import { RdoArrayNW, RdoObjectNW, RdoPrimitiveNW, RdoMapNW, RdoSetNW } from '.';
-import { IEqualityComparer, IGlobalNameOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes } from '..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes } from '..';
 import { Logger } from '../infrastructure/logger';
 import { NodeTypeUtils } from './utils/node-type.utils';
 
@@ -7,7 +7,7 @@ const logger = Logger.make('RdoNodeWrapperFactory');
 
 export class RdoNodeWrapperFactory {
   private _syncChildNode: ISyncChildNode<any, any>;
-  private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _wrapRdoNode: IWrapRdoNode;
   private _defaultEqualityComparer: IEqualityComparer;
@@ -20,7 +20,7 @@ export class RdoNodeWrapperFactory {
     defaultEqualityComparer,
   }: {
     syncChildNode: ISyncChildNode<any, any>;
-    globalNodeOptions: IGlobalNameOptions | undefined;
+    globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     wrapRdoNode: IWrapRdoNode;
     defaultEqualityComparer: IEqualityComparer;
