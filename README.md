@@ -131,3 +131,11 @@ While this library solves several challenges relating to client-side JavaScript 
 ### Notes 0.1.0
 
 - Initial release
+
+### Notes 0.2.0 - 0.3.0
+
+- Performance updates
+
+### Notes 0.4.0
+
+- Refactorings for improved maintainability
