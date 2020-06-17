@@ -4,6 +4,11 @@ import { Logger } from '@ablestack/rdo/infrastructure/logger';
 const logger = Logger.make('flat-object-sync.test.ts');
 
 // -----------------------------------
+// Source Data Models
+// -----------------------------------
+type Bar = { id: string; name: string };
+
+// -----------------------------------
 // Source Data
 // -----------------------------------
 export const fooSourceJSON = { id: 'foo-1', name: 'Simple Foo 1' };

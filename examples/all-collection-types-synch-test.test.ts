@@ -1,120 +1,106 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
+import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
+import { GraphSynchronizer } from '@ablestack/rdo';
 import _ from 'lodash';
-import { allCollectionsJSON_Trio, allCollectionsJSON_Uno, AllCollectionTypesWithObjectsRDO, BookRDO, LibraryRDO, librarySourceJSON } from './supporting-files';
-import { AllCollectionTypesRDO, AllCollectionTypesWithPrimitivesRDO, DefaultId$RDO, DefaultIdRDO, SimpleRDO, TargetedOptionsTestRootRDO } from './supporting-files/test-rdo-models';
-import { targetedNodeOptionsTestRootJSON } from './supporting-files/test-source-data';
-import { Book, DefaultIdSourceObject, Library, SimpleObject } from './supporting-files/test-source-types';
 
-const logger = Logger.make('autoSynchronize.test.ts');
+const logger = Logger.make('map-sync.test.ts');
 
-// --------------------------------------------------------------
-// SHARED
-// --------------------------------------------------------------
-function makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions() {
-  // SETUP
-  return new GraphSynchronizer({
-    targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, makeRdo: (book: Book) => new BookRDO() }],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
+// -----------------------------------
+// Source Data Models
+// -----------------------------------
+export type AllCollections = {
+  arrayOfNumbers: (number | undefined | null)[];
+  arrayOfObjects: (SimpleObject | undefined | null)[];
+
+  mapOfNumbers: (number | undefined | null)[];
+  mapOfObjects: (SimpleObject | undefined | null)[];
+
+  setOfNumbers: (number | undefined | null)[];
+  setOfObjects: (SimpleObject | undefined | null)[];
+
+  customCollectionOfNumbers: (number | undefined | null)[];
+  customCollectionOfObjects: (SimpleObject | undefined | null)[];
+};
+
+export type SimpleObject = { id: string; __type?: string };
+
+// -----------------------------------
+// Source Data
+// -----------------------------------
+export const allCollectionsJSON_Trio: AllCollections = {
+  arrayOfNumbers: [1, 2, undefined, null, 3],
+  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  mapOfNumbers: [1, 2, undefined, null, 3],
+  mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  setOfNumbers: [1, 2, undefined, null, 3],
+  setOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  customCollectionOfNumbers: [1, 2, undefined, null, 3],
+  customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+};
+
+export const allCollectionsJSON_Uno: AllCollections = {
+  arrayOfNumbers: [1],
+  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }],
+  mapOfNumbers: [1],
+  mapOfObjects: [{ id: '1', __type: 'mapOfObjectsObject' }],
+  setOfNumbers: [1],
+  setOfObjects: [{ id: '1', __type: 'setOfObjectsObject' }],
+  customCollectionOfNumbers: [1],
+  customCollectionOfObjects: [{ id: '1', __type: 'customCollectionOfObjectsObject' }],
+};
+
+// -----------------------------------
+// Reactive Domain Object Graph
+// -----------------------------------
+export class AllCollectionTypesRDO {
+  public arrayOfObjects = new Array<SimpleRDO>();
+  public mapOfObjects = new Map<string, SimpleRDO>();
+  public setOfObjects = new Set<SimpleRDO>();
+  public customCollectionOfObjects = new SyncableCollection({
+    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
+    makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
+  public arrayOfNumbers = new Array<Number>();
+  public mapOfNumbers = new Map<string, number>();
+  public setOfNumbers = new Set<number>();
+}
+
+export class SimpleRDO {
+  public id = '';
 }
 
 // --------------------------------------------------------------
-// TEST
+// CONFIG
 // --------------------------------------------------------------
-test('Synchronize using sourceNodeMatcher config', () => {
-  const libraryRDO = new LibraryRDO();
-  const graphSynchronizer = makePreconfiguredLibraryGraphSynchronizerUsingTypeOptions();
-
-  // POSTURE VERIFICATION
-  expect(libraryRDO.authors.size).toBeFalsy();
-
-  // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
-
-  // RESULTS VERIFICATION
-  expect(libraryRDO.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
-  expect(libraryRDO.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
-});
-
-// --------------------------------------------------------------
-// SHARED
-// --------------------------------------------------------------
-function makePreconfiguredAllCollectionTypesGraphSynchronizer() {
-  // SETUP
-  return new GraphSynchronizer({
-    targetedNodeOptions: [
-      {
-        sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
-        makeRdo: (o: SimpleObject) => new SimpleRDO(),
-      },
-      {
-        sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
-        makeRdo: (o: SimpleObject) => new SimpleRDO(),
-      },
-      {
-        sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
-        makeRdo: (o: SimpleObject) => new SimpleRDO(),
-      },
-      {
-        sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
-        makeRdo: (o: SimpleObject) => new SimpleRDO(),
-      },
-    ],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
-  });
-}
-
-// --------------------------------------------------------------
-// TEST
-// --------------------------------------------------------------
-test('Synchronize all object collection types', () => {
-  const allCollectionTypesRDO = new AllCollectionTypesWithObjectsRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
-
-  // POSTURE VERIFICATION
-  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
-
-  // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
-
-  // RESULTS VERIFICATION
-  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
-});
-
-// --------------------------------------------------------------
-// TEST
-// --------------------------------------------------------------
-test('Synchronize all primitive collection types', () => {
-  const allCollectionTypesRDO = new AllCollectionTypesWithPrimitivesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
-
-  // POSTURE VERIFICATION
-  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(0);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(0);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(0);
-
-  // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
-
-  // RESULTS VERIFICATION
-  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
-});
+const config = {
+  targetedNodeOptions: [
+    {
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },
+      makeRdo: (o: SimpleObject) => new SimpleRDO(),
+    },
+    {
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'mapOfObjectsObject' },
+      makeRdo: (o: SimpleObject) => new SimpleRDO(),
+    },
+    {
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'setOfObjectsObject' },
+      makeRdo: (o: SimpleObject) => new SimpleRDO(),
+    },
+    {
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
+      makeRdo: (o: SimpleObject) => new SimpleRDO(),
+    },
+  ],
+  globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
+};
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize collection additions', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+  const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
@@ -155,7 +141,7 @@ test('Synchronize collection additions', () => {
 // --------------------------------------------------------------
 test('Synchronize collection removals', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+  const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
@@ -196,7 +182,7 @@ test('Synchronize collection removals', () => {
 // --------------------------------------------------------------
 test('Synchronize collection removals - down to zero - with sourceNodeMatcher targeted configuration', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+  const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Uno });
@@ -237,7 +223,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
 // --------------------------------------------------------------
 test('Synchronize collection element edit', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+  const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
@@ -283,7 +269,7 @@ test('Synchronize collection element edit', () => {
 // --------------------------------------------------------------
 test('Synchronize collection element - handle null value edits', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
-  const graphSynchronizer = makePreconfiguredAllCollectionTypesGraphSynchronizer();
+  const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
@@ -322,106 +308,4 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
   expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
   expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
-});
-
-// --------------------------------------------------------------
-// TEST
-// --------------------------------------------------------------
-
-// --------------------------------------------------------------
-// TEST
-// --------------------------------------------------------------
-
-test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
-  const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
-  const graphSynchronizer = new GraphSynchronizer({
-    targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultIdRDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO() },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' }, ignore: true },
-    ],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
-  });
-
-  // POSTURE VERIFICATION
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
-
-  // LOAD DATA
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
-
-  // RESULTS VERIFICATION STAGE 1
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO[0].id);
-
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO[0].id);
-
-  // REMOVE ITEM & SYNC
-  const targetedNodeOptionsTestRootJSONWithEdits = _.cloneDeep(targetedNodeOptionsTestRootJSON);
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
-
-  // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
-
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
-
-  // REMOVE ANOTHER ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
-
-  // RESULTS VERIFICATION STAGE 3
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
-
-  // ADD ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.push({ id: '4A' });
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.push({ id: '4B' });
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
-
-  // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
-
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
-});
-
-// --------------------------------------------------------------
-// TEST
-// --------------------------------------------------------------
-
-test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
-  const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
-  const graphSynchronizer = new GraphSynchronizer({
-    targetedNodeOptions: [
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultIdRDO' }, ignore: true },
-      { sourceNodeMatcher: { nodePath: 'mapOfDefaultId$RDO' }, ignore: true },
-      {
-        sourceNodeMatcher: { nodePath: 'mapOfDefault_IdRDO' },
-        makeRdo: (sourceNode: DefaultIdSourceObject) => new DefaultId$RDO(),
-        makeRdoCollectionKey: { fromSourceElement: (sourceNode) => sourceNode.id, fromRdoElement: (RDO) => RDO._id },
-      },
-    ],
-    globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
-  });
-
-  // POSTURE VERIFICATION
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
-
-  // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
-
-  // RESULTS VERIFICATION
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
-
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO[0].id);
 });

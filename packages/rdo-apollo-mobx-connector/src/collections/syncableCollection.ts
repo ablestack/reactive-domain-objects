@@ -22,7 +22,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   // -----------------------------------
   private _makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<S>;
   private _makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<D>;
-  private _makeRdo: (sourceItem: S) => D;
+  private _makeRdo?: (sourceItem: S) => D;
 
   @computed public get size(): number {
     return this._map$.size;
@@ -40,8 +40,8 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   }: {
     makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<S>;
     makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<D>;
-    makeRdo: (sourceNode: S) => D;
-  }) {
+    makeRdo?: (sourceNode: S) => D;
+  } = {}) {
     this._makeCollectionKeyFromSourceElement = makeCollectionKeyFromSourceElement;
     this._makeCollectionKeyFromRdoElement = makeCollectionKeyFromRdoElement;
     this._makeRdo = makeRdo;
@@ -108,6 +108,7 @@ export class SyncableCollection<S, D> implements ISyncableRDOCollection<S, D>, M
   };
 
   public makeRdo(sourceItem: S) {
+    if (!this._makeRdo) return undefined;
     return this._makeRdo(sourceItem);
   }
 

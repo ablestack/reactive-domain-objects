@@ -1,8 +1,12 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
-import { Bar } from './supporting-files/test-source-types';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 
 const logger = Logger.make('map-sync.test.ts');
+
+// -----------------------------------
+// Source Data Models
+// -----------------------------------
+type Bar = { id: string; name: string };
 
 // -----------------------------------
 // Source Data
