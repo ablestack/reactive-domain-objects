@@ -78,7 +78,6 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   public makeRdoElement(sourceObject) {
     let rdo: any = undefined;
-    console.log(`${this.wrappedSourceNode.sourceNodePath} - this.getNodeOptions()`, this.getNodeOptions(), this.getNodeOptions()?.makeRdo, this.wrappedSourceNode.value);
     if (this.getNodeOptions()?.makeRdo) {
       rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
     }
@@ -93,6 +92,10 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
     if (!rdo && this.globalNodeOptions?.makeRdo) {
       return this.globalNodeOptions.makeRdo(sourceObject, this);
+    }
+
+    if (NodeTypeUtils.isPrimitive(sourceObject)) {
+      return sourceObject;
     }
 
     // Auto-create Rdo collectionItem if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals

@@ -64,7 +64,9 @@ function isPrimitive(val) {
         case 'bigint':
         case 'boolean':
         case 'number':
-        case 'string':
+        case 'string': {
+            return true;
+        }
         case 'undefined':
         case null:
         default: {

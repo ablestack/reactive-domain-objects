@@ -88,7 +88,6 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
         }
         // If element found, use to test against matchers
         if (firstElement) {
-          console.log(`this._targetedOptionMatchersArray`, this._targetedOptionMatchersArray);
           this._nodeOptions = this._targetedOptionMatchersArray.find((targetOptionMatcher) => targetOptionMatcher.sourceNodeMatcher.nodeContent && targetOptionMatcher.sourceNodeMatcher.nodeContent(firstElement)) || null;
         } else {
           this._nodeOptions = null;
