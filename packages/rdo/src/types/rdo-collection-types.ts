@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
+import { IRdoNodeWrapper } from './internal-types';
+
 //--------------------------------------------------------
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
@@ -31,7 +33,7 @@ export function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollection
 }
 
 export interface IMakeRdo<S, D> {
-  makeRdo(sourceObject: S): D | undefined;
+  makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
 }
 
 export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {

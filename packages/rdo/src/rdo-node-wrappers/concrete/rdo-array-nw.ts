@@ -18,6 +18,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     syncChildNode,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     value: Array<D>;
     typeInfo: RdoNodeTypeInfo;
@@ -27,8 +28,9 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
     this._value = value;
   }
 

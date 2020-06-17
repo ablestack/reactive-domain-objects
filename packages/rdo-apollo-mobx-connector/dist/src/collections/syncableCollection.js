@@ -18,7 +18,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
  * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
 class SyncableCollection {
-    constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, }) {
+    constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, } = {}) {
         this._array$ = new Array();
         this[Symbol.toStringTag] = 'Map';
         // -----------------------------------
@@ -132,6 +132,8 @@ class SyncableCollection {
         return this._map$.entries();
     }
     makeRdo(sourceItem) {
+        if (!this._makeRdo)
+            return undefined;
         return this._makeRdo(sourceItem);
     }
     elements() {

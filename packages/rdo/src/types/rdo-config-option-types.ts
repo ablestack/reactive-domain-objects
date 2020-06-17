@@ -19,6 +19,7 @@ export interface IGraphSyncOptions {
 export interface IGlobalNameOptions {
   commonRdoFieldnamePostfix?: string;
   tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string;
+  makeRdo?: IMakeRdo<any, any>['makeRdo'];
 }
 
 export interface INodeSyncOptions<S, D> {

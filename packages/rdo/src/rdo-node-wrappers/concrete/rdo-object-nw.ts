@@ -38,6 +38,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     wrapRdoNode,
     globalNodeOptions,
     matchingNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     value: D;
     typeInfo: RdoNodeTypeInfo;
@@ -49,8 +50,9 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     wrapRdoNode: IWrapRdoNode;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
     this._value = value;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
     this._wrapRdoNode = wrapRdoNode;

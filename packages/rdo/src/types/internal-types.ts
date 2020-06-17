@@ -57,9 +57,9 @@ export interface IRdoNodeWrapper<S, D> {
   readonly wrappedParentRdoNode: IRdoNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   readonly wrappedSourceNode: ISourceNodeWrapper<S>;
-  readonly matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
   readonly globalNodeOptions: IGlobalNameOptions | undefined;
   readonly ignore: boolean;
+  getNodeOptions(): INodeSyncOptions<any, any> | null;
   childElementCount(): number;
   smartSync(): boolean;
 }

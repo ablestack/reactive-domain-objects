@@ -15,6 +15,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     syncChildNode,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
@@ -23,8 +24,9 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
   }
 
   //------------------------------
@@ -67,12 +69,16 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   public makeRdo(sourceObject) {
     // Use IMakeCollectionKey provided on options if available
-    if (this.matchingNodeOptions?.makeRdo) {
-      return this.matchingNodeOptions.makeRdo(sourceObject);
+    if (this.getNodeOptions()?.makeRdo) {
+      return this.getNodeOptions()!.makeRdo!(sourceObject, this);
     }
 
     if (isIMakeRdo(this.value)) {
-      return this.value.makeRdo(sourceObject);
+      return this.value.makeRdo(sourceObject, this);
+    }
+
+    if (this.globalNodeOptions.makeRdo) {
+      return this.globalNodeOptions.makeRdo(sourceObject);
     }
 
     return undefined;

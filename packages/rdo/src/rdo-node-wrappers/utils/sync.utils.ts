@@ -31,9 +31,9 @@ function synchronizeCollection<S, D>({ rdo, syncChildNode }: { rdo: IRdoCollecti
         targetItem = rdo.getElement(key);
       }
       if (!targetItem) {
-        if (!rdo.makeRdo) throw Error(`rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
+        if (!rdo.makeRdo) throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
         targetItem = rdo.makeRdo(sourceItem);
-        if (!targetItem) throw Error(`rdo.targetItem produced null or undefined`);
+        if (!targetItem) throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.targetItem produced null or undefined`);
 
         logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
         rdo.insertElement(key, targetItem);

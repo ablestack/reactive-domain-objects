@@ -17,6 +17,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     syncChildNode,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     value: ISyncableRDOCollection<S, D>;
     typeInfo: RdoNodeTypeInfo;
@@ -26,8 +27,9 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
     this._value = value;
   }
 

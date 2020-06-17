@@ -15,6 +15,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
     typeInfo,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     value: D;
     key: string | undefined;
@@ -23,8 +24,9 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
     typeInfo: RdoNodeTypeInfo;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
 
     this._value = value;
   }

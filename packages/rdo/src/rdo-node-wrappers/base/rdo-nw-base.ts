@@ -10,6 +10,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
   private _wrappedSourceNode: ISourceNodeWrapper<S>;
   private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
   private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
 
   constructor({
     typeInfo,
@@ -18,6 +19,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     wrappedSourceNode,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
@@ -25,6 +27,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     wrappedSourceNode: ISourceNodeWrapper<S>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
     this._typeInfo = typeInfo;
     this._key = key;
@@ -32,6 +35,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     this._wrappedSourceNode = wrappedSourceNode;
     this._matchingNodeOptions = matchingNodeOptions;
     this._globalNodeOptions = globalNodeOptions;
+    this._targetedOptionMatchersArray = targetedOptionMatchersArray;
 
     // link Rdo node to source node
     wrappedSourceNode.setRdoNode(this);
@@ -41,7 +45,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
   // IRdoNodeWrapper
   //------------------------------
   public get ignore(): boolean {
-    return (this._matchingNodeOptions && this.matchingNodeOptions?.ignore) || false;
+    return this.getNodeOptions()?.ignore || false;
   }
 
   public get key() {
@@ -60,12 +64,20 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     return this._wrappedSourceNode;
   }
 
-  public get matchingNodeOptions(): INodeSyncOptions<any, any> | undefined {
-    return this._matchingNodeOptions;
-  }
-
   public get globalNodeOptions(): IGlobalNameOptions | undefined {
     return this._globalNodeOptions;
+  }
+
+  private _nodeOptions: INodeSyncOptions<any, any> | undefined | null;
+  public getNodeOptions(): INodeSyncOptions<any, any> | null {
+    if (this._nodeOptions === undefined) {
+      if (this._matchingNodeOptions) {
+        this._nodeOptions = this._matchingNodeOptions;
+      } else if (this._targetedOptionMatchersArray) {
+        this._nodeOptions = this._targetedOptionMatchersArray.find((targetOptionMatcher) => targetOptionMatcher.sourceNodeMatcher.nodeContent && targetOptionMatcher.sourceNodeMatcher.nodeContent(this.value)) || null;
+      } else this._nodeOptions = null;
+    }
+    return this._nodeOptions;
   }
 
   public abstract get value();

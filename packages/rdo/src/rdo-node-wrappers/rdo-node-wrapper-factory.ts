@@ -8,17 +8,20 @@ const logger = Logger.make('RdoNodeWrapperFactory');
 export class RdoNodeWrapperFactory {
   private _syncChildNode: ISyncChildNode<any, any>;
   private _globalNodeOptions: IGlobalNameOptions | undefined;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _wrapRdoNode: IWrapRdoNode;
   private _defaultEqualityComparer: IEqualityComparer;
 
   constructor({
     syncChildNode,
     globalNodeOptions,
+    targetedOptionMatchersArray,
     wrapRdoNode,
     defaultEqualityComparer,
   }: {
     syncChildNode: ISyncChildNode<any, any>;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     wrapRdoNode: IWrapRdoNode;
     defaultEqualityComparer: IEqualityComparer;
   }) {
@@ -26,6 +29,7 @@ export class RdoNodeWrapperFactory {
     this._globalNodeOptions = globalNodeOptions;
     this._wrapRdoNode = wrapRdoNode;
     this._defaultEqualityComparer = defaultEqualityComparer;
+    this._targetedOptionMatchersArray = targetedOptionMatchersArray;
   }
 
   public make<S, D>({
@@ -48,7 +52,7 @@ export class RdoNodeWrapperFactory {
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        return new RdoPrimitiveNW<S, D>({ value: value as D, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new RdoPrimitiveNW<S, D>({ value: value as D, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions, targetedOptionMatchersArray: this._targetedOptionMatchersArray });
       }
       case '[object Object]': {
         return new RdoObjectNW({
@@ -62,16 +66,47 @@ export class RdoNodeWrapperFactory {
           wrapRdoNode: this._wrapRdoNode,
           matchingNodeOptions,
           globalNodeOptions: this._globalNodeOptions,
+          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
         });
       }
       case '[object Array]': {
-        return new RdoArrayNW<S, D>({ value: value as Array<D>, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode: this._syncChildNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new RdoArrayNW<S, D>({
+          value: value as Array<D>,
+          typeInfo,
+          key,
+          wrappedParentRdoNode,
+          wrappedSourceNode,
+          syncChildNode: this._syncChildNode,
+          matchingNodeOptions,
+          globalNodeOptions: this._globalNodeOptions,
+          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        });
       }
       case '[object Map]': {
-        return new RdoMapNW<S, D>({ value: value as Map<string, D>, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode: this._syncChildNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new RdoMapNW<S, D>({
+          value: value as Map<string, D>,
+          typeInfo,
+          key,
+          wrappedParentRdoNode,
+          wrappedSourceNode,
+          syncChildNode: this._syncChildNode,
+          matchingNodeOptions,
+          globalNodeOptions: this._globalNodeOptions,
+          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        });
       }
       case '[object Set]': {
-        return new RdoSetNW<S, D>({ value: value as Set<D>, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode: this._syncChildNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new RdoSetNW<S, D>({
+          value: value as Set<D>,
+          typeInfo,
+          key,
+          wrappedParentRdoNode,
+          wrappedSourceNode,
+          syncChildNode: this._syncChildNode,
+          matchingNodeOptions,
+          globalNodeOptions: this._globalNodeOptions,
+          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

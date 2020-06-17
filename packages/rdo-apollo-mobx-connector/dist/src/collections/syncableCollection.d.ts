@@ -14,14 +14,14 @@ export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<
     private _map$;
     private _makeCollectionKeyFromSourceElement?;
     private _makeCollectionKeyFromRdoElement?;
-    private _makeRdo;
+    private _makeRdo?;
     get size(): number;
     private _array$;
     get array$(): Array<D>;
-    constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, }: {
+    constructor({ makeCollectionKeyFromSourceElement, makeCollectionKeyFromRdoElement, makeRdo, }?: {
         makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<S>;
         makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<D>;
-        makeRdo: (sourceNode: S) => D;
+        makeRdo?: (sourceNode: S) => D;
     });
     delete(key: string): boolean;
     forEach(callbackfn: (value: D, key: string, map: Map<string, D>) => void, thisArg?: any): void;
@@ -36,7 +36,7 @@ export declare class SyncableCollection<S, D> implements ISyncableRDOCollection<
     [Symbol.toStringTag]: string;
     makeCollectionKeyFromSourceElement: (item: S) => string | undefined;
     makeCollectionKeyFromRdoElement: (item: D) => string | undefined;
-    makeRdo(sourceItem: S): D;
+    makeRdo(sourceItem: S): D | undefined;
     getCollectionKeys: () => string[];
     elements(): Iterable<D>;
     getElement: (key: string) => D | undefined;

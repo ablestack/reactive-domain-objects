@@ -1,6 +1,5 @@
 import { GraphSynchronizer } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { TargetedOptionsTestRootRDO, DefaultIdRDO, DefaultId$RDO } from './supporting-files/default-id-rdo-models';
 import _ from 'lodash';
 
 const logger = Logger.make('flat-object-sync.test.ts');
@@ -23,8 +22,41 @@ export const targetedNodeOptionsTestRootJSON: PropNameTestRoot = {
 // -----------------------------------
 // Reactive Domain Object Graph
 // -----------------------------------
+export class TargetedOptionsTestRootRDO {
+  public mapOfDefaultIdRDO = new Array<DefaultIdRDO>();
+  public mapOfDefaultId$RDO = new Array<DefaultId$RDO>();
+  public mapOfDefault_IdRDO = new Array<Default_IdRDO>();
+}
 
-// Imported from ./supporting-files/default-id-rdo-models
+export class DefaultIdRDO {
+  private _id: string = '';
+  public get id(): string {
+    return this._id;
+  }
+  public set id(value) {
+    this._id = value;
+  }
+}
+
+export class DefaultId$RDO {
+  private _id$: string = '';
+  public get id$(): string {
+    return this._id$;
+  }
+  public set id$(value) {
+    this._id$ = value;
+  }
+}
+
+export class Default_IdRDO {
+  private __id: string = '';
+  public get _id(): string {
+    return this.__id;
+  }
+  public set _id(value) {
+    this.__id = value;
+  }
+}
 
 // --------------------------------------------------------------
 // TEST

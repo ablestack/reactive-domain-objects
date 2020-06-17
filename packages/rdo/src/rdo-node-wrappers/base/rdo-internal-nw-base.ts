@@ -15,6 +15,7 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
     syncChildNode,
     matchingNodeOptions,
     globalNodeOptions,
+    targetedOptionMatchersArray,
   }: {
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
@@ -23,8 +24,9 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNameOptions | undefined;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
     this._syncChildNode = syncChildNode;
   }
 

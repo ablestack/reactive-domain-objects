@@ -32,10 +32,10 @@ function synchronizeCollection({ rdo, syncChildNode }) {
             }
             if (!targetItem) {
                 if (!rdo.makeRdo)
-                    throw Error(`rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
+                    throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
                 targetItem = rdo.makeRdo(sourceItem);
                 if (!targetItem)
-                    throw Error(`rdo.targetItem produced null or undefined`);
+                    throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.targetItem produced null or undefined`);
                 logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
                 rdo.insertElement(key, targetItem);
             }
