@@ -8,7 +8,7 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     private _equalityComparer;
     private _wrapRdoNode;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: D;
+        value: D | undefined;
         typeInfo: RdoNodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
@@ -26,8 +26,8 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     smartSync(): boolean;
     itemKeys(): string[];
     getElement(key: string): any;
-    updateElement(key: string, value: any): boolean;
-    insertElement(key: string, value: D): boolean;
+    updateElement(key: string, value: D | undefined): boolean;
+    insertElement(key: string, value: D | undefined): boolean;
     /**
      *
      */

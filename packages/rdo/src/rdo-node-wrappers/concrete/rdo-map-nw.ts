@@ -58,6 +58,10 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     } else return false;
   }
 
+  public insertElement(key: string, value: D) {
+    this._value.set(key, value);
+  }
+
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
@@ -83,10 +87,6 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public childElementCount(): number {
     return this._value.size;
-  }
-
-  public insertElement(key: string, value: D) {
-    this._value.set(key, value);
   }
 
   public deleteElement(key: string): boolean {

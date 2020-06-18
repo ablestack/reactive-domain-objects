@@ -5,7 +5,7 @@ import { NodeChange } from '../../types/event-types';
 export declare class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
     private _value;
     constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: D;
+        value: D | undefined;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -15,7 +15,7 @@ export declare class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    get value(): D;
+    get value(): D | undefined;
     childElementCount(): number;
     smartSync(): boolean;
 }

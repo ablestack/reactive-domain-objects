@@ -20,10 +20,10 @@ export declare class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     itemKeys(): IterableIterator<string>;
     getElement(key: string): D | undefined;
     updateElement(key: string, value: D): boolean;
+    insertElement(key: string, value: D): void;
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    insertElement(key: string, value: D): void;
     deleteElement(key: string): boolean;
     clearElements(): boolean;
 }

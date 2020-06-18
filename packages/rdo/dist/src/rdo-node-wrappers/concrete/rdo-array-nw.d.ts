@@ -5,7 +5,7 @@ import { NodeChange } from '../../types/event-types';
 export declare class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     private _value;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: Array<D>;
+        value: Array<D> | undefined;
         typeInfo: RdoNodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
@@ -20,10 +20,10 @@ export declare class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     itemKeys(): string[];
     getElement(key: string): D | undefined;
     updateElement(key: string, value: D): boolean;
+    insertElement(key: string, value: D): void;
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    insertElement(key: string, value: D): void;
     deleteElement(key: string): boolean;
     clearElements(): boolean;
 }

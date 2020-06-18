@@ -487,8 +487,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/internal-types.ts": {
-        "version": "16b2d9105577368f70b1672a38a32de56ff97de4201c0ba3b096d3a7c98f8505",
-        "signature": "a58d03339d974ae006e1e78b19ccdbac5c70e9976526b021efe66193d8bfdf42",
+        "version": "c46a12ab34728e2aedecd96e1fc5fe7552ba6d7e559d9e0b5cb94403f3e6aae7",
+        "signature": "a7528452f7e50c3bfa6c536e4e76e4cfcb9e7a92ae584db1a52fb12d4bdfc30c",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-config-option-types.ts": {
@@ -827,7 +827,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "b6026126031206f9560dc40222103d83e04d029ef2aca2a0397d76c3a1c29fc1",
+        "version": "9195c753d0a8f67bc005fa109d94013174057d3bddcaf2a9eb67bc6916595db1",
         "signature": "53b79d388e24f937c122fce1aab0a4c897335575fe4efd3e9252f31da2a6966e",
         "affectsGlobalScope": false
       },
@@ -842,23 +842,23 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-array-nw.ts": {
-        "version": "e63e63a181ef95cc9c55dde3d0b4cd8ef84c8060d4ac46906c03d9c2b87defbd",
-        "signature": "81f292fb2b3cde3948a816b93ae2d6ac3807d7c02b05d264b0b396f14110a14f",
+        "version": "879dec32a58013c4edddb8a553a779fd429717c6d23e8e126bbc501d67501ed9",
+        "signature": "c1c6045a2d6cbb4b17ac90f3dd380584aa3bc2035d7938315b08100bf71d8165",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-map-nw.ts": {
-        "version": "c211e93e6837d25ee5ebd86ba80dddd50755a27d29fd5343c496103be6700a4a",
-        "signature": "f2eb26e2ec97d72ae9b311bdea6c5e213658ac629699722596fe6f7b0afed8a3",
+        "version": "8915f5eda29f44ab1403d76c637474aff5149851d8de3d77fc9edd76ea24b81d",
+        "signature": "169328be33bfab9e6efb0606825ae1991547290ded4da2c1d52328535eb21647",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "6454388888d84a2ff50a20406ff9aa9a3ae44e48b9d27703b73e7295f8a47aee",
-        "signature": "15de4f17558c0a3d975c5cb92ba2ee6494490501d5cb4839621e2c21336fb835",
+        "version": "b22ca2ecb7642c95dc5e5f54bb3747d3ef8d067a4b950df7dc46571cae7fcd29",
+        "signature": "5b49f56066770677dc1e27ced991b50748cab5ae76597dae3c46f5a151dd6b1a",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-primitive-nw.ts": {
-        "version": "5fc87aeed289f44d9b691b522f2290719f41ba00afbbdc351142d0e2358a91e4",
-        "signature": "6b38ea1f52c4efac37566ca13745fff51cf04aabd313ff22804b7faa4b091b3d",
+        "version": "b9aab5d8cae8e51cd3e1c4ff57481ff4b93d445ee13214d966ef59db28507ec0",
+        "signature": "492a4e34d4240b4d739b62b72921d926a9bf15b99f7419cb04e21870ee5845a7",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-set-nw.ts": {
@@ -892,8 +892,8 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-node-wrapper-factory.ts": {
-        "version": "4ad7da3dd067e01b815abca2ad0b98358ef98919967301a04bf9ed8d171c86cd",
-        "signature": "5842472c954e676ac5f7af94d96291c3551411d493da0b10c1b0897d7c50e555",
+        "version": "94a22bb1780a734be81c8fbcbd22e2caa16517bf4a826e4a9466930e07432156",
+        "signature": "d2bb69035428414ad268889d6706fbd78da478d2228a1fdb7fbc89f79d9ee996",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/index.ts": {
@@ -962,8 +962,8 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "34116d9d263976f18b31360719d6b67c9d22360fc2e57b78442aef29e6743d20",
-        "signature": "34912f39c82be65a1ee92f149ee17f5474612fccd93cec20cdb4106804ffd454",
+        "version": "ab0837a142c2bb5b8c0732153ecb1a8918c7cc8f08ad11e8eed65ec1bbe4cb45",
+        "signature": "bacec088ac70a97014e1fd858559cc45682b86cdfd2ae59b503fcccbb48cb7ba",
         "affectsGlobalScope": false
       },
       "../node_modules/@babel/types/lib/index.d.ts": {

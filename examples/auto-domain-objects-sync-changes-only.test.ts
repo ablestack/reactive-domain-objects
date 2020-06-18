@@ -66,6 +66,9 @@ const config: IGraphSyncOptions = {
 test('Synchronize auto-creates RDO and updates complex graph as expected', () => {
   const libraryRDO = {} as Library;
   const graphSynchronizer = new GraphSynchronizer(config);
+  graphSynchronizer.subscribeToNodeChanges((data) => {
+    console.log(` ----> `, data);
+  });
 
   // POSTURE VERIFICATION
   expect(libraryRDO.name).toBeFalsy();
@@ -99,7 +102,7 @@ test('Synchronize auto-creates RDO and updates complex graph as expected', () =>
 // TEST
 // --------------------------------------------------------------
 
-test.only('Synchronize only updated properties only where source data changed', () => {
+test('Synchronize only updated properties only where source data changed', () => {
   const libraryRDO = {} as Library;
   const graphSynchronizer = new GraphSynchronizer(config);
 
@@ -111,7 +114,6 @@ test.only('Synchronize only updated properties only where source data changed', 
   graphSynchronizer.subscribeToNodeChanges((data) => {
     if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
     fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
-    console.log(` ----> `, data);
   });
 
   // Mutate data

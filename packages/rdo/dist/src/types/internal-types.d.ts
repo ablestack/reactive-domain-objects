@@ -52,12 +52,12 @@ export declare function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any
 export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
     itemKeys(): Iterable<string>;
     getElement(key: string): D | null | undefined;
-    updateElement(key: string, value: D): boolean;
-    insertElement(key: string, value: D): void;
+    updateElement(key: string, value: D | undefined): boolean;
+    insertElement(key: string, value: D | undefined): void;
 }
 export declare function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any>;
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdoElement<S, D>, IMakeCollectionKey<D> {
-    elements(): Iterable<D>;
+    elements(): Iterable<D | undefined>;
     deleteElement(key: string): boolean;
     clearElements(): boolean;
 }
@@ -74,7 +74,7 @@ export declare type ISyncChildNode<S, D> = ({ wrappedParentRdoNode, rdoNodeItemV
 }) => boolean;
 export declare type IWrapRdoNode = ({ sourceNodePath, rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey, }: {
     sourceNodePath: string;
-    rdoNode: object;
+    rdoNode: object | undefined;
     sourceNode: object;
     wrappedParentRdoNode?: IRdoInternalNodeWrapper<unknown, unknown> | undefined;
     rdoNodeItemKey?: string | undefined;

@@ -94,7 +94,7 @@ export class QueryWatcher<Q> {
       logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
       return;
     }
-    logger.trace(`${this._name} - Starting`);
+    logger.info(`${this._name} - Starting`);
 
     if (force) this._watchedQuery.resetLastResults();
 

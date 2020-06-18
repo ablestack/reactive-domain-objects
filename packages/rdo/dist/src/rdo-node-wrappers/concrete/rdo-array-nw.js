@@ -8,8 +8,11 @@ const collection_utils_1 = require("../utils/collection.utils");
 const logger = logger_1.Logger.make('RdoArrayNW');
 class RdoArrayNW extends __1.RdoCollectionNWBase {
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        var _a;
         super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-        this._value = value;
+        if (!value && !((_a = globalNodeOptions === null || globalNodeOptions === void 0 ? void 0 : globalNodeOptions.autoInstantiateRdoItems) === null || _a === void 0 ? void 0 : _a.objectFieldsAsObservableObjectLiterals))
+            throw new Error(`Null value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
+        this._value = value || [];
     }
     //------------------------------
     // IRdoNodeWrapper
@@ -31,6 +34,9 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
         if (this.childElementCount() === 0)
             return false;
         return collection_utils_1.CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+    }
+    insertElement(key, value) {
+        collection_utils_1.CollectionUtils.Array.insertElement({ collection: this._value, key, value });
     }
     //------------------------------
     // IRdoInternalNodeWrapper
@@ -55,9 +61,6 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     }
     childElementCount() {
         return this._value.length;
-    }
-    insertElement(key, value) {
-        collection_utils_1.CollectionUtils.Array.insertElement({ collection: this._value, key, value });
     }
     deleteElement(key) {
         return collection_utils_1.CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });

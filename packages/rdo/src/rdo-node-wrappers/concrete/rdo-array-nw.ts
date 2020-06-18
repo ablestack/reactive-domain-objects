@@ -22,7 +22,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: Array<D>;
+    value: Array<D> | undefined;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
@@ -34,7 +34,8 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-    this._value = value;
+    if (!value && !globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) throw new Error(`Null value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
+    this._value = value || [];
   }
 
   //------------------------------
@@ -57,6 +58,10 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
   public updateElement(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
     return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+  }
+
+  public insertElement(key: string, value: D) {
+    CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 
   //------------------------------
@@ -84,10 +89,6 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
 
   public childElementCount(): number {
     return this._value.length;
-  }
-
-  public insertElement(key: string, value: D) {
-    CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 
   public deleteElement(key: string): boolean {

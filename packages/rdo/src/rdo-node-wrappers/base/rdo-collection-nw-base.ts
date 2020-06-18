@@ -186,11 +186,10 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
     }
 
-    // Auto-create Rdo collectionItem if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
-    // Note: this uses MobX to create an observable tree in the exact shape
-    // of the source data, regardless of original TypeScript typing of the collection items
-    // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
-    // Blending both can lead to unexpected behavior
+    // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
+    // Note: this creates an observable tree in the exact shape of the source data
+    // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
+    // Keys made here, instantiation takes place in downstream constructors
     if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
       rdo = sourceObject;
       logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);

@@ -45,15 +45,15 @@ export class RdoNodeWrapperFactory {
     wrappedSourceNode,
     matchingNodeOptions,
   }: {
-    value: RdoNodeTypes<S, D>;
+    value: RdoNodeTypes<S, D> | undefined;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
   }): IRdoNodeWrapper<S, D> {
-    const typeInfo = NodeTypeUtils.getRdoNodeType(value);
+    const builtInType = value ? NodeTypeUtils.getRdoNodeType(value).builtInType : wrappedSourceNode.typeInfo.builtInType;
 
-    switch (typeInfo.builtInType) {
+    switch (builtInType) {
       case '[object Boolean]':
       case '[object Date]':
       case '[object Number]':
@@ -63,7 +63,7 @@ export class RdoNodeWrapperFactory {
           key,
           wrappedParentRdoNode,
           wrappedSourceNode,
-          typeInfo,
+          typeInfo: builtInType,
           matchingNodeOptions,
           globalNodeOptions: this._globalNodeOptions,
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,
@@ -76,7 +76,7 @@ export class RdoNodeWrapperFactory {
           key,
           wrappedParentRdoNode,
           wrappedSourceNode,
-          typeInfo,
+          typeInfo: builtInType,
           defaultEqualityComparer: this._defaultEqualityComparer,
           syncChildNode: this._syncChildNode,
           wrapRdoNode: this._wrapRdoNode,
@@ -89,7 +89,7 @@ export class RdoNodeWrapperFactory {
       case '[object Array]': {
         return new RdoArrayNW<S, D>({
           value: value as Array<D>,
-          typeInfo,
+          typeInfo: builtInType,
           key,
           wrappedParentRdoNode,
           wrappedSourceNode,
@@ -101,9 +101,10 @@ export class RdoNodeWrapperFactory {
         });
       }
       case '[object Map]': {
+        if (value === null || value === undefined) throw new Error('autoInstantiate of Map types not supported');
         return new RdoMapNW<S, D>({
           value: value as Map<string, D>,
-          typeInfo,
+          typeInfo: builtInType,
           key,
           wrappedParentRdoNode,
           wrappedSourceNode,
@@ -115,9 +116,10 @@ export class RdoNodeWrapperFactory {
         });
       }
       case '[object Set]': {
+        if (value === null || value === undefined) throw new Error('autoInstantiate of Map types not supported');
         return new RdoSetNW<S, D>({
           value: value as Set<D>,
-          typeInfo,
+          typeInfo: builtInType,
           key,
           wrappedParentRdoNode,
           wrappedSourceNode,
@@ -129,7 +131,7 @@ export class RdoNodeWrapperFactory {
         });
       }
       default: {
-        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);
+        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${builtInType}`);
       }
     }
   }

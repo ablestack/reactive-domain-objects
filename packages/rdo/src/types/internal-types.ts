@@ -6,13 +6,12 @@ import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey, IMake
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 
 export type NodeKind = 'Primitive' | 'Collection' | 'Object';
-//export type ChildElementsNodeKind = NodeKind | null;
 export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 
 export type SourceNodeTypeInfo = { kind: NodeKind; builtInType: JavaScriptBuiltInType };
 
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
-export type RdoNodeTypeInfo = { kind: NodeKind; type: RdoFieldType | undefined; builtInType: JavaScriptBuiltInType };
+export type RdoNodeTypeInfo = { kind: NodeKind; type?: RdoFieldType; builtInType: JavaScriptBuiltInType };
 
 export interface ISourceNodeWrapper<S> {
   readonly typeInfo: SourceNodeTypeInfo;
@@ -71,8 +70,8 @@ export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any> {
 export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
   itemKeys(): Iterable<string>;
   getElement(key: string): D | null | undefined;
-  updateElement(key: string, value: D): boolean;
-  insertElement(key: string, value: D): void;
+  updateElement(key: string, value: D | undefined): boolean;
+  insertElement(key: string, value: D | undefined): void;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any> {
@@ -81,7 +80,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdoElement<S, D>, IMakeCollectionKey<D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
-  elements(): Iterable<D>;
+  elements(): Iterable<D | undefined>;
   deleteElement(key: string): boolean;
   clearElements(): boolean;
 }
@@ -119,7 +118,7 @@ export type IWrapRdoNode = ({
   sourceNodeItemKey,
 }: {
   sourceNodePath: string;
-  rdoNode: object;
+  rdoNode: object | undefined;
   sourceNode: object;
   wrappedParentRdoNode?: IRdoInternalNodeWrapper<unknown, unknown> | undefined;
   rdoNodeItemKey?: string | undefined;

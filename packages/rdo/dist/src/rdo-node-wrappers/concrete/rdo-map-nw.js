@@ -30,6 +30,9 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
         else
             return false;
     }
+    insertElement(key, value) {
+        this._value.set(key, value);
+    }
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
@@ -53,9 +56,6 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
     }
     childElementCount() {
         return this._value.size;
-    }
-    insertElement(key, value) {
-        this._value.set(key, value);
     }
     deleteElement(key) {
         return this._value.delete(key);

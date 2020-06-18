@@ -165,7 +165,17 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }: { wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any>; rdoNodeItemValue: any; rdoNodeItemKey: string; sourceNodeItemKey: string }): boolean => {
+  public syncChildNode = ({
+    wrappedParentRdoNode,
+    rdoNodeItemValue,
+    rdoNodeItemKey,
+    sourceNodeItemKey,
+  }: {
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any>;
+    rdoNodeItemValue: object | undefined;
+    rdoNodeItemKey: string;
+    sourceNodeItemKey: string;
+  }): boolean => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
     const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
@@ -173,8 +183,11 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Validate
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
     if (rdoNodeItemValue === undefined) {
-      logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
-      return false;
+      // If undefined && not autoInstantiateRdoFields, continue
+      if (!this._globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
+        logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+        return false;
+      }
     }
 
     const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);

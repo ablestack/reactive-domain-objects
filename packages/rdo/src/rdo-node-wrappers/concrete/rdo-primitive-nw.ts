@@ -7,20 +7,19 @@ import { NodeChange } from '../../types/event-types';
 const logger = Logger.make('RdoPrimitiveNW');
 
 export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
-  private _value: D;
+  private _value: D | undefined;
 
   constructor({
     value,
     key,
     wrappedParentRdoNode,
     wrappedSourceNode,
-    typeInfo,
     matchingNodeOptions,
     globalNodeOptions,
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: D;
+    value: D | undefined;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -32,6 +31,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
 
+    if (!value && !globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) throw new Error(`Undefined value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
     this._value = value;
   }
 
