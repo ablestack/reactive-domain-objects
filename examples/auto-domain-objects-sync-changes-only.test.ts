@@ -1,6 +1,7 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import _ from 'lodash';
+import { isObservable, isObservableProp } from 'mobx';
 
 const logger = Logger.make('map-sync.test.ts');
 
@@ -86,7 +87,6 @@ test('Synchronize auto-creates RDO and updates complex graph as expected', () =>
   expect(libraryRDO.name).toEqual(librarySourceJSON.name);
   expect(libraryRDO.city).toEqual(librarySourceJSON.city);
 
-  expect(libraryRDO.authors.length).toEqual(librarySourceJSON.authors.length);
   expect(libraryRDO.authors[0].id).toEqual(librarySourceJSON.authors[0].id);
   expect(libraryRDO.authors[0].name).toEqual(librarySourceJSON.authors[0].name);
   expect(libraryRDO.authors[0].age).toEqual(librarySourceJSON.authors[0].age);
@@ -114,7 +114,7 @@ test('Synchronize only updated properties only where source data changed', () =>
   graphSynchronizer.subscribeToNodeChanges((data) => {
     if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
     fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
-    console.log(` ----> `, data);
+    //console.log(` ----> `, data);
   });
 
   // Mutate data
@@ -124,8 +124,6 @@ test('Synchronize only updated properties only where source data changed', () =>
 
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
-
-  console.log(`libraryRDO`, libraryRDO);
 
   // RESULTS VERIFICATION
   expect(fieldChangeCounter.get('code')).toEqual(1);

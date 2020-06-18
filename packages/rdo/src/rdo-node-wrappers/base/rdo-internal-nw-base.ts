@@ -3,6 +3,7 @@ import { RdoNWBase } from './rdo-nw-base';
 import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, isIMakeRdo, NodeTypeUtils } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
+import { observable } from 'mobx';
 
 const logger = Logger.make('RdoMapNW');
 
@@ -88,13 +89,13 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return sourceObject;
+        return observable.box(sourceObject);
       }
       case 'Collection': {
-        return [];
+        return observable(new Array());
       }
       case 'Object': {
-        return {};
+        return observable(new Object());
       }
     }
   }

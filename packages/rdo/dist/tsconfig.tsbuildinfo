@@ -516,16 +516,6 @@
         "signature": "cb828dce5900e2829c1946124119528d5b83e4370c042aabf6cf72adced0fe4c",
         "affectsGlobalScope": false
       },
-      "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": {
-        "version": "7bb45d16c397f961dc3a60c92b289a9061d0b6f22eac2e050bc1d0d87523384c",
-        "signature": "12b1f32dd9ee4b50de32b868dff2f2609877bc44870e746df267819ed58fc207",
-        "affectsGlobalScope": false
-      },
-      "../src/rdo-node-wrappers/utils/node-type.utils.ts": {
-        "version": "5e4b6608bfd64061457b532e89586ff46a9852f5d1ebe9585ad9eae1cc616307",
-        "signature": "4623940ba1c56d6f7d066e581fd5d71280be0e7ba70cf9cbb9b3c8552e4bd7fa",
-        "affectsGlobalScope": false
-      },
       "../node_modules/mobx/lib/utils/utils.d.ts": {
         "version": "a262d84d7a0ec96e682f72e583745d76f6f03b990cb6503507924539c1fcbd33",
         "signature": "a262d84d7a0ec96e682f72e583745d76f6f03b990cb6503507924539c1fcbd33",
@@ -759,6 +749,16 @@
       "../node_modules/mobx/lib/mobx.d.ts": {
         "version": "79aa0139ec854503adfe9cfaca28419bb8d2b9a396860530089d44279cba29cc",
         "signature": "79aa0139ec854503adfe9cfaca28419bb8d2b9a396860530089d44279cba29cc",
+        "affectsGlobalScope": false
+      },
+      "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": {
+        "version": "51f5c704b9cd417f59340d8a84767be772354766ee86026f234f986855879ed9",
+        "signature": "12b1f32dd9ee4b50de32b868dff2f2609877bc44870e746df267819ed58fc207",
+        "affectsGlobalScope": false
+      },
+      "../src/rdo-node-wrappers/utils/node-type.utils.ts": {
+        "version": "5e4b6608bfd64061457b532e89586ff46a9852f5d1ebe9585ad9eae1cc616307",
+        "signature": "4623940ba1c56d6f7d066e581fd5d71280be0e7ba70cf9cbb9b3c8552e4bd7fa",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/lodash/ts3.1/common/common.d.ts": {
@@ -2864,6 +2864,7 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts",
+        "../node_modules/mobx/lib/mobx.d.ts",
         "../src/index.ts",
         "../src/infrastructure/event-emitter.ts",
         "../src/infrastructure/logger.ts",

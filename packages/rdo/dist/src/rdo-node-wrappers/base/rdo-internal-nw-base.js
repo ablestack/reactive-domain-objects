@@ -4,6 +4,7 @@ exports.RdoInternalNWBase = void 0;
 const logger_1 = require("../../infrastructure/logger");
 const rdo_nw_base_1 = require("./rdo-nw-base");
 const __1 = require("../..");
+const mobx_1 = require("mobx");
 const logger = logger_1.Logger.make('RdoMapNW');
 class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
@@ -51,13 +52,13 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
         const typeInfo = __1.NodeTypeUtils.getNodeType(sourceObject);
         switch (typeInfo.kind) {
             case 'Primitive': {
-                return sourceObject;
+                return mobx_1.observable.box(sourceObject);
             }
             case 'Collection': {
-                return [];
+                return mobx_1.observable(new Array());
             }
             case 'Object': {
-                return {};
+                return mobx_1.observable(new Object());
             }
         }
     }
