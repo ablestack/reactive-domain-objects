@@ -6,8 +6,8 @@ const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const logger = logger_1.Logger.make('RdoPrimitiveNW');
 class RdoPrimitiveNW extends __1.RdoNWBase {
-    constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
+    constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._value = value;
     }
     //------------------------------
@@ -34,7 +34,10 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
                 throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
             if (!this.key)
                 throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
-            return this.wrappedParentRdoNode.updateElement(this.key, this.wrappedSourceNode.value);
+            const changed = this.wrappedParentRdoNode.updateElement(this.key, this.wrappedSourceNode.value);
+            if (changed)
+                this.eventEmitter.publish('nodeChange', { changeType: 'update', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: this.wrappedSourceNode.key, rdoKey: this.key, rdoOldValue: this.value, rdoNewValue: this.wrappedSourceNode.value });
+            return changed;
         }
         return false;
     }

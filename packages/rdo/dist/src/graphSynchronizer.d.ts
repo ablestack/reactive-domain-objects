@@ -1,4 +1,6 @@
 import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IWrapRdoNode } from '.';
+import { SubscriptionFunction } from './infrastructure';
+import { NodeChange } from './types/event-types';
 /**
  *
  *
@@ -6,6 +8,7 @@ import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IWrapRd
  * @class GraphSynchronizer
  */
 export declare class GraphSynchronizer implements IGraphSynchronizer {
+    private _eventEmitter;
     private _defaultEqualityComparer;
     private _globalNodeOptions;
     private _targetedOptionNodePathsMap;
@@ -31,6 +34,8 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
         rootSourceNode: S;
         rootRdo: D;
     }): void;
+    subscribeToNodeChanges(func: SubscriptionFunction<NodeChange>): void;
+    unsubscribeToNodeChanges(func: SubscriptionFunction<NodeChange>): void;
     /**
      *
      *

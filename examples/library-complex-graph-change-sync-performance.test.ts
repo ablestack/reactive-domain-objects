@@ -1,4 +1,4 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
 import _ from 'lodash';
@@ -32,7 +32,7 @@ const CHANGE_SYNC_MAX_TIME_MS = 1500;
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
+const config: IGraphSyncOptions = {
   targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };

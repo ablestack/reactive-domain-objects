@@ -6,7 +6,8 @@ const logger_1 = require("../infrastructure/logger");
 const node_type_utils_1 = require("./utils/node-type.utils");
 const logger = logger_1.Logger.make('RdoNodeWrapperFactory');
 class RdoNodeWrapperFactory {
-    constructor({ syncChildNode, globalNodeOptions, targetedOptionMatchersArray, wrapRdoNode, defaultEqualityComparer, }) {
+    constructor({ eventEmitter, syncChildNode, globalNodeOptions, targetedOptionMatchersArray, wrapRdoNode, defaultEqualityComparer, }) {
+        this._eventEmitter = eventEmitter;
         this._syncChildNode = syncChildNode;
         this._globalNodeOptions = globalNodeOptions;
         this._wrapRdoNode = wrapRdoNode;
@@ -20,7 +21,17 @@ class RdoNodeWrapperFactory {
             case '[object Date]':
             case '[object Number]':
             case '[object String]': {
-                return new _1.RdoPrimitiveNW({ value: value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions, targetedOptionMatchersArray: this._targetedOptionMatchersArray });
+                return new _1.RdoPrimitiveNW({
+                    value: value,
+                    key,
+                    wrappedParentRdoNode,
+                    wrappedSourceNode,
+                    typeInfo,
+                    matchingNodeOptions,
+                    globalNodeOptions: this._globalNodeOptions,
+                    targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
+                });
             }
             case '[object Object]': {
                 return new _1.RdoObjectNW({
@@ -35,6 +46,7 @@ class RdoNodeWrapperFactory {
                     matchingNodeOptions,
                     globalNodeOptions: this._globalNodeOptions,
                     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
                 });
             }
             case '[object Array]': {
@@ -48,6 +60,7 @@ class RdoNodeWrapperFactory {
                     matchingNodeOptions,
                     globalNodeOptions: this._globalNodeOptions,
                     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
                 });
             }
             case '[object Map]': {
@@ -61,6 +74,7 @@ class RdoNodeWrapperFactory {
                     matchingNodeOptions,
                     globalNodeOptions: this._globalNodeOptions,
                     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
                 });
             }
             case '[object Set]': {
@@ -74,6 +88,7 @@ class RdoNodeWrapperFactory {
                     matchingNodeOptions,
                     globalNodeOptions: this._globalNodeOptions,
                     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
                 });
             }
             default: {

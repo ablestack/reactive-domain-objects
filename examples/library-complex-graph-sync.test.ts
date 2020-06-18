@@ -1,4 +1,4 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { BookRDO, LibraryRDO } from './supporting-files/library-rdo-models';
 import { librarySourceJSON } from './supporting-files/library-source-data';
@@ -27,7 +27,7 @@ const logger = Logger.make('map-sync.test.ts');
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
+const config: IGraphSyncOptions = {
   targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };

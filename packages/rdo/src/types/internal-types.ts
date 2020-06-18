@@ -54,7 +54,7 @@ export type RdoNodeTypes<S, D> = D | Array<D> | Map<string, D> | Set<D> | ISynca
 export interface IRdoNodeWrapper<S, D> {
   readonly value: RdoNodeTypes<S, D>;
   readonly key: string | undefined;
-  readonly wrappedParentRdoNode: IRdoNodeWrapper<any, any> | undefined;
+  readonly wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any> | undefined;
   readonly typeInfo: RdoNodeTypeInfo;
   readonly wrappedSourceNode: ISourceNodeWrapper<S>;
   readonly globalNodeOptions: IGlobalNodeOptions | undefined;
@@ -72,6 +72,7 @@ export interface IRdoInternalNodeWrapper<S, D> extends IRdoNodeWrapper<S, D> {
   itemKeys(): Iterable<string>;
   getElement(key: string): D | null | undefined;
   updateElement(key: string, value: D): boolean;
+  insertElement(key: string, value: D): void;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any> {
@@ -81,7 +82,6 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeRdoElement<S, D>, IMakeCollectionKey<D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D>;
-  insertElement(key: string, value: D): void;
   deleteElement(key: string): boolean;
   clearElements(): boolean;
 }
@@ -121,7 +121,7 @@ export type IWrapRdoNode = ({
   sourceNodePath: string;
   rdoNode: object;
   sourceNode: object;
-  wrappedParentRdoNode?: IRdoNodeWrapper<unknown, unknown> | undefined;
+  wrappedParentRdoNode?: IRdoInternalNodeWrapper<unknown, unknown> | undefined;
   rdoNodeItemKey?: string | undefined;
   sourceNodeItemKey?: string | undefined;
 }) => IRdoNodeWrapper<unknown, unknown>;

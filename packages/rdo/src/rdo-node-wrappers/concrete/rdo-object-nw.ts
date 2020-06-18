@@ -18,8 +18,10 @@ import {
   IWrapRdoNode,
   IContinueSmartSync,
 } from '../..';
-import { isIRdoInternalNodeWrapper, INodeSyncOptions } from '../../types';
+import { isIRdoInternalNodeWrapper, INodeSyncOptions, IRdoInternalNodeWrapper } from '../../types';
 import { observable } from 'mobx';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoObjectNW');
 
@@ -40,11 +42,12 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     globalNodeOptions,
     matchingNodeOptions,
     targetedOptionMatchersArray,
+    eventEmitter,
   }: {
     value: D;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
-    wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode<S, D>;
@@ -52,8 +55,9 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
     this._wrapRdoNode = wrapRdoNode;
@@ -130,6 +134,16 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
       return true;
     } else return false;
   }
+
+  insertElement(key: string, value: D) {
+    if (!(key in this._value)) {
+      //@ts-ignore
+      this._value[key] = value;
+      return true;
+    }
+    return false;
+  }
+
   //--------------------------------------
   // Private Methods
   //--------------------------------------
@@ -139,31 +153,33 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   private sync(): boolean {
     let changed = false;
 
-    if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}')`);
+    if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) {
+      throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}')`);
+    }
 
     // Loop properties
     for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
       const sourceFieldVal = this.wrappedSourceNode.getItem(sourceFieldname);
-      const rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
+      let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 
-      // Check to see if key exists
-      if (!rdoFieldname) {
-        logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' key not found in RDO. Skipping property`);
-        continue;
-      }
-
-      let rdoNodeItemValue = this.getElement(rdoFieldname);
-      if (!rdoFieldname) {
+      let rdoNodeItemValue: any;
+      if (rdoFieldname) {
+        rdoNodeItemValue = this.getElement(rdoFieldname);
+      } else {
         // Auto-create Rdo object field if autoInstantiateRdoItems.objectFieldsAsObservableObjectLiterals
         // Note: this uses MobX to create an observable tree in the exact shape
         // of the source data, regardless of  original TypeScript typing of the collection items
         // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods
         // Blending both can lead to unexpected behavior
         if (this.globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
-          logger.info(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' auto making RDO`);
-          rdoNodeItemValue = observable(sourceFieldVal);
+          logger.info(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
+          rdoFieldname = sourceFieldname;
+          rdoNodeItemValue = sourceFieldVal;
+          this.insertElement(rdoFieldname, rdoNodeItemValue);
+          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, rdoOldValue: undefined, rdoNewValue: rdoNodeItemValue });
         } else {
-          throw new Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${rdoFieldname}' value not found in RDO. Skipping property`);
+          logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
+          continue;
         }
       }
 

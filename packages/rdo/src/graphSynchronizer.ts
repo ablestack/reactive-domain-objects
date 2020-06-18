@@ -1,6 +1,7 @@
-import { comparers, IEqualityComparer, IGlobalNodeOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, IRdoNodeWrapper, isISourceInternalNodeWrapper, SourceNodeWrapperFactory, IWrapRdoNode } from '.';
-import { Logger } from './infrastructure/logger';
+import { comparers, IEqualityComparer, IGlobalNodeOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, isISourceInternalNodeWrapper, IWrapRdoNode, SourceNodeWrapperFactory } from '.';
+import { EventEmitter, Logger, SubscriptionFunction } from './infrastructure';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
+import { NodeChange } from './types/event-types';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -14,6 +15,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
+  private _eventEmitter: EventEmitter<NodeChange>;
   private _defaultEqualityComparer: IEqualityComparer;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
@@ -81,6 +83,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // CONSTRUCTOR
   // ------------------------------------------------------------------------------------------------------------------
   constructor(options?: IGraphSyncOptions) {
+    this._eventEmitter = new EventEmitter<NodeChange>();
     this._defaultEqualityComparer = options?.customEqualityComparer || comparers.apollo;
     this._globalNodeOptions = options?.globalNodeOptions;
     this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any>>();
@@ -95,6 +98,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     this._sourceNodeWrapperFactory = new SourceNodeWrapperFactory({ globalNodeOptions: this._globalNodeOptions });
     this._rdoNodeWrapperFactory = new RdoNodeWrapperFactory({
+      eventEmitter: this._eventEmitter,
       syncChildNode: this.syncChildNode,
       globalNodeOptions: this._globalNodeOptions,
       wrapRdoNode: this.wrapRdoNode,
@@ -122,6 +126,14 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     wrappedRdoNode.smartSync();
 
     logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
+  }
+
+  public subscribeToNodeChanges(func: SubscriptionFunction<NodeChange>) {
+    this._eventEmitter.subscribe('nodeChange', func);
+  }
+
+  public unsubscribeToNodeChanges(func: SubscriptionFunction<NodeChange>) {
+    this._eventEmitter.unsubscribe('nodeChange', func);
   }
 
   /**
@@ -159,8 +171,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
 
     // Validate
-    if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
-    if (!rdoNodeItemValue === undefined) {
+    if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+    if (rdoNodeItemValue === undefined) {
       logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
       return false;
     }

@@ -1,6 +1,6 @@
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import _ from 'lodash';
 
 const logger = Logger.make('map-sync.test.ts');
@@ -73,7 +73,7 @@ export class SimpleRDO {
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
+const config: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
       sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'arrayOfObjectsObject' },

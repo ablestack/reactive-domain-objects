@@ -5,11 +5,10 @@ const __1 = require("..");
 const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const collection_utils_1 = require("../utils/collection.utils");
-const sync_utils_1 = require("../utils/sync.utils");
 const logger = logger_1.Logger.make('RdoArrayNW');
 class RdoArrayNW extends __1.RdoCollectionNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._value = value;
     }
     //------------------------------
@@ -45,7 +44,7 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             if (!__2.isISourceCollectionNodeWrapper(this.wrappedSourceNode))
                 throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
             // Execute
-            return sync_utils_1.SyncUtils.synchronizeCollection({ rdo: this, syncChildNode: this._syncChildNode });
+            return super.synchronizeCollection();
         }
     }
     //------------------------------

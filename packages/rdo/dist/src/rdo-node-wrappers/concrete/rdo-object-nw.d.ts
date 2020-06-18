@@ -1,15 +1,17 @@
 import { RdoInternalNWBase } from '..';
-import { IGlobalNodeOptions, IEqualityComparer, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
-import { INodeSyncOptions } from '../../types';
+import { IGlobalNodeOptions, IEqualityComparer, RdoNodeTypeInfo, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
+import { INodeSyncOptions, IRdoInternalNodeWrapper } from '../../types';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { NodeChange } from '../../types/event-types';
 export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
     private _value;
     private _equalityComparer;
     private _wrapRdoNode;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, }: {
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: D;
         typeInfo: RdoNodeTypeInfo;
         key: string | undefined;
-        wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode<S, D>;
@@ -17,6 +19,7 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+        eventEmitter: EventEmitter<NodeChange>;
     });
     get value(): D;
     childElementCount(): number;
@@ -24,6 +27,7 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     itemKeys(): string[];
     getElement(key: string): any;
     updateElement(key: string, value: any): boolean;
+    insertElement(key: string, value: D): boolean;
     /**
      *
      */

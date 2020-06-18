@@ -1,3 +1,4 @@
+export * from './event-types';
 export * from './general-types';
 export * from './internal-types';
 export * from './rdo-collection-types';

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphSynchronizer = void 0;
 const _1 = require(".");
-const logger_1 = require("./infrastructure/logger");
+const infrastructure_1 = require("./infrastructure");
 const rdo_node_wrapper_factory_1 = require("./rdo-node-wrappers/rdo-node-wrapper-factory");
-const logger = logger_1.Logger.make('GraphSynchronizer');
+const logger = infrastructure_1.Logger.make('GraphSynchronizer');
 /**
  *
  *
@@ -40,8 +40,8 @@ class GraphSynchronizer {
             const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
             // Validate
             if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
-                throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step Node in path. Expected Internal Node but found Leaf Node`);
-            if (!rdoNodeItemValue === undefined) {
+                throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+            if (rdoNodeItemValue === undefined) {
                 logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
                 return false;
             }
@@ -68,6 +68,7 @@ class GraphSynchronizer {
             this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
             return changed;
         };
+        this._eventEmitter = new infrastructure_1.EventEmitter();
         this._defaultEqualityComparer = (options === null || options === void 0 ? void 0 : options.customEqualityComparer) || _1.comparers.apollo;
         this._globalNodeOptions = options === null || options === void 0 ? void 0 : options.globalNodeOptions;
         this._targetedOptionNodePathsMap = new Map();
@@ -81,6 +82,7 @@ class GraphSynchronizer {
         }
         this._sourceNodeWrapperFactory = new _1.SourceNodeWrapperFactory({ globalNodeOptions: this._globalNodeOptions });
         this._rdoNodeWrapperFactory = new rdo_node_wrapper_factory_1.RdoNodeWrapperFactory({
+            eventEmitter: this._eventEmitter,
             syncChildNode: this.syncChildNode,
             globalNodeOptions: this._globalNodeOptions,
             wrapRdoNode: this.wrapRdoNode,
@@ -146,6 +148,12 @@ class GraphSynchronizer {
         const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
         wrappedRdoNode.smartSync();
         logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
+    }
+    subscribeToNodeChanges(func) {
+        this._eventEmitter.subscribe('nodeChange', func);
+    }
+    unsubscribeToNodeChanges(func) {
+        this._eventEmitter.unsubscribe('nodeChange', func);
     }
     /**
      *

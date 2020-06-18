@@ -1,17 +1,20 @@
 import { Logger } from '../../infrastructure/logger';
 import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
-import { isISourceCollectionNodeWrapper, isIRdoCollectionNodeWrapper } from '../../types';
+import { isISourceCollectionNodeWrapper, isIRdoCollectionNodeWrapper, IRdoInternalNodeWrapper } from '../../types';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoMapNW');
 
 export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
   private _typeInfo: RdoNodeTypeInfo;
   private _key: string | undefined;
-  private _parent: IRdoNodeWrapper<S, D> | undefined;
+  private _parent: IRdoInternalNodeWrapper<S, D> | undefined;
   private _wrappedSourceNode: ISourceNodeWrapper<S>;
   private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+  private _eventEmitter: EventEmitter<NodeChange>;
 
   constructor({
     typeInfo,
@@ -21,14 +24,16 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     matchingNodeOptions,
     globalNodeOptions,
     targetedOptionMatchersArray,
+    eventEmitter,
   }: {
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
-    wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    eventEmitter: EventEmitter<NodeChange>;
   }) {
     this._typeInfo = typeInfo;
     this._key = key;
@@ -37,9 +42,17 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     this._matchingNodeOptions = matchingNodeOptions;
     this._globalNodeOptions = globalNodeOptions;
     this._targetedOptionMatchersArray = targetedOptionMatchersArray;
+    this._eventEmitter = eventEmitter;
 
     // link Rdo node to source node
     wrappedSourceNode.setRdoNode(this);
+  }
+
+  //------------------------------
+  // Protected
+  //------------------------------
+  protected get eventEmitter(): EventEmitter<NodeChange> {
+    return this._eventEmitter;
   }
 
   //------------------------------

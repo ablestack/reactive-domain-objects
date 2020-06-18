@@ -1,4 +1,4 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { LibraryRDO, BookRDO } from './supporting-files/library-rdo-models';
 import { librarySourceJSON } from './supporting-files/library-source-data';
@@ -27,7 +27,7 @@ const logger = Logger.make('flat-object-sync.test.ts');
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
+const config: IGraphSyncOptions = {
   targetedNodeOptions: [{ sourceNodeMatcher: { nodeContent: (node) => node && node.__type === 'Book' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };

@@ -5,7 +5,7 @@ const logger_1 = require("../../infrastructure/logger");
 const types_1 = require("../../types");
 const logger = logger_1.Logger.make('RdoMapNW');
 class RdoNWBase {
-    constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, }) {
+    constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
         this._typeInfo = typeInfo;
         this._key = key;
         this._parent = wrappedParentRdoNode;
@@ -13,8 +13,15 @@ class RdoNWBase {
         this._matchingNodeOptions = matchingNodeOptions;
         this._globalNodeOptions = globalNodeOptions;
         this._targetedOptionMatchersArray = targetedOptionMatchersArray;
+        this._eventEmitter = eventEmitter;
         // link Rdo node to source node
         wrappedSourceNode.setRdoNode(this);
+    }
+    //------------------------------
+    // Protected
+    //------------------------------
+    get eventEmitter() {
+        return this._eventEmitter;
     }
     //------------------------------
     // IRdoNodeWrapper

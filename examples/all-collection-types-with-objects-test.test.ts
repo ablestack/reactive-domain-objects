@@ -1,4 +1,4 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
 
@@ -48,7 +48,7 @@ export class SimpleRDO {
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
+const config: IGraphSyncOptions = {
   targetedNodeOptions: [
     {
       sourceNodeMatcher: {

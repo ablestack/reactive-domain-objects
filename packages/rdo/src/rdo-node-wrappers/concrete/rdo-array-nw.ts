@@ -1,8 +1,9 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { CollectionUtils } from '../utils/collection.utils';
-import { SyncUtils } from '../utils/sync.utils';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoArrayNW');
 
@@ -19,18 +20,20 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     matchingNodeOptions,
     globalNodeOptions,
     targetedOptionMatchersArray,
+    eventEmitter,
   }: {
     value: Array<D>;
     typeInfo: RdoNodeTypeInfo;
     key: string | undefined;
-    wrappedParentRdoNode: IRdoNodeWrapper<S, D> | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
     syncChildNode: ISyncChildNode<S, D>;
     matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
   }
 
@@ -68,7 +71,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return SyncUtils.synchronizeCollection({ rdo: this, syncChildNode: this._syncChildNode });
+      return super.synchronizeCollection();
     }
   }
 
