@@ -1,4 +1,4 @@
-import { ISourceInternalNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions } from '../..';
+import { ISourceInternalNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 export declare class SourceObjectNW<S extends Record<string, any>> extends SourceBaseNW<S> implements ISourceInternalNodeWrapper<S> {
     private _value;
@@ -6,7 +6,7 @@ export declare class SourceObjectNW<S extends Record<string, any>> extends Sourc
         value: S | null | undefined;
         sourceNodePath: string;
         key: string | undefined;
-        typeInfo: SourceNodeTypeInfo;
+        typeInfo: NodeTypeInfo;
         lastSourceNode: any;
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;

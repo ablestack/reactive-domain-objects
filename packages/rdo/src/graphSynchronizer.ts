@@ -183,11 +183,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     // Validate
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
     if (rdoNodeItemValue === undefined) {
-      // If undefined && not autoInstantiateRdoFields, continue
-      if (!this._globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
-        logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
-        return false;
-      }
+      logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+      return false;
     }
 
     const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);

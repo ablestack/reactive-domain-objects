@@ -1,37 +1,12 @@
 import { Logger } from '../../infrastructure/logger';
-import { SourceNodeTypeInfo, JavaScriptBuiltInType, RdoNodeTypeInfo, IsISyncableCollection } from '../..';
+import { NodeTypeInfo, JavaScriptBuiltInType, IsISyncableCollection } from '../..';
 
 const logger = Logger.make('node-type.utils');
 
 /**
  *
  */
-function getSourceNodeType(sourceNodeVal: any): SourceNodeTypeInfo {
-  const sourceNodeBuiltInType = toString.call(sourceNodeVal) as JavaScriptBuiltInType;
-
-  switch (sourceNodeBuiltInType) {
-    case '[object Boolean]':
-    case '[object Date]':
-    case '[object Number]':
-    case '[object String]': {
-      return { kind: 'Primitive', builtInType: sourceNodeBuiltInType };
-    }
-    case '[object Object]': {
-      return { kind: 'Object', builtInType: sourceNodeBuiltInType };
-    }
-    case '[object Array]': {
-      return { kind: 'Collection', builtInType: sourceNodeBuiltInType };
-    }
-    default: {
-      throw new Error(`Unable to find Source type for sourceNodeBuiltInType: ${sourceNodeBuiltInType}`);
-    }
-  }
-}
-
-/**
- *
- */
-function getRdoNodeType(rdoNodeVal: any): RdoNodeTypeInfo {
+function getNodeType(rdoNodeVal: any): NodeTypeInfo {
   const builtInNodeType = toString.call(rdoNodeVal) as JavaScriptBuiltInType;
 
   if (IsISyncableCollection(rdoNodeVal)) {
@@ -79,4 +54,4 @@ function isPrimitive(val: any): boolean {
   }
 }
 
-export const NodeTypeUtils = { getSourceNodeType, getRdoNodeType, isPrimitive };
+export const NodeTypeUtils = { getNodeType, isPrimitive };

@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { CollectionUtils } from '../utils/collection.utils';
 import { EventEmitter } from '../../infrastructure/event-emitter';
@@ -22,8 +22,8 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: Array<D> | undefined;
-    typeInfo: RdoNodeTypeInfo;
+    value: Array<D>;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -34,8 +34,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-    if (!value && !globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) throw new Error(`Null value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
-    this._value = value || [];
+    this._value = value;
   }
 
   //------------------------------
@@ -50,17 +49,17 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
-  public getElement(key: string) {
+  public getItem(key: string) {
     if (this.childElementCount() === 0) return undefined;
     return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
-  public updateElement(key: string, value: D) {
+  public updateItem(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
     return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
-  public insertElement(key: string, value: D) {
+  public insertItem(key: string, value: D) {
     CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 

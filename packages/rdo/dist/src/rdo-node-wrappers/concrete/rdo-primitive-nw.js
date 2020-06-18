@@ -6,11 +6,8 @@ const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const logger = logger_1.Logger.make('RdoPrimitiveNW');
 class RdoPrimitiveNW extends __1.RdoNWBase {
-    constructor({ value, key, wrappedParentRdoNode, wrappedSourceNode, typeInfo, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        var _a;
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
         super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-        if (!value && !((_a = globalNodeOptions === null || globalNodeOptions === void 0 ? void 0 : globalNodeOptions.autoInstantiateRdoItems) === null || _a === void 0 ? void 0 : _a.objectFieldsAsObservableObjectLiterals))
-            throw new Error(`Undefined value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
         this._value = value;
     }
     //------------------------------
@@ -37,7 +34,7 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
                 throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
             if (!this.key)
                 throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
-            const changed = this.wrappedParentRdoNode.updateElement(this.key, this.wrappedSourceNode.value);
+            const changed = this.wrappedParentRdoNode.updateItem(this.key, this.wrappedSourceNode.value);
             if (changed)
                 this.eventEmitter.publish('nodeChange', { changeType: 'update', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: this.wrappedSourceNode.key, rdoKey: this.key, rdoOldValue: this.value, rdoNewValue: this.wrappedSourceNode.value });
             return changed;

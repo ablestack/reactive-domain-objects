@@ -1,4 +1,4 @@
-import { ISourceNodeWrapper, SourceNodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
+import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
 export declare abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
     private _key;
     private _typeInfo;
@@ -10,12 +10,12 @@ export declare abstract class SourceBaseNW<S> implements ISourceNodeWrapper<S> {
     constructor({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions, }: {
         sourceNodePath: string;
         key: string | undefined;
-        typeInfo: SourceNodeTypeInfo;
+        typeInfo: NodeTypeInfo;
         lastSourceNode: any;
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
     });
-    get typeInfo(): SourceNodeTypeInfo;
+    get typeInfo(): NodeTypeInfo;
     get key(): string | undefined;
     get sourceNodePath(): string;
     get lastSourceNode(): S | undefined;

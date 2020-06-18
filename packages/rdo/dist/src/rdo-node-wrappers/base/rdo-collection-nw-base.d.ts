@@ -1,11 +1,11 @@
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 export declare abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> implements IRdoCollectionNodeWrapper<S, D> {
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        typeInfo: RdoNodeTypeInfo;
+        typeInfo: NodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -17,10 +17,9 @@ export declare abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBas
     });
     protected synchronizeCollection(): boolean;
     makeCollectionKey: (item: D) => any;
-    makeRdoElement(sourceObject: any): any;
     abstract elements(): Iterable<D>;
     abstract childElementCount(): any;
     abstract clearElements(): any;
-    abstract insertElement(key: string, value: D): any;
+    abstract insertItem(key: string, value: D): any;
     abstract deleteElement(key: string): any;
 }

@@ -1,12 +1,12 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 export declare class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     private _value;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: Array<D> | undefined;
-        typeInfo: RdoNodeTypeInfo;
+        value: Array<D>;
+        typeInfo: NodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -18,9 +18,9 @@ export declare class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     });
     get value(): D[];
     itemKeys(): string[];
-    getElement(key: string): D | undefined;
-    updateElement(key: string, value: D): boolean;
-    insertElement(key: string, value: D): void;
+    getItem(key: string): D | undefined;
+    updateItem(key: string, value: D): boolean;
+    insertItem(key: string, value: D): void;
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;

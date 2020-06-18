@@ -1,5 +1,5 @@
 import { Logger } from '../../infrastructure/logger';
-import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
+import { IRdoNodeWrapper, NodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
 import { isISourceCollectionNodeWrapper, isIRdoCollectionNodeWrapper, IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -7,7 +7,7 @@ import { NodeChange } from '../../types/event-types';
 const logger = Logger.make('RdoMapNW');
 
 export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
-  private _typeInfo: RdoNodeTypeInfo;
+  private _typeInfo: NodeTypeInfo;
   private _key: string | undefined;
   private _parent: IRdoInternalNodeWrapper<S, D> | undefined;
   private _wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -26,7 +26,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -70,7 +70,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     return this._parent;
   }
 
-  public get typeInfo(): RdoNodeTypeInfo {
+  public get typeInfo(): NodeTypeInfo {
     return this._typeInfo;
   }
 

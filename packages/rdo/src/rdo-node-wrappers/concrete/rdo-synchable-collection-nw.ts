@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -22,7 +22,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     eventEmitter,
   }: {
     value: ISyncableRDOCollection<S, D>;
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -47,11 +47,11 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.getCollectionKeys();
   }
 
-  public getElement(key: string) {
+  public getItem(key: string) {
     return this._value.getElement(key);
   }
 
-  public updateElement(key: string, value: D) {
+  public updateItem(key: string, value: D) {
     return this._value.updateElement(key, value);
   }
 
@@ -79,7 +79,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertElement(key: string, value: D) {
+  public insertItem(key: string, value: D) {
     this._value.insertElement(key, value);
   }
 

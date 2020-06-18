@@ -23,7 +23,7 @@ export class SourceNodeWrapperFactory {
     lastSourceNode: any;
     matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
   }): ISourceNodeWrapper<S> {
-    const typeInfo = NodeTypeUtils.getSourceNodeType(value);
+    const typeInfo = NodeTypeUtils.getNodeType(value);
 
     switch (typeInfo.kind) {
       case 'Primitive': {

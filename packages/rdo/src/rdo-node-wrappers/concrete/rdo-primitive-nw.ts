@@ -1,5 +1,5 @@
 import { RdoNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isIRdoInternalNodeWrapper, ISourceNodeWrapper, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isIRdoInternalNodeWrapper, ISourceNodeWrapper, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -11,6 +11,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
 
   constructor({
     value,
+    typeInfo,
     key,
     wrappedParentRdoNode,
     wrappedSourceNode,
@@ -19,19 +20,17 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: D | undefined;
+    value: D;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
-    typeInfo: RdoNodeTypeInfo;
     matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-
-    if (!value && !globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) throw new Error(`Undefined value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
     this._value = value;
   }
 
@@ -58,7 +57,7 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
       if (!isIRdoInternalNodeWrapper(this.wrappedParentRdoNode)) throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
       if (!this.key) throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
 
-      const changed = this.wrappedParentRdoNode.updateElement(this.key, (this.wrappedSourceNode.value as unknown) as D);
+      const changed = this.wrappedParentRdoNode.updateItem(this.key, (this.wrappedSourceNode.value as unknown) as D);
       if (changed)
         this.eventEmitter.publish('nodeChange', { changeType: 'update', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: this.wrappedSourceNode.key!, rdoKey: this.key, rdoOldValue: this.value, rdoNewValue: this.wrappedSourceNode.value });
       return changed;

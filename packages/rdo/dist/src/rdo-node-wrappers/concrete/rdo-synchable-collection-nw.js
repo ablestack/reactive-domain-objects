@@ -19,10 +19,10 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     itemKeys() {
         return this._value.getCollectionKeys();
     }
-    getElement(key) {
+    getItem(key) {
         return this._value.getElement(key);
     }
-    updateElement(key, value) {
+    updateItem(key, value) {
         return this._value.updateElement(key, value);
     }
     //------------------------------
@@ -47,7 +47,7 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.size;
     }
-    insertElement(key, value) {
+    insertItem(key, value) {
         this._value.insertElement(key, value);
     }
     deleteElement(key) {

@@ -3,7 +3,7 @@ import { RdoInternalNWBase } from '..';
 import {
   IGlobalNodeOptions,
   IEqualityComparer,
-  RdoNodeTypeInfo,
+  NodeTypeInfo,
   IRdoNodeWrapper,
   ISourceNodeWrapper,
   ISyncChildNode,
@@ -44,8 +44,8 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: D | undefined;
-    typeInfo: RdoNodeTypeInfo;
+    value: D;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -59,8 +59,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
 
-    if (!value && !globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) throw new Error(`Undefined value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
-    this._value = value || ({} as D);
+    this._value = value;
 
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
     this._wrapRdoNode = wrapRdoNode;
@@ -126,11 +125,11 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     return Object.keys(this._value);
   }
 
-  public getElement(key: string) {
+  public getItem(key: string) {
     return this._value[key];
   }
 
-  public updateElement(key: string, value: D | undefined) {
+  public updateItem(key: string, value: D | undefined) {
     if (key in this._value) {
       //@ts-ignore
       this._value[key] = value;
@@ -138,7 +137,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     } else return false;
   }
 
-  insertElement(key: string, value: D | undefined) {
+  public insertItem(key: string, value: D | undefined) {
     if (!(key in this._value)) {
       //@ts-ignore
       this._value[key] = value;
@@ -167,7 +166,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
 
       let rdoNodeItemValue: any;
       if (rdoFieldname) {
-        rdoNodeItemValue = this.getElement(rdoFieldname);
+        rdoNodeItemValue = this.getItem(rdoFieldname);
       } else {
         // Auto-create Rdo object field if autoInstantiateRdoItems.objectFieldsAsObservableObjectLiterals
         // Note: this creates an observable tree in the exact shape of the source data
@@ -175,7 +174,16 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
         // Keys made here, instantiation takes place in downstream constructors
         if (this.globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
+
+          // Allocate fieldname and empty val
           rdoFieldname = sourceFieldname;
+          rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
+
+          // Insert
+          this.insertItem(rdoFieldname, rdoNodeItemValue);
+
+          // Emit
+          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, rdoOldValue: undefined, rdoNewValue: rdoNodeItemValue });
         } else {
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
           continue;

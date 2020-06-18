@@ -15,7 +15,9 @@ class RdoNodeWrapperFactory {
         this._targetedOptionMatchersArray = targetedOptionMatchersArray;
     }
     make({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }) {
-        const typeInfo = node_type_utils_1.NodeTypeUtils.getRdoNodeType(value);
+        if (value === null || value === undefined)
+            throw new Error('Rdo value should not be null or undefined');
+        const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
         switch (typeInfo.builtInType) {
             case '[object Boolean]':
             case '[object Date]':

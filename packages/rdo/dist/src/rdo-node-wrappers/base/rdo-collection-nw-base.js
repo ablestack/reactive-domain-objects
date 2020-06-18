@@ -21,7 +21,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         //     // Try and get element type from source collection
         //     const firstElement = this.elements()[Symbol.iterator]().next().value;
         //     if (firstElement) {
-        //       this._childElementSourceNodeKind = NodeTypeUtils.getRdoNodeType(firstElement).kind;
+        //       this._childElementSourceNodeKind = NodeTypeUtils.getNodeType(firstElement).kind;
         //     } else this._childElementSourceNodeKind = null;
         //   }
         //   return this._childElementSourceNodeKind;
@@ -89,7 +89,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                 let targetItem = undefined;
                 if (!targetCollectionStartedEmpty) {
                     logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Found item ${key} in rdoCollection`, targetItem);
-                    targetItem = rdo.getElement(key);
+                    targetItem = rdo.getItem(key);
                 }
                 if (!targetItem) {
                     if (!rdo.makeRdoElement)
@@ -99,7 +99,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                         throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeRdoElement produced null or undefined`);
                     }
                     logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
-                    rdo.insertElement(key, targetItem);
+                    rdo.insertItem(key, targetItem);
                     this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: undefined, rdoNewValue: targetItem });
                 }
                 //
@@ -130,35 +130,6 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             }
         }
         return changed;
-    }
-    makeRdoElement(sourceObject) {
-        var _a, _b, _c, _d;
-        let rdo = undefined;
-        if ((_a = this.getNodeOptions()) === null || _a === void 0 ? void 0 : _a.makeRdo) {
-            rdo = this.getNodeOptions().makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from nodeOptions`, sourceObject, rdo);
-        }
-        if (!rdo && types_1.isIMakeRdo(this.value)) {
-            rdo = this.value.makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from IMakeRdo`, sourceObject, rdo);
-        }
-        if (!rdo && ((_b = this.globalNodeOptions) === null || _b === void 0 ? void 0 : _b.makeRdo)) {
-            rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
-        }
-        if (!rdo && node_type_utils_1.NodeTypeUtils.isPrimitive(sourceObject)) {
-            rdo = sourceObject;
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
-        }
-        // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
-        // Note: this creates an observable tree in the exact shape of the source data
-        // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
-        // Keys made here, instantiation takes place in downstream constructors
-        if (!rdo && ((_d = (_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.autoInstantiateRdoItems) === null || _d === void 0 ? void 0 : _d.collectionItemsAsObservableObjectLiterals)) {
-            rdo = sourceObject;
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);
-        }
-        return rdo;
     }
 }
 exports.RdoCollectionNWBase = RdoCollectionNWBase;

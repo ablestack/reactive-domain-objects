@@ -1,4 +1,4 @@
-import { IRdoNodeWrapper, RdoNodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
+import { IRdoNodeWrapper, NodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, INodeSyncOptions } from '../..';
 import { IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -12,7 +12,7 @@ export declare abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     private _targetedOptionMatchersArray;
     private _eventEmitter;
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        typeInfo: RdoNodeTypeInfo;
+        typeInfo: NodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -25,7 +25,7 @@ export declare abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     get ignore(): boolean;
     get key(): string | undefined;
     get wrappedParentRdoNode(): IRdoInternalNodeWrapper<S, D> | undefined;
-    get typeInfo(): RdoNodeTypeInfo;
+    get typeInfo(): NodeTypeInfo;
     get wrappedSourceNode(): ISourceNodeWrapper<S>;
     get globalNodeOptions(): IGlobalNodeOptions | undefined;
     private _nodeOptions;

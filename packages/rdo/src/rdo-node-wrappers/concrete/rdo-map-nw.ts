@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -22,7 +22,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     eventEmitter,
   }: {
     value: Map<string, D>;
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -47,18 +47,18 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.keys();
   }
 
-  public getElement(key: string) {
+  public getItem(key: string) {
     return this._value.get(key);
   }
 
-  public updateElement(key: string, value: D) {
+  public updateItem(key: string, value: D) {
     if (this._value.has(key)) {
       this._value.set(key, value);
       return true;
     } else return false;
   }
 
-  public insertElement(key: string, value: D) {
+  public insertItem(key: string, value: D) {
     this._value.set(key, value);
   }
 

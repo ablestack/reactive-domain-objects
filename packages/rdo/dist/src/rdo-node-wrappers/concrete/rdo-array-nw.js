@@ -8,11 +8,8 @@ const collection_utils_1 = require("../utils/collection.utils");
 const logger = logger_1.Logger.make('RdoArrayNW');
 class RdoArrayNW extends __1.RdoCollectionNWBase {
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        var _a;
         super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
-        if (!value && !((_a = globalNodeOptions === null || globalNodeOptions === void 0 ? void 0 : globalNodeOptions.autoInstantiateRdoItems) === null || _a === void 0 ? void 0 : _a.objectFieldsAsObservableObjectLiterals))
-            throw new Error(`Null value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
-        this._value = value || [];
+        this._value = value;
     }
     //------------------------------
     // IRdoNodeWrapper
@@ -25,17 +22,17 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             return [];
         return collection_utils_1.CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
     }
-    getElement(key) {
+    getItem(key) {
         if (this.childElementCount() === 0)
             return undefined;
         return collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
     }
-    updateElement(key, value) {
+    updateItem(key, value) {
         if (this.childElementCount() === 0)
             return false;
         return collection_utils_1.CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
     }
-    insertElement(key, value) {
+    insertItem(key, value) {
         collection_utils_1.CollectionUtils.Array.insertElement({ collection: this._value, key, value });
     }
     //------------------------------

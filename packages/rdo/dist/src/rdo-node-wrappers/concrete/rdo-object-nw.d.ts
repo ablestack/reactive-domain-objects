@@ -1,5 +1,5 @@
 import { RdoInternalNWBase } from '..';
-import { IGlobalNodeOptions, IEqualityComparer, RdoNodeTypeInfo, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
+import { IGlobalNodeOptions, IEqualityComparer, NodeTypeInfo, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode } from '../..';
 import { INodeSyncOptions, IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
@@ -8,8 +8,8 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     private _equalityComparer;
     private _wrapRdoNode;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: D | undefined;
-        typeInfo: RdoNodeTypeInfo;
+        value: D;
+        typeInfo: NodeTypeInfo;
         key: string | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -25,9 +25,9 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     childElementCount(): number;
     smartSync(): boolean;
     itemKeys(): string[];
-    getElement(key: string): any;
-    updateElement(key: string, value: D | undefined): boolean;
-    insertElement(key: string, value: D | undefined): boolean;
+    getItem(key: string): any;
+    updateItem(key: string, value: D | undefined): boolean;
+    insertItem(key: string, value: D | undefined): boolean;
     /**
      *
      */

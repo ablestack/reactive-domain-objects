@@ -1,5 +1,5 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { CollectionUtils } from '../utils/collection.utils';
 import { EventEmitter } from '../../infrastructure/event-emitter';
@@ -23,7 +23,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     eventEmitter,
   }: {
     value: Set<D>;
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -49,12 +49,12 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
-  public getElement(key: string) {
+  public getItem(key: string) {
     if (this.childElementCount() === 0) return undefined;
     return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
   }
 
-  public updateElement(key: string, value: D) {
+  public updateItem(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
     return CollectionUtils.Set.updateElement<D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
@@ -87,7 +87,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertElement(key: string, value: D) {
+  public insertItem(key: string, value: D) {
     CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 

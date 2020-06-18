@@ -19,10 +19,10 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
     itemKeys() {
         return this._value.keys();
     }
-    getElement(key) {
+    getItem(key) {
         return this._value.get(key);
     }
-    updateElement(key, value) {
+    updateItem(key, value) {
         if (this._value.has(key)) {
             this._value.set(key, value);
             return true;
@@ -30,7 +30,7 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
         else
             return false;
     }
-    insertElement(key, value) {
+    insertItem(key, value) {
         this._value.set(key, value);
     }
     //------------------------------

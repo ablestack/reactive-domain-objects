@@ -1,4 +1,4 @@
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, config } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, config } from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { NodeTypeUtils } from '../utils/node-type.utils';
@@ -22,7 +22,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -64,7 +64,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
         let targetItem: D | null | undefined = undefined;
         if (!targetCollectionStartedEmpty) {
           logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Found item ${key} in rdoCollection`, targetItem);
-          targetItem = rdo.getElement(key);
+          targetItem = rdo.getItem(key);
         }
         if (!targetItem) {
           if (!rdo.makeRdoElement) throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
@@ -74,7 +74,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
           }
 
           logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
-          rdo.insertElement(key, targetItem);
+          rdo.insertItem(key, targetItem);
           this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: undefined, rdoNewValue: targetItem });
         }
 
@@ -117,7 +117,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   //     // Try and get element type from source collection
   //     const firstElement = this.elements()[Symbol.iterator]().next().value;
   //     if (firstElement) {
-  //       this._childElementSourceNodeKind = NodeTypeUtils.getRdoNodeType(firstElement).kind;
+  //       this._childElementSourceNodeKind = NodeTypeUtils.getNodeType(firstElement).kind;
   //     } else this._childElementSourceNodeKind = null;
   //   }
   //   return this._childElementSourceNodeKind;
@@ -164,43 +164,9 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
   };
 
-  public makeRdoElement(sourceObject) {
-    let rdo: any = undefined;
-    if (this.getNodeOptions()?.makeRdo) {
-      rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from nodeOptions`, sourceObject, rdo);
-    }
-
-    if (!rdo && isIMakeRdo(this.value)) {
-      rdo = this.value.makeRdo(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from IMakeRdo`, sourceObject, rdo);
-    }
-
-    if (!rdo && this.globalNodeOptions?.makeRdo) {
-      rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
-    }
-
-    if (!rdo && NodeTypeUtils.isPrimitive(sourceObject)) {
-      rdo = sourceObject;
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
-    }
-
-    // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
-    // Note: this creates an observable tree in the exact shape of the source data
-    // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
-    // Keys made here, instantiation takes place in downstream constructors
-    if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
-      rdo = sourceObject;
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);
-    }
-
-    return rdo;
-  }
-
   public abstract elements(): Iterable<D>;
   public abstract childElementCount();
   public abstract clearElements();
-  public abstract insertElement(key: string, value: D);
+  public abstract insertItem(key: string, value: D);
   public abstract deleteElement(key: string);
 }

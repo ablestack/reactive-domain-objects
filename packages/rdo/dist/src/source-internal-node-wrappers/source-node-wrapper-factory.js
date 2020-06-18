@@ -9,7 +9,7 @@ class SourceNodeWrapperFactory {
         this._globalNodeOptions = globalNodeOptions;
     }
     make({ sourceNodePath, value, key, lastSourceNode, matchingNodeOptions, }) {
-        const typeInfo = node_type_utils_1.NodeTypeUtils.getSourceNodeType(value);
+        const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
         switch (typeInfo.kind) {
             case 'Primitive': {
                 return new source_primitive_nw_1.SourcePrimitiveNW({ value, key, sourceNodePath, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });

@@ -25,7 +25,7 @@ const librarySourceJSON: Library = {
     {
       id: 'author-js',
       name: 'john smith',
-      age: 50,
+      age: 30,
       books: [
         { id: 'book-js-0', title: 'book 0', pages: 200, publisher: { id: 'pub-1', name: 'super-books' }, __type: 'Book' },
         { id: 'book-js-1', title: 'book 1', pages: 100, publisher: { id: 'pub-1', name: 'mega-books' }, __type: 'Book' },
@@ -40,7 +40,7 @@ const librarySourceJSON: Library = {
     {
       id: 'author-ss',
       name: 'shari s',
-      age: 50,
+      age: 40,
       books: [{ id: 'book-ss-0', title: 'book 0', pages: 200, publisher: { id: 'pub-1', name: 'super-books' }, __type: 'Book' }],
     },
   ],
@@ -67,7 +67,7 @@ test('Synchronize auto-creates RDO and updates complex graph as expected', () =>
   const libraryRDO = {} as Library;
   const graphSynchronizer = new GraphSynchronizer(config);
   graphSynchronizer.subscribeToNodeChanges((data) => {
-    console.log(` ----> `, data);
+    // console.log(` ----> `, data);
   });
 
   // POSTURE VERIFICATION
@@ -114,6 +114,7 @@ test('Synchronize only updated properties only where source data changed', () =>
   graphSynchronizer.subscribeToNodeChanges((data) => {
     if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
     fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
+    console.log(` ----> `, data);
   });
 
   // Mutate data
@@ -122,8 +123,9 @@ test('Synchronize only updated properties only where source data changed', () =>
   libraryWithEdits.authors[0].age = libraryWithEdits.authors[0].age + 2;
 
   // EXECUTE
-  // update
   graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
+
+  console.log(`libraryRDO`, libraryRDO);
 
   // RESULTS VERIFICATION
   expect(fieldChangeCounter.get('code')).toEqual(1);

@@ -1,4 +1,4 @@
-import { SourceNodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNodeOptions } from '../..';
+import { NodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 export declare class SourceArrayNW<S> extends SourceBaseNW<S> implements ISourceCollectionNodeWrapper<S> {
     private _value;
@@ -6,7 +6,7 @@ export declare class SourceArrayNW<S> extends SourceBaseNW<S> implements ISource
         value: Array<S>;
         sourceNodePath: string;
         key: string | undefined;
-        typeInfo: SourceNodeTypeInfo;
+        typeInfo: NodeTypeInfo;
         lastSourceNode: any;
         matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;

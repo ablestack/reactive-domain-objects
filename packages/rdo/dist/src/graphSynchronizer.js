@@ -35,7 +35,6 @@ class GraphSynchronizer {
          *
          */
         this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey, }) => {
-            var _a, _b;
             logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
             let changed = false;
             const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
@@ -43,11 +42,8 @@ class GraphSynchronizer {
             if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
                 throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
             if (rdoNodeItemValue === undefined) {
-                // If undefined && not autoInstantiateRdoFields, continue
-                if (!((_b = (_a = this._globalNodeOptions) === null || _a === void 0 ? void 0 : _a.autoInstantiateRdoItems) === null || _b === void 0 ? void 0 : _b.objectFieldsAsObservableObjectLiterals)) {
-                    logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
-                    return false;
-                }
+                logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+                return false;
             }
             const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
             if (!sourceNode === undefined) {

@@ -1,6 +1,6 @@
 import { Logger } from '../../infrastructure/logger';
 import { RdoNWBase } from './rdo-nw-base';
-import { IRdoInternalNodeWrapper, ISyncChildNode, RdoNodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNodeOptions } from '../..';
+import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, isIMakeRdo, NodeTypeUtils } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 
@@ -20,7 +20,7 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    typeInfo: RdoNodeTypeInfo;
+    typeInfo: NodeTypeInfo;
     key: string | undefined;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<S>;
@@ -37,8 +37,65 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
+  public makeRdoElement(sourceObject: any) {
+    let rdo: any = undefined;
+    if (this.getNodeOptions()?.makeRdo) {
+      rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from nodeOptions`, sourceObject, rdo);
+    }
+
+    if (!rdo && isIMakeRdo(this.value)) {
+      rdo = this.value.makeRdo(sourceObject, this);
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from IMakeRdo`, sourceObject, rdo);
+    }
+
+    if (!rdo && this.globalNodeOptions?.makeRdo) {
+      rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
+    }
+
+    if (!rdo && NodeTypeUtils.isPrimitive(sourceObject)) {
+      rdo = sourceObject;
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
+    }
+
+    // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
+    // Note: this creates an observable tree in the exact shape of the source data
+    // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
+    // Keys made here, instantiation takes place in downstream constructors
+    if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
+      rdo = this.autoInstantiateNode(sourceObject);
+
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);
+    }
+
+    return rdo;
+  }
+
   public abstract itemKeys();
-  public abstract getElement(key: string);
-  public abstract updateElement(key: string, value: D);
-  public abstract insertElement(key: string, value: D);
+  public abstract getItem(key: string);
+  public abstract updateItem(key: string, value: D);
+  public abstract insertItem(key: string, value: D);
+
+  //------------------------------
+  // Private
+  //------------------------------
+
+  //
+  // Just needs to return empty objects or collections, as these will get synced downstream
+  private autoInstantiateNode(sourceObject: any) {
+    const typeInfo = NodeTypeUtils.getNodeType(sourceObject);
+
+    switch (typeInfo.kind) {
+      case 'Primitive': {
+        return sourceObject;
+      }
+      case 'Collection': {
+        return [];
+      }
+      case 'Object': {
+        return {};
+      }
+    }
+  }
 }

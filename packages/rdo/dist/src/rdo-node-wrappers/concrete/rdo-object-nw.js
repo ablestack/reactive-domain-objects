@@ -8,7 +8,6 @@ const types_1 = require("../../types");
 const logger = logger_1.Logger.make('RdoObjectNW');
 class RdoObjectNW extends __1.RdoInternalNWBase {
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        var _a;
         super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         /** */
         this.makeContinueSmartSyncFunction = ({ originalSourceNodePath }) => {
@@ -23,9 +22,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 return this._syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
             };
         };
-        if (!value && !((_a = globalNodeOptions === null || globalNodeOptions === void 0 ? void 0 : globalNodeOptions.autoInstantiateRdoItems) === null || _a === void 0 ? void 0 : _a.objectFieldsAsObservableObjectLiterals))
-            throw new Error(`Undefined value only allowed when globalNodeOptions.autoInstantiateRdoItems. sourceNodePath: ${this.wrappedSourceNode.sourceNodePath}`);
-        this._value = value || {};
+        this._value = value;
         this._equalityComparer = __2.IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
         this._wrapRdoNode = wrapRdoNode;
     }
@@ -83,10 +80,10 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     itemKeys() {
         return Object.keys(this._value);
     }
-    getElement(key) {
+    getItem(key) {
         return this._value[key];
     }
-    updateElement(key, value) {
+    updateItem(key, value) {
         if (key in this._value) {
             //@ts-ignore
             this._value[key] = value;
@@ -95,7 +92,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         else
             return false;
     }
-    insertElement(key, value) {
+    insertItem(key, value) {
         if (!(key in this._value)) {
             //@ts-ignore
             this._value[key] = value;
@@ -121,7 +118,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
             let rdoNodeItemValue;
             if (rdoFieldname) {
-                rdoNodeItemValue = this.getElement(rdoFieldname);
+                rdoNodeItemValue = this.getItem(rdoFieldname);
             }
             else {
                 // Auto-create Rdo object field if autoInstantiateRdoItems.objectFieldsAsObservableObjectLiterals
@@ -130,7 +127,13 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 // Keys made here, instantiation takes place in downstream constructors
                 if ((_b = (_a = this.globalNodeOptions) === null || _a === void 0 ? void 0 : _a.autoInstantiateRdoItems) === null || _b === void 0 ? void 0 : _b.objectFieldsAsObservableObjectLiterals) {
                     logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
+                    // Allocate fieldname and empty val
                     rdoFieldname = sourceFieldname;
+                    rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
+                    // Insert
+                    this.insertItem(rdoFieldname, rdoNodeItemValue);
+                    // Emit
+                    this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, rdoOldValue: undefined, rdoNewValue: rdoNodeItemValue });
                 }
                 else {
                     logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
