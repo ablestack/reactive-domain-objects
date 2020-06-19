@@ -20,5 +20,6 @@ export declare abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> im
     abstract getItem(key: string): any;
     abstract updateItem(key: string, value: D): any;
     abstract insertItem(key: string, value: D): any;
-    private autoInstantiateNode;
+    private autoInstantiateNodeAsMobxObservables;
+    private autoInstantiateNodeAsPlainObjectLiterals;
 }

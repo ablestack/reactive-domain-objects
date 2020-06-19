@@ -27,6 +27,7 @@ class GraphSynchronizer {
          */
         this.wrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
             const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
+            console.log(` -------- sourceNode`, sourceNode);
             const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
             const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
             return wrappedRdoNode;
@@ -42,12 +43,12 @@ class GraphSynchronizer {
             if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
                 throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
             if (rdoNodeItemValue === undefined) {
-                logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+                logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`);
                 return false;
             }
             const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
-            if (!sourceNode === undefined) {
-                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}`);
+            if (sourceNode === undefined) {
+                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
                 return false;
             }
             // Node traversal tracking - step-in

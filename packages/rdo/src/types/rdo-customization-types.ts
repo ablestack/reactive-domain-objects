@@ -16,23 +16,23 @@ export interface ICustomSync<S> {
   synchronizeState: ({ sourceObject, continueSmartSync }: { sourceObject: S; continueSmartSync: IContinueSmartSync }) => boolean;
 }
 
+export function IsICustomSync(o: any): o is ICustomSync<any> {
+  return o && o.synchronizeState && typeof o.synchronizeState === 'function';
+}
+
 export type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({
-  sourceNodeSubPath,
   sourceNodeItemKey,
   sourceItemValue,
   rdoNodeItemKey,
   rdoNodeItemValue,
+  sourceNodeSubPath,
 }: {
-  sourceNodeSubPath: string;
   sourceNodeItemKey: string;
   sourceItemValue: any;
   rdoNodeItemKey: string;
   rdoNodeItemValue: any;
+  sourceNodeSubPath?: string;
 }) => boolean;
-
-export function IsICustomSync(o: any): o is ICustomSync<any> {
-  return o && o.synchronizeState && typeof o.synchronizeState === 'function';
-}
 
 export interface ICustomEqualityRDO<S> {
   isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;

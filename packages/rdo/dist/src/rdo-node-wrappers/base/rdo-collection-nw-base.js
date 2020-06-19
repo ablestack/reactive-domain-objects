@@ -98,7 +98,6 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                     if (!targetItem) {
                         throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeRdoElement produced null or undefined`);
                     }
-                    logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Adding item ${key} to collection`, targetItem);
                     rdo.insertItem(key, targetItem);
                     this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: undefined, rdoNewValue: targetItem });
                 }

@@ -10,6 +10,7 @@ export interface IGraphSyncOptions {
     globalNodeOptions?: IGlobalNodeOptions;
     targetedNodeOptions?: Array<INodeSyncOptions<any, any>>;
 }
+export declare type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
     commonRdoFieldnamePostfix?: string;
     tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
@@ -18,9 +19,10 @@ export interface IGlobalNodeOptions {
         sourceFieldVal: any;
     }) => string;
     makeRdo?: IMakeRdo<any, any>['makeRdo'];
-    autoInstantiateRdoItems?: {
-        objectFieldsAsObservableObjectLiterals: boolean;
-        collectionItemsAsObservableObjectLiterals: boolean;
+    autoMakeRdoTypes?: {
+        objectFields: boolean;
+        collectionElements: boolean;
+        as: autoMakeRdoAsTypes;
     };
 }
 export interface INodeSyncOptions<S, D> {

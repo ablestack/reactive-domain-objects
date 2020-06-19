@@ -60,14 +60,18 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
       logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
     }
 
-    // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
+    // Auto-create Rdo object field if autoMakeRdoTypes.collectionElements
     // Note: this creates an observable tree in the exact shape of the source data
     // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
     // Keys made here, instantiation takes place in downstream constructors
-    if (!rdo && this.globalNodeOptions?.autoInstantiateRdoItems?.collectionItemsAsObservableObjectLiterals) {
-      rdo = this.autoInstantiateNode(sourceObject);
+    if (!rdo && this.globalNodeOptions?.autoMakeRdoTypes?.collectionElements) {
+      if (this.globalNodeOptions.autoMakeRdoTypes.as === 'mobx-observable-object-literals') {
+        rdo = this.autoInstantiateNodeAsMobxObservables(sourceObject);
+      } else {
+        this.autoInstantiateNodeAsPlainObjectLiterals(sourceObject);
+      }
 
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
     }
 
     return rdo;
@@ -82,9 +86,10 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
   // Private
   //------------------------------
 
-  //
-  // Just needs to return empty objects or collections, as these will get synced downstream
-  private autoInstantiateNode(sourceObject: any) {
+  // AUTO INSTANTIATE
+  // Always return empty objects or collections, as these will get synced downstream
+
+  private autoInstantiateNodeAsMobxObservables(sourceObject: any) {
     const typeInfo = NodeTypeUtils.getNodeType(sourceObject);
 
     switch (typeInfo.kind) {
@@ -96,6 +101,24 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
       }
       case 'Object': {
         return observable(new Object());
+      }
+    }
+  }
+
+  //
+  // Just needs to return empty objects or collections, as these will get synced downstream
+  private autoInstantiateNodeAsPlainObjectLiterals(sourceObject: any) {
+    const typeInfo = NodeTypeUtils.getNodeType(sourceObject);
+
+    switch (typeInfo.kind) {
+      case 'Primitive': {
+        return sourceObject;
+      }
+      case 'Collection': {
+        return new Array();
+      }
+      case 'Object': {
+        return new Object();
       }
     }
   }

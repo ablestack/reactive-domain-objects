@@ -492,13 +492,13 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-config-option-types.ts": {
-        "version": "22896e1c640f22b273e3b1ca57431562a1f7ee79b6308f0e1473aabfbcc1c480",
-        "signature": "e126e1b68889f10bfee6bd70fac01b65de1cc3ab9c0d3ac6baed526b19c8a34b",
+        "version": "097b2286811258160961cc47664e8ac20756618b8c469e3612b0513be111fcbf",
+        "signature": "7f365bc04e565de05d77cf45b8fcf46a3b242d1da25d3bac27894f2561de4c54",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-customization-types.ts": {
-        "version": "cabadd2cada4232ec807e9f5edc6c605e105228dd445a9d11781a29ed9bbe2ef",
-        "signature": "77e5911a185d0cfc7ba9fd28853fdc3ba652a0711361508d930a51fbd2af6282",
+        "version": "7f7e3be704133391b5b6e3749312feb3274103bfd74c29febfd1705697eede78",
+        "signature": "0fcea7abf3f24be7dfcea50f1dc230611371ce083752c7712717a61259b2ba39",
         "affectsGlobalScope": false
       },
       "../src/types/index.ts": {
@@ -507,7 +507,7 @@
         "affectsGlobalScope": false
       },
       "../src/infrastructure/event-emitter.ts": {
-        "version": "3debcd27e9d13803d8ba8bc0acc53e98b3c4e661d0888369970276350780cd5a",
+        "version": "ad631af9e8e976707d0601a4624fa65b6599277b9291b0b83d0f6e8edf0a316e",
         "signature": "256732d82d782df8ee5ed90a9bb1c614ab5f06e63ea0539bf1d3e5aff2b9fd4c",
         "affectsGlobalScope": false
       },
@@ -752,12 +752,12 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": {
-        "version": "51f5c704b9cd417f59340d8a84767be772354766ee86026f234f986855879ed9",
-        "signature": "12b1f32dd9ee4b50de32b868dff2f2609877bc44870e746df267819ed58fc207",
+        "version": "905d5b73a4a8f021fa56b22e61856c7613d640b51fb4271a24cd0f57a9198fc5",
+        "signature": "0895ea89b742ffd62a3c70145db0c011b354e7548f689a9e621b365440fab45d",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/utils/node-type.utils.ts": {
-        "version": "5e4b6608bfd64061457b532e89586ff46a9852f5d1ebe9585ad9eae1cc616307",
+        "version": "dd354be9f52341b3bc2c79c58d84756971dd4e7b81cda3beb56744d3b56ff860",
         "signature": "4623940ba1c56d6f7d066e581fd5d71280be0e7ba70cf9cbb9b3c8552e4bd7fa",
         "affectsGlobalScope": false
       },
@@ -827,7 +827,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "3ac902a6387671b4af85dfd1c0b6b2a81b335bb801735d5ff2076888ead5951f",
+        "version": "209ea60575cbacc19b0231374068968171922790198bffd87056cd275d561d02",
         "signature": "58988c9c23de61ed5420b5afc66cc44436be9353d18ff9c4e99050e6e939d7ff",
         "affectsGlobalScope": false
       },
@@ -852,7 +852,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "82c78bda68ce087991889a73cf48c802dda93faae3493df9bc938bbedcafd99a",
+        "version": "c4f7db9cdde36289a1e26c9c5f2a1f40b6b2e1c7c857604102f378bc51c7b62e",
         "signature": "e7d33449b7eab0bf19d836ed193c66d1ccf610d7275daa3251a9390b165fc086",
         "affectsGlobalScope": false
       },
@@ -962,7 +962,7 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "29cbd6058a973ea5bd8c80d4f9b0a8c53ee6475c0d8a9cd0e3614fe2af846643",
+        "version": "1b85c3d442ef0fac0bd84ae1783f969076647bc4f628ec5278a84990bf09426b",
         "signature": "bacec088ac70a97014e1fd858559cc45682b86cdfd2ae59b503fcccbb48cb7ba",
         "affectsGlobalScope": false
       },
@@ -2813,7 +2813,8 @@
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
-        "../node_modules/@types/node/util.d.ts"
+        "../node_modules/@types/node/util.d.ts",
+        "../src/infrastructure/logger.ts"
       ],
       "../src/infrastructure/index.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",

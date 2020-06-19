@@ -12,14 +12,14 @@ export interface ICustomSync<S> {
         continueSmartSync: IContinueSmartSync;
     }) => boolean;
 }
-export declare type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, }: {
-    sourceNodeSubPath: string;
+export declare function IsICustomSync(o: any): o is ICustomSync<any>;
+export declare type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath, }: {
     sourceNodeItemKey: string;
     sourceItemValue: any;
     rdoNodeItemKey: string;
     rdoNodeItemValue: any;
+    sourceNodeSubPath?: string;
 }) => boolean;
-export declare function IsICustomSync(o: any): o is ICustomSync<any>;
 export interface ICustomEqualityRDO<S> {
     isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;
 }

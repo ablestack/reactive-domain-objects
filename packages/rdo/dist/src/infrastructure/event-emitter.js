@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventEmitter = void 0;
+const logger_1 = require("./logger");
+const logger = logger_1.Logger.make('RdoObjectNW');
 class EventEmitter {
     constructor() {
         this.registry = new Map();
@@ -25,6 +27,7 @@ class EventEmitter {
     }
     /** */
     publish(eventType, data) {
+        logger.trace(`publish: ${eventType}`, data);
         if (this.registry.has(eventType)) {
             this.registry.get(eventType).forEach((subscriber) => subscriber(data));
         }

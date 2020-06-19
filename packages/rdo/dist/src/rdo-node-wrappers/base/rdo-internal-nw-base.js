@@ -33,22 +33,27 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
             rdo = sourceObject;
             logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
         }
-        // Auto-create Rdo object field if autoInstantiateRdoItems.collectionItemsAsObservableObjectLiterals
+        // Auto-create Rdo object field if autoMakeRdoTypes.collectionElements
         // Note: this creates an observable tree in the exact shape of the source data
         // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
         // Keys made here, instantiation takes place in downstream constructors
-        if (!rdo && ((_d = (_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.autoInstantiateRdoItems) === null || _d === void 0 ? void 0 : _d.collectionItemsAsObservableObjectLiterals)) {
-            rdo = this.autoInstantiateNode(sourceObject);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoInstantiateRdoItems`, sourceObject, rdo);
+        if (!rdo && ((_d = (_c = this.globalNodeOptions) === null || _c === void 0 ? void 0 : _c.autoMakeRdoTypes) === null || _d === void 0 ? void 0 : _d.collectionElements)) {
+            if (this.globalNodeOptions.autoMakeRdoTypes.as === 'mobx-observable-object-literals') {
+                rdo = this.autoInstantiateNodeAsMobxObservables(sourceObject);
+            }
+            else {
+                this.autoInstantiateNodeAsPlainObjectLiterals(sourceObject);
+            }
+            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
         }
         return rdo;
     }
     //------------------------------
     // Private
     //------------------------------
-    //
-    // Just needs to return empty objects or collections, as these will get synced downstream
-    autoInstantiateNode(sourceObject) {
+    // AUTO INSTANTIATE
+    // Always return empty objects or collections, as these will get synced downstream
+    autoInstantiateNodeAsMobxObservables(sourceObject) {
         const typeInfo = __1.NodeTypeUtils.getNodeType(sourceObject);
         switch (typeInfo.kind) {
             case 'Primitive': {
@@ -59,6 +64,22 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
             }
             case 'Object': {
                 return mobx_1.observable(new Object());
+            }
+        }
+    }
+    //
+    // Just needs to return empty objects or collections, as these will get synced downstream
+    autoInstantiateNodeAsPlainObjectLiterals(sourceObject) {
+        const typeInfo = __1.NodeTypeUtils.getNodeType(sourceObject);
+        switch (typeInfo.kind) {
+            case 'Primitive': {
+                return sourceObject;
+            }
+            case 'Collection': {
+                return new Array();
+            }
+            case 'Object': {
+                return new Object();
             }
         }
     }

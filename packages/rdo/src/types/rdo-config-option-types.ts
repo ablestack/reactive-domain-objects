@@ -16,13 +16,15 @@ export interface IGraphSyncOptions {
   targetedNodeOptions?: Array<INodeSyncOptions<any, any>>;
 }
 
+export type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
   commonRdoFieldnamePostfix?: string;
   tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string;
   makeRdo?: IMakeRdo<any, any>['makeRdo'];
-  autoInstantiateRdoItems?: {
-    objectFieldsAsObservableObjectLiterals: boolean;
-    collectionItemsAsObservableObjectLiterals: boolean;
+  autoMakeRdoTypes?: {
+    objectFields: boolean;
+    collectionElements: boolean;
+    as: autoMakeRdoAsTypes;
   };
 }
 

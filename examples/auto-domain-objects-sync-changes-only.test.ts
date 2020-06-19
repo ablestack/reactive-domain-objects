@@ -57,7 +57,7 @@ const librarySourceJSON: Library = {
 // CONFIG
 // --------------------------------------------------------------
 const config: IGraphSyncOptions = {
-  globalNodeOptions: { autoInstantiateRdoItems: { collectionItemsAsObservableObjectLiterals: true, objectFieldsAsObservableObjectLiterals: true } },
+  globalNodeOptions: { autoMakeRdoTypes: { as: 'mobx-observable-object-literals', collectionElements: true, objectFields: true } },
 };
 
 // --------------------------------------------------------------
@@ -65,7 +65,13 @@ const config: IGraphSyncOptions = {
 // --------------------------------------------------------------
 
 test('Synchronize auto-creates RDO and updates complex graph as expected', () => {
+  //
+  // NOTE - the RDO object here starts as an empty object literal. Due to the `autoMakeRdoTypes` setting, the Rdo is auto-created.
+  //  Every field is initially populated, and then (as with manually created graphs) only changed fields are subsequently updated
+  //
   const libraryRDO = {} as Library;
+
+  //
   const graphSynchronizer = new GraphSynchronizer(config);
   graphSynchronizer.subscribeToNodeChanges((data) => {
     // console.log(` ----> `, data);

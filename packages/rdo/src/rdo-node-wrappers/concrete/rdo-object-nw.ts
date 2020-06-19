@@ -79,7 +79,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   public smartSync(): boolean {
     let changed = false;
     const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
-    const rdo = this.wrappedSourceNode.value;
+    const rdo = this.value;
     const sourceObject = this.wrappedSourceNode.value;
     const lastSourceObject = this.wrappedSourceNode.lastSourceNode;
 
@@ -101,7 +101,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
         changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
       } else {
-        logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`);
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`, rdo);
         changed = this.sync();
       }
 
@@ -168,11 +168,11 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
       if (rdoFieldname) {
         rdoNodeItemValue = this.getItem(rdoFieldname);
       } else {
-        // Auto-create Rdo object field if autoInstantiateRdoItems.objectFieldsAsObservableObjectLiterals
+        // Auto-create Rdo object field if autoMakeRdoTypes.objectFields
         // Note: this creates an observable tree in the exact shape of the source data
         // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
         // Keys made here, instantiation takes place in downstream constructors
-        if (this.globalNodeOptions?.autoInstantiateRdoItems?.objectFieldsAsObservableObjectLiterals) {
+        if (this.globalNodeOptions?.autoMakeRdoTypes?.objectFields) {
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
 
           // Allocate fieldname and empty val
@@ -261,10 +261,8 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   /** */
   private makeContinueSmartSyncFunction = ({ originalSourceNodePath }: { originalSourceNodePath: string }): IContinueSmartSync => {
     // Build method
-    return ({ sourceNodeSubPath, sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue }) => {
-      if (!sourceNodeSubPath) throw new Error('continueSync sourceNodeSubPath must not be null or empty. continueSync can only be called on child objects');
-
-      const sourceNodePath = `${originalSourceNodePath}.${sourceNodeSubPath}`;
+    return ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
+      const sourceNodePath = sourceNodeSubPath ? `${originalSourceNodePath}.${sourceNodeSubPath}` : originalSourceNodePath;
       const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
       if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
