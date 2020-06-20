@@ -9,6 +9,23 @@
     "type": "git",
     "url": "git+https://github.com/ablestack/reactive-domain-objects"
   },
+  "keywords": [
+    "json",
+    "typescript",
+    "graphql",
+    "react",
+    "reactjs",
+    "state-management",
+    "domain-models",
+    "mobx",
+    "mox-react",
+    "observable",
+    "reactive",
+    "json-data",
+    "idempotent",
+    "imperative",
+    "reactive"
+  ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "tsc --build --verbose",
