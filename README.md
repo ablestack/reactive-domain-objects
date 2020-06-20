@@ -6,6 +6,8 @@ The [reactive-domain-objects](https://github.com/ablestack/reactive-domain-objec
 
 A primary use case is connecting GraphQL client libraries (such as [ApolloGraphQL](https://github.com/apollographql/apollo-client)) to reactive client libraries (such as [React](https://reactjs.org/)) with Observables (such as [MobX](https://mobx.js.org/)).
 
+See below for an introduction to the library, and [Full Technical/Usage Documentation](https://github.com/ablestack/reactive-domain-objects/blob/master/TECHNICAL.md) for a detailed description of all the functionality, configuration options, and additional usage examples.
+
 ## The Problems Being Solved
 
 The problems being solved primarily revolve around consuming and using JSON data in TypeScript/JavaScript client applications:
