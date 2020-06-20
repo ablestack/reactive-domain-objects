@@ -18,6 +18,7 @@
     "state-management",
     "domain-models",
     "mobx",
+    "mobx-state-tree",
     "mox-react",
     "observable",
     "reactive",
