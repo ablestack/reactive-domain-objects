@@ -4,60 +4,6 @@ import _ from 'lodash';
 
 const logger = Logger.make('flat-object-sync.test.ts');
 
-// -----------------------------------
-// Source Data Models
-// -----------------------------------
-export type DefaultIdSourceObject = { id: string };
-export type PropNameTestRoot = { mapOfDefaultIdRDO: DefaultIdSourceObject[]; mapOfDefaultId$RDO: DefaultIdSourceObject[]; mapOfDefault_IdRDO: DefaultIdSourceObject[] };
-
-// -----------------------------------
-// Source Data
-// -----------------------------------
-export const targetedNodeOptionsTestRootJSON: PropNameTestRoot = {
-  mapOfDefaultIdRDO: [{ id: '1A' }, { id: '1B' }],
-  mapOfDefaultId$RDO: [{ id: '2A' }, { id: '2B' }],
-  mapOfDefault_IdRDO: [{ id: '3A' }, { id: '3B' }],
-};
-
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
-export class TargetedOptionsTestRootRDO {
-  public mapOfDefaultIdRDO = new Array<DefaultIdRDO>();
-  public mapOfDefaultId$RDO = new Array<DefaultId$RDO>();
-  public mapOfDefault_IdRDO = new Array<Default_IdRDO>();
-}
-
-export class DefaultIdRDO {
-  private _id: string = '';
-  public get id(): string {
-    return this._id;
-  }
-  public set id(value) {
-    this._id = value;
-  }
-}
-
-export class DefaultId$RDO {
-  private _id$: string = '';
-  public get id$(): string {
-    return this._id$;
-  }
-  public set id$(value) {
-    this._id$ = value;
-  }
-}
-
-export class Default_IdRDO {
-  private __id: string = '';
-  public get _id(): string {
-    return this.__id;
-  }
-  public set _id(value) {
-    this.__id = value;
-  }
-}
-
 // --------------------------------------------------------------
 // CONFIG A
 // --------------------------------------------------------------
@@ -171,3 +117,58 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
   expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO.length);
   expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO[0].id);
 });
+
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
+// Source Data Models
+export type DefaultIdSourceObject = { id: string };
+export type PropNameTestRoot = { mapOfDefaultIdRDO: DefaultIdSourceObject[]; mapOfDefaultId$RDO: DefaultIdSourceObject[]; mapOfDefault_IdRDO: DefaultIdSourceObject[] };
+
+//
+// Source Data
+export const targetedNodeOptionsTestRootJSON: PropNameTestRoot = {
+  mapOfDefaultIdRDO: [{ id: '1A' }, { id: '1B' }],
+  mapOfDefaultId$RDO: [{ id: '2A' }, { id: '2B' }],
+  mapOfDefault_IdRDO: [{ id: '3A' }, { id: '3B' }],
+};
+
+//
+// RDO Graphs
+export class TargetedOptionsTestRootRDO {
+  public mapOfDefaultIdRDO = new Array<DefaultIdRDO>();
+  public mapOfDefaultId$RDO = new Array<DefaultId$RDO>();
+  public mapOfDefault_IdRDO = new Array<Default_IdRDO>();
+}
+
+export class DefaultIdRDO {
+  private _id: string = '';
+  public get id(): string {
+    return this._id;
+  }
+  public set id(value) {
+    this._id = value;
+  }
+}
+
+export class DefaultId$RDO {
+  private _id$: string = '';
+  public get id$(): string {
+    return this._id$;
+  }
+  public set id$(value) {
+    this._id$ = value;
+  }
+}
+
+export class Default_IdRDO {
+  private __id: string = '';
+  public get _id(): string {
+    return this.__id;
+  }
+  public set _id(value) {
+    this.__id = value;
+  }
+}

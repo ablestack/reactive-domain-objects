@@ -5,71 +5,6 @@ import _ from 'lodash';
 
 const logger = Logger.make('map-sync.test.ts');
 
-// -----------------------------------
-// Source Data Models
-// -----------------------------------
-export type AllCollections = {
-  arrayOfNumbers: (number | undefined | null)[];
-  arrayOfObjects: (SimpleObject | undefined | null)[];
-
-  mapOfNumbers: (number | undefined | null)[];
-  mapOfObjects: (SimpleObject | undefined | null)[];
-
-  setOfNumbers: (number | undefined | null)[];
-  setOfObjects: (SimpleObject | undefined | null)[];
-
-  customCollectionOfNumbers: (number | undefined | null)[];
-  customCollectionOfObjects: (SimpleObject | undefined | null)[];
-};
-
-export type SimpleObject = { id: string; __type?: string };
-
-// -----------------------------------
-// Source Data
-// -----------------------------------
-export const allCollectionsJSON_Trio: AllCollections = {
-  arrayOfNumbers: [1, 2, undefined, null, 3],
-  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-  mapOfNumbers: [1, 2, undefined, null, 3],
-  mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-  setOfNumbers: [1, 2, undefined, null, 3],
-  setOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-  customCollectionOfNumbers: [1, 2, undefined, null, 3],
-  customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-};
-
-export const allCollectionsJSON_Uno: AllCollections = {
-  arrayOfNumbers: [1],
-  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }],
-  mapOfNumbers: [1],
-  mapOfObjects: [{ id: '1', __type: 'mapOfObjectsObject' }],
-  setOfNumbers: [1],
-  setOfObjects: [{ id: '1', __type: 'setOfObjectsObject' }],
-  customCollectionOfNumbers: [1],
-  customCollectionOfObjects: [{ id: '1', __type: 'customCollectionOfObjectsObject' }],
-};
-
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
-export class AllCollectionTypesRDO {
-  public arrayOfObjects = new Array<SimpleRDO>();
-  public mapOfObjects = new Map<string, SimpleRDO>();
-  public setOfObjects = new Set<SimpleRDO>();
-  public customCollectionOfObjects = new SyncableCollection({
-    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
-    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
-    makeRdo: (o: SimpleRDO) => new SimpleRDO(),
-  });
-  public arrayOfNumbers = new Array<Number>();
-  public mapOfNumbers = new Map<string, number>();
-  public setOfNumbers = new Set<number>();
-}
-
-export class SimpleRDO {
-  public id = '';
-}
-
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
@@ -309,3 +244,69 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
   expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
 });
+
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
+// Source Data Models
+export type AllCollections = {
+  arrayOfNumbers: (number | undefined | null)[];
+  arrayOfObjects: (SimpleObject | undefined | null)[];
+
+  mapOfNumbers: (number | undefined | null)[];
+  mapOfObjects: (SimpleObject | undefined | null)[];
+
+  setOfNumbers: (number | undefined | null)[];
+  setOfObjects: (SimpleObject | undefined | null)[];
+
+  customCollectionOfNumbers: (number | undefined | null)[];
+  customCollectionOfObjects: (SimpleObject | undefined | null)[];
+};
+
+export type SimpleObject = { id: string; __type?: string };
+
+//
+// Source Data
+export const allCollectionsJSON_Trio: AllCollections = {
+  arrayOfNumbers: [1, 2, undefined, null, 3],
+  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  mapOfNumbers: [1, 2, undefined, null, 3],
+  mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  setOfNumbers: [1, 2, undefined, null, 3],
+  setOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  customCollectionOfNumbers: [1, 2, undefined, null, 3],
+  customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+};
+
+export const allCollectionsJSON_Uno: AllCollections = {
+  arrayOfNumbers: [1],
+  arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }],
+  mapOfNumbers: [1],
+  mapOfObjects: [{ id: '1', __type: 'mapOfObjectsObject' }],
+  setOfNumbers: [1],
+  setOfObjects: [{ id: '1', __type: 'setOfObjectsObject' }],
+  customCollectionOfNumbers: [1],
+  customCollectionOfObjects: [{ id: '1', __type: 'customCollectionOfObjectsObject' }],
+};
+
+//
+// RDO Graphs
+export class AllCollectionTypesRDO {
+  public arrayOfObjects = new Array<SimpleRDO>();
+  public mapOfObjects = new Map<string, SimpleRDO>();
+  public setOfObjects = new Set<SimpleRDO>();
+  public customCollectionOfObjects = new SyncableCollection({
+    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
+    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
+    makeRdo: (o: SimpleRDO) => new SimpleRDO(),
+  });
+  public arrayOfNumbers = new Array<Number>();
+  public mapOfNumbers = new Map<string, number>();
+  public setOfNumbers = new Set<number>();
+}
+
+export class SimpleRDO {
+  public id = '';
+}

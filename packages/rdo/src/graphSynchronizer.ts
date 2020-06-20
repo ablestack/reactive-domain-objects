@@ -156,8 +156,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   public wrapRdoNode: IWrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
     const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
 
-    console.log(` -------- sourceNode`, sourceNode);
-
     const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
     const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
 

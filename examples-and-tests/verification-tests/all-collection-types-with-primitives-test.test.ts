@@ -4,9 +4,12 @@ import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
 
 const logger = Logger.make('map-sync.test.ts');
 
-// -----------------------------------
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
 // Source Data Models
-// -----------------------------------
 export type AllCollectionTypesWithPrimitives = {
   arrayOfNumbers: (number | undefined | null)[];
   mapOfNumbers: (number | undefined | null)[];
@@ -14,9 +17,8 @@ export type AllCollectionTypesWithPrimitives = {
   customCollectionOfNumbers: (number | undefined | null)[];
 };
 
-// -----------------------------------
+//
 // Source Data
-// -----------------------------------
 const allCollectionsTypesWithPrimitivesJSON = {
   arrayOfNumbers: [1, 2, undefined, null, 3],
   mapOfNumbers: [1, 2, undefined, null, 3],
@@ -24,9 +26,8 @@ const allCollectionsTypesWithPrimitivesJSON = {
   customCollectionOfNumbers: [1, 2, undefined, null, 3],
 };
 
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
+//
+// RDO Graphs
 export class AllCollectionTypesWithPrimitivesRdo {
   public customCollectionOfObjects = new SyncableCollection<Number, Number>();
   public arrayOfNumbers = new Array<Number>();

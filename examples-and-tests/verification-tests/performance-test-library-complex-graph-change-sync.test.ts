@@ -2,30 +2,31 @@ import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
 import _ from 'lodash';
-import { librarySourceJSON } from './supporting-files/library-source-data';
-import { LibraryRDO, BookRDO } from './supporting-files/library-rdo-models';
-import { Book, Library } from './supporting-files/library-source-models';
+import { librarySourceJSON } from '../supporting-files/library-source-data';
+import { LibraryRDO, BookRDO } from '../supporting-files/library-rdo-models';
+import { Book, Library } from '../supporting-files/library-source-models';
 
 const logger = Logger.make('library-complex-graph-change-sync-performance.test.ts');
 
 const CHANGE_SYNC_ITERATION_COUNT = 5000;
-const CHANGE_SYNC_MAX_TIME_MS = 1500;
+const CHANGE_SYNC_MAX_TIME_MS = 2000;
 
-// -----------------------------------
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
 // Source Data Models
-// -----------------------------------
 
 // Imported from ./supporting-files/library-source-models
 
-// -----------------------------------
+//
 // Source Data
-// -----------------------------------
 
 // Imported from ./supporting-files/library-source-data
 
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
+//
+// RDO Graphs
 
 // Imported from ./supporting-files/library-rdo-models.ts
 

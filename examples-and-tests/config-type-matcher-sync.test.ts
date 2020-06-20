@@ -6,24 +6,6 @@ import { Book } from './supporting-files/library-source-models';
 
 const logger = Logger.make('flat-object-sync.test.ts');
 
-// -----------------------------------
-// Source Data Models
-// -----------------------------------
-
-// Imported from ./supporting-files/library-source-models
-
-// -----------------------------------
-// Source Data
-// -----------------------------------
-
-// Imported from ./supporting-files/library-source-data
-
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
-
-// Imported from ./supporting-files/library-rdo-models.ts
-
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
@@ -49,3 +31,22 @@ test('Synchronize using sourceNodeMatcher config', () => {
   expect(libraryRDO.authors.array$[0].books.length).toEqual(librarySourceJSON.authors[0].books.length);
   expect(libraryRDO.authors.array$[0].books[0].id).toEqual(librarySourceJSON.authors[0].books[0].id);
 });
+
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
+// Source Data Models
+
+// Imported from ./supporting-files/library-source-models
+
+//
+// Source Data
+
+// Imported from ./supporting-files/library-source-data
+
+//
+// RDO Graphs
+
+// Imported from ./supporting-files/library-rdo-models.ts

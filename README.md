@@ -20,10 +20,13 @@ The problems being solved primarily revolve around consuming and using JSON data
 
 ## Key Features
 
-- **Interfaces and Custom Collection Types** to support the construction of [Reactive Domain Object](#definition-reactive-domain-object) Graphs
 - **Automatic synchronization** of [Reactive Domain Object](#definition-reactive-domain-object) Graphs with an external data-source
-- **Automatic Change tracking**, of external data-sources, with [Reactive Domain Object](#definition-reactive-domain-object) Nodes only being updated only where changes are detected. When combined with Observable properties, this is a very powerful feature, that
-- **Performance Optimized**, with update synchronizations on a medium sized graph in sub 0.1 milliseconds, a full initial graph load in sub 0.5 milliseconds (as measured on a 2015 quad-core laptop)
+- **Automatic Change tracking**, of external data-sources, with [Reactive Domain Object](#definition-reactive-domain-object) Nodes only being updated only where changes are detected. When combined with Observable properties, this is a very powerful feature that reduces or eliminates the need for memoization code in dependent UI code
+- **Convention, Configuration, or Code** options for specifying the construction of [Reactive Domain Object](#definition-reactive-domain-object) Graphs
+- **Automatic Creation of Observable Domain Model Objects**, (base on configuration settings)
+- **Emits Node Change Events**, which can be subscribed to via the GraphSynchronizer object
+- **Rdo Synchronization Lifecycle Hooks**, which can be implemented via interfaces
+- **Performance Optimized**, with sub 0.3 millisecond synchronizations for a medium sized graph (as measured on a 2015 quad-core laptop. Performanc test available for local performance verification)
 - **One way data flow paradigm**: Actions --> External Data Source --> State
 - **Custom Collection Types**, to support easy graph traversal, and reduce the need for denormalization of data
 
@@ -139,3 +142,8 @@ While this library solves several challenges relating to client-side JavaScript 
 ### Notes 0.4.0
 
 - Refactorings for improved maintainability
+
+### Notes 0.5.0
+
+- Added auto-Rdo creation functionality
+- Added GraphSynchronizer EventEmitter. This broadcast all node change event to any subscribers

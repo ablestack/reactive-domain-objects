@@ -1,45 +1,25 @@
-import { GraphSynchronizer } from '@ablestack/rdo';
+import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
+import { BookRDO, LibraryRDO } from './supporting-files/library-rdo-models';
 import { librarySourceJSON } from './supporting-files/library-source-data';
+import { Book } from './supporting-files/library-source-models';
 
 const logger = Logger.make('map-sync.test.ts');
-
-// -----------------------------------
-// Source Data Models
-// -----------------------------------
-
-// Imported from ./supporting-files/library-source-models
-
-// -----------------------------------
-// Source Data
-// -----------------------------------
-
-// Imported from ./supporting-files/library-source-data
-
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
-
-// Auto-created
 
 // --------------------------------------------------------------
 // CONFIG
 // --------------------------------------------------------------
-const config = {
-  globalNodeOptions: {
-    autoInstantiateRdoItems: {
-      objectFieldsAsObservableObjectLiterals: true,
-      collectionItemsAsObservableObjectLiterals: true,
-    },
-  },
+const config: IGraphSyncOptions = {
+  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
+  globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 
-test('Synchronize updates complex graph as expected with auto-create Rdo objects', () => {
-  const libraryRDO = {} as any;
+test('Synchronize updates complex graph as expected', () => {
+  const libraryRDO = new LibraryRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 
   // POSTURE VERIFICATION
@@ -70,3 +50,22 @@ test('Synchronize updates complex graph as expected with auto-create Rdo objects
   expect(libraryRDO.authors.array$[0].books[0].publisher.id).toEqual(librarySourceJSON.authors[0].books[0].publisher.id);
   expect(libraryRDO.authors.array$[0].books[0].publisher.name$).toEqual(librarySourceJSON.authors[0].books[0].publisher.name);
 });
+
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
+// Source Data Models
+
+// Imported from ./supporting-files/library-source-models
+
+//
+// Source Data
+
+// Imported from ./supporting-files/library-source-data
+
+//
+// RDO Graphs
+
+// Imported from ./supporting-files/library-rdo-models.ts

@@ -227,18 +227,18 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/internal-types.d.ts": {
-        "version": "a58d03339d974ae006e1e78b19ccdbac5c70e9976526b021efe66193d8bfdf42",
-        "signature": "a58d03339d974ae006e1e78b19ccdbac5c70e9976526b021efe66193d8bfdf42",
+        "version": "d4c73d20c1cc027377b8c4f57d3813f277670ab7da94eabd1230f7eec88bd2b7",
+        "signature": "d4c73d20c1cc027377b8c4f57d3813f277670ab7da94eabd1230f7eec88bd2b7",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-config-option-types.d.ts": {
-        "version": "e126e1b68889f10bfee6bd70fac01b65de1cc3ab9c0d3ac6baed526b19c8a34b",
-        "signature": "e126e1b68889f10bfee6bd70fac01b65de1cc3ab9c0d3ac6baed526b19c8a34b",
+        "version": "7f365bc04e565de05d77cf45b8fcf46a3b242d1da25d3bac27894f2561de4c54",
+        "signature": "7f365bc04e565de05d77cf45b8fcf46a3b242d1da25d3bac27894f2561de4c54",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": {
-        "version": "77e5911a185d0cfc7ba9fd28853fdc3ba652a0711361508d930a51fbd2af6282",
-        "signature": "77e5911a185d0cfc7ba9fd28853fdc3ba652a0711361508d930a51fbd2af6282",
+        "version": "0fcea7abf3f24be7dfcea50f1dc230611371ce083752c7712717a61259b2ba39",
+        "signature": "0fcea7abf3f24be7dfcea50f1dc230611371ce083752c7712717a61259b2ba39",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/index.d.ts": {
@@ -252,18 +252,18 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts": {
-        "version": "c71e637ebfbb44d851d61c7e598b5d1112f6489d921e1a1513dbc8cadb93b7c4",
-        "signature": "c71e637ebfbb44d851d61c7e598b5d1112f6489d921e1a1513dbc8cadb93b7c4",
+        "version": "cb828dce5900e2829c1946124119528d5b83e4370c042aabf6cf72adced0fe4c",
+        "signature": "cb828dce5900e2829c1946124119528d5b83e4370c042aabf6cf72adced0fe4c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts": {
-        "version": "0425c9b1842ada12e3ff374673b8b7c0cadf22aad1b4b6fbe36d5841b7c579f5",
-        "signature": "0425c9b1842ada12e3ff374673b8b7c0cadf22aad1b4b6fbe36d5841b7c579f5",
+        "version": "0895ea89b742ffd62a3c70145db0c011b354e7548f689a9e621b365440fab45d",
+        "signature": "0895ea89b742ffd62a3c70145db0c011b354e7548f689a9e621b365440fab45d",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts": {
-        "version": "53b79d388e24f937c122fce1aab0a4c897335575fe4efd3e9252f31da2a6966e",
-        "signature": "53b79d388e24f937c122fce1aab0a4c897335575fe4efd3e9252f31da2a6966e",
+        "version": "58988c9c23de61ed5420b5afc66cc44436be9353d18ff9c4e99050e6e939d7ff",
+        "signature": "58988c9c23de61ed5420b5afc66cc44436be9353d18ff9c4e99050e6e939d7ff",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/index.d.ts": {
@@ -272,33 +272,33 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts": {
-        "version": "81f292fb2b3cde3948a816b93ae2d6ac3807d7c02b05d264b0b396f14110a14f",
-        "signature": "81f292fb2b3cde3948a816b93ae2d6ac3807d7c02b05d264b0b396f14110a14f",
+        "version": "310b11f5e9dfe29489ca391e77300cd2115bdba48f54c14a7ed3cea3526dbf62",
+        "signature": "310b11f5e9dfe29489ca391e77300cd2115bdba48f54c14a7ed3cea3526dbf62",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts": {
-        "version": "f2eb26e2ec97d72ae9b311bdea6c5e213658ac629699722596fe6f7b0afed8a3",
-        "signature": "f2eb26e2ec97d72ae9b311bdea6c5e213658ac629699722596fe6f7b0afed8a3",
+        "version": "919961be074a5cd86f83ce03098a39169623c28028a78dc8a2a38a74c65839b9",
+        "signature": "919961be074a5cd86f83ce03098a39169623c28028a78dc8a2a38a74c65839b9",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts": {
-        "version": "15de4f17558c0a3d975c5cb92ba2ee6494490501d5cb4839621e2c21336fb835",
-        "signature": "15de4f17558c0a3d975c5cb92ba2ee6494490501d5cb4839621e2c21336fb835",
+        "version": "e7d33449b7eab0bf19d836ed193c66d1ccf610d7275daa3251a9390b165fc086",
+        "signature": "e7d33449b7eab0bf19d836ed193c66d1ccf610d7275daa3251a9390b165fc086",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts": {
-        "version": "6b38ea1f52c4efac37566ca13745fff51cf04aabd313ff22804b7faa4b091b3d",
-        "signature": "6b38ea1f52c4efac37566ca13745fff51cf04aabd313ff22804b7faa4b091b3d",
+        "version": "7c8cd20da3b88066110e6bad5ff97431583efbafb5e18f20e175fcf33a74c4b2",
+        "signature": "7c8cd20da3b88066110e6bad5ff97431583efbafb5e18f20e175fcf33a74c4b2",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts": {
-        "version": "49de0dbe3f469c5ae15da45edbd361192962eb02eab754d9ff1cf0c159217936",
-        "signature": "49de0dbe3f469c5ae15da45edbd361192962eb02eab754d9ff1cf0c159217936",
+        "version": "9070aa3cc596dda8398ed625dc45397e26377bcbd053d469551d81bdb2b4b17b",
+        "signature": "9070aa3cc596dda8398ed625dc45397e26377bcbd053d469551d81bdb2b4b17b",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts": {
-        "version": "70028b31065085aaa764de4f17d1fd906d7ea3461ed13307be21b6de09a6ac34",
-        "signature": "70028b31065085aaa764de4f17d1fd906d7ea3461ed13307be21b6de09a6ac34",
+        "version": "308f0545a6c143b4d9e1806b82acf48e17e846e4a486f02604a39000497b6a0b",
+        "signature": "308f0545a6c143b4d9e1806b82acf48e17e846e4a486f02604a39000497b6a0b",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/index.d.ts": {
@@ -312,8 +312,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/node-type.utils.d.ts": {
-        "version": "2e855165a4e49db91b8921ae7542b22aca7c027917f332f4b1243ff2e1959fc7",
-        "signature": "2e855165a4e49db91b8921ae7542b22aca7c027917f332f4b1243ff2e1959fc7",
+        "version": "4623940ba1c56d6f7d066e581fd5d71280be0e7ba70cf9cbb9b3c8552e4bd7fa",
+        "signature": "4623940ba1c56d6f7d066e581fd5d71280be0e7ba70cf9cbb9b3c8552e4bd7fa",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/rdo-wrapper-validation.utils.d.ts": {
@@ -327,8 +327,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/rdo-node-wrapper-factory.d.ts": {
-        "version": "5842472c954e676ac5f7af94d96291c3551411d493da0b10c1b0897d7c50e555",
-        "signature": "5842472c954e676ac5f7af94d96291c3551411d493da0b10c1b0897d7c50e555",
+        "version": "d2bb69035428414ad268889d6706fbd78da478d2228a1fdb7fbc89f79d9ee996",
+        "signature": "d2bb69035428414ad268889d6706fbd78da478d2228a1fdb7fbc89f79d9ee996",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/index.d.ts": {
@@ -337,23 +337,23 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-internal-node-wrappers/base/source-base-nw.d.ts": {
-        "version": "e07ad82ad8eeb2df0c4f4f05972f3a99570a61b67665c6faf753e88a3dd00281",
-        "signature": "e07ad82ad8eeb2df0c4f4f05972f3a99570a61b67665c6faf753e88a3dd00281",
+        "version": "1f3510cfecf66fc0d068dfe507702874ad02684701b7e16bb99e999d4c57f24c",
+        "signature": "1f3510cfecf66fc0d068dfe507702874ad02684701b7e16bb99e999d4c57f24c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-internal-node-wrappers/concrete/source-array-nw.d.ts": {
-        "version": "29dc6e5695ec39e28e86c0e380cc2ad02ec66dd2f5adfaf3b2de33ee85fe3106",
-        "signature": "29dc6e5695ec39e28e86c0e380cc2ad02ec66dd2f5adfaf3b2de33ee85fe3106",
+        "version": "7d3372c51bfa60550cbbdad15323cd3cec55fdd6cfc44ee4d9e3c6b8f68f82df",
+        "signature": "7d3372c51bfa60550cbbdad15323cd3cec55fdd6cfc44ee4d9e3c6b8f68f82df",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-internal-node-wrappers/concrete/source-object-nw.d.ts": {
-        "version": "02700ecdcb52bf73a7cebc3b233b37e7d6b0d0ea6b15774936373755b018978a",
-        "signature": "02700ecdcb52bf73a7cebc3b233b37e7d6b0d0ea6b15774936373755b018978a",
+        "version": "2edace93ab5af7b5b7bd0a62d544fb39b149bde90591577d7e1bc2f132b9548d",
+        "signature": "2edace93ab5af7b5b7bd0a62d544fb39b149bde90591577d7e1bc2f132b9548d",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-internal-node-wrappers/concrete/source-primitive-nw.d.ts": {
-        "version": "6a0980004f3f00229ca7e77d20d5b6636d95190893825888ec9a0608ebff404b",
-        "signature": "6a0980004f3f00229ca7e77d20d5b6636d95190893825888ec9a0608ebff404b",
+        "version": "8e4e3ae3bd67f7eed987fec2b3004f06d24a502f1290c091c5e887fa9a76a314",
+        "signature": "8e4e3ae3bd67f7eed987fec2b3004f06d24a502f1290c091c5e887fa9a76a314",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-internal-node-wrappers/concrete/index.d.ts": {
@@ -387,8 +387,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/graphsynchronizer.d.ts": {
-        "version": "34912f39c82be65a1ee92f149ee17f5474612fccd93cec20cdb4106804ffd454",
-        "signature": "34912f39c82be65a1ee92f149ee17f5474612fccd93cec20cdb4106804ffd454",
+        "version": "bacec088ac70a97014e1fd858559cc45682b86cdfd2ae59b503fcccbb48cb7ba",
+        "signature": "bacec088ac70a97014e1fd858559cc45682b86cdfd2ae59b503fcccbb48cb7ba",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/static.config.d.ts": {

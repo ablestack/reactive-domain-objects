@@ -1,27 +1,28 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import _ from 'lodash';
-import { BookRDO, LibraryRDO } from './supporting-files/library-rdo-models';
-import { librarySourceJSON } from './supporting-files/library-source-data';
-import { Book } from './supporting-files/library-source-models';
+import { BookRDO, LibraryRDO } from '../supporting-files/library-rdo-models';
+import { librarySourceJSON } from '../supporting-files/library-source-data';
+import { Book } from '../supporting-files/library-source-models';
 
 const logger = Logger.make('map-sync.test.ts');
 
-// -----------------------------------
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
 // Source Data Models
-// -----------------------------------
 
 // Imported from ./supporting-files/library-source-models
 
-// -----------------------------------
+//
 // Source Data
-// -----------------------------------
 
 // Imported from ./supporting-files/library-source-data
 
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
+//
+// RDO Graphs
 
 // Imported from ./supporting-files/library-rdo-models.ts
 

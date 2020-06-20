@@ -9,7 +9,6 @@ const logger = logger_1.Logger.make('node-type.utils');
  */
 function getNodeType(rdoNodeVal) {
     const builtInNodeType = toString.call(rdoNodeVal);
-    //console.log(` ----------- rdoNodeVal`, rdoNodeVal);
     if (__1.IsISyncableCollection(rdoNodeVal)) {
         return { kind: 'Collection', type: 'ISyncableCollection', builtInType: builtInNodeType };
     }

@@ -1,6 +1,6 @@
 {
   "name": "@ablestack/rdo",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "A library to facilitate building and running graphs of Reactive Domain Objects - connecting JSON data sources to reactive client applications",
   "author": "jamshally <ahrndee@gmail.com>",
   "license": "MIT",
@@ -25,7 +25,8 @@
   "dependencies": {
     "@wry/equality": "^0.1.11",
     "debug": "^4.1.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "mobx": "^5.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.0",

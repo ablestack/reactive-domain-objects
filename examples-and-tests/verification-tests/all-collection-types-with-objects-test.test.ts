@@ -4,9 +4,12 @@ import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
 
 const logger = Logger.make('map-sync.test.ts');
 
-// -----------------------------------
+// --------------------------------------------------------------
+// MODELS & DATA
+// --------------------------------------------------------------
+
+//
 // Source Data Models
-// -----------------------------------
 type AllCollectionTypesWithObjects = {
   arrayOfObjects: (SimpleObject | undefined | null)[];
   mapOfObjects: (SimpleObject | undefined | null)[];
@@ -16,9 +19,8 @@ type AllCollectionTypesWithObjects = {
 
 export type SimpleObject = { id: string; __type?: string };
 
-// -----------------------------------
+//
 // Source Data
-// -----------------------------------
 export const allCollectionsTypesWithObjectsJSON: AllCollectionTypesWithObjects = {
   arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
   mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
@@ -26,9 +28,8 @@ export const allCollectionsTypesWithObjectsJSON: AllCollectionTypesWithObjects =
   customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
 };
 
-// -----------------------------------
-// Reactive Domain Object Graph
-// -----------------------------------
+//
+// RDO Graphs
 
 export class AllCollectionTypesWithObjectsRDO {
   public arrayOfObjects = new Array<SimpleRDO>();

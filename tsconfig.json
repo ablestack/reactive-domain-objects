@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig-base",
-  "include": ["examples/**/*.ts", "examples/library-complex-graph-full-sync-performance.test.ts.off"],
+  "include": ["examples-and-tests/**/*.ts"],
   "exclude": ["node_modules"],
   "references": [{ "path": "./packages/rdo" }, { "path": "./packages/rdo-apollo-mobx-connector" }]
 }
