@@ -36,7 +36,14 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
                 throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
             const changed = this.wrappedParentRdoNode.updateItem(this.key, this.wrappedSourceNode.value);
             if (changed)
-                this.eventEmitter.publish('nodeChange', { changeType: 'update', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: this.wrappedSourceNode.key, rdoKey: this.key, rdoOldValue: this.value, rdoNewValue: this.wrappedSourceNode.value });
+                this.eventEmitter.publish('nodeChange', {
+                    changeType: 'update',
+                    sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+                    sourceKey: this.wrappedSourceNode.key,
+                    rdoKey: this.key,
+                    oldSourceValue: this.value,
+                    newSourceValue: this.wrappedSourceNode.value,
+                });
             return changed;
         }
         return false;

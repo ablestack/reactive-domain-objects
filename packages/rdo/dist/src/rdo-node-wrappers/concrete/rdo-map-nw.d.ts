@@ -24,6 +24,6 @@ export declare class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    deleteElement(key: string): boolean;
+    deleteElement(key: string): D | undefined;
     clearElements(): boolean;
 }

@@ -91,7 +91,7 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 
-  public deleteElement(key: string): boolean {
+  public deleteElement(key: string): D | undefined {
     return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 

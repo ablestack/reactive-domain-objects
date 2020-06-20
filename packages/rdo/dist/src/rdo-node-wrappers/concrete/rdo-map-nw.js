@@ -58,7 +58,9 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
         return this._value.size;
     }
     deleteElement(key) {
-        return this._value.delete(key);
+        const item = this._value.get(key);
+        this._value.delete(key);
+        return item;
     }
     clearElements() {
         if (this.childElementCount() === 0)

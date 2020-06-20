@@ -47,7 +47,7 @@ export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceE
   getElement: (key: string) => D | null | undefined;
   insertElement: (key: string, value: D) => void;
   updateElement: (key: string, value: D) => boolean;
-  deleteElement: (key: string) => boolean;
+  deleteElement: (key: string) => D | undefined;
   clearElements: () => boolean;
 }
 

@@ -78,7 +78,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 export interface IRdoCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D>, IMakeCollectionKey<D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D | undefined>;
-  deleteElement(key: string): boolean;
+  deleteElement(key: string): D | undefined;
   clearElements(): boolean;
 }
 

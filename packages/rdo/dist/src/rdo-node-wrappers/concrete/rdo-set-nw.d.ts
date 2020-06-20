@@ -24,6 +24,6 @@ export declare class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     elements(): Iterable<D>;
     childElementCount(): number;
     insertItem(key: string, value: D): void;
-    deleteElement(key: string): boolean;
+    deleteElement(key: string): D | undefined;
     clearElements(): boolean;
 }

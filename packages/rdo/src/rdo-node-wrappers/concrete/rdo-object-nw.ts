@@ -183,7 +183,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
           this.insertItem(rdoFieldname, rdoNodeItemValue);
 
           // Emit
-          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, rdoOldValue: undefined, rdoNewValue: rdoNodeItemValue });
+          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, oldSourceValue: undefined, newSourceValue: sourceFieldVal });
         } else {
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
           continue;

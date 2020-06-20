@@ -99,7 +99,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                         throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeRdoElement produced null or undefined`);
                     }
                     rdo.insertItem(key, targetItem);
-                    this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: undefined, rdoNewValue: targetItem });
+                    this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
                 }
                 //
                 // Sync Item
@@ -123,7 +123,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             if (targetCollectionKeysInDestinationOnly.length > 0) {
                 targetCollectionKeysInDestinationOnly.forEach((key) => {
                     const deletedItem = rdo.deleteElement(key);
-                    this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: deletedItem, rdoNewValue: undefined });
+                    this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: deletedItem, newSourceValue: undefined });
                 });
                 changed = true;
             }

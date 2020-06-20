@@ -88,7 +88,7 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 
 ## Simple Usage Example With Collections
 
-Nested collections are really the complexity starts to increase. However, reactive-domain-objects takes care of most of this complexity, just requiring that some basic configuration options are supplied. See example below, with notable differences from above examples highlighted in comments
+Nested collections are where the complexity starts to increase for any manual sync solution. However, reactive-domain-objects takes care of most of this complexity, just requiring that some basic configuration options are supplied. See example below, with notable differences from above examples highlighted in comments
 
 ```TypeScript
 // SOURCE JSON DATA
@@ -125,15 +125,43 @@ graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJS
 
 > Note: **RDO Instantiation**
 >
-> 1.  \* Because the BarRDO type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created. As such, a corresponding 'make' function needs to be supplied to the GraphSynchronizer
+> 1.  \* Because the BarRDO type lives in a parent collection, it will need to be dynamically instantiated as corresponding source collection items are created.
 >
-> 2.  \* There are several ways the makeRdo function can be supplied to the GraphSynchronizer:
+> 2.  \* There are several ways RDO can be made:
 >
 >     - As with the above example, a make method can be contained in an Options object, and mapped to the corresponding JSON node by specifying the `nodePath`
 >     - A make method can be contained in an Options object, and mapped to the corresponding JSON node by supplying a `nodeContent` method that can identify the object type from it's contained data (such a `__type` field).
 >     - The 'IRdoFactory' interface can be implemented by the containing collection
+>     - The RDOs can be auto-created (see example below)
 >
 >     See the [configuration options documentation](TODO) for more information
+
+## Simple Usage Example With Automatic Observable RDO Creation
+
+If Domain objects don't require any custom behavior, it is possible to set the configuration to auto-create the RDO objects. This will make the objects in the exact shape fo the source data, but with the following two advantages:
+
+- The properties will be automatically be converted to Mobx Observables (configurable)
+- Only the _changed_ fields will be updated on each sync, reducing/eliminating the need for memoization code form downstream dependent UIs
+
+```TypeScript
+// SOURCE JSON DATA
+const fooSourceJSONSimple: FooSimple = { bar: { id: 'bar-1', name: 'Bar 1' } };
+
+// Configuration Options
+const syncOptions: IGraphSyncOptions = {
+  globalNodeOptions: {
+    autoMakeRdoTypes: { as: 'mobx-observable-object-literals', collectionElements: true, objectFields: true },
+  },
+};
+
+// INSTANTIATE
+const fooSimpleRDO = {} as FooSimple; // Note - only an empty object literal needs supply here. The RDO graph will be auto created
+const graphSynchronizer = new GraphSynchronizer(syncOptions);
+
+// SYNC
+graphSynchronizer.smartSync({ rootRdo: fooSimpleRDO, rootSourceNode: fooSourceJSONSimple });
+
+```
 
 ## General Usage Notes & Tips
 
@@ -150,6 +178,25 @@ An instance of this class allows a Reactive Domain Graph to be synchronized with
 >
 > - It is the same equality comparer used by the ApolloGraphQL client, which was a major use-case for this project
 > - It provides structural equality checking, with correct handling of cyclic references, and minimal bundle size
+
+### Synchroniation Events
+
+The GraphSynchronizer has an built-in EventEmitter, which broadcast key lifecycle events to subscribers. Clients can be notified of all node-change events by subscribing per the following example:
+
+```TypeScript
+graphSynchronizer.subscribeToNodeChanges((data) => { /* custom code here */ });
+```
+
+The data payload contains the following properties:
+
+| Parameter      | Description                                     |
+| -------------- | ----------------------------------------------- |
+| changeType     | 'create' or 'update' or 'delete'                |
+| sourceNodePath | The nodePath of the given node                  |
+| sourceKey      | The fieldname/element key of the given node     |
+| rdoKey         | The corresponding fieldname/key of the RDO node |
+| oldSourceValue | The original value of the source node           |
+| newSourceValue | The new value of the source node                |
 
 See [Usage Section](#Usage) Examples above for primary documentation for usage. See below for notes and configuration documentation.
 

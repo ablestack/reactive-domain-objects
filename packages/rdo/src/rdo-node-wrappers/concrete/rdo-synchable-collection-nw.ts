@@ -83,7 +83,7 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     this._value.insertElement(key, value);
   }
 
-  public deleteElement(key: string): boolean {
+  public deleteElement(key: string): D | undefined {
     return this._value.deleteElement(key);
   }
 

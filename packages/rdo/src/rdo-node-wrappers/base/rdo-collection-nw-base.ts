@@ -74,7 +74,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
           }
 
           rdo.insertItem(key, targetItem);
-          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: undefined, rdoNewValue: targetItem });
+          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
         }
 
         //
@@ -98,7 +98,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       if (targetCollectionKeysInDestinationOnly.length > 0) {
         targetCollectionKeysInDestinationOnly.forEach((key) => {
           const deletedItem = rdo.deleteElement(key);
-          this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, rdoOldValue: deletedItem, rdoNewValue: undefined });
+          this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: deletedItem, newSourceValue: undefined });
         });
         changed = true;
       }
@@ -167,5 +167,5 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   public abstract childElementCount();
   public abstract clearElements();
   public abstract insertItem(key: string, value: D);
-  public abstract deleteElement(key: string);
+  public abstract deleteElement(key: string): D | undefined;
 }

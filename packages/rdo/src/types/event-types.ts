@@ -6,6 +6,6 @@ export interface NodeChange {
   sourceNodePath: string;
   sourceKey: string;
   rdoKey: string;
-  rdoOldValue: any | undefined;
-  rdoNewValue: any | undefined;
+  oldSourceValue: any | undefined;
+  newSourceValue: any | undefined;
 }

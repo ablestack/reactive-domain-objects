@@ -89,8 +89,10 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public deleteElement(key: string): boolean {
-    return this._value.delete(key);
+  public deleteElement(key: string): D | undefined {
+    const item = this._value.get(key);
+    this._value.delete(key);
+    return item;
   }
 
   public clearElements(): boolean {

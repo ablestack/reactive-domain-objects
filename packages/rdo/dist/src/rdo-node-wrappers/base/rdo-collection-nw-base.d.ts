@@ -21,5 +21,5 @@ export declare abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBas
     abstract childElementCount(): any;
     abstract clearElements(): any;
     abstract insertItem(key: string, value: D): any;
-    abstract deleteElement(key: string): any;
+    abstract deleteElement(key: string): D | undefined;
 }

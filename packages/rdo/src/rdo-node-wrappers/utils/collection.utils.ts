@@ -28,14 +28,13 @@ const _Array = {
     }
     return false;
   },
-  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }) => {
-    if (collection.length === 0) return false;
+  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }): T | undefined => {
+    if (collection.length === 0) return undefined;
     const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
     if (existingItemIndex !== -1) {
-      collection.splice(existingItemIndex, 1);
-      return true;
+      return collection.splice(existingItemIndex, 1)[0];
     }
-    return false;
+    return undefined;
   },
   clear: <T>({ collection }: { collection: Array<T> }) => collection.splice(0, collection.length).length > 0,
 };
@@ -65,24 +64,25 @@ const _Set = {
     }
     return false;
   },
-  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }) => {
-    if (collection.size === 0) return false;
+  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }): T | undefined => {
+    if (collection.size === 0) return undefined;
     const item = Array.from(collection.values()).find((item) => makeCollectionKey(item) === key);
     if (item) {
       collection.delete(item);
-      return true;
+      return item;
     }
-    return false;
+    return undefined;
   },
 };
 
 const _Record = {
-  deleteElement: <T>({ record, key }: { record: Record<string, T>; key: string }) => {
+  deleteElement: <T>({ record, key }: { record: Record<string, T>; key: string }): T | undefined => {
     if (key in record) {
+      const item = record[key];
       delete record[key];
-      return true;
+      return item;
     }
-    return false;
+    return undefined;
   },
 };
 

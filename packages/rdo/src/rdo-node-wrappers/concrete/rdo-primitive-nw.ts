@@ -59,7 +59,14 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
 
       const changed = this.wrappedParentRdoNode.updateItem(this.key, (this.wrappedSourceNode.value as unknown) as D);
       if (changed)
-        this.eventEmitter.publish('nodeChange', { changeType: 'update', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: this.wrappedSourceNode.key!, rdoKey: this.key, rdoOldValue: this.value, rdoNewValue: this.wrappedSourceNode.value });
+        this.eventEmitter.publish('nodeChange', {
+          changeType: 'update',
+          sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+          sourceKey: this.wrappedSourceNode.key!,
+          rdoKey: this.key,
+          oldSourceValue: this.value,
+          newSourceValue: this.wrappedSourceNode.value,
+        });
       return changed;
     }
     return false;

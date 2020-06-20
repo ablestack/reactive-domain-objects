@@ -90,7 +90,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.length;
   }
 
-  public deleteElement(key: string): boolean {
+  public deleteElement(key: string): D | undefined {
     return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
