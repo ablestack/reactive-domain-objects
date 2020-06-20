@@ -107,7 +107,7 @@ This code was initially developed for use in a single commercial project. It is 
 
 This library is part of a collection of companion tools and libraries under the [AbleStack](https://github.com/ablestack) umbrella. All of these libraries share the common goal:
 
-> Help solo developers and small teams build big ideas rapidly and affordably
+> Helping small teams and solo-developers build big ideas rapidly and affordably
 
 To achieve these goals, the following principles are applied:
 
