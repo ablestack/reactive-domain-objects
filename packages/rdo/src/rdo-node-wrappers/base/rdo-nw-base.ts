@@ -6,14 +6,14 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
+export abstract class RdoNWBase<K extends string | number | symbol, S, D> implements IRdoNodeWrapper<K, S, D> {
   private _typeInfo: NodeTypeInfo;
-  private _key: string | undefined;
-  private _parent: IRdoInternalNodeWrapper<S, D> | undefined;
-  private _wrappedSourceNode: ISourceNodeWrapper<S>;
-  private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+  private _key: K | undefined;
+  private _parent: IRdoInternalNodeWrapper<any, S, D> | undefined;
+  private _wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+  private _matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
-  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
   private _eventEmitter: EventEmitter<NodeChange>;
 
   constructor({
@@ -27,12 +27,12 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     this._typeInfo = typeInfo;
@@ -74,7 +74,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     return this._typeInfo;
   }
 
-  public get wrappedSourceNode(): ISourceNodeWrapper<S> {
+  public get wrappedSourceNode(): ISourceNodeWrapper<K, S, D> {
     return this._wrappedSourceNode;
   }
 
@@ -82,8 +82,8 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     return this._globalNodeOptions;
   }
 
-  private _nodeOptions: INodeSyncOptions<any, any> | undefined | null;
-  public getNodeOptions(): INodeSyncOptions<any, any> | null {
+  private _nodeOptions: INodeSyncOptions<K, S, D> | undefined | null;
+  public getNodeOptions(): INodeSyncOptions<K, S, D> | null {
     if (this._nodeOptions === undefined) {
       // Look for node options from path match
       if (this._matchingNodeOptions) {
@@ -91,7 +91,7 @@ export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
 
         // Look for node options from targetOptionMatchers
       } else if (this._targetedOptionMatchersArray) {
-        let firstElement = undefined;
+        let firstElement;
 
         // Try to get first element from either collection for matching
         if (this.wrappedSourceNode.childElementCount() > 0 && isISourceCollectionNodeWrapper(this.wrappedSourceNode)) {

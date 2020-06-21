@@ -25,7 +25,7 @@ class GraphSynchronizer {
         /**
          *
          */
-        this.wrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode }) => {
+        this.wrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }) => {
             const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
             const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
             const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
@@ -34,7 +34,7 @@ class GraphSynchronizer {
         /**
          *
          */
-        this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey, }) => {
+        this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }) => {
             logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
             let changed = false;
             const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
@@ -95,12 +95,12 @@ class GraphSynchronizer {
     // ------------------------------------------------------------------------------------------------------------------
     pushSourceNodeInstancePathOntoStack(key, sourceNodeKind) {
         logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
-        this._sourceNodeInstancePathStack.push(key);
+        this._sourceNodeInstancePathStack.push(key.toString());
         // reset locally cached dependencies
         this._sourceNodeInstancePath = undefined;
         // push to typepath if objectProperty
         if (sourceNodeKind === 'Object') {
-            this._sourceNodePathStack.push(key);
+            this._sourceNodePathStack.push(key.toString());
             // reset locally cached dependencies
             this._sourceNodePath = undefined;
         }

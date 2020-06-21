@@ -1,5 +1,5 @@
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
+import { SyncableCollection } from '@ablestack/rdo';
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import _ from 'lodash';
 

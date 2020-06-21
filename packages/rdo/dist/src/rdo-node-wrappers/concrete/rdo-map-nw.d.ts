@@ -2,28 +2,28 @@ import { RdoCollectionNWBase } from '..';
 import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
-export declare class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
+export declare class RdoMapNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: Map<string, D>;
+        value: Map<K, D>;
         typeInfo: NodeTypeInfo;
-        key: string | undefined;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<S>;
-        syncChildNode: ISyncChildNode<S, D>;
-        matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+        key: K | undefined;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+        syncChildNode: ISyncChildNode;
+        matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    get value(): Map<string, D>;
-    itemKeys(): IterableIterator<string>;
-    getItem(key: string): D | undefined;
-    updateItem(key: string, value: D): boolean;
-    insertItem(key: string, value: D): void;
+    get value(): Map<K, D>;
+    itemKeys(): IterableIterator<K>;
+    getItem(key: K): D | undefined;
+    updateItem(key: K, value: D): boolean;
+    insertItem(key: K, value: D): void;
     smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    deleteElement(key: string): D | undefined;
+    deleteElement(key: K): D | undefined;
     clearElements(): boolean;
 }

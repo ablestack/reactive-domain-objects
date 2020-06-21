@@ -1,13 +1,13 @@
 import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNodeOptions, MakeCollectionKeyMethod, IMakeRdo, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
-import { Logger } from '../../infrastructure/logger';
-import { CollectionUtils } from '../utils/collection.utils';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
+import { Logger } from '../../infrastructure/logger';
 import { NodeChange } from '../../types/event-types';
+import { CollectionUtils } from '../utils/collection.utils';
 
 const logger = Logger.make('RdoArrayNW');
 
-export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
+export class RdoArrayNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Array<D>;
 
   constructor({
@@ -24,13 +24,13 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
   }: {
     value: Array<D>;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -49,17 +49,17 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
-  public getItem(key: string) {
+  public getItem(key: K) {
     if (this.childElementCount() === 0) return undefined;
     return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
-  public updateItem(key: string, value: D) {
+  public updateItem(key: K, value: D) {
     if (this.childElementCount() === 0) return false;
     return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
-  public insertItem(key: string, value: D) {
+  public insertItem(key: K, value: D) {
     CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 
@@ -90,7 +90,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.length;
   }
 
-  public deleteElement(key: string): D | undefined {
+  public deleteElement(key: K): D | undefined {
     return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 

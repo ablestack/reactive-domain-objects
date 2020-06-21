@@ -10,17 +10,17 @@ export declare class RdoNodeWrapperFactory {
     private _defaultEqualityComparer;
     constructor({ eventEmitter, syncChildNode, globalNodeOptions, targetedOptionMatchersArray, wrapRdoNode, defaultEqualityComparer, }: {
         eventEmitter: EventEmitter<NodeChange>;
-        syncChildNode: ISyncChildNode<any, any>;
+        syncChildNode: ISyncChildNode;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         wrapRdoNode: IWrapRdoNode;
         defaultEqualityComparer: IEqualityComparer;
     });
-    make<S, D>({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
-        value: RdoNodeTypes<S, D> | undefined;
-        key: string | undefined;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<S>;
-        matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
-    }): IRdoNodeWrapper<S, D>;
+    make<K extends string | number | symbol, S, D>({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
+        value: RdoNodeTypes<K, S, D> | undefined;
+        key: K | undefined;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+        matchingNodeOptions?: INodeSyncOptions<any, any, any> | undefined;
+    }): IRdoNodeWrapper<K, S, D>;
 }

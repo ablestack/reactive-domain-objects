@@ -6,7 +6,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoPrimitiveNW');
 
-export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
+export class RdoPrimitiveNW<K extends string | number | symbol, S, D> extends RdoNWBase<K, S, D> {
   private _value: D | undefined;
 
   constructor({
@@ -22,12 +22,12 @@ export class RdoPrimitiveNW<S, D> extends RdoNWBase<S, D> {
   }: {
     value: D;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });

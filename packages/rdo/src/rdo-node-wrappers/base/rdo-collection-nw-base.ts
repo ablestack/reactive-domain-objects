@@ -1,16 +1,15 @@
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, config } from '../..';
-import { Logger } from '../../infrastructure/logger';
-import { RdoInternalNWBase } from './rdo-internal-nw-base';
-import { NodeTypeUtils } from '../utils/node-type.utils';
-import { isIMakeCollectionKeyFromRdoElement, isIMakeRdo, IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper } from '../../types';
-import { observable } from 'mobx';
-import { EventEmitter } from '../../infrastructure/event-emitter';
-import { NodeChange } from '../../types/event-types';
 import _ from 'lodash';
+import { config, IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { Logger } from '../../infrastructure/logger';
+import { IRdoInternalNodeWrapper, isIMakeCollectionKeyFromRdoElement, isISourceCollectionNodeWrapper } from '../../types';
+import { NodeChange } from '../../types/event-types';
+import { NodeTypeUtils } from '../utils/node-type.utils';
+import { RdoInternalNWBase } from './rdo-internal-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
-export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> implements IRdoCollectionNodeWrapper<S, D> {
+export abstract class RdoCollectionNWBase<K extends string | number | symbol, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
   constructor({
     typeInfo,
     key,
@@ -23,13 +22,13 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -43,7 +42,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     const syncChildNode = this._syncChildNode;
 
     let changed = false;
-    const sourceKeys = new Array<string>();
+    const sourceKeys = new Array<K>();
     const targetCollectionStartedEmpty = rdo.childElementCount() === 0;
 
     if (rdo.wrappedSourceNode.childElementCount() > 0) {
@@ -93,7 +92,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
       if (!rdo.itemKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
       if (!rdo.deleteElement) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
       // If destination item missing from source - remove from destination
-      const targetCollectionKeys = Array.from<string>(rdo.itemKeys());
+      const targetCollectionKeys = Array.from<K>(rdo.itemKeys());
       const targetCollectionKeysInDestinationOnly = _.difference(targetCollectionKeys, sourceKeys);
       if (targetCollectionKeysInDestinationOnly.length > 0) {
         targetCollectionKeysInDestinationOnly.forEach((key) => {
@@ -138,7 +137,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
     // If primitive, the item is the key
     if (NodeTypeUtils.isPrimitive(item)) {
-      const key = String(item);
+      const key = item;
       logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from Primitive value: ${key}`);
       return key;
     }
@@ -166,6 +165,6 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   public abstract elements(): Iterable<D>;
   public abstract childElementCount();
   public abstract clearElements();
-  public abstract insertItem(key: string, value: D);
-  public abstract deleteElement(key: string): D | undefined;
+  public abstract insertItem(key: K, value: D);
+  public abstract deleteElement(key: K): D | undefined;
 }

@@ -53,7 +53,7 @@ class RdoNWBase {
                 // Look for node options from targetOptionMatchers
             }
             else if (this._targetedOptionMatchersArray) {
-                let firstElement = undefined;
+                let firstElement;
                 // Try to get first element from either collection for matching
                 if (this.wrappedSourceNode.childElementCount() > 0 && types_1.isISourceCollectionNodeWrapper(this.wrappedSourceNode)) {
                     firstElement = this.wrappedSourceNode.elements()[Symbol.iterator]().next().value;

@@ -1,4 +1,4 @@
-import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
+import { SyncableCollection } from '@ablestack/rdo';
 import { Author } from './library-source-models';
 
 // -----------------------------------

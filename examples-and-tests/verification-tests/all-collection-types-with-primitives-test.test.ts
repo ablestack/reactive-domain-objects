@@ -1,6 +1,6 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { SyncableCollection } from '@ablestack/rdo-apollo-mobx-connector';
+import { SyncableCollection } from '@ablestack/rdo';
 
 const logger = Logger.make('map-sync.test.ts');
 

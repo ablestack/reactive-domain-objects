@@ -6,29 +6,29 @@ import { IRdoNodeWrapper, IMakeRdo } from './internal-types';
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
 //-------------------------------------------------------
 
-export type MakeCollectionKeyMethod<T> = (item: T) => string | undefined;
+export type MakeCollectionKeyMethod<K extends string | number | symbol, T> = (item: T) => K | undefined;
 
-export interface IMakeCollectionKey<T> {
-  makeCollectionKey: (item: T) => string | undefined;
+export interface IMakeCollectionKey<K extends string | number | symbol, T> {
+  makeCollectionKey: (item: T) => K | undefined;
 }
 
-export function isIMakeCollectionKey(o: any): o is IMakeCollectionKey<any> {
+export function isIMakeCollectionKey(o: any): o is IMakeCollectionKey<any, any> {
   return o && o.makeCollectionKey;
 }
 
-export interface IMakeCollectionKeyFromSourceElement<T> {
-  makeCollectionKeyFromSourceElement: IMakeCollectionKey<T>['makeCollectionKey'];
+export interface IMakeCollectionKeyFromSourceElement<K extends string | number | symbol, T> {
+  makeCollectionKeyFromSourceElement: IMakeCollectionKey<K, T>['makeCollectionKey'];
 }
 
-export function isIMakeCollectionKeyFromSourceElement(o: any): o is IMakeCollectionKeyFromSourceElement<any> {
+export function isIMakeCollectionKeyFromSourceElement(o: any): o is IMakeCollectionKeyFromSourceElement<any, any> {
   return o && o.makeCollectionKeyFromSourceElement;
 }
 
-export interface IMakeCollectionKeyFromRdoElement<T> {
-  makeCollectionKeyFromRdoElement: IMakeCollectionKey<T>['makeCollectionKey'];
+export interface IMakeCollectionKeyFromRdoElement<K extends string | number | symbol, T> {
+  makeCollectionKeyFromRdoElement: IMakeCollectionKey<K, T>['makeCollectionKey'];
 }
 
-export function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollectionKeyFromRdoElement<any> {
+export function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollectionKeyFromRdoElement<any, any> {
   return o && o.makeCollectionKeyFromRdoElement;
 }
 
@@ -40,23 +40,23 @@ export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
   return o && o.makeRdoElement;
 }
 
-export interface ISyncableCollection<S, D> extends IMakeCollectionKeyFromSourceElement<S>, IMakeCollectionKeyFromRdoElement<D> {
+export interface ISyncableCollection<K extends string | number | symbol, S, D> extends IMakeCollectionKeyFromSourceElement<K, S>, IMakeCollectionKeyFromRdoElement<K, D> {
   readonly size: number;
   elements(): Iterable<D>;
-  getCollectionKeys: () => string[];
-  getElement: (key: string) => D | null | undefined;
-  insertElement: (key: string, value: D) => void;
-  updateElement: (key: string, value: D) => boolean;
-  deleteElement: (key: string) => D | undefined;
+  getCollectionKeys: () => K[];
+  getElement: (key: K) => D | null | undefined;
+  insertElement: (key: K, value: D) => void;
+  updateElement: (key: K, value: D) => boolean;
+  deleteElement: (key: K) => D | undefined;
   clearElements: () => boolean;
 }
 
-export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any> {
+export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any> {
   return o && o.size && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements && isIMakeCollectionKeyFromSourceElement(o) && isIMakeCollectionKeyFromRdoElement(o);
 }
 
-export interface ISyncableRDOCollection<S, D> extends IMakeRdo<S, D>, ISyncableCollection<S, D> {}
+export interface ISyncableRDOCollection<K extends string | number | symbol, S, D> extends IMakeRdo<K, S, D>, ISyncableCollection<K, S, D> {}
 
-export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any> {
+export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any, any> {
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }

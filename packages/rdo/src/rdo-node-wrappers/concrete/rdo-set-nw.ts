@@ -7,7 +7,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoSetNW');
 
-export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
+export class RdoSetNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Set<D>;
 
   constructor({
@@ -24,13 +24,13 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
   }: {
     value: Set<D>;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -49,14 +49,14 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
-  public getItem(key: string) {
+  public getItem(key: K) {
     if (this.childElementCount() === 0) return undefined;
     return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
   }
 
-  public updateItem(key: string, value: D) {
+  public updateItem(key: K, value: D) {
     if (this.childElementCount() === 0) return false;
-    return CollectionUtils.Set.updateElement<D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+    return CollectionUtils.Set.updateElement<K, D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
   //------------------------------
@@ -87,11 +87,11 @@ export class RdoSetNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertItem(key: string, value: D) {
+  public insertItem(key: K, value: D) {
     CollectionUtils.Set.insertElement({ collection: this._value, key, value });
   }
 
-  public deleteElement(key: string): D | undefined {
+  public deleteElement(key: K): D | undefined {
     return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 

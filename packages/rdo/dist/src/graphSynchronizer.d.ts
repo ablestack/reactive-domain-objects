@@ -1,4 +1,4 @@
-import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IWrapRdoNode } from '.';
+import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IRdoNodeWrapper, RdoNodeTypes, ISyncChildNode } from '.';
 import { SubscriptionFunction } from './infrastructure';
 import { NodeChange } from './types/event-types';
 /**
@@ -46,14 +46,16 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    wrapRdoNode: IWrapRdoNode;
+    wrapRdoNode: <K extends string | number | symbol, S, D>({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }: {
+        sourceNodePath: string;
+        rdoNode: RdoNodeTypes<K, S, D>;
+        sourceNode: S;
+        wrappedParentRdoNode?: IRdoInternalNodeWrapper<any, any, any> | undefined;
+        rdoNodeItemKey?: K | undefined;
+        sourceNodeItemKey?: K | undefined;
+    }) => IRdoNodeWrapper<K, S, D>;
     /**
      *
      */
-    syncChildNode: ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey, }: {
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any>;
-        rdoNodeItemValue: object | undefined;
-        rdoNodeItemKey: string;
-        sourceNodeItemKey: string;
-    }) => boolean;
+    syncChildNode: ISyncChildNode;
 }

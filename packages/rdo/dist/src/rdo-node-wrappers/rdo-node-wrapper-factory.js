@@ -36,20 +36,27 @@ class RdoNodeWrapperFactory {
                 });
             }
             case '[object Object]': {
-                return new _1.RdoObjectNW({
-                    value,
-                    key,
-                    wrappedParentRdoNode,
-                    wrappedSourceNode,
-                    typeInfo,
-                    defaultEqualityComparer: this._defaultEqualityComparer,
-                    syncChildNode: this._syncChildNode,
-                    wrapRdoNode: this._wrapRdoNode,
-                    matchingNodeOptions,
-                    globalNodeOptions: this._globalNodeOptions,
-                    targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-                    eventEmitter: this._eventEmitter,
-                });
+                if (typeof key === 'string' || typeof key === 'undefined') {
+                    const wrappedSourceNodeTyped = wrappedSourceNode;
+                    const o = new _1.RdoObjectNW({
+                        value,
+                        key,
+                        wrappedParentRdoNode,
+                        wrappedSourceNode: wrappedSourceNodeTyped,
+                        typeInfo,
+                        defaultEqualityComparer: this._defaultEqualityComparer,
+                        syncChildNode: this._syncChildNode,
+                        wrapRdoNode: this._wrapRdoNode,
+                        matchingNodeOptions,
+                        globalNodeOptions: this._globalNodeOptions,
+                        targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                        eventEmitter: this._eventEmitter,
+                    });
+                    return o;
+                }
+                else {
+                    throw new Error(`Key for SourceObjects must be of type string (or undefined in the case of the root element). Found key of type ${typeof key}`);
+                }
             }
             case '[object Array]': {
                 return new _1.RdoArrayNW({

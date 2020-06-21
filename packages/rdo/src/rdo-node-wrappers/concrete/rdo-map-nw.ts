@@ -6,8 +6,8 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoMapNW');
 
-export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
-  private _value: Map<string, D>;
+export class RdoMapNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
+  private _value: Map<K, D>;
 
   constructor({
     value,
@@ -21,15 +21,15 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: Map<string, D>;
+    value: Map<K, D>;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -47,18 +47,18 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.keys();
   }
 
-  public getItem(key: string) {
+  public getItem(key: K) {
     return this._value.get(key);
   }
 
-  public updateItem(key: string, value: D) {
+  public updateItem(key: K, value: D) {
     if (this._value.has(key)) {
       this._value.set(key, value);
       return true;
     } else return false;
   }
 
-  public insertItem(key: string, value: D) {
+  public insertItem(key: K, value: D) {
     this._value.set(key, value);
   }
 
@@ -89,7 +89,7 @@ export class RdoMapNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public deleteElement(key: string): D | undefined {
+  public deleteElement(key: K): D | undefined {
     const item = this._value.get(key);
     this._value.delete(key);
     return item;

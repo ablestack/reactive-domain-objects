@@ -1,6 +1,6 @@
 import { IEqualityComparer, IMakeRdo, MakeCollectionKeyMethod } from '.';
-export interface IGraphSynchronizer {
-    smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: {
+export interface IGraphSynchronizer<K extends string = string> {
+    smartSync<S extends Record<K, any>, D extends Record<K, any>>({ rootSourceNode, rootRdo }: {
         rootSourceNode: S;
         rootRdo: D;
     }): any;
@@ -8,31 +8,31 @@ export interface IGraphSynchronizer {
 export interface IGraphSyncOptions {
     customEqualityComparer?: IEqualityComparer;
     globalNodeOptions?: IGlobalNodeOptions;
-    targetedNodeOptions?: Array<INodeSyncOptions<any, any>>;
+    targetedNodeOptions?: Array<INodeSyncOptions<any, any, any>>;
 }
 export declare type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
     commonRdoFieldnamePostfix?: string;
-    tryGetRdoFieldname?: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
+    tryGetRdoFieldname?: <K extends string | number | symbol>({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
         sourceNodePath: string;
-        sourceFieldname: string;
+        sourceFieldname: K;
         sourceFieldVal: any;
-    }) => string;
-    makeRdo?: IMakeRdo<any, any>['makeRdo'];
+    }) => K | undefined;
+    makeRdo?: IMakeRdo<any, any, any>['makeRdo'];
     autoMakeRdoTypes?: {
         objectFields: boolean;
         collectionElements: boolean;
         as: autoMakeRdoAsTypes;
     };
 }
-export interface INodeSyncOptions<S, D> {
+export interface INodeSyncOptions<K extends string | number | symbol, S, D> {
     sourceNodeMatcher: INodeSelector<S>;
     ignore?: boolean;
     makeRdoCollectionKey?: {
-        fromSourceElement: MakeCollectionKeyMethod<S>;
-        fromRdoElement: MakeCollectionKeyMethod<D>;
+        fromSourceElement: MakeCollectionKeyMethod<K, S>;
+        fromRdoElement: MakeCollectionKeyMethod<K, D>;
     };
-    makeRdo?: IMakeRdo<S, D>['makeRdo'];
+    makeRdo?: IMakeRdo<K, S, D>['makeRdo'];
 }
 export interface INodeSelector<S> {
     nodePath?: string;

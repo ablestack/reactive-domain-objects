@@ -6,8 +6,8 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoSyncableCollectionNW');
 
-export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
-  private _value: ISyncableRDOCollection<S, D>;
+export class RdoSyncableCollectionNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
+  private _value: ISyncableRDOCollection<K, S, D>;
 
   constructor({
     value,
@@ -21,15 +21,15 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: ISyncableRDOCollection<S, D>;
+    value: ISyncableRDOCollection<K, S, D>;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -47,11 +47,11 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.getCollectionKeys();
   }
 
-  public getItem(key: string) {
+  public getItem(key: K) {
     return this._value.getElement(key);
   }
 
-  public updateItem(key: string, value: D) {
+  public updateItem(key: K, value: D) {
     return this._value.updateElement(key, value);
   }
 
@@ -79,11 +79,11 @@ export class RdoSyncableCollectionNW<S, D> extends RdoCollectionNWBase<S, D> {
     return this._value.size;
   }
 
-  public insertItem(key: string, value: D) {
+  public insertItem(key: K, value: D) {
     this._value.insertElement(key, value);
   }
 
-  public deleteElement(key: string): D | undefined {
+  public deleteElement(key: K): D | undefined {
     return this._value.deleteElement(key);
   }
 

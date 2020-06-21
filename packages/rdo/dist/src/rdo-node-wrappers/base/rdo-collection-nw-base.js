@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoCollectionNWBase = void 0;
 const tslib_1 = require("tslib");
+const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const __1 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
-const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
-const node_type_utils_1 = require("../utils/node-type.utils");
 const types_1 = require("../../types");
-const lodash_1 = tslib_1.__importDefault(require("lodash"));
+const node_type_utils_1 = require("../utils/node-type.utils");
+const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
 const logger = logger_1.Logger.make('RdoCollectionNWBase');
 class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
@@ -41,7 +41,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             }
             // If primitive, the item is the key
             if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
-                const key = String(item);
+                const key = item;
                 logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from Primitive value: ${key}`);
                 return key;
             }

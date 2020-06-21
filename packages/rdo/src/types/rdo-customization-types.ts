@@ -4,11 +4,11 @@
 
 import { IGraphSynchronizer } from '.';
 
-export interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extends Record<string, any>> {
-  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string | undefined;
+export interface IHasCustomRdoFieldNames<K extends string> {
+  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
 }
 
-export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any, any> {
+export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any> {
   return o && o.tryGetRdoFieldname && typeof o.tryGetRdoFieldname === 'function';
 }
 
@@ -20,19 +20,8 @@ export function IsICustomSync(o: any): o is ICustomSync<any> {
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
 }
 
-export type IContinueSmartSync = <S extends Record<string, any>, D extends Record<string, any>>({
-  sourceNodeItemKey,
-  sourceItemValue,
-  rdoNodeItemKey,
-  rdoNodeItemValue,
-  sourceNodeSubPath,
-}: {
-  sourceNodeItemKey: string;
-  sourceItemValue: any;
-  rdoNodeItemKey: string;
-  rdoNodeItemValue: any;
-  sourceNodeSubPath?: string;
-}) => boolean;
+export type IContinueSmartSync = <K extends string | number | symbol, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
+export type SmartSyncProps<K, S, D> = { sourceNodeItemKey: K; sourceItemValue: S; rdoNodeItemKey: K; rdoNodeItemValue: D; sourceNodeSubPath?: string };
 
 export interface ICustomEqualityRDO<S> {
   isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;

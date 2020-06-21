@@ -7,8 +7,8 @@ import { observable } from 'mobx';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements IRdoInternalNodeWrapper<S, D> {
-  protected _syncChildNode: ISyncChildNode<S, D>;
+export abstract class RdoInternalNWBase<K extends string | number | symbol, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
+  protected _syncChildNode: ISyncChildNode;
 
   constructor({
     typeInfo,
@@ -22,13 +22,13 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
-    syncChildNode: ISyncChildNode<S, D>;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    syncChildNode: ISyncChildNode;
+    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -78,9 +78,9 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
   }
 
   public abstract itemKeys();
-  public abstract getItem(key: string);
-  public abstract updateItem(key: string, value: D);
-  public abstract insertItem(key: string, value: D);
+  public abstract getItem(key: K);
+  public abstract updateItem(key: K, value: D);
+  public abstract insertItem(key: K, value: D);
 
   //------------------------------
   // Private

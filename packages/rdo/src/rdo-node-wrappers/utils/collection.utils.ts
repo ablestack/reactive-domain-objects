@@ -5,7 +5,7 @@ import { Logger } from '../../infrastructure/logger';
 const logger = Logger.make('CollectionUtils');
 
 const _Array = {
-  getCollectionKeys: <T>({ collection, makeCollectionKey }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T> }) => {
+  getCollectionKeys: <K extends string | number | symbol, T>({ collection, makeCollectionKey }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T> }) => {
     return collection.length > 0
       ? collection.map((item) => {
           const key = makeCollectionKey(item);
@@ -14,11 +14,11 @@ const _Array = {
         })
       : [];
   },
-  getElement: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }) => {
+  getElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; key: K }) => {
     return collection.length > 0 ? collection.find((item) => makeCollectionKey(item) === key) : undefined;
   },
-  insertElement: <T>({ collection, key, value }: { collection: Array<T>; key: string; value: T }) => collection.push(value),
-  updateElement: <T>({ collection, makeCollectionKey, value }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; value: T }) => {
+  insertElement: <K extends string | number | symbol, T>({ collection, key, value }: { collection: Array<T>; key: K; value: T }) => collection.push(value),
+  updateElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, value }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; value: T }) => {
     if (collection.length === 0) return false;
     const key = makeCollectionKey(value);
     const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
@@ -28,7 +28,7 @@ const _Array = {
     }
     return false;
   },
-  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }): T | undefined => {
+  deleteElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, key }: { collection: Array<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; key: K }): T | undefined => {
     if (collection.length === 0) return undefined;
     const existingItemIndex = collection.findIndex((item) => makeCollectionKey(item) === key);
     if (existingItemIndex !== -1) {
@@ -40,7 +40,7 @@ const _Array = {
 };
 
 const _Set = {
-  getCollectionKeys: <T>({ collection, makeCollectionKey }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T> }) =>
+  getCollectionKeys: <K extends string | number | symbol, T>({ collection, makeCollectionKey }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T> }) =>
     collection.size > 0
       ? Array.from(collection.values()).map((item) => {
           const key = makeCollectionKey(item);
@@ -48,12 +48,12 @@ const _Set = {
           return key;
         })
       : [],
-  getElement: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }) =>
+  getElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; key: K }) =>
     collection.size > 0 ? Array.from(collection.values()).find((item) => makeCollectionKey(item) == key) : undefined,
-  insertElement: <T>({ collection, key, value }: { collection: Set<T>; key: string; value: T }) => {
+  insertElement: <K extends string | number | symbol, T>({ collection, key, value }: { collection: Set<T>; key: K; value: T }) => {
     collection.add(value);
   },
-  updateElement: <T>({ collection, makeCollectionKey, value }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; value: T }) => {
+  updateElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, value }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; value: T }) => {
     if (collection.size === 0) return false;
     const key = makeCollectionKey(value);
     const existingItem = Array.from(collection.values()).find((item) => makeCollectionKey(item) === key);
@@ -64,7 +64,7 @@ const _Set = {
     }
     return false;
   },
-  deleteElement: <T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<T>; key: string }): T | undefined => {
+  deleteElement: <K extends string | number | symbol, T>({ collection, makeCollectionKey, key }: { collection: Set<T>; makeCollectionKey: MakeCollectionKeyMethod<K, T>; key: K }): T | undefined => {
     if (collection.size === 0) return undefined;
     const item = Array.from(collection.values()).find((item) => makeCollectionKey(item) === key);
     if (item) {

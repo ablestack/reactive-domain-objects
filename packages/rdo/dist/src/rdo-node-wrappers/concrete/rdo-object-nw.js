@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoObjectNW = void 0;
-const logger_1 = require("../../infrastructure/logger");
 const __1 = require("..");
 const __2 = require("../..");
+const logger_1 = require("../../infrastructure/logger");
 const types_1 = require("../../types");
 const logger = logger_1.Logger.make('RdoObjectNW');
 class RdoObjectNW extends __1.RdoInternalNWBase {
@@ -12,13 +12,15 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         /** */
         this.makeContinueSmartSyncFunction = ({ originalSourceNodePath }) => {
             // Build method
-            return ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
+            const continueSmartSync = ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
                 const sourceNodePath = sourceNodeSubPath ? `${originalSourceNodePath}.${sourceNodeSubPath}` : originalSourceNodePath;
                 const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
                 if (!types_1.isIRdoInternalNodeWrapper(wrappedRdoNode))
                     throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
                 return this._syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
             };
+            // return method
+            return continueSmartSync;
         };
         this._value = value;
         this._equalityComparer = __2.IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;

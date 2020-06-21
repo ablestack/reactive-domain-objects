@@ -1,31 +1,29 @@
-import { Logger } from '../../infrastructure/logger';
 import { RdoInternalNWBase } from '..';
 import {
-  IGlobalNodeOptions,
+  IContinueSmartSync,
   IEqualityComparer,
-  NodeTypeInfo,
-  IRdoNodeWrapper,
-  ISourceNodeWrapper,
-  ISyncChildNode,
-  IsICustomEqualityRDO,
+  IGlobalNodeOptions,
+  IsIAfterSyncIfNeeded,
+  IsIAfterSyncUpdate,
   IsIBeforeSyncIfNeeded,
   IsIBeforeSyncUpdate,
+  IsICustomEqualityRDO,
   IsICustomSync,
-  IsIAfterSyncUpdate,
-  IsIAfterSyncIfNeeded,
-  isISourceInternalNodeWrapper,
   IsIHasCustomRdoFieldNames,
+  isISourceInternalNodeWrapper,
+  ISourceNodeWrapper,
+  ISyncChildNode,
   IWrapRdoNode,
-  IContinueSmartSync,
+  NodeTypeInfo,
 } from '../..';
-import { isIRdoInternalNodeWrapper, INodeSyncOptions, IRdoInternalNodeWrapper } from '../../types';
-import { observable } from 'mobx';
 import { EventEmitter } from '../../infrastructure/event-emitter';
+import { Logger } from '../../infrastructure/logger';
+import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoObjectNW');
 
-export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
+export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends RdoInternalNWBase<K, S, D> {
   private _value: D;
   private _equalityComparer: IEqualityComparer;
   private _wrapRdoNode: IWrapRdoNode;
@@ -46,15 +44,15 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }: {
     value: D;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<S>;
+    key: K | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     defaultEqualityComparer: IEqualityComparer;
-    syncChildNode: ISyncChildNode<S, D>;
+    syncChildNode: ISyncChildNode;
     wrapRdoNode: IWrapRdoNode;
-    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -125,11 +123,11 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     return Object.keys(this._value);
   }
 
-  public getItem(key: string) {
+  public getItem(key: K) {
     return this._value[key];
   }
 
-  public updateItem(key: string, value: D | undefined) {
+  public updateItem(key: K, value: D | undefined) {
     if (key in this._value) {
       //@ts-ignore
       this._value[key] = value;
@@ -137,7 +135,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     } else return false;
   }
 
-  public insertItem(key: string, value: D | undefined) {
+  public insertItem(key: K, value: D | undefined) {
     if (!(key in this._value)) {
       //@ts-ignore
       this._value[key] = value;
@@ -176,7 +174,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
 
           // Allocate fieldname and empty val
-          rdoFieldname = sourceFieldname;
+          rdoFieldname = sourceFieldname as K;
           rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
 
           // Insert
@@ -199,9 +197,9 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   /**
    *
    */
-  public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: string; sourceFieldVal: string }): string | undefined {
+  public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: K; sourceFieldVal: any }): K | undefined {
     // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-    let rdoFieldname: string | undefined;
+    let rdoFieldname: K | undefined;
 
     //
     // Try IHasCustomRdoFieldNames
@@ -245,7 +243,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     //
     if (!rdoFieldname && this.globalNodeOptions?.commonRdoFieldnamePostfix) {
       const domainPropKeyWithPostfix = `${sourceFieldname}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
-      rdoFieldname = domainPropKeyWithPostfix;
+      rdoFieldname = domainPropKeyWithPostfix as K | undefined;
 
       // If fieldName not in wrappedParentRdoNode, set to null
       if (rdoFieldname && !(rdoFieldname in this._value)) {
@@ -259,14 +257,17 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }
 
   /** */
-  private makeContinueSmartSyncFunction = ({ originalSourceNodePath }: { originalSourceNodePath: string }): IContinueSmartSync => {
+  private makeContinueSmartSyncFunction = ({ originalSourceNodePath }: { originalSourceNodePath: string }) => {
     // Build method
-    return ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
+    const continueSmartSync: IContinueSmartSync = ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
       const sourceNodePath = sourceNodeSubPath ? `${originalSourceNodePath}.${sourceNodeSubPath}` : originalSourceNodePath;
       const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
       if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
       return this._syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
     };
+
+    // return method
+    return continueSmartSync;
   };
 }
