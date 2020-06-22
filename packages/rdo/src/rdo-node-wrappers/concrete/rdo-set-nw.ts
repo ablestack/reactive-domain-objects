@@ -7,7 +7,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoSetNW');
 
-export class RdoSetNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
+export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Set<D>;
 
   constructor({

@@ -26,30 +26,38 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
         if (this.wrappedSourceNode.typeInfo.builtInType !== this.typeInfo.builtInType) {
             throw Error(`For primitive types, the source type and the domain type must match. Source type: '${this.wrappedSourceNode.typeInfo.builtInType}', rdoNodeTypeInfo: ${this.typeInfo.builtInType}`);
         }
-        if (Object.is(this.wrappedSourceNode.value, this.value)) {
-            logger.trace(`smartSync - SourceNodePath:${this.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, this.wrappedSourceNode.value, this.value);
+        if (!this.wrappedParentRdoNode)
+            throw new Error('Primitive RDO Node wrappers must have a Parent node, and can not be root Nodes. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
+        if (!__2.isIRdoInternalNodeWrapper(this.wrappedParentRdoNode))
+            throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
+        if (!this.key)
+            throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
+        return RdoPrimitiveNW.sync({
+            wrappedParentNode: this.wrappedParentRdoNode,
+            sourceKey: this.wrappedSourceNode.key,
+            rdoKey: this.key,
+            newValue: this.wrappedSourceNode.value,
+            eventEmitter: this.eventEmitter,
+        });
+    }
+    static sync({ wrappedParentNode, sourceKey, rdoKey, newValue, eventEmitter, }) {
+        const oldValue = wrappedParentNode.getItem(rdoKey);
+        if (Object.is(oldValue, newValue)) {
+            logger.trace(`smartSync - SourceNodePath:${wrappedParentNode.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
+            return false;
         }
-        else {
-            logger.trace(`primitive value found in domainPropKey ${this.key}. Setting from old value to new value`, this.value, this.wrappedSourceNode.value);
-            if (!this.wrappedParentRdoNode)
-                throw new Error('Primitive RDO Node wrappers must have a Parent node, and can not be root Nodes. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
-            if (!__2.isIRdoInternalNodeWrapper(this.wrappedParentRdoNode))
-                throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
-            if (!this.key)
-                throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
-            const changed = this.wrappedParentRdoNode.updateItem(this.key, this.wrappedSourceNode.value);
-            if (changed)
-                this.eventEmitter.publish('nodeChange', {
-                    changeType: 'update',
-                    sourceNodePath: this.wrappedSourceNode.sourceNodePath,
-                    sourceKey: this.wrappedSourceNode.key,
-                    rdoKey: this.key,
-                    oldSourceValue: this.value,
-                    newSourceValue: this.wrappedSourceNode.value,
-                });
-            return changed;
-        }
-        return false;
+        logger.trace(`primitive value found in domainPropKey ${rdoKey}. Setting from old value to new value`, newValue, oldValue);
+        const changed = wrappedParentNode.updateItem(rdoKey, newValue);
+        if (changed)
+            eventEmitter.publish('nodeChange', {
+                changeType: 'update',
+                sourceNodePath: wrappedParentNode.wrappedSourceNode.sourceNodePath,
+                sourceKey,
+                rdoKey,
+                oldSourceValue: oldValue,
+                newSourceValue: newValue,
+            });
+        return changed;
     }
 }
 exports.RdoPrimitiveNW = RdoPrimitiveNW;

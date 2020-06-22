@@ -1,7 +1,7 @@
 import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 
-export class SourcePrimitiveNW<K extends string | number | symbol, S, D> extends SourceBaseNW<K, S, D> implements ISourceNodeWrapper<K, S, D> {
+export class SourcePrimitiveNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceNodeWrapper<K, S, D> {
   private _value: S | null | undefined;
 
   constructor({

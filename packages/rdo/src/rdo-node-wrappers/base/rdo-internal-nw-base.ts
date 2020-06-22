@@ -7,7 +7,7 @@ import { observable } from 'mobx';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoInternalNWBase<K extends string | number | symbol, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
+export abstract class RdoInternalNWBase<K extends string | number, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
   protected _syncChildNode: ISyncChildNode;
 
   constructor({

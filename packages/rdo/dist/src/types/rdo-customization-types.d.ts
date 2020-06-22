@@ -13,7 +13,7 @@ export interface ICustomSync<S> {
     }) => boolean;
 }
 export declare function IsICustomSync(o: any): o is ICustomSync<any>;
-export declare type IContinueSmartSync = <K extends string | number | symbol, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
+export declare type IContinueSmartSync = <K extends string | number, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
 export declare type SmartSyncProps<K, S, D> = {
     sourceNodeItemKey: K;
     sourceItemValue: S;

@@ -1,6 +1,6 @@
 import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
 
-export abstract class SourceBaseNW<K extends string | number | symbol, S, D> implements ISourceNodeWrapper<K, S, D> {
+export abstract class SourceBaseNW<K extends string | number, S, D> implements ISourceNodeWrapper<K, S, D> {
   private _key: K | undefined;
   private _typeInfo: NodeTypeInfo;
   private _sourceNodePath: string;

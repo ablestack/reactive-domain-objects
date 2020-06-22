@@ -47,7 +47,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
-  private pushSourceNodeInstancePathOntoStack<K extends string | number | symbol>(key: K, sourceNodeKind: InternalNodeKind) {
+  private pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind) {
     logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
     this._sourceNodeInstancePathStack.push(key.toString());
     // reset locally cached dependencies
@@ -171,7 +171,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public wrapRdoNode = <K extends string | number | symbol, S, D>({
+  public wrapRdoNode = <K extends string | number, S, D>({
     sourceNodePath,
     sourceNode,
     sourceNodeItemKey,

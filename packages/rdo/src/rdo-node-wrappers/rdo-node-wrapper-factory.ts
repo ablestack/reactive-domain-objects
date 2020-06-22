@@ -38,7 +38,7 @@ export class RdoNodeWrapperFactory {
     this._targetedOptionMatchersArray = targetedOptionMatchersArray;
   }
 
-  public make<K extends string | number | symbol, S, D>({
+  public make<K extends string | number, S, D>({
     value,
     key,
     wrappedParentRdoNode,

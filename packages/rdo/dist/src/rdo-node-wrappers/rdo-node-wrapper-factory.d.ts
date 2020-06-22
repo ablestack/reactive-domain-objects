@@ -16,7 +16,7 @@ export declare class RdoNodeWrapperFactory {
         wrapRdoNode: IWrapRdoNode;
         defaultEqualityComparer: IEqualityComparer;
     });
-    make<K extends string | number | symbol, S, D>({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
+    make<K extends string | number, S, D>({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
         value: RdoNodeTypes<K, S, D> | undefined;
         key: K | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;

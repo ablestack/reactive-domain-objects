@@ -10,7 +10,7 @@ import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper } from
  * @template D
  * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
-export declare class SyncableCollection<K extends string | number | symbol, S, D> implements ISyncableRDOCollection<K, S, D>, Map<K, D> {
+export declare class SyncableCollection<K extends string | number, S, D> implements ISyncableRDOCollection<K, S, D>, Map<K, D> {
     private _map$;
     private _makeCollectionKeyFromSourceElement?;
     private _makeCollectionKeyFromRdoElement?;

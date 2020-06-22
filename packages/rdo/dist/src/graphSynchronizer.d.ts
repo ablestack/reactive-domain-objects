@@ -46,7 +46,7 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     /**
      *
      */
-    wrapRdoNode: <K extends string | number | symbol, S, D>({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }: {
+    wrapRdoNode: <K extends string | number, S, D>({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }: {
         sourceNodePath: string;
         rdoNode: RdoNodeTypes<K, S, D>;
         sourceNode: S;

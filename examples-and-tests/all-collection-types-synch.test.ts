@@ -63,6 +63,9 @@ test('Synchronize collection additions', () => {
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
 
   // RESULTS VERIFICATION
+
+  console.log('----------------', allCollectionTypesRDO);
+
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);

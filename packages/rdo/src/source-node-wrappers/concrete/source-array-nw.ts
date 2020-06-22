@@ -4,7 +4,7 @@ import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
 import { isIMakeCollectionKeyFromSourceElement } from '../../types';
 
-export class SourceArrayNW<K extends string | number | symbol, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
+export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
   private _value: Array<S>;
 
   constructor({

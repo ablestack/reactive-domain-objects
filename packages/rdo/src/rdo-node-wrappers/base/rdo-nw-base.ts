@@ -6,7 +6,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoNWBase<K extends string | number | symbol, S, D> implements IRdoNodeWrapper<K, S, D> {
+export abstract class RdoNWBase<K extends string | number, S, D> implements IRdoNodeWrapper<K, S, D> {
   private _typeInfo: NodeTypeInfo;
   private _key: K | undefined;
   private _parent: IRdoInternalNodeWrapper<any, S, D> | undefined;

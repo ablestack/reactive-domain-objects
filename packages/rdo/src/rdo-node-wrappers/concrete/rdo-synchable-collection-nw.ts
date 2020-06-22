@@ -6,7 +6,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoSyncableCollectionNW');
 
-export class RdoSyncableCollectionNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
+export class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: ISyncableRDOCollection<K, S, D>;
 
   constructor({

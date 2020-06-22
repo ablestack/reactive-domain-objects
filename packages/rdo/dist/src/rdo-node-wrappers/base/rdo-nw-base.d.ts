@@ -2,7 +2,7 @@ import { IRdoNodeWrapper, NodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, 
 import { IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
-export declare abstract class RdoNWBase<K extends string | number | symbol, S, D> implements IRdoNodeWrapper<K, S, D> {
+export declare abstract class RdoNWBase<K extends string | number, S, D> implements IRdoNodeWrapper<K, S, D> {
     private _typeInfo;
     private _key;
     private _parent;

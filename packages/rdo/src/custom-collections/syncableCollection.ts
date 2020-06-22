@@ -14,7 +14,7 @@ const logger = Logger.make('SyncableCollection');
  * @template D
  * @description: A Map collection, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
-export class SyncableCollection<K extends string | number | symbol, S, D> implements ISyncableRDOCollection<K, S, D>, Map<K, D> {
+export class SyncableCollection<K extends string | number, S, D> implements ISyncableRDOCollection<K, S, D>, Map<K, D> {
   @observable.shallow private _map$: Map<K, D>;
 
   // -----------------------------------

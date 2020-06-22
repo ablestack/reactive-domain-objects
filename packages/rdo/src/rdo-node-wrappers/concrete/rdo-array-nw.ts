@@ -7,7 +7,7 @@ import { CollectionUtils } from '../utils/collection.utils';
 
 const logger = Logger.make('RdoArrayNW');
 
-export class RdoArrayNW<K extends string | number | symbol, S, D> extends RdoCollectionNWBase<K, S, D> {
+export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Array<D>;
 
   constructor({

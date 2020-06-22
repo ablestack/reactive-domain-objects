@@ -10,7 +10,7 @@ export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type NodeTypeInfo = { kind: NodeKind; type?: RdoFieldType; builtInType: JavaScriptBuiltInType };
 
-export interface ISourceNodeWrapper<K extends string | number | symbol, S, D> {
+export interface ISourceNodeWrapper<K extends string | number, S, D> {
   readonly typeInfo: NodeTypeInfo;
   readonly value: S | Iterable<S> | null | undefined;
   readonly key: K | undefined;
@@ -27,7 +27,7 @@ export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any, any, 
   return o && o.typeInfo && 'value' in o && o.setRdoNode && o.childElementCount;
 }
 
-export interface ISourceInternalNodeWrapper<K extends string | number | symbol, S, D> extends ISourceNodeWrapper<K, S, D> {
+export interface ISourceInternalNodeWrapper<K extends string | number, S, D> extends ISourceNodeWrapper<K, S, D> {
   nodeKeys(): Iterable<K>;
   getItem(key: K): S | null | undefined;
 }
@@ -36,7 +36,7 @@ export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWr
   return o && o.nodeKeys && o.getItem && isISourceNodeWrapper(o);
 }
 
-export interface ISourceCollectionNodeWrapper<K extends string | number | symbol, S, D> extends ISourceInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, S> {
+export interface ISourceCollectionNodeWrapper<K extends string | number, S, D> extends ISourceInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, S> {
   //readonly childElementsNodeKind: NodeKind;
   elements(): Iterable<S>;
 }
@@ -45,9 +45,9 @@ export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNo
   return o && o.elements && isISourceInternalNodeWrapper(o) && isIMakeCollectionKey(o);
 }
 
-export type RdoNodeTypes<K extends string | number | symbol, S, D> = D | Array<D> | Map<K, D> | Set<D> | ISyncableRDOCollection<K, S, D> | null | undefined;
+export type RdoNodeTypes<K extends string | number, S, D> = D | Array<D> | Map<K, D> | Set<D> | ISyncableRDOCollection<K, S, D> | null | undefined;
 
-export interface IRdoNodeWrapper<K extends string | number | symbol, S, D> {
+export interface IRdoNodeWrapper<K extends string | number, S, D> {
   readonly value: RdoNodeTypes<K, S, D>;
   readonly key: K | undefined;
   readonly wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;
@@ -65,7 +65,7 @@ export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any, any> {
   return o && o.value !== undefined && o.typeInfo && o.wrappedSourceNode && 'ignore' in o && o.childElementCount && o.smartSync;
 }
 
-export interface IRdoInternalNodeWrapper<K extends string | number | symbol, S, D> extends IRdoNodeWrapper<K, S, D>, IMakeRdoElement<S, D> {
+export interface IRdoInternalNodeWrapper<K extends string | number, S, D> extends IRdoNodeWrapper<K, S, D>, IMakeRdoElement<S, D> {
   itemKeys(): Iterable<K>;
   getItem(key: K): D | null | undefined;
   updateItem(key: K, value: D | undefined): boolean;
@@ -76,7 +76,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
   return o && o.itemKeys && o.getItem && o.updateItem && isIMakeRdoElement(o) && isIRdoNodeWrapper(o);
 }
 
-export interface IRdoCollectionNodeWrapper<K extends string | number | symbol, S, D> extends IRdoInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, D> {
+export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D | undefined>;
   deleteElement(key: K): D | undefined;
@@ -87,7 +87,7 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
   return o && o.elements && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
 }
 
-export interface IMakeRdo<K extends string | number | symbol, S, D> {
+export interface IMakeRdo<K extends string | number, S, D> {
   makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>): D | undefined;
 }
 
@@ -95,7 +95,7 @@ export function isIMakeRdo(o: any): o is IMakeRdo<any, any, any> {
   return o && o.makeRdo;
 }
 
-export type ISyncChildNode = <K extends string | number | symbol, D>({
+export type ISyncChildNode = <K extends string | number, D>({
   wrappedParentRdoNode,
   rdoNodeItemValue,
   rdoNodeItemKey,
@@ -107,7 +107,7 @@ export type ISyncChildNode = <K extends string | number | symbol, D>({
   sourceNodeItemKey: K;
 }) => boolean;
 
-export type IWrapRdoNode = <K extends string | number | symbol, S, D>({
+export type IWrapRdoNode = <K extends string | number, S, D>({
   sourceNodePath,
   rdoNode,
   sourceNode,

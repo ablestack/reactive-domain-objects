@@ -9,7 +9,7 @@ import { RdoInternalNWBase } from './rdo-internal-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
-export abstract class RdoCollectionNWBase<K extends string | number | symbol, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
+export abstract class RdoCollectionNWBase<K extends string | number, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
   constructor({
     typeInfo,
     key,

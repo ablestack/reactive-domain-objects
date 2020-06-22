@@ -10,7 +10,7 @@ export class SourceNodeWrapperFactory {
     this._globalNodeOptions = globalNodeOptions;
   }
 
-  public make<K extends string | number | symbol, S, D>({
+  public make<K extends string | number, S, D>({
     sourceNodePath,
     value,
     key,

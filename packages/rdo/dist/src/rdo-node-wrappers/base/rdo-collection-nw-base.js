@@ -102,11 +102,10 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                     changed = true;
                     this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
                 }
-                //
-                // Sync Item
-                //
-                if (node_type_utils_1.NodeTypeUtils.isPrimitive(targetItem)) {
-                    logger.trace(`Skipping sync. Item '${key}' in collection is a Primitive Node, and will have been updated by input or delete step`, sourceItem);
+                // Update directly if Leaf node
+                // Or else step into child and sync
+                if (!sourceItem || node_type_utils_1.NodeTypeUtils.isPrimitive(sourceItem)) {
+                    logger.trace(`Skipping child sync. Item '${key}' in collection is undefined, null, or Primitive`, sourceItem);
                 }
                 else {
                     logger.trace(`Syncing item '${key}' in collection`, sourceItem);

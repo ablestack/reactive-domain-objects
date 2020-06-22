@@ -18,7 +18,7 @@ export function IsICustomSync(o: any): o is ICustomSync<any> {
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
 }
 
-export type IContinueSmartSync = <K extends string | number | symbol, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
+export type IContinueSmartSync = <K extends string | number, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
 export type SmartSyncProps<K, S, D> = { sourceNodeItemKey: K; sourceItemValue: S; rdoNodeItemKey: K; rdoNodeItemValue: D; sourceNodeSubPath?: string };
 
 export interface ICustomEqualityRDO<S> {

@@ -143,9 +143,11 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                     continue;
                 }
             }
-            if (__1.NodeTypeUtils.isPrimitive(rdoNodeItemValue)) {
-                logger.trace(`Field '${rdoFieldname}' in object is a Primitive Node. Skipping sync, and updating directly `);
-                this.updateItem(rdoFieldname, rdoNodeItemValue);
+            // Update directly if Leaf node
+            // Or else step into child and sync
+            if (!sourceFieldVal || __1.NodeTypeUtils.isPrimitive(sourceFieldVal)) {
+                logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
+                __1.RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
             }
             else {
                 logger.trace(`Syncing Field '${rdoFieldname}' in object`);

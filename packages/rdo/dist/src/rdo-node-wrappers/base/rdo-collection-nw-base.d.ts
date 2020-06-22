@@ -3,7 +3,7 @@ import { EventEmitter } from '../../infrastructure/event-emitter';
 import { IRdoInternalNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
-export declare abstract class RdoCollectionNWBase<K extends string | number | symbol, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
+export declare abstract class RdoCollectionNWBase<K extends string | number, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
         key: K | undefined;

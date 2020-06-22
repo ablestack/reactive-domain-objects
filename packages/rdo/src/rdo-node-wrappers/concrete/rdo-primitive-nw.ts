@@ -6,7 +6,7 @@ import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoPrimitiveNW');
 
-export class RdoPrimitiveNW<K extends string | number | symbol, S, D> extends RdoNWBase<K, S, D> {
+export class RdoPrimitiveNW<K extends string | number, S, D> extends RdoNWBase<K, S, D> {
   private _value: D | undefined;
 
   constructor({
@@ -58,23 +58,42 @@ export class RdoPrimitiveNW<K extends string | number | symbol, S, D> extends Rd
     if (!isIRdoInternalNodeWrapper(this.wrappedParentRdoNode)) throw new Error(`Parent RDO Node wrappers must implement IRdoInternalNodeWrapper. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}`);
     if (!this.key) throw new Error('Primitive RDO Node Wrapper - Key must not be null when synching. SourceNodePath:${this.wrappedSourceNode.sourceNodePath}');
 
-    return RdoPrimitiveNW.sync({ key: this.key, oldValue: this.value, newValue: this.wrappedSourceNode.value, eventEmitter: this.eventEmitter });
+    return RdoPrimitiveNW.sync<S, D>({
+      wrappedParentNode: this.wrappedParentRdoNode,
+      sourceKey: this.wrappedSourceNode.key!,
+      rdoKey: this.key,
+      newValue: (this.wrappedSourceNode.value as unknown) as D,
+      eventEmitter: this.eventEmitter,
+    });
   }
 
-  public static sync<S, D>({ key, parentNode, oldValue, newValue, eventEmitter }: { key: string | number | symbol; parentNode: IRdoInternalNodeWrapper<any, S, D>; oldValue: S; newValue: S; eventEmitter: EventEmitter<NodeChange> }) {
+  public static sync<S, D>({
+    wrappedParentNode,
+    sourceKey,
+    rdoKey,
+    newValue,
+    eventEmitter,
+  }: {
+    wrappedParentNode: IRdoInternalNodeWrapper<any, S, D>;
+    sourceKey: string | number;
+    rdoKey: string | number;
+    newValue: D;
+    eventEmitter: EventEmitter<NodeChange>;
+  }) {
+    const oldValue = wrappedParentNode.getItem(rdoKey);
     if (Object.is(oldValue, newValue)) {
-      logger.trace(`smartSync - SourceNodePath:${parentNode.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
+      logger.trace(`smartSync - SourceNodePath:${wrappedParentNode.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
       return false;
     }
 
-    logger.trace(`primitive value found in domainPropKey ${key}. Setting from old value to new value`, newValue, oldValue);
-    const changed = parentNode.updateItem(key, (newValue as unknown) as D);
+    logger.trace(`primitive value found in domainPropKey ${rdoKey}. Setting from old value to new value`, newValue, oldValue);
+    const changed = wrappedParentNode.updateItem(rdoKey, newValue);
     if (changed)
       eventEmitter.publish('nodeChange', {
         changeType: 'update',
-        sourceNodePath: parentNode.wrappedSourceNode.sourceNodePath,
-        sourceKey: key,
-        rdoKey: key,
+        sourceNodePath: wrappedParentNode.wrappedSourceNode.sourceNodePath,
+        sourceKey,
+        rdoKey,
         oldSourceValue: oldValue,
         newSourceValue: newValue,
       });

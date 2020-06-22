@@ -2,7 +2,7 @@ import { RdoNWBase } from '..';
 import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
-export declare class RdoPrimitiveNW<K extends string | number | symbol, S, D> extends RdoNWBase<K, S, D> {
+export declare class RdoPrimitiveNW<K extends string | number, S, D> extends RdoNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: D;
@@ -19,4 +19,11 @@ export declare class RdoPrimitiveNW<K extends string | number | symbol, S, D> ex
     get value(): D | undefined;
     childElementCount(): number;
     smartSync(): boolean;
+    static sync<S, D>({ wrappedParentNode, sourceKey, rdoKey, newValue, eventEmitter, }: {
+        wrappedParentNode: IRdoInternalNodeWrapper<any, S, D>;
+        sourceKey: string | number;
+        rdoKey: string | number;
+        newValue: D;
+        eventEmitter: EventEmitter<NodeChange>;
+    }): boolean;
 }
