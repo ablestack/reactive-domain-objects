@@ -40,6 +40,10 @@ export class RdoArrayNW<K extends string | number | symbol, S, D> extends RdoCol
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get leafNode() {
+    return false;
+  }
+
   public get value() {
     return this._value;
   }
@@ -51,7 +55,8 @@ export class RdoArrayNW<K extends string | number | symbol, S, D> extends RdoCol
 
   public getItem(key: K) {
     if (this.childElementCount() === 0) return undefined;
-    return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+    const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+    return item;
   }
 
   public updateItem(key: K, value: D) {
@@ -75,7 +80,9 @@ export class RdoArrayNW<K extends string | number | symbol, S, D> extends RdoCol
       if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
       // Execute
-      return super.synchronizeCollection();
+      const changed = super.synchronizeCollection();
+
+      return changed;
     }
   }
 

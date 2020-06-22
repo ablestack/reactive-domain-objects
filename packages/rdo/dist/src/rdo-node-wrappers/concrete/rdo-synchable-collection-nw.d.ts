@@ -16,6 +16,7 @@ export declare class RdoSyncableCollectionNW<K extends string | number | symbol,
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): ISyncableRDOCollection<K, S, D>;
     itemKeys(): K[];
     getItem(key: K): D | null | undefined;

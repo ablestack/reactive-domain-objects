@@ -16,6 +16,7 @@ export declare class RdoSetNW<K extends string | number | symbol, S, D> extends 
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): Set<D>;
     itemKeys(): any[];
     getItem(key: K): D | undefined;

@@ -16,6 +16,7 @@ export declare class RdoMapNW<K extends string | number | symbol, S, D> extends 
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): Map<K, D>;
     itemKeys(): IterableIterator<K>;
     getItem(key: K): D | undefined;

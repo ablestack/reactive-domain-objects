@@ -14,6 +14,9 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
+    get leafNode() {
+        return false;
+    }
     get value() {
         return this._value;
     }

@@ -14,9 +14,12 @@ import {
   RdoNodeTypes,
   ISyncChildNode,
 } from '.';
-import { EventEmitter, Logger, SubscriptionFunction } from './infrastructure';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 import { NodeChange } from './types/event-types';
+import { Logger } from './infrastructure/logger';
+import { EventEmitter, SubscriptionFunction } from './infrastructure/event-emitter';
+import { RdoWrapperValidationUtils, NodeTypeUtils } from './rdo-node-wrappers';
+import { getPlainObjectKeys } from 'mobx/lib/internal';
 
 const logger = Logger.make('GraphSynchronizer');
 

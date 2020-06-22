@@ -21,6 +21,7 @@ export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> 
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): D;
     childElementCount(): number;
     smartSync(): boolean;

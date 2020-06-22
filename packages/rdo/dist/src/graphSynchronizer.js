@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphSynchronizer = void 0;
 const _1 = require(".");
-const infrastructure_1 = require("./infrastructure");
 const rdo_node_wrapper_factory_1 = require("./rdo-node-wrappers/rdo-node-wrapper-factory");
-const logger = infrastructure_1.Logger.make('GraphSynchronizer');
+const logger_1 = require("./infrastructure/logger");
+const event_emitter_1 = require("./infrastructure/event-emitter");
+const logger = logger_1.Logger.make('GraphSynchronizer');
 /**
  *
  *
@@ -68,7 +69,7 @@ class GraphSynchronizer {
             this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
             return changed;
         };
-        this._eventEmitter = new infrastructure_1.EventEmitter();
+        this._eventEmitter = new event_emitter_1.EventEmitter();
         this._defaultEqualityComparer = (options === null || options === void 0 ? void 0 : options.customEqualityComparer) || _1.comparers.apollo;
         this._globalNodeOptions = options === null || options === void 0 ? void 0 : options.globalNodeOptions;
         this._targetedOptionNodePathsMap = new Map();

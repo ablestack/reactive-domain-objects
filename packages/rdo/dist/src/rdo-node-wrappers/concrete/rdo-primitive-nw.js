@@ -13,6 +13,9 @@ class RdoPrimitiveNW extends __1.RdoNWBase {
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
+    get leafNode() {
+        return true;
+    }
     get value() {
         return this._value;
     }

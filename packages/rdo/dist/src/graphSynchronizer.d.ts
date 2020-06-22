@@ -1,6 +1,6 @@
 import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IRdoNodeWrapper, RdoNodeTypes, ISyncChildNode } from '.';
-import { SubscriptionFunction } from './infrastructure';
 import { NodeChange } from './types/event-types';
+import { SubscriptionFunction } from './infrastructure/event-emitter';
 /**
  *
  *

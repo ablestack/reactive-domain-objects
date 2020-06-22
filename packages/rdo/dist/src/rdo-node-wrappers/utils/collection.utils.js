@@ -8,8 +8,9 @@ const _Array = {
         return collection.length > 0
             ? collection.map((item) => {
                 const key = makeCollectionKey(item);
-                if (!key)
+                if (!key) {
                     throw new Error('Array.getCollectionKeys - makeCollectionKey did not produce a value');
+                }
                 return key;
             })
             : [];

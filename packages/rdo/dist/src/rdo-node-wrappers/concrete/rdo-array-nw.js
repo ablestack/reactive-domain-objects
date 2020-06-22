@@ -14,6 +14,9 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
+    get leafNode() {
+        return false;
+    }
     get value() {
         return this._value;
     }
@@ -25,7 +28,8 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     getItem(key) {
         if (this.childElementCount() === 0)
             return undefined;
-        return collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+        const item = collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+        return item;
     }
     updateItem(key, value) {
         if (this.childElementCount() === 0)
@@ -47,7 +51,8 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             if (!__2.isISourceCollectionNodeWrapper(this.wrappedSourceNode))
                 throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
             // Execute
-            return super.synchronizeCollection();
+            const changed = super.synchronizeCollection();
+            return changed;
         }
     }
     //------------------------------

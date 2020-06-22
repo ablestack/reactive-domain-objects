@@ -13,6 +13,6 @@ export declare class SourceObjectNW<K extends string, S extends Record<K, any>, 
     });
     get value(): S | null | undefined;
     childElementCount(): number;
-    nodeKeys(): string[];
+    nodeKeys(): K[];
     getItem(key: K): S[K] | null | undefined;
 }

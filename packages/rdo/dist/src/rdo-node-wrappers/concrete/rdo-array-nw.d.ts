@@ -16,6 +16,7 @@ export declare class RdoArrayNW<K extends string | number | symbol, S, D> extend
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): D[];
     itemKeys(): any[];
     getItem(key: K): D | undefined;

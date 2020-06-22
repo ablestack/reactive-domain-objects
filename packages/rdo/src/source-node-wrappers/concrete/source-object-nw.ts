@@ -42,8 +42,8 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
   //------------------------------
 
   //@ts-ignore
-  public nodeKeys() {
-    return (this._value && Object.keys(this._value)) || [];
+  public nodeKeys(): K[] {
+    return ((this._value && Object.keys(this._value)) || []) as K[];
   }
 
   public getItem(key: K) {

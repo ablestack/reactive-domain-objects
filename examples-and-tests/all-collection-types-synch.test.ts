@@ -49,7 +49,6 @@ test('Synchronize collection additions', () => {
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
   expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
 
-  // EXECUTE
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers.push(4);
@@ -60,8 +59,10 @@ test('Synchronize collection additions', () => {
   allCollectionSourceModelWithEdits.setOfObjects.push({ id: '4' });
   allCollectionSourceModelWithEdits.customCollectionOfObjects.push({ id: '4' });
 
-  // RESULTS VERIFICATION
+  // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+
+  // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);

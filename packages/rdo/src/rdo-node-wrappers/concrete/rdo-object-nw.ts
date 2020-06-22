@@ -1,4 +1,4 @@
-import { RdoInternalNWBase } from '..';
+import { RdoInternalNWBase, NodeTypeUtils } from '..';
 import {
   IContinueSmartSync,
   IEqualityComparer,
@@ -66,6 +66,10 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get leafNode() {
+    return false;
+  }
+
   public get value() {
     return this._value;
   }
@@ -188,7 +192,15 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
         }
       }
 
-      changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
+      // Update directly if Leaf node
+      // Or else step into child and sync
+      if (!sourceFieldVal || NodeTypeUtils.isPrimitive(sourceFieldVal)) {
+        logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
+        this.updateItem(rdoFieldname, sourceFieldVal);
+      } else {
+        logger.trace(`Syncing Field '${rdoFieldname}' in object`);
+        changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+      }
     }
 
     return changed;

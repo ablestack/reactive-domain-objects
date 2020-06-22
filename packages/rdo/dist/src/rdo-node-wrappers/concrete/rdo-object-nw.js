@@ -29,6 +29,9 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
+    get leafNode() {
+        return false;
+    }
     get value() {
         return this._value;
     }
@@ -140,7 +143,14 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                     continue;
                 }
             }
-            changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname });
+            if (__1.NodeTypeUtils.isPrimitive(rdoNodeItemValue)) {
+                logger.trace(`Field '${rdoFieldname}' in object is a Primitive Node. Skipping sync, and updating directly `);
+                this.updateItem(rdoFieldname, rdoNodeItemValue);
+            }
+            else {
+                logger.trace(`Syncing Field '${rdoFieldname}' in object`);
+                changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+            }
         }
         return changed;
     }

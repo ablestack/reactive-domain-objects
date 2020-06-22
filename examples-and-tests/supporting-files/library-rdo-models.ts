@@ -91,7 +91,7 @@ export class LibraryRDO {
     this._capacity = value;
   }
 
-  public authors: SyncableCollection<Author, AuthorRDO> = new SyncableCollection({
+  public authors: SyncableCollection<string, Author, AuthorRDO> = new SyncableCollection({
     makeCollectionKeyFromSourceElement: (author: Author) => author.id,
     makeCollectionKeyFromRdoElement: (author: AuthorRDO) => author.id,
     makeRdo: (book: Author) => new AuthorRDO(),

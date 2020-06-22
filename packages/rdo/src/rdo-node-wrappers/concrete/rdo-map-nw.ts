@@ -39,6 +39,10 @@ export class RdoMapNW<K extends string | number | symbol, S, D> extends RdoColle
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get leafNode() {
+    return false;
+  }
+
   public get value() {
     return this._value;
   }

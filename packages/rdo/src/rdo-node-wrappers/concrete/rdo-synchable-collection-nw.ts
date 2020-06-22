@@ -39,6 +39,10 @@ export class RdoSyncableCollectionNW<K extends string | number | symbol, S, D> e
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
+  public get leafNode() {
+    return false;
+  }
+
   public get value() {
     return this._value;
   }

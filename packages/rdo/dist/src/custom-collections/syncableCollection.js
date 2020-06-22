@@ -4,7 +4,8 @@ exports.SyncableCollection = void 0;
 const tslib_1 = require("tslib");
 const mobx_1 = require("mobx");
 const __1 = require("..");
-const logger = __1.Logger.make('SyncableCollection');
+const logger_1 = require("../infrastructure/logger");
+const logger = logger_1.Logger.make('SyncableCollection');
 /**
  *
  *

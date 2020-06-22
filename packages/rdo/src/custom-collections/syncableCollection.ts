@@ -1,5 +1,6 @@
 import { observable, computed } from 'mobx';
-import { Logger, ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionUtils } from '..';
+import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionUtils } from '..';
+import { Logger } from '../infrastructure/logger';
 
 const logger = Logger.make('SyncableCollection');
 /**

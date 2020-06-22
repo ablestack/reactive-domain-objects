@@ -115,6 +115,7 @@ export abstract class RdoNWBase<K extends string | number | symbol, S, D> implem
     return this._nodeOptions;
   }
 
+  public abstract get leafNode();
   public abstract get value();
   public abstract smartSync();
   public abstract childElementCount();

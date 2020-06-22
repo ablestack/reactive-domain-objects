@@ -55,6 +55,7 @@ export interface IRdoNodeWrapper<K extends string | number | symbol, S, D> {
   readonly wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
   readonly globalNodeOptions: IGlobalNodeOptions | undefined;
   readonly ignore: boolean;
+  readonly leafNode: boolean;
   getNodeOptions(): INodeSyncOptions<any, any, any> | null;
   childElementCount(): number;
   smartSync(): boolean;

@@ -21,7 +21,7 @@ class SourceObjectNW extends source_base_nw_1.SourceBaseNW {
     //------------------------------
     //@ts-ignore
     nodeKeys() {
-        return (this._value && Object.keys(this._value)) || [];
+        return ((this._value && Object.keys(this._value)) || []);
     }
     getItem(key) {
         return this._value && this._value[key];

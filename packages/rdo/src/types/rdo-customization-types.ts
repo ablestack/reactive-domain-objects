@@ -2,8 +2,6 @@
 // RDO - SYNC CUSTOMIZATION INTERFACES TYPES
 //-------------------------------------------------------
 
-import { IGraphSynchronizer } from '.';
-
 export interface IHasCustomRdoFieldNames<K extends string> {
   tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
 }

@@ -71,7 +71,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         const syncChildNode = this._syncChildNode;
         let changed = false;
         const sourceKeys = new Array();
-        const targetCollectionStartedEmpty = rdo.childElementCount() === 0;
+        let targetCollectionInitiallyEmpty = rdo.childElementCount() === 0;
         if (rdo.wrappedSourceNode.childElementCount() > 0) {
             if (!types_1.isISourceCollectionNodeWrapper(rdo.wrappedSourceNode))
                 throw new Error('Can only sync Rdo collection types with Rdo source types');
@@ -87,7 +87,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                 sourceKeys.push(key);
                 // Get or create target item
                 let targetItem = undefined;
-                if (!targetCollectionStartedEmpty) {
+                if (!targetCollectionInitiallyEmpty) {
                     logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Found item ${key} in rdoCollection`, targetItem);
                     targetItem = rdo.getItem(key);
                 }
@@ -99,20 +99,25 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                         throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeRdoElement produced null or undefined`);
                     }
                     rdo.insertItem(key, targetItem);
+                    changed = true;
                     this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
                 }
                 //
                 // Sync Item
                 //
-                logger.trace(`Syncing item ${key} in collection`, sourceItem);
-                changed = syncChildNode({ wrappedParentRdoNode: rdo, rdoNodeItemValue: targetItem, rdoNodeItemKey: key, sourceNodeItemKey: key });
-                continue;
+                if (node_type_utils_1.NodeTypeUtils.isPrimitive(targetItem)) {
+                    logger.trace(`Skipping sync. Item '${key}' in collection is a Primitive Node, and will have been updated by input or delete step`, sourceItem);
+                }
+                else {
+                    logger.trace(`Syncing item '${key}' in collection`, sourceItem);
+                    changed = changed && syncChildNode({ wrappedParentRdoNode: rdo, rdoNodeItemValue: targetItem, rdoNodeItemKey: key, sourceNodeItemKey: key });
+                }
             }
         }
         // short-cutting this check when initial collection was empty.
         // This id a performance optimization and also (indirectly)
         // allows for auto collection methods based on target item types
-        if (!targetCollectionStartedEmpty) {
+        if (!targetCollectionInitiallyEmpty) {
             if (!rdo.itemKeys)
                 throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
             if (!rdo.deleteElement)

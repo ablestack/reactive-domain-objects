@@ -15,6 +15,7 @@ export declare class RdoPrimitiveNW<K extends string | number | symbol, S, D> ex
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    get leafNode(): boolean;
     get value(): D | undefined;
     childElementCount(): number;
     smartSync(): boolean;
