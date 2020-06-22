@@ -35,7 +35,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             }
             // If primitive, the item is the key
             if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
-                return String(item);
+                return item;
             }
             // Last option - look for idKey
             if (item[__1.config.defaultIdKey]) {

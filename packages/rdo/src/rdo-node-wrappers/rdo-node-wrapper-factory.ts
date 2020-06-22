@@ -74,7 +74,7 @@ export class RdoNodeWrapperFactory {
       }
       case '[object Object]': {
         if (typeof key === 'string' || typeof key === 'undefined') {
-          const wrappedSourceNodeTyped = wrappedSourceNode as ISourceNodeWrapper<string, S, D>;
+          const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
           const o = new RdoObjectNW({
             value,
             key,

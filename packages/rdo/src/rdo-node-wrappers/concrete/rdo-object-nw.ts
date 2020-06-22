@@ -105,6 +105,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
       } else {
         logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`, rdo);
         changed = this.sync();
+        logger.trace(`synchronizeObjectState - ${sourceNodePath} - post autoSync`, rdo);
       }
 
       // Call lifecycle methods if found
@@ -194,9 +195,9 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
 
       // Update directly if Leaf node
       // Or else step into child and sync
-      if (!sourceFieldVal || NodeTypeUtils.isPrimitive(sourceFieldVal)) {
+      if (sourceFieldVal === null || sourceFieldVal === undefined || NodeTypeUtils.isPrimitive(sourceFieldVal)) {
         logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
-        RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
+        changed = RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
       } else {
         logger.trace(`Syncing Field '${rdoFieldname}' in object`);
         changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;

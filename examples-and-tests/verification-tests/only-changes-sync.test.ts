@@ -1,5 +1,5 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
-import { Logger } from '@ablestack/rdo/infrastructure/logger';
+import { Logger, DefaultLogger } from '@ablestack/rdo/infrastructure/logger';
 import _ from 'lodash';
 import { BookRDO, LibraryRDO } from '../supporting-files/library-rdo-models';
 import { librarySourceJSON } from '../supporting-files/library-source-data';
@@ -38,19 +38,43 @@ const config: IGraphSyncOptions = {
 // TEST
 // --------------------------------------------------------------
 
+test('Test Jest Spy functionality', () => {
+  const libraryRDO = new LibraryRDO();
+
+  // Set Spy
+  const spy = jest.spyOn(libraryRDO, 'code$', 'set');
+
+  // Use setter
+  libraryRDO.code$ = 'testVal';
+
+  // Expect
+  expect(spy).toHaveBeenCalled();
+});
+
+// --------------------------------------------------------------
+// TEST
+// --------------------------------------------------------------
+
 test('Synchronize only updated properties only where source data changed', () => {
   const libraryRDO = new LibraryRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
-  // Initial data load
-  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
-  // Add method spies
+  // Initial Spy
   const library_code_spy_set = jest.spyOn(libraryRDO, 'code$', 'set');
   const library_capacity_spy_set = jest.spyOn(libraryRDO, 'capacity', 'set');
 
+  // Initial data load
+  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
+
+  // Posture Verification
+  expect(library_code_spy_set).toHaveBeenCalled();
+  expect(library_capacity_spy_set).toHaveBeenCalled();
+
+  // Clear/Add method spies
+  library_code_spy_set.mockClear();
+  library_capacity_spy_set.mockClear();
   const authors_0_age_spy_set = jest.spyOn(libraryRDO.authors.array$[0], 'age$', 'set');
   const authors_0_name_spy_set = jest.spyOn(libraryRDO.authors.array$[0], 'name$', 'set');
-
   const authors_0_books_0_title_spy_set = jest.spyOn(libraryRDO.authors.array$[0].books[0], 'title$', 'get');
 
   // Mutate data
@@ -59,7 +83,6 @@ test('Synchronize only updated properties only where source data changed', () =>
   libraryWithEdits.authors[0].age = libraryWithEdits.authors[0].age + 2;
 
   // EXECUTE
-  // update
   graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
 
   // RESULTS VERIFICATION

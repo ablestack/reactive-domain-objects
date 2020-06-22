@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+export type LogLevels = 0 | 1 | 2 | 3 | 4 | 5;
+
 export interface ILogger {
   error(msg: string, ...logObjects: any[]): void;
   warn(msg: string, ...logObjects: any[]): void;
@@ -16,17 +18,17 @@ export interface ILoggerFactory {
   (namespace: string): ILogger;
 }
 
-class DefaultLogger implements ILogger {
+export class DefaultLogger implements ILogger {
   private _logger: debug.Debugger;
-  private _appLogLevel: number;
+  private static _appLogLevel: number;
 
   constructor(namespace: string) {
     this._logger = debug(`apollo-mobx-connector.${namespace}`);
-    this._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
+    DefaultLogger._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
   }
 
   private log(logLevel: number, msg: string, ...logObjects: any[]): void {
-    if (logLevel > this._appLogLevel) return;
+    if (logLevel > DefaultLogger._appLogLevel) return;
 
     if (logLevel === 1) console.error(msg, logObjects);
     else if (logLevel === 2) console.warn(msg, logObjects);
@@ -55,6 +57,10 @@ class DefaultLogger implements ILogger {
 
   public trace(msg: string, ...logObjects: any[]): void {
     this.log(5, `Trace: ${msg}`, logObjects);
+  }
+
+  public static setGlobalLogLevel(logLevel: LogLevels) {
+    DefaultLogger._appLogLevel = logLevel;
   }
 }
 

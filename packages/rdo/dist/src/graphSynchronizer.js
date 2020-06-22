@@ -95,7 +95,7 @@ class GraphSynchronizer {
     // PRIVATE PROPERTIES
     // ------------------------------------------------------------------------------------------------------------------
     pushSourceNodeInstancePathOntoStack(key, sourceNodeKind) {
-        logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (${sourceNodeKind})`);
+        logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
         this._sourceNodeInstancePathStack.push(key.toString());
         // reset locally cached dependencies
         this._sourceNodeInstancePath = undefined;

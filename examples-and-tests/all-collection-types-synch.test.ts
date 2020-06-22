@@ -64,8 +64,6 @@ test('Synchronize collection additions', () => {
 
   // RESULTS VERIFICATION
 
-  console.log('----------------', allCollectionTypesRDO);
-
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
@@ -190,8 +188,8 @@ test('Synchronize collection element edit', () => {
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get(1)).toBeUndefined();
   expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
   expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
   expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
@@ -235,9 +233,10 @@ test('Synchronize collection element - handle null value edits', () => {
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.get('4')).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get(1)).toBeUndefined();
   expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
   expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
   expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
@@ -306,8 +305,8 @@ export class AllCollectionTypesRDO {
     makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
-  public arrayOfNumbers = new Array<Number>();
-  public mapOfNumbers = new Map<string, number>();
+  public arrayOfNumbers = new Array<number>();
+  public mapOfNumbers = new Map<number, number>();
   public setOfNumbers = new Set<number>();
 }
 

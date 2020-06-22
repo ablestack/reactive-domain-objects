@@ -14,7 +14,7 @@ const config: IGraphSyncOptions = {
 // TEST
 // --------------------------------------------------------------
 
-test.only('Collection usage demo', () => {
+test('Collection usage demo', () => {
   const fooRDO = new FooDomainGraphWithCollection();
   const graphSynchronizer = new GraphSynchronizer(config);
 

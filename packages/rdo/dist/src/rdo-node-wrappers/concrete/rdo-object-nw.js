@@ -64,6 +64,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             else {
                 logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`, rdo);
                 changed = this.sync();
+                logger.trace(`synchronizeObjectState - ${sourceNodePath} - post autoSync`, rdo);
             }
             // Call lifecycle methods if found
             if (__2.IsIAfterSyncUpdate(rdo))
@@ -145,9 +146,9 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             }
             // Update directly if Leaf node
             // Or else step into child and sync
-            if (!sourceFieldVal || __1.NodeTypeUtils.isPrimitive(sourceFieldVal)) {
+            if (sourceFieldVal === null || sourceFieldVal === undefined || __1.NodeTypeUtils.isPrimitive(sourceFieldVal)) {
                 logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
-                __1.RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
+                changed = __1.RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
             }
             else {
                 logger.trace(`Syncing Field '${rdoFieldname}' in object`);

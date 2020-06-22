@@ -85,7 +85,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
 
     // If primitive, the item is the key
     if (NodeTypeUtils.isPrimitive(item)) {
-      return String(item);
+      return item;
     }
 
     // Last option - look for idKey

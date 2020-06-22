@@ -207,8 +207,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/infrastructure/logger.d.ts": {
-        "version": "7c3ab15d69ca0a28ec5a53e8d540c65d0a436b60069e598deaa83d67102ffbbe",
-        "signature": "7c3ab15d69ca0a28ec5a53e8d540c65d0a436b60069e598deaa83d67102ffbbe",
+        "version": "6776c72f0598d582bf77bc7b828313342becbfab675e30b9016f53f288cfc467",
+        "signature": "6776c72f0598d582bf77bc7b828313342becbfab675e30b9016f53f288cfc467",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/custom-collections/syncablecollection.d.ts": {

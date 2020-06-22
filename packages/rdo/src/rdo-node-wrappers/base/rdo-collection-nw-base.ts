@@ -38,43 +38,42 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   // Protected
   //------------------------------
   protected synchronizeCollection() {
-    const rdo = this;
     const syncChildNode = this._syncChildNode;
 
     let changed = false;
     const sourceKeys = new Array<K>();
-    let targetCollectionInitiallyEmpty = rdo.childElementCount() === 0;
+    let targetCollectionInitiallyEmpty = this.childElementCount() === 0;
 
-    if (rdo.wrappedSourceNode.childElementCount() > 0) {
-      if (!isISourceCollectionNodeWrapper(rdo.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Rdo source types');
-      const sourceCollection = rdo.wrappedSourceNode.elements();
+    if (this.wrappedSourceNode.childElementCount() > 0) {
+      if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Rdo source types');
+      const sourceCollection = this.wrappedSourceNode.elements();
 
       for (const sourceItem of sourceCollection) {
         if (sourceItem === null || sourceItem === undefined) continue;
         // Make key
 
-        const key = rdo.wrappedSourceNode.makeCollectionKey(sourceItem);
-        if (!key) throw Error(`rdo.wrappedSourceNode.makeKey produced null or undefined. It must be defined when sourceCollection.length > 0`);
+        const key = this.wrappedSourceNode.makeCollectionKey(sourceItem);
+        if (!key) throw Error(`this.wrappedSourceNode.makeKey produced null or undefined. It must be defined when sourceCollection.length > 0`);
 
         // Track keys so can be used in target item removal later
         sourceKeys.push(key);
 
         // Get or create target item
         let targetItem: D | null | undefined = undefined;
-        if (!targetCollectionInitiallyEmpty) {
-          logger.trace(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - Found item ${key} in rdoCollection`, targetItem);
-          targetItem = rdo.getItem(key);
+        if (this.childElementCount() > 0) {
+          targetItem = this.getItem(key);
         }
-        if (!targetItem) {
-          if (!rdo.makeRdoElement) throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
-          targetItem = rdo.makeRdoElement(sourceItem);
-          if (!targetItem) {
-            throw Error(`sourceNodePath: ${rdo.wrappedSourceNode.sourceNodePath} - rdo.makeRdoElement produced null or undefined`);
-          }
 
-          rdo.insertItem(key, targetItem);
+        // If no target item, Make
+        if (targetItem === null || targetItem === undefined) {
+          if (!this.makeRdoElement) throw Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - this.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
+          targetItem = this.makeRdoElement(sourceItem);
+          if (!targetItem) {
+            throw Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - this.makeRdoElement produced null or undefined`);
+          }
+          this.insertItem(key, targetItem);
           changed = true;
-          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
+          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
         }
 
         // Update directly if Leaf node
@@ -83,7 +82,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
           logger.trace(`Skipping child sync. Item '${key}' in collection is undefined, null, or Primitive`, sourceItem);
         } else {
           logger.trace(`Syncing item '${key}' in collection`, sourceItem);
-          changed = changed && syncChildNode({ wrappedParentRdoNode: rdo, rdoNodeItemValue: targetItem, rdoNodeItemKey: key, sourceNodeItemKey: key });
+          changed = syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: targetItem, rdoNodeItemKey: key, sourceNodeItemKey: key }) && changed;
         }
       }
     }
@@ -92,15 +91,15 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     // This id a performance optimization and also (indirectly)
     // allows for auto collection methods based on target item types
     if (!targetCollectionInitiallyEmpty) {
-      if (!rdo.itemKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
-      if (!rdo.deleteElement) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
+      if (!this.itemKeys) throw Error(`getTargetCollectionKeys wan null or undefined. It must be defined when targetCollection.length > 0`);
+      if (!this.deleteElement) throw Error(`tryDeleteItemFromTargetCollection wan null or undefined. It must be defined when targetCollection.length > 0`);
       // If destination item missing from source - remove from destination
-      const targetCollectionKeys = Array.from<K>(rdo.itemKeys());
+      const targetCollectionKeys = Array.from<K>(this.itemKeys());
       const targetCollectionKeysInDestinationOnly = _.difference(targetCollectionKeys, sourceKeys);
       if (targetCollectionKeysInDestinationOnly.length > 0) {
         targetCollectionKeysInDestinationOnly.forEach((key) => {
-          const deletedItem = rdo.deleteElement(key);
-          this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: rdo.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: deletedItem, newSourceValue: undefined });
+          const deletedItem = this.deleteElement(key);
+          this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: deletedItem, newSourceValue: undefined });
         });
         changed = true;
       }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = void 0;
+exports.Logger = exports.DefaultLogger = void 0;
 const tslib_1 = require("tslib");
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 const debug_1 = tslib_1.__importDefault(require("debug"));
@@ -9,10 +9,10 @@ dotenv_1.default.config();
 class DefaultLogger {
     constructor(namespace) {
         this._logger = debug_1.default(`apollo-mobx-connector.${namespace}`);
-        this._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
+        DefaultLogger._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
     }
     log(logLevel, msg, ...logObjects) {
-        if (logLevel > this._appLogLevel)
+        if (logLevel > DefaultLogger._appLogLevel)
             return;
         if (logLevel === 1)
             console.error(msg, logObjects);
@@ -39,7 +39,11 @@ class DefaultLogger {
     trace(msg, ...logObjects) {
         this.log(5, `Trace: ${msg}`, logObjects);
     }
+    static setGlobalLogLevel(logLevel) {
+        DefaultLogger._appLogLevel = logLevel;
+    }
 }
+exports.DefaultLogger = DefaultLogger;
 let make = (namespace) => {
     return new DefaultLogger(namespace);
 };
