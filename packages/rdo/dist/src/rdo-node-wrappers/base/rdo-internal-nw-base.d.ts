@@ -3,7 +3,7 @@ import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, ISourceNodeWrapp
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 export declare abstract class RdoInternalNWBase<K extends string | number, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
-    protected _syncChildNode: ISyncChildNode;
+    private _syncChildNode;
     constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
         key: K | undefined;
@@ -15,6 +15,7 @@ export declare abstract class RdoInternalNWBase<K extends string | number, S, D>
         targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    protected get syncChildNode(): ISyncChildNode;
     makeRdoElement(sourceObject: any): any;
     abstract itemKeys(): any;
     abstract getItem(key: K): any;

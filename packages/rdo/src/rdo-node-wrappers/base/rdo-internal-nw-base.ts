@@ -1,6 +1,6 @@
 import { Logger } from '../../infrastructure/logger';
 import { RdoNWBase } from './rdo-nw-base';
-import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, isIMakeRdo, NodeTypeUtils } from '../..';
+import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoNodeWrapper, ISourceNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, isIMakeRdo, NodeTypeUtils, IEqualityComparer, IsICustomEqualityRDO } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 import { observable } from 'mobx';
@@ -8,7 +8,7 @@ import { observable } from 'mobx';
 const logger = Logger.make('RdoMapNW');
 
 export abstract class RdoInternalNWBase<K extends string | number, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
-  protected _syncChildNode: ISyncChildNode;
+  private _syncChildNode: ISyncChildNode;
 
   constructor({
     typeInfo,
@@ -33,6 +33,13 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
   }) {
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._syncChildNode = syncChildNode;
+  }
+
+  //------------------------------
+  // Protected
+  //------------------------------
+  protected get syncChildNode(): ISyncChildNode {
+    return this._syncChildNode;
   }
 
   //------------------------------

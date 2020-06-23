@@ -55,11 +55,20 @@ export class RdoNodeWrapperFactory {
 
     const typeInfo = NodeTypeUtils.getNodeType(value);
 
+    console.log(' ----------------- ', typeInfo, {
+      value,
+      key,
+      wrappedParentRdoNode,
+      wrappedSourceNode,
+      matchingNodeOptions,
+    });
+
     switch (typeInfo.builtInType) {
       case '[object Boolean]':
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
+        logger.trace(`Wrapping Node ${key} with RdoPrimitiveNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
         return new RdoPrimitiveNW<K, S, D>({
           value: value as D,
           key,
@@ -74,6 +83,7 @@ export class RdoNodeWrapperFactory {
       }
       case '[object Object]': {
         if (typeof key === 'string' || typeof key === 'undefined') {
+          logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
           const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
           const o = new RdoObjectNW({
             value,
@@ -95,20 +105,25 @@ export class RdoNodeWrapperFactory {
         }
       }
       case '[object Array]': {
-        return new RdoArrayNW<K, S, D>({
+        logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
+        const a = new RdoArrayNW<S, D>({
           value: value as Array<D>,
           typeInfo,
-          key,
+          key: String(key),
           wrappedParentRdoNode,
-          wrappedSourceNode,
+          wrappedSourceNode: wrappedSourceNodeTyped,
           syncChildNode: this._syncChildNode,
+          defaultEqualityComparer: this._defaultEqualityComparer,
           matchingNodeOptions,
           globalNodeOptions: this._globalNodeOptions,
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,
           eventEmitter: this._eventEmitter,
         });
+        return (a as unknown) as IRdoNodeWrapper<K, S, D>;
       }
       case '[object Map]': {
+        logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
         return new RdoMapNW<K, S, D>({
           value: value as Map<K, D>,
           typeInfo,
@@ -116,6 +131,7 @@ export class RdoNodeWrapperFactory {
           wrappedParentRdoNode,
           wrappedSourceNode,
           syncChildNode: this._syncChildNode,
+          defaultEqualityComparer: this._defaultEqualityComparer,
           matchingNodeOptions,
           globalNodeOptions: this._globalNodeOptions,
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,
@@ -123,6 +139,7 @@ export class RdoNodeWrapperFactory {
         });
       }
       case '[object Set]': {
+        logger.trace(`Wrapping Node ${key} with RdoSetNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
         return new RdoSetNW<K, S, D>({
           value: value as Set<D>,
           typeInfo,
@@ -130,6 +147,7 @@ export class RdoNodeWrapperFactory {
           wrappedParentRdoNode,
           wrappedSourceNode,
           syncChildNode: this._syncChildNode,
+          defaultEqualityComparer: this._defaultEqualityComparer,
           matchingNodeOptions,
           globalNodeOptions: this._globalNodeOptions,
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,

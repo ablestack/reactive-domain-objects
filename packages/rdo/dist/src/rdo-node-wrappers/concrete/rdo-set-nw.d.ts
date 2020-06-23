@@ -1,16 +1,17 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 export declare class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
     private _value;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: Set<D>;
         typeInfo: NodeTypeInfo;
         key: K | undefined;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
         syncChildNode: ISyncChildNode;
+        defaultEqualityComparer: IEqualityComparer;
         matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
@@ -27,4 +28,5 @@ export declare class RdoSetNW<K extends string | number, S, D> extends RdoCollec
     insertItem(key: K, value: D): void;
     deleteElement(key: K): D | undefined;
     clearElements(): boolean;
+    executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]): void;
 }

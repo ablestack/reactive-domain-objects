@@ -7,8 +7,8 @@ const logger_1 = require("../../infrastructure/logger");
 const collection_utils_1 = require("../utils/collection.utils");
 const logger = logger_1.Logger.make('RdoSetNW');
 class RdoSetNW extends __1.RdoCollectionNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._value = value;
     }
     //------------------------------
@@ -70,6 +70,34 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
             return false;
         this._value.clear();
         return true;
+    }
+    //------------------------------
+    // RdoSyncableCollectionNW
+    //------------------------------
+    executePatchOperations(patchOperations) {
+        // Should already be in reverse index order. Loop through and execute
+        for (const patchOp of patchOperations) {
+            switch (patchOp.op) {
+                case 'add':
+                    if (!patchOp.rdo)
+                        throw new Error('Rdo must not be null for patch-add operations');
+                    this.value.add(patchOp.rdo);
+                // now fall through to update, so the values sync to the new item
+                case 'update':
+                    if (!patchOp.rdo)
+                        throw new Error('Rdo must not be null for patch-update operations');
+                    this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
+                    break;
+                case 'remove':
+                    if (!patchOp.rdo)
+                        throw new Error('Rdo must not be null for Set patch-delete operations');
+                    this.value.delete(patchOp.rdo);
+                    break;
+                default:
+                    throw new Error(`Unknown operation: ${patchOp.op}`);
+                    break;
+            }
+        }
     }
 }
 exports.RdoSetNW = RdoSetNW;

@@ -9,6 +9,8 @@ export type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type NodeTypeInfo = { kind: NodeKind; type?: RdoFieldType; builtInType: JavaScriptBuiltInType };
+export type NodePatchOperationType = 'add' | 'remove' | 'update';
+export type CollectionNodePatchOperation<K extends string | number, D> = { op: NodePatchOperationType; index: number; key: K; rdo?: D };
 
 export interface ISourceNodeWrapper<K extends string | number, S, D> {
   readonly typeInfo: NodeTypeInfo;

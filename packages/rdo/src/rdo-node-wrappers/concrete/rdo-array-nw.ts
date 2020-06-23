@@ -1,13 +1,14 @@
-import { RdoCollectionNWBase, RdoWrapperValidationUtils } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
+import { RdoCollectionNWBase, RdoWrapperValidationUtils, NodeTypeUtils } from '..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, CollectionNodePatchOperation, IEqualityComparer } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
 import { NodeChange } from '../../types/event-types';
 import { CollectionUtils } from '../utils/collection.utils';
+import _ from 'lodash';
 
 const logger = Logger.make('RdoArrayNW');
 
-export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   private _value: Array<D>;
 
   constructor({
@@ -16,6 +17,7 @@ export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNW
     key,
     wrappedParentRdoNode,
     wrappedSourceNode,
+    defaultEqualityComparer,
     syncChildNode,
     matchingNodeOptions,
     globalNodeOptions,
@@ -24,16 +26,17 @@ export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNW
   }: {
     value: Array<D>;
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    key: string | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<string, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
+    defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+    matchingNodeOptions: INodeSyncOptions<string, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
   }
 
@@ -53,18 +56,18 @@ export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNW
     return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   }
 
-  public getItem(key: K) {
+  public getItem(key: string) {
     if (this.childElementCount() === 0) return undefined;
     const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
     return item;
   }
 
-  public updateItem(key: K, value: D) {
+  public updateItem(key: string, value: D) {
     if (this.childElementCount() === 0) return false;
     return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
   }
 
-  public insertItem(key: K, value: D) {
+  public insertItem(key: string, value: D) {
     CollectionUtils.Array.insertElement({ collection: this._value, key, value });
   }
 
@@ -97,11 +100,38 @@ export class RdoArrayNW<K extends string | number, S, D> extends RdoCollectionNW
     return this._value.length;
   }
 
-  public deleteElement(key: K): D | undefined {
+  public deleteElement(key: string): D | undefined {
     return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
   }
 
   public clearElements(): boolean {
     return CollectionUtils.Array.clear({ collection: this._value });
+  }
+
+  //------------------------------
+  // RdoSyncableCollectionNW
+  //------------------------------
+
+  public executePatchOperations(patchOperations: CollectionNodePatchOperation<string, D>[]) {
+    // Should already be in reverse index order. Loop through and execute
+
+    for (const patchOp of patchOperations) {
+      switch (patchOp.op) {
+        case 'add':
+          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
+          this.value.splice(patchOp.index, 0, patchOp.rdo);
+        // now fall through to update, so the values sync to the new item
+        case 'update':
+          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
+          this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
+          break;
+        case 'remove':
+          this.value.splice(patchOp.index, 1);
+          break;
+        default:
+          throw new Error(`Unknown operation: ${patchOp.op}`);
+          break;
+      }
+    }
   }
 }

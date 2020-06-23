@@ -60,17 +60,6 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // ISourceCollectionNodeWrapper
   //------------------------------
 
-  // private _childElementsNodeKind: ChildElementsNodeKind | undefined;
-  // public get ChildElementsNodeKind(): ChildElementsNodeKind {
-  //   if (this._childElementsNodeKind === undefined) {
-  //     const firstElement = this.elements()[Symbol.iterator]().next().value;
-  //     if (firstElement) {
-  //       this._childElementsNodeKind = NodeTypeUtils.getSourceNodeType(firstElement).kind;
-  //     } else this._childElementsNodeKind = null;
-  //   }
-  //   return this._childElementsNodeKind;
-  // }
-
   public makeCollectionKey = (item: S) => {
     if (item === null || item === undefined) return undefined;
 

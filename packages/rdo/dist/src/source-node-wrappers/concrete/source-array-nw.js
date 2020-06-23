@@ -12,16 +12,6 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
         //------------------------------
         // ISourceCollectionNodeWrapper
         //------------------------------
-        // private _childElementsNodeKind: ChildElementsNodeKind | undefined;
-        // public get ChildElementsNodeKind(): ChildElementsNodeKind {
-        //   if (this._childElementsNodeKind === undefined) {
-        //     const firstElement = this.elements()[Symbol.iterator]().next().value;
-        //     if (firstElement) {
-        //       this._childElementsNodeKind = NodeTypeUtils.getSourceNodeType(firstElement).kind;
-        //     } else this._childElementsNodeKind = null;
-        //   }
-        //   return this._childElementsNodeKind;
-        // }
         this.makeCollectionKey = (item) => {
             var _a, _b;
             if (item === null || item === undefined)

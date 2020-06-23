@@ -17,7 +17,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
                 if (!types_1.isIRdoInternalNodeWrapper(wrappedRdoNode))
                     throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
-                return this._syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
+                return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
             };
             // return method
             return continueSmartSync;
@@ -152,7 +152,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             }
             else {
                 logger.trace(`Syncing Field '${rdoFieldname}' in object`);
-                changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+                changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
             }
         }
         return changed;

@@ -12,6 +12,12 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
         this._syncChildNode = syncChildNode;
     }
     //------------------------------
+    // Protected
+    //------------------------------
+    get syncChildNode() {
+        return this._syncChildNode;
+    }
+    //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
     makeRdoElement(sourceObject) {

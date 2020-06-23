@@ -58,7 +58,6 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
 
     this._value = value;
-
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
     this._wrapRdoNode = wrapRdoNode;
   }
@@ -200,7 +199,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
         changed = RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
       } else {
         logger.trace(`Syncing Field '${rdoFieldname}' in object`);
-        changed = this._syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+        changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
       }
     }
 
@@ -277,7 +276,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
       const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
       if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
-      return this._syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
+      return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
     };
 
     // return method

@@ -6,8 +6,8 @@ const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const logger = logger_1.Logger.make('RdoSyncableCollectionNW');
 class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._value = value;
     }
     //------------------------------
@@ -58,6 +58,32 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     }
     clearElements() {
         return this._value.clearElements();
+    }
+    //------------------------------
+    // RdoSyncableCollectionNW
+    //------------------------------
+    executePatchOperations(patchOperations) {
+        // Should already be in reverse index order. Loop through and execute
+        for (const patchOp of patchOperations) {
+            switch (patchOp.op) {
+                case 'add':
+                    if (!patchOp.rdo)
+                        throw new Error('Rdo must not be null for patch-add operations');
+                    this.value.insertElement(patchOp.key, patchOp.rdo);
+                // now fall through to update, so the values sync to the new item
+                case 'update':
+                    if (!patchOp.rdo)
+                        throw new Error('Rdo must not be null for patch-update operations');
+                    this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
+                    break;
+                case 'remove':
+                    this.value.deleteElement(patchOp.key);
+                    break;
+                default:
+                    throw new Error(`Unknown operation: ${patchOp.op}`);
+                    break;
+            }
+        }
     }
 }
 exports.RdoSyncableCollectionNW = RdoSyncableCollectionNW;

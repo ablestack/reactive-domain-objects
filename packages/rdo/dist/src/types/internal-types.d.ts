@@ -9,6 +9,13 @@ export declare type NodeTypeInfo = {
     type?: RdoFieldType;
     builtInType: JavaScriptBuiltInType;
 };
+export declare type NodePatchOperationType = 'add' | 'remove' | 'update';
+export declare type CollectionNodePatchOperation<K extends string | number, D> = {
+    op: NodePatchOperationType;
+    index: number;
+    key: K;
+    rdo?: D;
+};
 export interface ISourceNodeWrapper<K extends string | number, S, D> {
     readonly typeInfo: NodeTypeInfo;
     readonly value: S | Iterable<S> | null | undefined;
