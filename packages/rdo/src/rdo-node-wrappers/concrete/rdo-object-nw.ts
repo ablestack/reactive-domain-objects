@@ -23,6 +23,7 @@ import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoObjectNW');
+type MutableCachedNodeItemType<S> = { sourceData: S | null | undefined };
 
 export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends RdoInternalNWBase<K, S, D> {
   private _value: D;
@@ -66,6 +67,20 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
   }
 
   //------------------------------
+  // Protected
+  //------------------------------
+
+  /** */
+  public getNodeInstanceCache(): MutableCachedNodeItemType<S> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<S>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+    if (!mutableNodeCacheItem) {
+      mutableNodeCacheItem = { sourceData: null };
+      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+    }
+    return mutableNodeCacheItem;
+  }
+
+  //------------------------------
   // IRdoNodeWrapper
   //------------------------------
   public get leafNode() {
@@ -85,10 +100,10 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
     const rdo = this.value;
     const sourceObject = this.wrappedSourceNode.value;
-    const lastSourceObject = this.wrappedSourceNode.mutableNodeCache;
+    const mutableNodeCacheItem = this.getNodeInstanceCache();
 
     // Check if previous source state and new source state are equal
-    const isAlreadyInSync = this._equalityComparer(sourceObject, lastSourceObject);
+    const isAlreadyInSync = this._equalityComparer(sourceObject, mutableNodeCacheItem.sourceData);
 
     // Call lifecycle methods if found
     if (IsIBeforeSyncIfNeeded(rdo)) rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
@@ -118,6 +133,9 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
 
     // Call lifecycle methods if found
     if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
+
+    // Update cache
+    mutableNodeCacheItem.sourceData = sourceObject as S;
 
     return changed;
   }

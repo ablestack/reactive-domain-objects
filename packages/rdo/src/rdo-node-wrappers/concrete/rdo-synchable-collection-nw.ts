@@ -64,30 +64,30 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
     return this._value;
   }
 
-  public itemKeys() {
-    return this._value.getCollectionKeys();
-  }
+  // public itemKeys() {
+  //   return this._value.getCollectionKeys();
+  // }
 
-  public getItem(key: K) {
-    return this._value.getElement(key);
-  }
+  // public getItem(key: K) {
+  //   return this._value.getElement(key);
+  // }
 
-  public updateItem(key: K, value: D) {
-    return this._value.updateElement(key, value);
-  }
+  // public updateItem(key: K, value: D) {
+  //   return this._value.updateElement(key, value);
+  // }
 
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync(): boolean {
-    if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearElements();
-    } else {
-      if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
-      return super.synchronizeCollection();
-    }
-  }
+  // public smartSync(): boolean {
+  //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
+  //     return this.clearElements();
+  //   } else {
+  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+  //     return super.synchronizeCollection();
+  //   }
+  // }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
@@ -100,17 +100,17 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
     return this._value.size;
   }
 
-  public insertItem(key: K, value: D) {
-    this._value.insertElement(key, value);
-  }
+  // public insertItem(key: K, value: D) {
+  //   this._value.insertElement(key, value);
+  // }
 
-  public deleteElement(key: K): D | undefined {
-    return this._value.deleteElement(key);
-  }
+  // public deleteElement(key: K): D | undefined {
+  //   return this._value.deleteElement(key);
+  // }
 
-  public clearElements(): boolean {
-    return this._value.clearElements();
-  }
+  // public clearElements(): boolean {
+  //   return this._value.clearElements();
+  // }
 
   //------------------------------
   // RdoSyncableCollectionNW

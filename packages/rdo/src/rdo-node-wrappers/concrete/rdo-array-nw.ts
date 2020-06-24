@@ -54,43 +54,43 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     return this._value;
   }
 
-  public itemKeys() {
-    if (this.childElementCount() === 0) return [];
-    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-  }
+  // public itemKeys() {
+  //   if (this.childElementCount() === 0) return [];
+  //   return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
+  // }
 
-  public getItem(key: string) {
-    if (this.childElementCount() === 0) return undefined;
-    const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-    return item;
-  }
+  // public getItem(key: string) {
+  //   if (this.childElementCount() === 0) return undefined;
+  //   const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+  //   return item;
+  // }
 
-  public updateItem(key: string, value: D) {
-    if (this.childElementCount() === 0) return false;
-    return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
-  }
+  // public updateItem(key: string, value: D) {
+  //   if (this.childElementCount() === 0) return false;
+  //   return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+  // }
 
-  public insertItem(key: string, value: D) {
-    CollectionUtils.Array.insertElement({ collection: this._value, key, value });
-  }
+  // public insertItem(key: string, value: D) {
+  //   CollectionUtils.Array.insertElement({ collection: this._value, key, value });
+  // }
 
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
-  public smartSync(): boolean {
-    if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearElements();
-    } else {
-      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+  // public smartSync(): boolean {
+  //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
+  //     return this.clearElements();
+  //   } else {
+  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
 
-      if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
-      // Execute
-      const changed = super.synchronizeCollection();
+  //     // Execute
+  //     const changed = super.synchronizeCollection();
 
-      return changed;
-    }
-  }
+  //     return changed;
+  //   }
+  // }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
@@ -103,13 +103,13 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     return this._value.length;
   }
 
-  public deleteElement(key: string): D | undefined {
-    return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-  }
+  // public deleteElement(key: string): D | undefined {
+  //   return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+  // }
 
-  public clearElements(): boolean {
-    return CollectionUtils.Array.clear({ collection: this._value });
-  }
+  // public clearElements(): boolean {
+  //   return CollectionUtils.Array.clear({ collection: this._value });
+  // }
 
   //------------------------------
   // RdoSyncableCollectionNW

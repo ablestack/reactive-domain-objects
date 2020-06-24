@@ -20,8 +20,7 @@ export class SyncableCollection<K extends string | number, S, D> implements ISyn
   // -----------------------------------
   // IRdoFactory
   // -----------------------------------
-  private _makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<K, S>;
-  private _makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<K, D>;
+  private _makeCollectionKey?: MakeCollectionKeyMethod<K, S>;
   private _makeRdo?: (sourceItem: S) => D;
 
   @computed public get size(): number {
@@ -34,16 +33,13 @@ export class SyncableCollection<K extends string | number, S, D> implements ISyn
   }
 
   constructor({
-    makeCollectionKeyFromSourceElement,
-    makeCollectionKeyFromRdoElement,
+    makeCollectionKey,
     makeRdo,
   }: {
-    makeCollectionKeyFromSourceElement?: MakeCollectionKeyMethod<K, S>;
-    makeCollectionKeyFromRdoElement?: MakeCollectionKeyMethod<K, D>;
+    makeCollectionKey?: MakeCollectionKeyMethod<K, S>;
     makeRdo?: (sourceNode: S) => D;
   } = {}) {
-    this._makeCollectionKeyFromSourceElement = makeCollectionKeyFromSourceElement;
-    this._makeCollectionKeyFromRdoElement = makeCollectionKeyFromRdoElement;
+    this._makeCollectionKey = makeCollectionKey;
     this._makeRdo = makeRdo;
     this._map$ = new Map<K, D>();
   }
@@ -97,14 +93,9 @@ export class SyncableCollection<K extends string | number, S, D> implements ISyn
   // -----------------------------------
   // ISyncableRdoCollection
   // -----------------------------------
-  public makeCollectionKeyFromSourceElement = (item: S): K | undefined => {
-    if (this._makeCollectionKeyFromSourceElement) return this._makeCollectionKeyFromSourceElement(item);
-    else return undefined;
-  };
-
-  public makeCollectionKeyFromRdoElement = (item: D): K | undefined => {
-    if (this._makeCollectionKeyFromRdoElement) return this._makeCollectionKeyFromRdoElement(item);
-    else return undefined;
+  public makeCollectionKey = (item: S): K => {
+    if (!this._makeCollectionKey) throw new Error('Could not find makeCollectionKey method');
+    return this._makeCollectionKey(item);
   };
 
   public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>) {
@@ -133,15 +124,17 @@ export class SyncableCollection<K extends string | number, S, D> implements ISyn
   };
 
   public updateElement = (key: K, value: D) => {
-    if (this.makeCollectionKeyFromRdoElement) {
-      if (!this._map$.has(key)) {
-        this._map$.set(key, value);
-        CollectionUtils.Array.updateElement<K, D>({ collection: this._array$!, makeCollectionKey: this.makeCollectionKeyFromRdoElement, value });
-        return true;
-      } else return false;
-    } else {
-      throw new Error('makeCollectionKeyFromRdoElement element must be available for ISyncableRDOCollection update operations');
-    }
+    //TODO
+    // if (this.makeCollectionKeyFromRdoElement) {
+    //   if (!this._map$.has(key)) {
+    //     this._map$.set(key, value);
+    //     CollectionUtils.Array.updateElement<K, D>({ collection: this._array$!, makeCollectionKey: this.makeCollectionKeyFromRdoElement, value });
+    //     return true;
+    //   } else return false;
+    // } else {
+    //   throw new Error('makeCollectionKeyFromRdoElement element must be available for ISyncableRDOCollection update operations');
+    // }
+    return false;
   };
 
   public deleteElement = (key: K) => {

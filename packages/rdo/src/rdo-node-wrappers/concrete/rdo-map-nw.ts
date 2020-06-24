@@ -52,40 +52,40 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     return this._value;
   }
 
-  public itemKeys() {
-    return this._value.keys();
-  }
+  // public itemKeys() {
+  //   return this._value.keys();
+  // }
 
-  public getItem(key: K) {
-    return this._value.get(key);
-  }
+  // public getItem(key: K) {
+  //   return this._value.get(key);
+  // }
 
-  public updateItem(key: K, value: D) {
-    if (this._value.has(key)) {
-      this._value.set(key, value);
-      return true;
-    } else return false;
-  }
+  // public updateItem(key: K, value: D) {
+  //   if (this._value.has(key)) {
+  //     this._value.set(key, value);
+  //     return true;
+  //   } else return false;
+  // }
 
-  public insertItem(key: K, value: D) {
-    this._value.set(key, value);
-  }
+  // public insertItem(key: K, value: D) {
+  //   this._value.set(key, value);
+  // }
 
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync(): boolean {
-    if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearElements();
-    } else {
-      // Validate
-      if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+  // public smartSync(): boolean {
+  //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
+  //     return this.clearElements();
+  //   } else {
+  //     // Validate
+  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
-      // Execute
-      return super.synchronizeCollection();
-    }
-  }
+  //     // Execute
+  //     return super.synchronizeCollection();
+  //   }
+  // }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
@@ -98,17 +98,17 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     return this._value.size;
   }
 
-  public deleteElement(key: K): D | undefined {
-    const item = this._value.get(key);
-    this._value.delete(key);
-    return item;
-  }
+  // public deleteElement(key: K): D | undefined {
+  //   const item = this._value.get(key);
+  //   this._value.delete(key);
+  //   return item;
+  // }
 
-  public clearElements(): boolean {
-    if (this.childElementCount() === 0) return false;
-    this._value.clear();
-    return true;
-  }
+  // public clearElements(): boolean {
+  //   if (this.childElementCount() === 0) return false;
+  //   this._value.clear();
+  //   return true;
+  // }
 
   //------------------------------
   // RdoSyncableCollectionNW

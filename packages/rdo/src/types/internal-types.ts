@@ -68,21 +68,21 @@ export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any, any> {
 }
 
 export interface IRdoInternalNodeWrapper<K extends string | number, S, D> extends IRdoNodeWrapper<K, S, D>, IMakeRdoElement<S, D> {
-  itemKeys(): Iterable<K>;
-  getItem(key: K): D | null | undefined;
-  updateItem(key: K, value: D | undefined): boolean;
-  insertItem(key: K, value: D | undefined): void;
+  // itemKeys(): Iterable<K>;
+  // getItem(key: K): D | null | undefined;
+  // updateItem(key: K, value: D | undefined): boolean;
+  // insertItem(key: K, value: D | undefined): void;
 }
 
 export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any, any> {
   return o && o.itemKeys && o.getItem && o.updateItem && isIMakeRdoElement(o) && isIRdoNodeWrapper(o);
 }
 
-export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, D> {
+export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D> {
   //readonly childElementsNodeKind: ChildElementsNodeKind;
   elements(): Iterable<D | undefined>;
-  deleteElement(key: K): D | undefined;
-  clearElements(): boolean;
+  // deleteElement(key: K): D | undefined;
+  // clearElements(): boolean;
 }
 
 export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any, any> {

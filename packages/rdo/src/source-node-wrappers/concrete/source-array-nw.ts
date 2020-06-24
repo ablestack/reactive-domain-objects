@@ -2,7 +2,7 @@ import { NodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNo
 import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
 import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
-import { isIMakeCollectionKeyFromSourceElement } from '../../types';
+import { isIMakeCollectionKey } from '../../types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
@@ -60,14 +60,14 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   //------------------------------
 
   public makeCollectionKey = (item: S) => {
-    if (item === null || item === undefined) return undefined;
+    if (item === null || item === undefined) throw new Error(`Can not make collection key from null or undefined source object`);
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
       // Use IMakeCollectionKey provided on options if available
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
     }
 
-    if (isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
+    if (isIMakeCollectionKey(this.wrappedRdoNode)) {
       return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
     }
 
@@ -81,7 +81,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
       return item[config.defaultIdKey];
     }
 
-    return undefined;
+    throw new Error(`Could not make collection `);
   };
 
   public elements(): Iterable<S> {

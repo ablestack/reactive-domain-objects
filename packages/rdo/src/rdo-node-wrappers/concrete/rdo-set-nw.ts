@@ -53,37 +53,37 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
     return this._value;
   }
 
-  public itemKeys() {
-    if (this.childElementCount() === 0) return [];
-    return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-  }
+  // public itemKeys() {
+  //   if (this.childElementCount() === 0) return [];
+  //   return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
+  // }
 
-  public getItem(key: K) {
-    if (this.childElementCount() === 0) return undefined;
-    return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
-  }
+  // public getItem(key: K) {
+  //   if (this.childElementCount() === 0) return undefined;
+  //   return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
+  // }
 
-  public updateItem(key: K, value: D) {
-    if (this.childElementCount() === 0) return false;
-    return CollectionUtils.Set.updateElement<K, D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
-  }
+  // public updateItem(key: K, value: D) {
+  //   if (this.childElementCount() === 0) return false;
+  //   return CollectionUtils.Set.updateElement<K, D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+  // }
 
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public smartSync(): boolean {
-    if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-      return this.clearElements();
-    } else {
-      RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+  // public smartSync(): boolean {
+  //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
+  //     return this.clearElements();
+  //   } else {
+  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
 
-      if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
-      // Execute
-      return super.synchronizeCollection();
-    }
-  }
+  //     // Execute
+  //     return super.synchronizeCollection();
+  //   }
+  // }
 
   //------------------------------
   // IRdoCollectionNodeWrapper
@@ -96,19 +96,19 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
     return this._value.size;
   }
 
-  public insertItem(key: K, value: D) {
-    CollectionUtils.Set.insertElement({ collection: this._value, key, value });
-  }
+  // public insertItem(key: K, value: D) {
+  //   CollectionUtils.Set.insertElement({ collection: this._value, key, value });
+  // }
 
-  public deleteElement(key: K): D | undefined {
-    return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-  }
+  // public deleteElement(key: K): D | undefined {
+  //   return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+  // }
 
-  public clearElements(): boolean {
-    if (this.childElementCount() === 0) return false;
-    this._value.clear();
-    return true;
-  }
+  // public clearElements(): boolean {
+  //   if (this.childElementCount() === 0) return false;
+  //   this._value.clear();
+  //   return true;
+  // }
 
   //------------------------------
   // RdoSyncableCollectionNW

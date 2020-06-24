@@ -36,8 +36,7 @@ export class AllCollectionTypesWithObjectsRDO {
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
   public customCollectionOfObjects = new SyncableCollection({
-    makeCollectionKeyFromSourceElement: (o: SimpleObject) => o.id,
-    makeCollectionKeyFromRdoElement: (o: SimpleRDO) => o.id,
+    makeCollectionKey: (o: SimpleObject) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
 }

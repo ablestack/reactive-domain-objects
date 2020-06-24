@@ -87,10 +87,10 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
     return rdo;
   }
 
-  public abstract itemKeys();
-  public abstract getItem(key: K);
-  public abstract updateItem(key: K, value: D);
-  public abstract insertItem(key: K, value: D);
+  // public abstract itemKeys();
+  // public abstract getItem(key: K);
+  // public abstract updateItem(key: K, value: D);
+  // public abstract insertItem(key: K, value: D);
 
   //------------------------------
   // Private

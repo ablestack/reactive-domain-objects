@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { config, IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
-import { IRdoInternalNodeWrapper, isIMakeCollectionKeyFromRdoElement, isISourceCollectionNodeWrapper, NodePatchOperationType, IEqualityComparer, CollectionNodePatchOperation } from '../../types';
+import { IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, NodePatchOperationType, IEqualityComparer, CollectionNodePatchOperation, ISourceCollectionNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { NodeTypeUtils } from '../utils/node-type.utils';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
@@ -10,6 +10,7 @@ import { isNullOrUndefined } from '../utils/global.utils';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoCollectionNWBase');
+type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; rdoMap: Map<K, D> };
 
 export abstract class RdoCollectionNWBase<K extends string | number, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
   private _equalityComparer: IEqualityComparer;
@@ -48,22 +49,19 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //------------------------------
 
   /** */
-  public getNodeInstanceCache() {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<{ sourceArray: Array<S>; rdoMap: Map<K, D> }>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+  public getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceArray: new Array<S>(), rdoMap: new Map<K, D>() };
+      mutableNodeCacheItem = { sourceData: new Array<S>(), rdoMap: new Map<K, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
   }
 
   /** */
-  protected generatePatchOperations(): CollectionNodePatchOperation<K, D>[] {
+  protected generatePatchOperations({ wrappedSourceNode, mutableNodeCacheItem }: { wrappedSourceNode: ISourceCollectionNodeWrapper<K, S, D>; mutableNodeCacheItem: MutableCachedNodeItemType<K, S, D> }): CollectionNodePatchOperation<K, D>[] {
     const operations = new Array<CollectionNodePatchOperation<K, D>>();
-
-    if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Collection source types');
-    const mutableNodeCacheItem = this.getNodeInstanceCache();
-    const origSourceArray = mutableNodeCacheItem.sourceArray;
+    const origSourceArray = mutableNodeCacheItem.sourceData;
     const rdoMap = mutableNodeCacheItem.rdoMap;
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
     const count = Math.max(origSourceArray.length, newSourceArray.length);
@@ -77,7 +75,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         // ---------------------------
         // New Key
         // ---------------------------
-        const newElementKey = this.wrappedSourceNode.makeCollectionKey(newSourceElement);
+        const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
         const newRdo = this.makeRdoElement(newSourceElement);
 
         // Add operation
@@ -89,8 +87,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         // ---------------------------
         // Existing Key
         // ---------------------------
-        const origElementKey = this.wrappedSourceNode.makeCollectionKey(origSourceElement);
-        const newElementKey = this.wrappedSourceNode.makeCollectionKey(newSourceElement);
+        const origElementKey = wrappedSourceNode.makeCollectionKey(origSourceElement);
+        const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
 
         if (origElementKey !== newElementKey) {
           // ---------------------------
@@ -125,12 +123,12 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         // ---------------------------
         // Missing Key
         // ---------------------------
-        const origElementKey = this.wrappedSourceNode.makeCollectionKey(origSourceElement);
+        const origElementKey = wrappedSourceNode.makeCollectionKey(origSourceElement);
         const origRdo = rdoMap.get(origElementKey);
         if (!origRdo) throw new Error(`Could not find original Rdo with key ${origElementKey}`);
 
         // Add operations
-        operations.push({ op: 'remove', index: i, key: this.wrappedSourceNode.makeCollectionKey(origSourceElement), rdo: origRdo });
+        operations.push({ op: 'remove', index: i, key: wrappedSourceNode.makeCollectionKey(origSourceElement), rdo: origRdo });
 
         // Update Rdo Map
         rdoMap.delete(origElementKey);
@@ -140,12 +138,24 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     return operations;
   }
 
-  protected synchronizeCollection() {
-    let changed = false;
-    const patchOperations = this.generatePatchOperations();
+  /** */
+  public smartSync(): boolean {
+    // Setup
+    const mutableNodeCacheItem = this.getNodeInstanceCache();
+    if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Collection source types');
+    const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
+
+    // Instrumentation
     console.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
     logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
+
+    // Execute
     this.executePatchOperations(patchOperations);
+
+    // Update cache
+    mutableNodeCacheItem.sourceData = this.wrappedSourceNode.value;
+
+    // Return
     return patchOperations.length > 0;
   }
 
@@ -232,51 +242,50 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //   return this._childElementSourceNodeKind;
   // }
 
-  public makeCollectionKey = (item: D) => {
-    // Use IMakeCollectionKey provided on options if available
-    if (this.getNodeOptions()?.makeRdoCollectionKey?.fromRdoElement) {
-      const key = this.getNodeOptions()!.makeRdoCollectionKey!.fromRdoElement(item);
-      logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from nodeOptions: ${key}`);
-      return key;
-    }
+  // public makeCollectionKey = (item: D) => {
+  //   // Use IMakeCollectionKey provided on options if available
+  //   if (this.getNodeOptions()?.makeRdoCollectionKey?.fromRdoElement) {
+  //     const key = this.getNodeOptions()!.makeRdoCollectionKey!.fromRdoElement(item);
+  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from nodeOptions: ${key}`);
+  //     return key;
+  //   }
 
-    if (isIMakeCollectionKeyFromRdoElement(this.value)) {
-      const key = this.value.makeCollectionKeyFromRdoElement(item);
-      logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from IMakeCollectionKeyFromRdoElement: ${key}`);
-      return key;
-    }
+  //   if (isIMakeCollectionKey(this.value)) {
+  //     const key = this.value.makeCollectionKeyFromRdoElement(item);
+  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from IMakeCollectionKeyFromRdoElement: ${key}`);
+  //     return key;
+  //   }
 
-    // If primitive, the item is the key
-    if (NodeTypeUtils.isPrimitive(item)) {
-      const key = item;
-      logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from Primitive value: ${key}`);
-      return key;
-    }
+  //   // If primitive, the item is the key
+  //   if (NodeTypeUtils.isPrimitive(item)) {
+  //     const key = item;
+  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from Primitive value: ${key}`);
+  //     return key;
+  //   }
 
-    // Look for idKey
-    if (config.defaultIdKey in item) {
-      const key = item[config.defaultIdKey];
-      logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKey: ${key}`);
-      return key;
-    }
+  //   // Look for idKey
+  //   if (config.defaultIdKey in item) {
+  //     const key = item[config.defaultIdKey];
+  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKey: ${key}`);
+  //     return key;
+  //   }
 
-    // Look for idKey with common postfix
-    if (this.globalNodeOptions?.commonRdoFieldnamePostfix) {
-      const defaultIdKeyWithPostfix = `${config.defaultIdKey}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
-      if (defaultIdKeyWithPostfix in item) {
-        const key = item[defaultIdKeyWithPostfix];
-        logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKeyWithPostfix: ${key}`);
-        return key;
-      }
-    }
+  //   // Look for idKey with common postfix
+  //   if (this.globalNodeOptions?.commonRdoFieldnamePostfix) {
+  //     const defaultIdKeyWithPostfix = `${config.defaultIdKey}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
+  //     if (defaultIdKeyWithPostfix in item) {
+  //       const key = item[defaultIdKeyWithPostfix];
+  //       logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKeyWithPostfix: ${key}`);
+  //       return key;
+  //     }
+  //   }
 
-    throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
-  };
+  //   throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
+  // };
 
   public abstract elements(): Iterable<D>;
-  public abstract childElementCount();
-  public abstract clearElements();
-  public abstract insertItem(key: K, value: D);
-  public abstract deleteElement(key: K): D | undefined;
+  // public abstract clearElements();
+  // public abstract insertItem(key: K, value: D);
+  // public abstract deleteElement(key: K): D | undefined;
   public abstract executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]);
 }
