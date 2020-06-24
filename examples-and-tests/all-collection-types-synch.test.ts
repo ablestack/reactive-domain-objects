@@ -76,7 +76,7 @@ test('Synchronize collection additions', () => {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('Synchronize collection removals', () => {
+test.only('Synchronize collection removals', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 

@@ -18,13 +18,6 @@ class RdoNodeWrapperFactory {
         if (value === null || value === undefined)
             throw new Error('Rdo value should not be null or undefined');
         const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
-        console.log(' ----------------- ', typeInfo, {
-            value,
-            key,
-            wrappedParentRdoNode,
-            wrappedSourceNode,
-            matchingNodeOptions,
-        });
         switch (typeInfo.builtInType) {
             case '[object Boolean]':
             case '[object Date]':

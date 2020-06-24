@@ -1,5 +1,6 @@
 import { ISourceInternalNodeWrapper, NodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 export class SourceObjectNW<K extends string, S extends Record<K, any>, D> extends SourceBaseNW<K, S, D> implements ISourceInternalNodeWrapper<K, S, D> {
   private _value: S | null | undefined;
@@ -9,7 +10,6 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
     sourceNodePath,
     key,
     typeInfo,
-    lastSourceNode,
     matchingNodeOptions,
     globalNodeOptions,
   }: {
@@ -17,11 +17,10 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
     sourceNodePath: string;
     key: K | undefined;
     typeInfo: NodeTypeInfo;
-    lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
-    super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
+    super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
     this._value = value;
   }
 

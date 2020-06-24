@@ -7,19 +7,17 @@ import {
   INodeSyncOptions,
   InternalNodeKind,
   IRdoInternalNodeWrapper,
-  isISourceInternalNodeWrapper,
-  IWrapRdoNode,
-  SourceNodeWrapperFactory,
   IRdoNodeWrapper,
-  RdoNodeTypes,
+  isISourceInternalNodeWrapper,
   ISyncChildNode,
+  RdoNodeTypes,
+  SourceNodeWrapperFactory,
 } from '.';
+import { EventEmitter, SubscriptionFunction } from './infrastructure/event-emitter';
+import { Logger } from './infrastructure/logger';
+import { MutableNodeCache } from './infrastructure/mutable-node-cache';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 import { NodeChange } from './types/event-types';
-import { Logger } from './infrastructure/logger';
-import { EventEmitter, SubscriptionFunction } from './infrastructure/event-emitter';
-import { RdoWrapperValidationUtils, NodeTypeUtils } from './rdo-node-wrappers';
-import { getPlainObjectKeys } from 'mobx/lib/internal';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -38,7 +36,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
-  private _sourceObjectMap = new Map<string, any>();
+  private _mutableNodeCache: MutableNodeCache;
   private _sourceNodeInstancePathStack = new Array<string>();
   private _sourceNodePathStack = new Array<string>();
   private _sourceNodeWrapperFactory: SourceNodeWrapperFactory;
@@ -89,14 +87,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     return this._sourceNodePath || '';
   }
 
-  private setLastSourceNodeInstancePathValue(value) {
-    this._sourceObjectMap.set(this.getSourceNodeInstancePath(), value);
-  }
-
-  private getLastSourceNodeInstancePathValue(): any {
-    return this._sourceObjectMap.get(this.getSourceNodeInstancePath());
-  }
-
   // ------------------------------------------------------------------------------------------------------------------
   // CONSTRUCTOR
   // ------------------------------------------------------------------------------------------------------------------
@@ -106,6 +96,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._globalNodeOptions = options?.globalNodeOptions;
     this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any, any>>();
     this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any, any>>();
+    this._mutableNodeCache = new MutableNodeCache();
 
     if (options?.targetedNodeOptions) {
       options?.targetedNodeOptions.forEach((targetedNodeOptionsItem) => {
@@ -154,16 +145,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._eventEmitter.unsubscribe('nodeChange', func);
   }
 
-  /**
-   *
-   *
-   * @memberof GraphSynchronizer
-   * @description clears the previously tracked data
-   */
-  public clearTrackedData() {
-    this._sourceObjectMap.clear();
-  }
-
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE METHODS
   // ------------------------------------------------------------------------------------------------------------------
@@ -188,8 +169,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }): IRdoNodeWrapper<K, S, D> => {
     const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
 
-    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<K, S, D>({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
-    const wrappedRdoNode = this._rdoNodeWrapperFactory.make<K, S, D>({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<K, S, D>({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
+    const wrappedRdoNode = this._rdoNodeWrapperFactory.make<K, S, D>({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
 
     return wrappedRdoNode;
   };
@@ -231,7 +212,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     // Node traversal tracking - step-out
-    this.setLastSourceNodeInstancePathValue(sourceNode);
+
     this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;

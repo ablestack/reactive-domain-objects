@@ -5,6 +5,7 @@ import { Logger } from '../../infrastructure/logger';
 import { NodeChange } from '../../types/event-types';
 import { CollectionUtils } from '../utils/collection.utils';
 import _ from 'lodash';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoArrayNW');
 
@@ -15,6 +16,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     value,
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     defaultEqualityComparer,
@@ -27,6 +29,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     value: Array<D>;
     typeInfo: NodeTypeInfo;
     key: string | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<string, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
     defaultEqualityComparer: IEqualityComparer;
@@ -36,7 +39,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
   }
 

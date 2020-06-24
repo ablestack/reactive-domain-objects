@@ -907,7 +907,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-node-wrapper-factory.ts": {
-        "version": "364788f8d7aacc296edb8ba9554d3a752f362899861f17492e16ba59147e2769",
+        "version": "6fbeef76f860cbbdbd3e56a4aaac11a720c688937c9772d61fa099dfd5dd07d4",
         "signature": "95783abdc0ac9411262534292ad5352ee9bbf67dc8c1bb10a0be8517fa43d433",
         "affectsGlobalScope": false
       },
@@ -922,7 +922,7 @@
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/source-array-nw.ts": {
-        "version": "120714dc1a7d838f0c5955e32dcc5231203b7137b8917fdbd641ff94df372e8d",
+        "version": "909bcd4e71f213bde52ff06428b5d523f1dab7d3d5a730a6869aaf95b8fb9897",
         "signature": "94ff84a9aa78af83dba7ca6afbe974866d970e3ef22a75690a0c6fca3c9f0d07",
         "affectsGlobalScope": false
       },

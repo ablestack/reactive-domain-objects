@@ -33,7 +33,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             }
             return undefined;
         };
-        this._value = value;
+        this._value = value.filter((element) => element !== null && element !== undefined);
     }
     //------------------------------
     // ISourceNodeWrapper

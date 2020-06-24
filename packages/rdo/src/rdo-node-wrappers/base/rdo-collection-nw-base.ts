@@ -7,6 +7,7 @@ import { NodeChange } from '../../types/event-types';
 import { NodeTypeUtils } from '../utils/node-type.utils';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 import { isNullOrUndefined } from '../utils/global.utils';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
@@ -16,6 +17,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   constructor({
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     defaultEqualityComparer,
@@ -27,6 +29,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }: {
     typeInfo: NodeTypeInfo;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     defaultEqualityComparer: IEqualityComparer;
@@ -36,20 +39,32 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._equalityComparer = defaultEqualityComparer;
   }
 
   //------------------------------
   // Protected
   //------------------------------
-  protected preparePatchOperations(): CollectionNodePatchOperation<K, D>[] {
+
+  /** */
+  public getNodeInstanceCache() {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<{ sourceArray: Array<S>; rdoMap: Map<K, D> }>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+    if (!mutableNodeCacheItem) {
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), rdoMap: new Map<K, D>() };
+      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+    }
+    return mutableNodeCacheItem;
+  }
+
+  /** */
+  protected generatePatchOperations(): CollectionNodePatchOperation<K, D>[] {
     const operations = new Array<CollectionNodePatchOperation<K, D>>();
 
     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Collection source types');
-    const lastSnapshot = this.wrappedSourceNode.lastSourceNode as { sourceArray: Array<S>; rdoMap: Map<K, D> }; // TODO - need to fix lastSourceNode to typed storage
-    const origSourceArray = lastSnapshot?.sourceArray || [];
-    const rdoMap = lastSnapshot?.rdoMap || new Map<K, D>();
+    const mutableNodeCacheItem = this.getNodeInstanceCache();
+    const origSourceArray = mutableNodeCacheItem.sourceArray;
+    const rdoMap = mutableNodeCacheItem.rdoMap;
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
     const count = Math.max(origSourceArray.length, newSourceArray.length);
 
@@ -127,36 +142,12 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
 
   protected synchronizeCollection() {
     let changed = false;
-    const patchOperations = this.preparePatchOperations();
+    const patchOperations = this.generatePatchOperations();
     console.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
     logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
     this.executePatchOperations(patchOperations);
     return patchOperations.length > 0;
   }
-
-  // protected synchronizeCollection2() {
-  //   let changed = false;
-  //   const operations = this.preparePatchOperations();
-
-  //   for (const operation of operations) {
-  //     switch (operation.op) {
-  //       case 'add':
-  //         const rdo = this.executePatchOperations;
-
-  //         break;
-  //       case 'update':
-  //         break;
-  //       case 'remove':
-  //         break;
-
-  //       default:
-  //         throw new Error(`Unknown operation: ${operation.op}`);
-  //         break;
-  //     }
-  //   }
-
-  //   return changed;
-  // }
 
   // protected synchronizeCollection() {
   //   let changed = false;

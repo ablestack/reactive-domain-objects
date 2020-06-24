@@ -4,6 +4,7 @@ import { Logger } from '../infrastructure/logger';
 import { NodeTypeUtils } from './utils/node-type.utils';
 import { EventEmitter } from '../infrastructure/event-emitter';
 import { NodeChange } from '../types/event-types';
+import { MutableNodeCache } from '../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoNodeWrapperFactory');
 
@@ -41,12 +42,14 @@ export class RdoNodeWrapperFactory {
   public make<K extends string | number, S, D>({
     value,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     matchingNodeOptions,
   }: {
     value: RdoNodeTypes<K, S, D> | undefined;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     matchingNodeOptions?: INodeSyncOptions<any, any, any> | undefined;
@@ -54,14 +57,6 @@ export class RdoNodeWrapperFactory {
     if (value === null || value === undefined) throw new Error('Rdo value should not be null or undefined');
 
     const typeInfo = NodeTypeUtils.getNodeType(value);
-
-    console.log(' ----------------- ', typeInfo, {
-      value,
-      key,
-      wrappedParentRdoNode,
-      wrappedSourceNode,
-      matchingNodeOptions,
-    });
 
     switch (typeInfo.builtInType) {
       case '[object Boolean]':
@@ -72,6 +67,7 @@ export class RdoNodeWrapperFactory {
         return new RdoPrimitiveNW<K, S, D>({
           value: value as D,
           key,
+          mutableNodeCache,
           wrappedParentRdoNode,
           wrappedSourceNode,
           typeInfo,
@@ -88,6 +84,7 @@ export class RdoNodeWrapperFactory {
           const o = new RdoObjectNW({
             value,
             key,
+            mutableNodeCache,
             wrappedParentRdoNode,
             wrappedSourceNode: wrappedSourceNodeTyped,
             typeInfo,
@@ -111,6 +108,7 @@ export class RdoNodeWrapperFactory {
           value: value as Array<D>,
           typeInfo,
           key: String(key),
+          mutableNodeCache,
           wrappedParentRdoNode,
           wrappedSourceNode: wrappedSourceNodeTyped,
           syncChildNode: this._syncChildNode,
@@ -128,6 +126,7 @@ export class RdoNodeWrapperFactory {
           value: value as Map<K, D>,
           typeInfo,
           key,
+          mutableNodeCache,
           wrappedParentRdoNode,
           wrappedSourceNode,
           syncChildNode: this._syncChildNode,
@@ -144,6 +143,7 @@ export class RdoNodeWrapperFactory {
           value: value as Set<D>,
           typeInfo,
           key,
+          mutableNodeCache,
           wrappedParentRdoNode,
           wrappedSourceNode,
           syncChildNode: this._syncChildNode,

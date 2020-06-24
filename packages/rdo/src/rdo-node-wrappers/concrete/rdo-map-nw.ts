@@ -3,6 +3,7 @@ import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollect
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoMapNW');
 
@@ -13,6 +14,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     value,
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     syncChildNode,
@@ -25,6 +27,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     value: Map<K, D>;
     typeInfo: NodeTypeInfo;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     defaultEqualityComparer: IEqualityComparer;
@@ -34,7 +37,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
   }
 

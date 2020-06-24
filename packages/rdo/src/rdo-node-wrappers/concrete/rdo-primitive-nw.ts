@@ -3,6 +3,7 @@ import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isIRdoInternalNo
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoPrimitiveNW');
 
@@ -13,6 +14,7 @@ export class RdoPrimitiveNW<K extends string | number, S, D> extends RdoNWBase<K
     value,
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     matchingNodeOptions,
@@ -23,6 +25,7 @@ export class RdoPrimitiveNW<K extends string | number, S, D> extends RdoNWBase<K
     value: D;
     typeInfo: NodeTypeInfo;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
@@ -30,7 +33,7 @@ export class RdoPrimitiveNW<K extends string | number, S, D> extends RdoNWBase<K
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
   }
 

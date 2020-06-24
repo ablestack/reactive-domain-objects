@@ -3,12 +3,14 @@ import { IRdoNodeWrapper, NodeTypeInfo, ISourceNodeWrapper, IGlobalNodeOptions, 
 import { isISourceCollectionNodeWrapper, isIRdoCollectionNodeWrapper, IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoMapNW');
 
 export abstract class RdoNWBase<K extends string | number, S, D> implements IRdoNodeWrapper<K, S, D> {
   private _typeInfo: NodeTypeInfo;
   private _key: K | undefined;
+  private _mutableNodeCache: MutableNodeCache;
   private _parent: IRdoInternalNodeWrapper<any, S, D> | undefined;
   private _wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
   private _matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
@@ -19,6 +21,7 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   constructor({
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     matchingNodeOptions,
@@ -28,6 +31,7 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   }: {
     typeInfo: NodeTypeInfo;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
@@ -37,6 +41,7 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   }) {
     this._typeInfo = typeInfo;
     this._key = key;
+    this._mutableNodeCache = mutableNodeCache;
     this._parent = wrappedParentRdoNode;
     this._wrappedSourceNode = wrappedSourceNode;
     this._matchingNodeOptions = matchingNodeOptions;
@@ -53,6 +58,10 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   //------------------------------
   protected get eventEmitter(): EventEmitter<NodeChange> {
     return this._eventEmitter;
+  }
+
+  protected get mutableNodeCache(): MutableNodeCache {
+    return this._mutableNodeCache;
   }
 
   //------------------------------

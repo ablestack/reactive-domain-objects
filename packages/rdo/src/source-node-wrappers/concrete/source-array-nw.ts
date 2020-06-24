@@ -3,6 +3,7 @@ import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils'
 import { SourceBaseNW } from '../base/source-base-nw';
 import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
 import { isIMakeCollectionKeyFromSourceElement } from '../../types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
   private _value: Array<S>;
@@ -12,7 +13,6 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
     sourceNodePath,
     key,
     typeInfo,
-    lastSourceNode,
     matchingNodeOptions,
     globalNodeOptions,
   }: {
@@ -20,12 +20,11 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
     sourceNodePath: string;
     key: K | undefined;
     typeInfo: NodeTypeInfo;
-    lastSourceNode: any;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
-    super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
-    this._value = value;
+    super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
+    this._value = value.filter((element) => element !== null && element !== undefined);
   }
 
   //------------------------------

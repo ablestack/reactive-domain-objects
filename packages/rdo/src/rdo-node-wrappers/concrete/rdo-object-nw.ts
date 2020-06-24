@@ -20,6 +20,7 @@ import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
 import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoObjectNW');
 
@@ -32,6 +33,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     value,
     typeInfo,
     key,
+    mutableNodeCache,
     wrappedParentRdoNode,
     wrappedSourceNode,
     defaultEqualityComparer,
@@ -45,6 +47,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     value: D;
     typeInfo: NodeTypeInfo;
     key: K | undefined;
+    mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
     defaultEqualityComparer: IEqualityComparer;
@@ -55,7 +58,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
 
     this._value = value;
     this._equalityComparer = IsICustomEqualityRDO(value) ? value.isStateEqual : defaultEqualityComparer;
@@ -82,7 +85,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
     const rdo = this.value;
     const sourceObject = this.wrappedSourceNode.value;
-    const lastSourceObject = this.wrappedSourceNode.lastSourceNode;
+    const lastSourceObject = this.wrappedSourceNode.mutableNodeCache;
 
     // Check if previous source state and new source state are equal
     const isAlreadyInSync = this._equalityComparer(sourceObject, lastSourceObject);

@@ -2,6 +2,7 @@
 
 import { IGlobalNodeOptions, INodeSyncOptions } from '.';
 import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey, IMakeRdoElement, isIMakeRdoElement } from './rdo-collection-types';
+import { MutableNodeCache } from '../infrastructure/mutable-node-cache';
 
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 
@@ -17,7 +18,6 @@ export interface ISourceNodeWrapper<K extends string | number, S, D> {
   readonly value: S | Iterable<S> | null | undefined;
   readonly key: K | undefined;
   readonly sourceNodePath: string;
-  readonly lastSourceNode: S | undefined;
   readonly matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
   readonly globalNodeOptions: IGlobalNodeOptions | undefined;
   readonly wrappedRdoNode: IRdoNodeWrapper<K, S, D> | undefined;
