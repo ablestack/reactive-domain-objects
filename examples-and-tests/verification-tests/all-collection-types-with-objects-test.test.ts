@@ -1,6 +1,6 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { SyncableCollection } from '@ablestack/rdo';
+import { Marray } from '@ablestack/rdo';
 
 const logger = Logger.make('map-sync.test.ts');
 
@@ -35,7 +35,7 @@ export class AllCollectionTypesWithObjectsRDO {
   public arrayOfObjects = new Array<SimpleRDO>();
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
-  public customCollectionOfObjects = new SyncableCollection({
+  public customCollectionOfObjects = new Marray({
     makeCollectionKey: (o: SimpleObject) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });

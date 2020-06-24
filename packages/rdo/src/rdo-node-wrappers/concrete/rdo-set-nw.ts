@@ -114,7 +114,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
   // RdoSyncableCollectionNW
   //------------------------------
   public executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]) {
-    // Should already be in reverse index order. Loop through and execute
+    // Loop through and execute (note, the operations are in descending order by index
 
     for (const patchOp of patchOperations) {
       switch (patchOp.op) {
@@ -126,7 +126,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
           this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
           break;
-        case 'remove':
+        case 'delete':
           if (!patchOp.rdo) throw new Error('Rdo must not be null for Set patch-delete operations');
           this.value.delete(patchOp.rdo);
           break;

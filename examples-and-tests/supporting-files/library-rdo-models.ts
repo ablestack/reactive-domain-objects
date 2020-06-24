@@ -1,4 +1,4 @@
-import { SyncableCollection } from '@ablestack/rdo';
+import { Marray } from '@ablestack/rdo';
 import { Author } from './library-source-models';
 
 // -----------------------------------
@@ -91,7 +91,7 @@ export class LibraryRDO {
     this._capacity = value;
   }
 
-  public authors: SyncableCollection<string, Author, AuthorRDO> = new SyncableCollection({
+  public authors: Marray<string, Author, AuthorRDO> = new Marray({
     makeCollectionKey: (author: Author) => author.id,
     makeRdo: (book: Author) => new AuthorRDO(),
   });

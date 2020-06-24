@@ -116,20 +116,19 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   // RdoSyncableCollectionNW
   //------------------------------
   public executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]) {
-    // Should already be in reverse index order. Loop through and execute
+    // Loop through and execute (note, the operations are in descending order by index
 
     for (const patchOp of patchOperations) {
       switch (patchOp.op) {
         case 'add':
-          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
-          this.value.insertElement(patchOp.key, patchOp.rdo);
+          this.value.patchAdd(patchOp);
         // now fall through to update, so the values sync to the new item
         case 'update':
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
           this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
           break;
-        case 'remove':
-          this.value.deleteElement(patchOp.key);
+        case 'delete':
+          this.value.patchDelete(patchOp);
           break;
         default:
           throw new Error(`Unknown operation: ${patchOp.op}`);

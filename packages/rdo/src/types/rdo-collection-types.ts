@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IRdoNodeWrapper, IMakeRdo } from './internal-types';
+import { IRdoNodeWrapper, IMakeRdo, CollectionNodePatchOperation } from './internal-types';
 
 //--------------------------------------------------------
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
@@ -25,8 +25,10 @@ export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
 }
 
 export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKey<K, S> {
-  // readonly size: number;
-  // elements(): Iterable<D>;
+  readonly size: number;
+  elements(): Iterable<D>;
+  patchAdd(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
+  patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
   // getCollectionKeys: () => K[];
   // getElement: (key: K) => D | null | undefined;
   // insertElement: (key: K, value: D) => void;

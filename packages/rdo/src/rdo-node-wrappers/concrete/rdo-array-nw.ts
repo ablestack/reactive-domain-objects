@@ -116,7 +116,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //------------------------------
 
   public executePatchOperations(patchOperations: CollectionNodePatchOperation<string, D>[]) {
-    // Should already be in reverse index order. Loop through and execute
+    // Loop through and execute (note, the operations are in descending order by index
 
     for (const patchOp of patchOperations) {
       switch (patchOp.op) {
@@ -128,7 +128,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
           this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
           break;
-        case 'remove':
+        case 'delete':
           this.value.splice(patchOp.index, 1);
           break;
         default:
