@@ -707,7 +707,7 @@
         "affectsGlobalScope": false
       },
       "../src/custom-collections/list-map.ts": {
-        "version": "62431c9624cb7428c4bf28e02a7b3138b559fb0b9e8356f445ef8f239debb3ff",
+        "version": "ca3703314c6626b174377c1a5cfd5c078821f0d264d321ffc71031025edd8e5d",
         "signature": "3c399f7fa043ece8cfe6ccae1eae79c69de10079fae3bc729573c791ed60e585",
         "affectsGlobalScope": false
       },
@@ -727,8 +727,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/event-types.ts": {
-        "version": "ab61c5649c6d5bd45970f7687bb2a58e507f37f5d8a15a92bf59ff262599b7e1",
-        "signature": "54b5c107eaff6ac760c896e4cf87bb2219a1b6ee294c3079f21cac389664c415",
+        "version": "8174f5caaec042e271096afb99611c48fa45cea1ba7854050b3d8a754e3f6f88",
+        "signature": "6ec9adeceab2d33544d7bc88254b02c9340a46f3d721a3693b85d9980fb1f210",
         "affectsGlobalScope": false
       },
       "../src/types/general-types.ts": {
@@ -742,18 +742,18 @@
         "affectsGlobalScope": false
       },
       "../src/types/internal-types.ts": {
-        "version": "b3519819bd57ddf2556eda2357d3d5aaf568e2620a437abf662d9b70c6e761f5",
-        "signature": "0fac12ecc9d1b1ba5b0a81df5c4ea7baf1120fd94d7cdbaaa74aab946851e3bb",
+        "version": "68f5eb5872592f1fce87886e29493505f1ae9f9eae3bf4effca1a46d8b36bb42",
+        "signature": "c6fdf173a3600442f7edd325d0e32165c115252c1ae4475b42dc956d695408d7",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-config-option-types.ts": {
-        "version": "1232c4ba15b8597c33813d1839573af1ea82d89bbf3f99af4db7154733869596",
-        "signature": "19f0aaf7158767097f7117f0b3b94338a58c6848a43c86390772c6646179904d",
+        "version": "a4785209ccb68688dd9afcd522a952ff6036c58223d49264081db79957e8efa3",
+        "signature": "1b5445157862478cc88a7ac81e78ebadfcede1dd3ee85087c6e070d24286a35c",
         "affectsGlobalScope": false
       },
       "../src/types/rdo-customization-types.ts": {
-        "version": "4cc9c8b5b23a68aaef0e1a73baa7c4dfa40b4e7479028390e80eb3f8a3743be0",
-        "signature": "ea977337241c7ea40af90583b08208da745bb485fe7f0123231d1844fcb9b1c4",
+        "version": "6aa5723339d22297f91da59d18f1bbd46e42a5b34f3d61c44eeb57084f801d1b",
+        "signature": "51c0d4f920916ec64f440cd9bf12bccd38c52dd1b884f2b1b3508ac1248e3187",
         "affectsGlobalScope": false
       },
       "../src/types/index.ts": {
@@ -772,12 +772,12 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-internal-nw-base.ts": {
-        "version": "187342b6b72e2854c93ec230bf83cb8861921b287452b359bdcbd34c8d6d2fc8",
+        "version": "a2d3858640ce31183eabd4fe214a17b446c3a9c7a826a0d29fcc7a5e0e648947",
         "signature": "a6768d625c8eacb20cbb8a84ab26b4a49cd56e99f309417a016bdc19209dd6a6",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "36a9d2663eb18107ca743037970bdb5f109cdf2aafe1506e85b6cfcbbde1b45c",
+        "version": "475f4a1dc8f16241e50aeba6b4310537736362d887e5d4b2a541972f1f012eda",
         "signature": "f5c0745e0fe2550e6aee85ba2d44d6734da156feadff2c594ee6e44d4b48baff",
         "affectsGlobalScope": false
       },
@@ -857,27 +857,32 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-array-nw.ts": {
-        "version": "892a0b025b136833a656bfa81d218116572098508b1ca2ece1b3b16dc7273477",
+        "version": "7270ff07d3ec0ea672c580eeb3e448d71c1cac04b13408e62e10082a40ed36d6",
         "signature": "64797fc3f1be738061bfb5a17bea831c9b38e9267fa666194f83eb6ac66e1f3e",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-map-nw.ts": {
-        "version": "3a40cffecba827a4689ad34720a9566ae8a4d6ed77e81df55f3aa8ea985aa0e1",
+        "version": "af84b57f9812a45f418fbc7502fe2f2d03faf18683f75475157d2d55e7c1168b",
         "signature": "d5ef4cdca2cbde1f7802dc8bdd2bd485b046a3c4f2ceae5c12848fa4e1fd3965",
         "affectsGlobalScope": false
       },
+      "../src/infrastructure/node-tracker.ts": {
+        "version": "7b69cd3258dc3d8a00fe8d3003798bd8534dab862db029151e8aafcda3d6b175",
+        "signature": "7f78a5472e3df31505b8af1ce9eba19bd58f1467b5cbe3d6d417a4465753b0cf",
+        "affectsGlobalScope": false
+      },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "f87c2bc9a3c5a1a136281b3993b81b3af473b34ac1ca78f8cbf032559c5024d9",
+        "version": "07122fc3b991998e13a3034f8207c79a4932e0773a560f1e8922b62babd9b262",
         "signature": "04918ca51b9ec45b8e713a981327b79e7d1dd0b7ba5d18d5d3ec14212e3867bd",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-set-nw.ts": {
-        "version": "de475a9b6381d78fc7195451f63a2db27cf9f2b68c443895cb6b68f99a1ef5a2",
+        "version": "b4850cd4321ec3bcd8096367493e651e73062e8e6a0ebfe25cca3ff28b201e39",
         "signature": "1103b358b22c401357c1d119abb6a64c5421c403a7195ae52a608f856428232a",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.ts": {
-        "version": "d26ff22481328ab3da11d6eb4b48970f2da916e7d24fdbb6ea4e9fb5b4b7467f",
+        "version": "b3d177df33ea0c43b79d4d41a8afc56219c9d0e36427dea022c57c93f752d6a9",
         "signature": "978baf590d643fa34fa02ee315d2c87b692504591885730c664aaa7276933401",
         "affectsGlobalScope": false
       },
@@ -897,8 +902,8 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/utils/rdo-wrapper-validation.utils.ts": {
-        "version": "814da6eec636e71b8ecdaf501b2029b347f130392f5678f944e0ab7840950ad8",
-        "signature": "62667854faee058d5740cd4b44d55abb86c2fc64ecc376e93adec55a99350e8e",
+        "version": "64ea041947e9da8e2d1ccb699b4208a141f049d3a2942457938bbffe3995ad17",
+        "signature": "e5a5d83721b15333a7014d6efa764b149e91bfd3c5be8e1745da7d44116eaef0",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/utils/index.ts": {
@@ -907,7 +912,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-node-wrapper-factory.ts": {
-        "version": "ef3af37a4895a196e7b2c38afc1e13a8ebf1994dc53928b965b6027265d5d3cd",
+        "version": "589a337f9f1813d5b6d5d8b5746d53cd5233114a6ff9ef30da62ef1368a8ef87",
         "signature": "c040dc1d5e4156b7ab3510f96cb877ad0fd06ad47d986eae254b5f95f862c085",
         "affectsGlobalScope": false
       },
@@ -917,23 +922,23 @@
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/base/source-base-nw.ts": {
-        "version": "c902eb78ec821d024138ef71529adf5c6a6be80de94eceb443a8da6a66bff3df",
-        "signature": "49a678756f85f158b7b2cb5ebd2ddb7d00068ece7a4576b4b689f9912821e16a",
+        "version": "0a7bc9d4aa8fe3fddcde3cd2b23ad848dd456a5f04e2e38a35bcd101dcd471c3",
+        "signature": "f0d88210be4eeb4515fea3f4c2d3dd182b5799321b0d8c3228db34d983dcd506",
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/source-array-nw.ts": {
-        "version": "2de951df06f5c7500a7f511fb9485e4d7a4694c086d8a0d3370e1176c84d3254",
-        "signature": "19e35bb084509b45078c7262bee55cc3df3bb784150e029f4096a66b89455f88",
+        "version": "81ae5f114902899b32e8df0cc3e527a1be603264ed30207834f9cf41f9d71dae",
+        "signature": "11b765d971d6280276f8a0912f943668e01977f1a4b894530e819c5903c5fdb7",
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/source-object-nw.ts": {
-        "version": "6756f380827d542b3bb48d724c7b93d23f205ed969cd0005c77351d5ba54d4bb",
-        "signature": "d1ae33e5061cff1cea69565f6499cd3b2a7b7f8094241666ed396fb7a08d6d3b",
+        "version": "06fe14469abfc215cf3238d4d14f656c60204b62089fcc299b4d41fda567023f",
+        "signature": "6cb9b066848b316903226c2abdf8fd72a2140c300ee9a9e2524f6cedab3ba1e9",
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/source-primitive-nw.ts": {
-        "version": "d51b1c2bf107561d2bfb9b3b123f142e0c28b2abdae915473a3f6535062f404b",
-        "signature": "1007f3cbd20843c50c300d3a954ad5f99d9b37ab671efb38eeade2644bb91d89",
+        "version": "6325c1b224e453a0b27aebec26ab493e6756d08984a0ce49010dfba93bc49abe",
+        "signature": "569e98dbf73cb9c5581383be69726639c390e7bfc7a495e34f7f5200dc204ca3",
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/index.ts": {
@@ -942,8 +947,8 @@
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/source-node-wrapper-factory.ts": {
-        "version": "5bf05bd3d9ddad6098fabdb0bfcae169688b4b1416829700c40b4f74a3926c8a",
-        "signature": "d0963c0ed404418141f6f7be388d998af33e41d5cc0b69912776e0e57edf320d",
+        "version": "45af9408045f966b87ea7040d1f6c7beeee3967d2d940087c8281a5109b9a417",
+        "signature": "34bc1c965a8e0f1ce94e9a60ebc8bf414acf53367938634ff7e7a83e434447fa",
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/index.ts": {
@@ -971,14 +976,9 @@
         "signature": "9f77d6cafe96e140ab4e675e0b24a0796c524d41be33431c7bb3ed2bf775ce79",
         "affectsGlobalScope": false
       },
-      "../src/infrastructure/node-tracker.ts": {
-        "version": "4b2352ac6dd56bea7800987aca4686efe38a063048298b6cbeb0a87beefa4405",
-        "signature": "ac70d074d4ef4db592864daf6af07193d7dc06d082bc4a924898ff0eb3539142",
-        "affectsGlobalScope": false
-      },
       "../src/graphsynchronizer.ts": {
-        "version": "279ca7643a59b75decc20bcb10446f816e431ad34ad1889612d1e8e76400dd67",
-        "signature": "29c0182938d9f778de5931711e4b088a909ed98987c059835a287c6eb1a193dc",
+        "version": "3326731492683ac4c7428fd12e721e14e76f901df6a7725ec921486ac51d4dba",
+        "signature": "455f5c21cde26998f93f250e411582bf29c68957dbf790449554a4fcb3ace381",
         "affectsGlobalScope": false
       },
       "../node_modules/@babel/types/lib/index.d.ts": {
@@ -2979,6 +2979,7 @@
         "../src/infrastructure/event-emitter.ts",
         "../src/infrastructure/logger.ts",
         "../src/infrastructure/mutable-node-cache.ts",
+        "../src/infrastructure/node-tracker.ts",
         "../src/rdo-node-wrappers/index.ts",
         "../src/types/event-types.ts",
         "../src/types/index.ts"

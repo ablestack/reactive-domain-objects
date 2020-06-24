@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SourceObjectNW = void 0;
 const source_base_nw_1 = require("../base/source-base-nw");
 class SourceObjectNW extends source_base_nw_1.SourceBaseNW {
-    constructor({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
-        super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
+    constructor({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
+        super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
         this._value = value;
     }
     //------------------------------

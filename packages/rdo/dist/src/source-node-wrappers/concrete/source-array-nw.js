@@ -7,8 +7,8 @@ const source_base_nw_1 = require("../base/source-base-nw");
 const node_type_utils_1 = require("../../rdo-node-wrappers/utils/node-type.utils");
 const types_1 = require("../../types");
 class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
-    constructor({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
-        super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
+    constructor({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
+        super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
         //------------------------------
         // ISourceCollectionNodeWrapper
         //------------------------------

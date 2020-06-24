@@ -13,8 +13,8 @@ export interface IGraphSyncOptions {
 export declare type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
     commonRdoFieldnamePostfix?: string;
-    tryGetRdoFieldname?: <K extends string | number>({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
-        sourceNodePath: string;
+    tryGetRdoFieldname?: <K extends string | number>({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: {
+        sourceNodeTypePath: string;
         sourceFieldname: K;
         sourceFieldVal: any;
     }) => K | undefined;

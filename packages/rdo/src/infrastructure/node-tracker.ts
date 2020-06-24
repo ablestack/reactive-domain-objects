@@ -4,9 +4,9 @@ import { InternalNodeKind } from '..';
 const logger = Logger.make('NodeTracker');
 
 export class NodeTracker {
-  private _nodePathSeperator = '/';
+  public static readonly nodePathSeperator = '/';
   private _sourceNodeInstancePathStack = new Array<string>();
-  private _sourceNodePathStack = new Array<string>();
+  private _sourceNodeTypePathStack = new Array<string>();
 
   public pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind) {
     logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
@@ -16,9 +16,9 @@ export class NodeTracker {
 
     // push to typepath if objectProperty
     if (sourceNodeKind === 'Object') {
-      this._sourceNodePathStack.push(key.toString());
+      this._sourceNodeTypePathStack.push(key.toString());
       // reset locally cached dependencies
-      this._sourceNodePath = undefined;
+      this._sourceNodeTypePath = undefined;
     }
   }
 
@@ -30,23 +30,23 @@ export class NodeTracker {
 
     // pop from typepath if objectProperty
     if (sourceNodeKind === 'Object') {
-      this._sourceNodePathStack.pop();
+      this._sourceNodeTypePathStack.pop();
       // reset locally cached dependencies
-      this._sourceNodePath = undefined;
+      this._sourceNodeTypePath = undefined;
     }
   }
 
   // sourceNodeInstancePath is used for persisting previous source state
   private _sourceNodeInstancePath: string | undefined;
   public getSourceNodeInstancePath(): string {
-    if (!this._sourceNodeInstancePath) this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join(this._nodePathSeperator);
+    if (!this._sourceNodeInstancePath) this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join(NodeTracker.nodePathSeperator);
     return this._sourceNodeInstancePath || '';
   }
 
-  // sourceNodePath is used for configuration generated options. It is essentially the node sourceNodeInstancePath, with the collection keys skipped. It is static, but  not unique per node
-  private _sourceNodePath: string | undefined;
+  // sourceNodeTypePath is used for configuration generated options. It is essentially the node sourceNodeInstancePath, with the collection keys skipped. It is static, but  not unique per node
+  private _sourceNodeTypePath: string | undefined;
   public getSourceNodePath(): string {
-    if (!this._sourceNodePath) this._sourceNodePath = this._sourceNodePathStack.join(this._nodePathSeperator);
-    return this._sourceNodePath || '';
+    if (!this._sourceNodeTypePath) this._sourceNodeTypePath = this._sourceNodeTypePathStack.join(NodeTracker.nodePathSeperator);
+    return this._sourceNodeTypePath || '';
   }
 }

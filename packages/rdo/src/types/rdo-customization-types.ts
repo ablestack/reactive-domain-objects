@@ -3,7 +3,7 @@
 //-------------------------------------------------------
 
 export interface IHasCustomRdoFieldNames<K extends string> {
-  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
+  tryGetRdoFieldname: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
 }
 
 export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any> {

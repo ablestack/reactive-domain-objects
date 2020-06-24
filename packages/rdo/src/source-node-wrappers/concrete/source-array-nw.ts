@@ -10,20 +10,22 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
 
   constructor({
     value,
-    sourceNodePath,
+    sourceNodeTypePath,
+    sourceNodeInstancePath,
     key,
     typeInfo,
     matchingNodeOptions,
     globalNodeOptions,
   }: {
     value: Array<S>;
-    sourceNodePath: string;
+    sourceNodeTypePath: string;
+    sourceNodeInstancePath: string;
     key: K | undefined;
     typeInfo: NodeTypeInfo;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
-    super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
+    super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
     this._value = value.filter((element) => element !== null && element !== undefined);
   }
 

@@ -34,7 +34,7 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
     //     return this.clearElements();
     //   } else {
-    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
     //     return super.synchronizeCollection();
     //   }
     // }
@@ -84,7 +84,7 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
             // PUBLISH
             this.eventEmitter.publish('nodeChange', {
                 changeType: patchOp.op,
-                sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceKey: patchOp.key,
                 rdoKey: patchOp.key,
                 previousSourceValue: patchOp.previousSourceValue,

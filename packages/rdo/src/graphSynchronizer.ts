@@ -91,7 +91,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
 
     logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
 
-    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodeTypePath: '', sourceNodeInstancePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
     wrappedRdoNode.smartSync();
 
     logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
@@ -113,23 +113,25 @@ export class GraphSynchronizer implements IGraphSynchronizer {
    *
    */
   public wrapRdoNode = <K extends string | number, S, D>({
-    sourceNodePath,
+    sourceNodeTypePath,
+    sourceNodeInstancePath,
     sourceNode,
     sourceNodeItemKey,
     rdoNode,
     rdoNodeItemKey,
     wrappedParentRdoNode,
   }: {
-    sourceNodePath: string;
+    sourceNodeTypePath: string;
+    sourceNodeInstancePath: string;
     rdoNode: RdoNodeTypes<K, S, D> | undefined;
     sourceNode: S;
     wrappedParentRdoNode?: IRdoInternalNodeWrapper<any, any, any> | undefined;
     rdoNodeItemKey?: K | undefined;
     sourceNodeItemKey?: K | undefined;
   }): IRdoNodeWrapper<K, S, D> => {
-    const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
+    const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodeTypePath);
 
-    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<K, S, D>({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<K, S, D>({ sourceNodeTypePath, sourceNodeInstancePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
     const wrappedRdoNode = this._rdoNodeWrapperFactory.make<K, S, D>({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
 
     return wrappedRdoNode;
@@ -160,7 +162,15 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this._nodeTracker.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({
+      sourceNodeTypePath: this._nodeTracker.getSourceNodePath(),
+      sourceNodeInstancePath: this._nodeTracker.getSourceNodeInstancePath(),
+      sourceNode,
+      rdoNode: rdoNodeItemValue,
+      wrappedParentRdoNode: wrappedParentRdoNode,
+      rdoNodeItemKey,
+      sourceNodeItemKey,
+    });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {

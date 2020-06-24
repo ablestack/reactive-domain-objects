@@ -5,9 +5,8 @@ const logger_1 = require("./logger");
 const logger = logger_1.Logger.make('NodeTracker');
 class NodeTracker {
     constructor() {
-        this._nodePathSeperator = '/';
         this._sourceNodeInstancePathStack = new Array();
-        this._sourceNodePathStack = new Array();
+        this._sourceNodeTypePathStack = new Array();
     }
     pushSourceNodeInstancePathOntoStack(key, sourceNodeKind) {
         logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
@@ -16,9 +15,9 @@ class NodeTracker {
         this._sourceNodeInstancePath = undefined;
         // push to typepath if objectProperty
         if (sourceNodeKind === 'Object') {
-            this._sourceNodePathStack.push(key.toString());
+            this._sourceNodeTypePathStack.push(key.toString());
             // reset locally cached dependencies
-            this._sourceNodePath = undefined;
+            this._sourceNodeTypePath = undefined;
         }
     }
     popSourceNodeInstancePathFromStack(sourceNodeKind) {
@@ -28,21 +27,22 @@ class NodeTracker {
         this._sourceNodeInstancePath = undefined;
         // pop from typepath if objectProperty
         if (sourceNodeKind === 'Object') {
-            this._sourceNodePathStack.pop();
+            this._sourceNodeTypePathStack.pop();
             // reset locally cached dependencies
-            this._sourceNodePath = undefined;
+            this._sourceNodeTypePath = undefined;
         }
     }
     getSourceNodeInstancePath() {
         if (!this._sourceNodeInstancePath)
-            this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join(this._nodePathSeperator);
+            this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join(NodeTracker.nodePathSeperator);
         return this._sourceNodeInstancePath || '';
     }
     getSourceNodePath() {
-        if (!this._sourceNodePath)
-            this._sourceNodePath = this._sourceNodePathStack.join(this._nodePathSeperator);
-        return this._sourceNodePath || '';
+        if (!this._sourceNodeTypePath)
+            this._sourceNodeTypePath = this._sourceNodeTypePathStack.join(NodeTracker.nodePathSeperator);
+        return this._sourceNodeTypePath || '';
     }
 }
 exports.NodeTracker = NodeTracker;
+NodeTracker.nodePathSeperator = '/';
 //# sourceMappingURL=node-tracker.js.map

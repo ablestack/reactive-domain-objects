@@ -16,10 +16,10 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     //------------------------------
     /** */
     getNodeInstanceCache() {
-        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
         if (!mutableNodeCacheItem) {
             mutableNodeCacheItem = { sourceData: new Array(), rdoMap: new Map() };
-            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
         }
         return mutableNodeCacheItem;
     }
@@ -105,8 +105,8 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             throw new Error('Can only sync Rdo collection types with Collection source types');
         const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
         // Instrumentation
-        //consol e.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
-        logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
+        console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
+        logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
         // Execute
         this.executePatchOperations(patchOperations);
         // Update cache

@@ -33,7 +33,7 @@ const FULL_SYNC_MAX_TIME_MS = 5000;
 // CONFIG
 // --------------------------------------------------------------
 const config: IGraphSyncOptions = {
-  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
+  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors/books' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };
 
@@ -54,8 +54,8 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
     graphSyncronizerArray[i] = new GraphSynchronizer(config);
     // Tegister
     graphSyncronizerArray[i].subscribeToNodeChanges((data) => {
-      if (data.sourceNodePath === targetBookPath) {
-        if (data.sourceNodePath) if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
+      if (data.sourceNodeTypePath === targetBookPath) {
+        if (data.sourceNodeTypePath) if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
         fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
       }
     });

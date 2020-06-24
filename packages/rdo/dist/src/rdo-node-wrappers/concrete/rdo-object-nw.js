@@ -5,6 +5,7 @@ const __1 = require("..");
 const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
 const types_1 = require("../../types");
+const node_tracker_1 = require("../../infrastructure/node-tracker");
 const logger = logger_1.Logger.make('RdoObjectNW');
 class RdoObjectNW extends __1.RdoInternalNWBase {
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
@@ -13,10 +14,11 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         this.makeContinueSmartSyncFunction = ({ originalSourceNodePath }) => {
             // Build method
             const continueSmartSync = ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
-                const sourceNodePath = sourceNodeSubPath ? `${originalSourceNodePath}.${sourceNodeSubPath}` : originalSourceNodePath;
-                const wrappedRdoNode = this._wrapRdoNode({ sourceNodePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
+                const sourceNodeTypePath = sourceNodeSubPath ? `${originalSourceNodePath}${node_tracker_1.NodeTracker.nodePathSeperator}${sourceNodeSubPath}` : originalSourceNodePath;
+                const sourceNodeInstancePath = `${sourceNodeTypePath}${node_tracker_1.NodeTracker.nodePathSeperator}${sourceNodeItemKey}`;
+                const wrappedRdoNode = this._wrapRdoNode({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
                 if (!types_1.isIRdoInternalNodeWrapper(wrappedRdoNode))
-                    throw new Error(`(${sourceNodePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
+                    throw new Error(`(${sourceNodeTypePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
                 return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
             };
             // return method
@@ -31,10 +33,10 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     //------------------------------
     /** */
     getNodeInstanceCache() {
-        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
         if (!mutableNodeCacheItem) {
             mutableNodeCacheItem = { sourceData: null };
-            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
         }
         return mutableNodeCacheItem;
     }
@@ -52,7 +54,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     }
     smartSync() {
         let changed = false;
-        const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
+        const sourceNodeTypePath = this.wrappedSourceNode.sourceNodeTypePath;
         const rdo = this.value;
         const sourceObject = this.wrappedSourceNode.value;
         const previousSourceData = this.getNodeInstanceCache();
@@ -70,20 +72,20 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 rdo.beforeSyncUpdate({ sourceObject });
             // Synchronize
             if (__2.IsICustomSync(rdo)) {
-                logger.trace(`synchronizeObjectState - ${sourceNodePath} - custom state synchronizer found. Using to sync`);
-                changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodePath }) });
+                logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - custom state synchronizer found. Using to sync`);
+                changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodeTypePath }) });
             }
             else {
-                logger.trace(`synchronizeObjectState - ${sourceNodePath} - no custom state synchronizer found. Using autoSync`, rdo);
+                logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - no custom state synchronizer found. Using autoSync`, rdo);
                 changed = this.sync();
-                logger.trace(`synchronizeObjectState - ${sourceNodePath} - post autoSync`, rdo);
+                logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - post autoSync`, rdo);
             }
             // Call lifecycle methods if found
             if (__2.IsIAfterSyncUpdate(rdo))
                 rdo.afterSyncUpdate({ sourceObject });
         }
         else {
-            logger.trace(`synchronizeObjectState - ${sourceNodePath} - already in sync. Skipping`);
+            logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - already in sync. Skipping`);
         }
         // Call lifecycle methods if found
         if (__2.IsIAfterSyncIfNeeded(rdo))
@@ -126,7 +128,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         var _a, _b;
         let changed = false;
         if (!__2.isISourceInternalNodeWrapper(this.wrappedSourceNode)) {
-            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodePath}')`);
+            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
         }
         // Loop properties
         for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
@@ -142,17 +144,17 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 // It is recommended to consistently use autoMakeRdo* OR consistently provide customMakeRdo methods. Blending both can lead to unexpected behavior
                 // Keys made here, instantiation takes place in downstream constructors
                 if ((_b = (_a = this.globalNodeOptions) === null || _a === void 0 ? void 0 : _a.autoMakeRdoTypes) === null || _b === void 0 ? void 0 : _b.objectFields) {
-                    logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
+                    logger.trace(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
                     // Allocate fieldname and empty val
                     rdoFieldname = sourceFieldname;
                     rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
                     // Insert
                     this.value[rdoFieldname] = rdoNodeItemValue;
                     // Emit
-                    this.eventEmitter.publish('nodeChange', { changeType: 'add', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousSourceValue: undefined, newSourceValue: sourceFieldVal });
+                    this.eventEmitter.publish('nodeChange', { changeType: 'add', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousSourceValue: undefined, newSourceValue: sourceFieldVal });
                 }
                 else {
-                    logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
+                    logger.trace(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
                     continue;
                 }
             }
@@ -180,7 +182,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         // Try IHasCustomRdoFieldNames
         //
         if (!rdoFieldname && __2.IsIHasCustomRdoFieldNames(this._value)) {
-            rdoFieldname = this._value.tryGetRdoFieldname({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
+            rdoFieldname = this._value.tryGetRdoFieldname({ sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceFieldname, sourceFieldVal });
             // If fieldName not in wrappedParentRdoNode, set to null
             if (rdoFieldname && !(rdoFieldname in this._value)) {
                 rdoFieldname = undefined;
@@ -193,7 +195,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         // Try _globalNodeOptions
         //
         if (!rdoFieldname && ((_a = this.globalNodeOptions) === null || _a === void 0 ? void 0 : _a.tryGetRdoFieldname)) {
-            rdoFieldname = (_b = this.globalNodeOptions) === null || _b === void 0 ? void 0 : _b.tryGetRdoFieldname({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceFieldname, sourceFieldVal });
+            rdoFieldname = (_b = this.globalNodeOptions) === null || _b === void 0 ? void 0 : _b.tryGetRdoFieldname({ sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceFieldname, sourceFieldVal });
             // If fieldName not in wrappedParentRdoNode, set to null
             if (rdoFieldname && !(rdoFieldname in this._value)) {
                 rdoFieldname = undefined;
@@ -232,14 +234,14 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     /** */
     primitiveDirectSync({ sourceKey, rdoKey, previousValue, newValue }) {
         if (Object.is(previousValue, newValue)) {
-            logger.trace(`smartSync - SourceNodePath:${this.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
+            logger.trace(`smartSync - SourceNodePath:${this.wrappedSourceNode.sourceNodeTypePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
             return false;
         }
         logger.trace(`primitive value found in domainPropKey ${rdoKey}. Setting from old value to new value`, previousValue, newValue);
         this.value[rdoKey] = newValue;
         this.eventEmitter.publish('nodeChange', {
             changeType: 'update',
-            sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+            sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
             sourceKey,
             rdoKey,
             previousSourceValue: previousValue,

@@ -72,7 +72,7 @@ class ListMap {
     }
     patchAdd(patchOp) {
         if (!patchOp.rdo)
-            throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath - Key:${patchOp.key}`);
+            throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath - Key:${patchOp.key}`);
         this._map$.set(patchOp.key, patchOp.rdo);
         this._array$.splice(patchOp.index, 0, patchOp.rdo);
     }

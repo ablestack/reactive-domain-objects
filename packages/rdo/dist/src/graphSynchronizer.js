@@ -28,9 +28,9 @@ class GraphSynchronizer {
         /**
          *
          */
-        this.wrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }) => {
-            const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
-            const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
+        this.wrapRdoNode = ({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }) => {
+            const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodeTypePath);
+            const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodeTypePath, sourceNodeInstancePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
             const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
             return wrappedRdoNode;
         };
@@ -56,7 +56,15 @@ class GraphSynchronizer {
             // Node traversal tracking - step-in
             this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
             // Wrap Node
-            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this._nodeTracker.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+            const wrappedRdoNode = this.wrapRdoNode({
+                sourceNodeTypePath: this._nodeTracker.getSourceNodePath(),
+                sourceNodeInstancePath: this._nodeTracker.getSourceNodeInstancePath(),
+                sourceNode,
+                rdoNode: rdoNodeItemValue,
+                wrappedParentRdoNode: wrappedParentRdoNode,
+                rdoNodeItemKey,
+                sourceNodeItemKey,
+            });
             // Test to see if node should be ignored, if not, synchronize
             if (wrappedRdoNode.ignore) {
                 logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
@@ -106,7 +114,7 @@ class GraphSynchronizer {
             return;
         }
         logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
-        const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
+        const wrappedRdoNode = this.wrapRdoNode({ sourceNodeTypePath: '', sourceNodeInstancePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });
         wrappedRdoNode.smartSync();
         logger.trace('smartSync - object tree sync traversal completed', { rootSourceNode, rootRdo });
     }

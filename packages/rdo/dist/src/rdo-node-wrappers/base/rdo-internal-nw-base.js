@@ -25,19 +25,19 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
         let rdo = undefined;
         if ((_a = this.getNodeOptions()) === null || _a === void 0 ? void 0 : _a.makeRdo) {
             rdo = this.getNodeOptions().makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from nodeOptions`, sourceObject, rdo);
+            logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from nodeOptions`, sourceObject, rdo);
         }
         if (!rdo && __1.isIMakeRdo(this.value)) {
             rdo = this.value.makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from IMakeRdo`, sourceObject, rdo);
+            logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from IMakeRdo`, sourceObject, rdo);
         }
         if (!rdo && ((_b = this.globalNodeOptions) === null || _b === void 0 ? void 0 : _b.makeRdo)) {
             rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
+            logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
         }
         if (!rdo && __1.NodeTypeUtils.isPrimitive(sourceObject)) {
             rdo = sourceObject;
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
+            logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from primitive`, sourceObject, rdo);
         }
         // Auto-create Rdo object field if autoMakeRdoTypes.collectionElements
         // Note: this creates an observable tree in the exact shape of the source data
@@ -50,7 +50,7 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
             else {
                 this.autoInstantiateNodeAsPlainObjectLiterals(sourceObject);
             }
-            logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
+            logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
         }
         return rdo;
     }

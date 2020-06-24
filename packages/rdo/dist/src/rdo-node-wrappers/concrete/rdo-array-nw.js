@@ -41,8 +41,8 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
     //     return this.clearElements();
     //   } else {
-    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
-    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
+    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
     //     // Execute
     //     const changed = super.synchronizeCollection();
     //     return changed;
@@ -73,7 +73,7 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             switch (patchOp.op) {
                 case 'add':
                     if (!patchOp.rdo)
-                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath:${this.wrappedSourceNode.sourceNodePath},  Key:${patchOp.key}`);
+                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
                     this.value.splice(patchOp.index, 0, patchOp.rdo);
                     // If primitive, break. Else, fall through to update, so the values sync to the new item
                     if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
@@ -93,7 +93,7 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             // PUBLISH
             this.eventEmitter.publish('nodeChange', {
                 changeType: patchOp.op,
-                sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceKey: patchOp.key,
                 rdoKey: patchOp.key,
                 previousSourceValue: patchOp.previousSourceValue,

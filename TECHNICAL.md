@@ -189,14 +189,14 @@ graphSynchronizer.subscribeToNodeChanges((data) => { /* custom code here */ });
 
 The data payload contains the following properties:
 
-| Parameter      | Description                                     |
-| -------------- | ----------------------------------------------- |
-| changeType     | 'create' or 'update' or 'delete'                |
-| sourceNodePath | The nodePath of the given node                  |
-| sourceKey      | The fieldname/element key of the given node     |
-| rdoKey         | The corresponding fieldname/key of the RDO node |
-| oldSourceValue | The original value of the source node           |
-| newSourceValue | The new value of the source node                |
+| Parameter          | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| changeType         | 'create' or 'update' or 'delete'                |
+| sourceNodeTypePath | The nodePath of the given node                  |
+| sourceKey          | The fieldname/element key of the given node     |
+| rdoKey             | The corresponding fieldname/key of the RDO node |
+| oldSourceValue     | The original value of the source node           |
+| newSourceValue     | The new value of the source node                |
 
 See [Usage Section](#Usage) Examples above for primary documentation for usage. See below for notes and configuration documentation.
 
@@ -334,12 +334,12 @@ Note that the matching algorithm will first try to find a field match _without_ 
 If the names of the RDOs are predictable, but not the same, a method can be supplied to custom generate the Domain Name properties from the source items. The method has the following signature:
 
 ```TypeScript
-({ sourceNodePath, sourcePropKey, sourcePropVal }: { sourceNodePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
+({ sourceNodeTypePath, sourcePropKey, sourcePropVal }: { sourceNodeTypePath: string; sourcePropKey: string; sourcePropVal: any }) => string;
 ```
 
 The parameters that are supplied to the method are as follows:
 
-- `sourceNodePath`: The source path for the parent object of the current item (see the config section on Paths)
+- `sourceNodeTypePath`: The source path for the parent object of the current item (see the config section on Paths)
 - `sourcePropKey`: The key for the current source item on it's parent property
 - `sourcePropVal`: The value for the current source item
 
@@ -519,17 +519,17 @@ The interface has the following signature:
 
 ```TypeScript
 interface IHasCustomRdoFieldNames<S extends Record<string, any>, D extends Record<string, any>> {
-  tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: string; sourceFieldVal: any }) => string | undefined;
+  tryGetRdoFieldname: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: string; sourceFieldVal: any }) => string | undefined;
 }
 ```
 
 The interface requires a single method is implemented, which receives:
 
-| Parameter       | Description              |
-| --------------- | ------------------------ |
-| sourceNodePath  | Path of source node      |
-| sourceFieldname | Fieldname of source node |
-| sourceFieldVal  | Value of source node     |
+| Parameter          | Description              |
+| ------------------ | ------------------------ |
+| sourceNodeTypePath | Path of source node      |
+| sourceFieldname    | Fieldname of source node |
+| sourceFieldVal     | Value of source node     |
 
 The method should return a string for the RDO fieldname that the source field corresponds to, or undefined if it does not correspond with any RDO fields
 

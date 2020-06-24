@@ -19,7 +19,7 @@ export interface IGraphSyncOptions {
 export type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
   commonRdoFieldnamePostfix?: string;
-  tryGetRdoFieldname?: <K extends string | number>({ sourceNodePath, sourceFieldname, sourceFieldVal }: { sourceNodePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
+  tryGetRdoFieldname?: <K extends string | number>({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
   makeRdo?: IMakeRdo<any, any, any>['makeRdo'];
   autoMakeRdoTypes?: {
     objectFields: boolean;

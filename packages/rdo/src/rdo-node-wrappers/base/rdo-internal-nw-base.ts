@@ -52,22 +52,22 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
     let rdo: any = undefined;
     if (this.getNodeOptions()?.makeRdo) {
       rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from nodeOptions`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from nodeOptions`, sourceObject, rdo);
     }
 
     if (!rdo && isIMakeRdo(this.value)) {
       rdo = this.value.makeRdo(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from IMakeRdo`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from IMakeRdo`, sourceObject, rdo);
     }
 
     if (!rdo && this.globalNodeOptions?.makeRdo) {
       rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
     }
 
     if (!rdo && NodeTypeUtils.isPrimitive(sourceObject)) {
       rdo = sourceObject;
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from primitive`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from primitive`, sourceObject, rdo);
     }
 
     // Auto-create Rdo object field if autoMakeRdoTypes.collectionElements
@@ -81,9 +81,8 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
         this.autoInstantiateNodeAsPlainObjectLiterals(sourceObject);
       }
 
-      logger.trace(`makeRdoElement - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
+      logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from autoMakeRdoTypes`, sourceObject, rdo);
     }
-
     return rdo;
   }
 

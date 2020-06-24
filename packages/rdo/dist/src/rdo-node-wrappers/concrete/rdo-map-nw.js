@@ -41,7 +41,7 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
     //     return this.clearElements();
     //   } else {
     //     // Validate
-    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
     //     // Execute
     //     return super.synchronizeCollection();
     //   }
@@ -75,7 +75,7 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
             switch (patchOp.op) {
                 case 'add':
                     if (!patchOp.rdo)
-                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath:${this.wrappedSourceNode.sourceNodePath},  Key:${patchOp.key}`);
+                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
                     this.value.set(patchOp.key, patchOp.rdo);
                     // If primitive, break. Else, fall through to update, so the values sync to the new item
                     if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
@@ -95,7 +95,7 @@ class RdoMapNW extends __1.RdoCollectionNWBase {
             // PUBLISH
             this.eventEmitter.publish('nodeChange', {
                 changeType: patchOp.op,
-                sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceKey: patchOp.key,
                 rdoKey: patchOp.key,
                 previousSourceValue: patchOp.previousSourceValue,

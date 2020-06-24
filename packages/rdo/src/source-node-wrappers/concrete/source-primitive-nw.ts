@@ -7,20 +7,22 @@ export class SourcePrimitiveNW<K extends string | number, S, D> extends SourceBa
 
   constructor({
     value,
-    sourceNodePath,
+    sourceNodeTypePath,
+    sourceNodeInstancePath,
     key,
     typeInfo,
     matchingNodeOptions,
     globalNodeOptions,
   }: {
     value: S | null | undefined;
-    sourceNodePath: string;
+    sourceNodeTypePath: string;
+    sourceNodeInstancePath: string;
     key: K | undefined;
     typeInfo: NodeTypeInfo;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
-    super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
+    super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
     this._value = value;
   }
 

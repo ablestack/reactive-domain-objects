@@ -48,10 +48,10 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
 
   /** */
   public getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
       mutableNodeCacheItem = { sourceData: new Array<S>(), rdoMap: new Map<K, D>() };
-      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
   }
@@ -145,8 +145,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
 
     // Instrumentation
-    //consol e.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
-    logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
+    console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
+    logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
 
     // Execute
     this.executePatchOperations(patchOperations);
@@ -184,14 +184,14 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
 
   //       // If no target item, Make
   //       if (targetItem === null || targetItem === undefined) {
-  //         if (!this.makeRdoElement) throw Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - this.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
+  //         if (!this.makeRdoElement) throw Error(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - this.makeItem wan null or undefined. It must be defined when targetItem collection not empty`);
   //         targetItem = this.makeRdoElement(sourceItem);
   //         if (!targetItem) {
-  //           throw Error(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - this.makeRdoElement produced null or undefined`);
+  //           throw Error(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - this.makeRdoElement produced null or undefined`);
   //         }
   //         this.insertItem(key, targetItem);
   //         changed = true;
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, previousSourceValue: undefined, newSourceValue: sourceItem });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceValue: undefined, newSourceValue: sourceItem });
   //       }
 
   //       // Update directly if Leaf node
@@ -217,7 +217,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //     if (targetCollectionKeysInDestinationOnly.length > 0) {
   //       targetCollectionKeysInDestinationOnly.forEach((key) => {
   //         const deletedItem = this.deleteElement(key);
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, previousSourceValue: deletedItem, newSourceValue: undefined });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceValue: deletedItem, newSourceValue: undefined });
   //       });
   //       changed = true;
   //     }
@@ -245,27 +245,27 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //   // Use IMakeCollectionKey provided on options if available
   //   if (this.getNodeOptions()?.makeRdoCollectionKey?.fromRdoElement) {
   //     const key = this.getNodeOptions()!.makeRdoCollectionKey!.fromRdoElement(item);
-  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from nodeOptions: ${key}`);
+  //     logger.trace(`makeCollectionKey - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making key from nodeOptions: ${key}`);
   //     return key;
   //   }
 
   //   if (isIMakeCollectionKey(this.value)) {
   //     const key = this.value.makeCollectionKeyFromRdoElement(item);
-  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from IMakeCollectionKeyFromRdoElement: ${key}`);
+  //     logger.trace(`makeCollectionKey - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making key from IMakeCollectionKeyFromRdoElement: ${key}`);
   //     return key;
   //   }
 
   //   // If primitive, the item is the key
   //   if (NodeTypeUtils.isPrimitive(item)) {
   //     const key = item;
-  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from Primitive value: ${key}`);
+  //     logger.trace(`makeCollectionKey - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making key from Primitive value: ${key}`);
   //     return key;
   //   }
 
   //   // Look for idKey
   //   if (config.defaultIdKey in item) {
   //     const key = item[config.defaultIdKey];
-  //     logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKey: ${key}`);
+  //     logger.trace(`makeCollectionKey - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making key from defaultIdKey: ${key}`);
   //     return key;
   //   }
 
@@ -274,12 +274,12 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //     const defaultIdKeyWithPostfix = `${config.defaultIdKey}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
   //     if (defaultIdKeyWithPostfix in item) {
   //       const key = item[defaultIdKeyWithPostfix];
-  //       logger.trace(`makeCollectionKey - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - making key from defaultIdKeyWithPostfix: ${key}`);
+  //       logger.trace(`makeCollectionKey - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making key from defaultIdKeyWithPostfix: ${key}`);
   //       return key;
   //     }
   //   }
 
-  //   throw new Error(`Path: ${this.wrappedSourceNode.sourceNodePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
+  //   throw new Error(`Path: ${this.wrappedSourceNode.sourceNodeTypePath} - could not find makeKeyFromRdoElement implementation either via config or interface. See documentation for details`);
   // };
 
   public abstract elements(): Iterable<D>;

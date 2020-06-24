@@ -76,9 +76,9 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
   //     return this.clearElements();
   //   } else {
-  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
+  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
 
-  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+  //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
 
   //     // Execute
   //     return super.synchronizeCollection();
@@ -120,7 +120,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
       // EXECUTE
       switch (patchOp.op) {
         case 'add':
-          if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath:${this.wrappedSourceNode.sourceNodePath},  Key:${patchOp.key}`);
+          if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
           this.value.add(patchOp.rdo);
           // If primitive, break. Else, fall through to update, so the values sync to the new item
           if (NodeTypeUtils.isPrimitive(patchOp.rdo)) break;
@@ -140,7 +140,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
       // PUBLISH
       this.eventEmitter.publish('nodeChange', {
         changeType: patchOp.op,
-        sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
         sourceKey: patchOp.key,
         rdoKey: patchOp.key,
         previousSourceValue: patchOp.previousSourceValue,

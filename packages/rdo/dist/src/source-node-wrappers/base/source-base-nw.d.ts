@@ -2,12 +2,14 @@ import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions,
 export declare abstract class SourceBaseNW<K extends string | number, S, D> implements ISourceNodeWrapper<K, S, D> {
     private _key;
     private _typeInfo;
-    private _sourceNodePath;
+    private _sourceNodeTypePath;
+    private _sourceNodeInstancePath;
     private _matchingNodeOptions;
     private _globalNodeOptions;
     private _wrappedRdoNode;
-    constructor({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }: {
-        sourceNodePath: string;
+    constructor({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }: {
+        sourceNodeTypePath: string;
+        sourceNodeInstancePath: string;
         key: K | undefined;
         typeInfo: NodeTypeInfo;
         matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
@@ -15,7 +17,8 @@ export declare abstract class SourceBaseNW<K extends string | number, S, D> impl
     });
     get typeInfo(): NodeTypeInfo;
     get key(): K | undefined;
-    get sourceNodePath(): string;
+    get sourceNodeTypePath(): string;
+    get sourceNodeInstancePath(): string;
     get matchingNodeOptions(): INodeSyncOptions<any, any, any> | undefined;
     get globalNodeOptions(): IGlobalNodeOptions | undefined;
     get wrappedRdoNode(): IRdoNodeWrapper<K, S, any> | undefined;

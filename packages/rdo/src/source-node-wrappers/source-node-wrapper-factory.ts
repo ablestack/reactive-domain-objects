@@ -12,12 +12,14 @@ export class SourceNodeWrapperFactory {
   }
 
   public make<K extends string | number, S, D>({
-    sourceNodePath,
+    sourceNodeTypePath,
+    sourceNodeInstancePath,
     value,
     key,
     matchingNodeOptions,
   }: {
-    sourceNodePath: string;
+    sourceNodeTypePath: string;
+    sourceNodeInstancePath: string;
     value: any;
     key: K | undefined; // Key should only even be undefined on root object
     matchingNodeOptions?: INodeSyncOptions<K, S, D> | undefined;
@@ -26,18 +28,18 @@ export class SourceNodeWrapperFactory {
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return new SourcePrimitiveNW<K, S, D>({ value, key, sourceNodePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new SourcePrimitiveNW<K, S, D>({ value, key, sourceNodeTypePath, sourceNodeInstancePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
       }
       case 'Object': {
         if (typeof key === 'string' || typeof key === 'undefined') {
-          const o = new SourceObjectNW<string, S, D>({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+          const o = new SourceObjectNW<string, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
           return (o as unknown) as ISourceNodeWrapper<K, S, D>;
         } else {
           throw new Error(`Key for SourceObjects must be of type string (or undefined in the case of the root element). Found key of type ${typeof key}`);
         }
       }
       case 'Collection': {
-        return new SourceArrayNW<K, S, D>({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new SourceArrayNW<K, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.stringifiedType}`);

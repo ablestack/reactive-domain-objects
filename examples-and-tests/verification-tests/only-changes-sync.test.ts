@@ -30,7 +30,7 @@ const logger = Logger.make('map-sync.test.ts');
 // CONFIG
 // --------------------------------------------------------------
 const config: IGraphSyncOptions = {
-  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
+  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors/books' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };
 

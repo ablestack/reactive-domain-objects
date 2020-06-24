@@ -1,5 +1,5 @@
-declare function nonKeyedCollectionSizeCheck({ sourceNodePath, collectionSize, collectionType }: {
-    sourceNodePath: string;
+declare function nonKeyedCollectionSizeCheck({ sourceNodeTypePath, collectionSize, collectionType }: {
+    sourceNodeTypePath: string;
     collectionSize: number;
     collectionType: string;
 }): void;

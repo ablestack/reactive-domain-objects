@@ -1,12 +1,12 @@
 import { InternalNodeKind } from '..';
 export declare class NodeTracker {
-    private _nodePathSeperator;
+    static readonly nodePathSeperator = "/";
     private _sourceNodeInstancePathStack;
-    private _sourceNodePathStack;
+    private _sourceNodeTypePathStack;
     pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind): void;
     popSourceNodeInstancePathFromStack(sourceNodeKind: InternalNodeKind): void;
     private _sourceNodeInstancePath;
     getSourceNodeInstancePath(): string;
-    private _sourceNodePath;
+    private _sourceNodeTypePath;
     getSourceNodePath(): string;
 }

@@ -8,9 +8,9 @@ const logger = Logger.make('custom-sync.test.ts');
 // --------------------------------------------------------------
 const config: IGraphSyncOptions = {
   targetedNodeOptions: [
-    { sourceNodeMatcher: { nodePath: 'bar.mapOfBaz' }, makeRdo: (sourceNode: Baz) => new BazRdo() },
-    { sourceNodeMatcher: { nodePath: 'bar.baz.mapOfFred' }, makeRdo: (sourceNode: Fred) => new FredRdo() },
-    { sourceNodeMatcher: { nodePath: 'bar.mapOfBaz.mapOfFred' }, makeRdo: (sourceNode: Fred) => new FredRdo() },
+    { sourceNodeMatcher: { nodePath: 'bar/mapOfBaz' }, makeRdo: (sourceNode: Baz) => new BazRdo() },
+    { sourceNodeMatcher: { nodePath: 'bar/baz/mapOfFred' }, makeRdo: (sourceNode: Fred) => new FredRdo() },
+    { sourceNodeMatcher: { nodePath: 'bar/mapOfBaz/mapOfFred' }, makeRdo: (sourceNode: Fred) => new FredRdo() },
   ],
 };
 

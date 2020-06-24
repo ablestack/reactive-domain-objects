@@ -4,8 +4,9 @@ export declare class SourceNodeWrapperFactory {
     constructor({ globalNodeOptions }: {
         globalNodeOptions: IGlobalNodeOptions | undefined;
     });
-    make<K extends string | number, S, D>({ sourceNodePath, value, key, matchingNodeOptions, }: {
-        sourceNodePath: string;
+    make<K extends string | number, S, D>({ sourceNodeTypePath, sourceNodeInstancePath, value, key, matchingNodeOptions, }: {
+        sourceNodeTypePath: string;
+        sourceNodeInstancePath: string;
         value: any;
         key: K | undefined;
         matchingNodeOptions?: INodeSyncOptions<K, S, D> | undefined;

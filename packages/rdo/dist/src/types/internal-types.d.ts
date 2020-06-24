@@ -22,7 +22,8 @@ export interface ISourceNodeWrapper<K extends string | number, S, D> {
     readonly typeInfo: NodeTypeInfo;
     readonly value: S | Iterable<S> | null | undefined;
     readonly key: K | undefined;
-    readonly sourceNodePath: string;
+    readonly sourceNodeTypePath: string;
+    readonly sourceNodeInstancePath: string;
     readonly matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     readonly globalNodeOptions: IGlobalNodeOptions | undefined;
     readonly wrappedRdoNode: IRdoNodeWrapper<K, S, D> | undefined;
@@ -71,8 +72,9 @@ export declare type ISyncChildNode = <K extends string | number, D>({ wrappedPar
     rdoNodeItemKey: K;
     sourceNodeItemKey: K;
 }) => boolean;
-export declare type IWrapRdoNode = <K extends string | number, S, D>({ sourceNodePath, rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey, }: {
-    sourceNodePath: string;
+export declare type IWrapRdoNode = <K extends string | number, S, D>({ sourceNodeTypePath, sourceNodeInstancePath, rdoNode, sourceNode, wrappedParentRdoNode: parentRdoNode, rdoNodeItemKey, sourceNodeItemKey, }: {
+    sourceNodeTypePath: string;
+    sourceNodeInstancePath: string;
     rdoNode: D | undefined;
     sourceNode: S;
     wrappedParentRdoNode?: IRdoInternalNodeWrapper<any, any, any> | undefined;

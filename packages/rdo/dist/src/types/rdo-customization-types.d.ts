@@ -1,6 +1,6 @@
 export interface IHasCustomRdoFieldNames<K extends string> {
-    tryGetRdoFieldname: ({ sourceNodePath, sourceFieldname, sourceFieldVal }: {
-        sourceNodePath: string;
+    tryGetRdoFieldname: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: {
+        sourceNodeTypePath: string;
         sourceFieldname: K;
         sourceFieldVal: any;
     }) => K | undefined;

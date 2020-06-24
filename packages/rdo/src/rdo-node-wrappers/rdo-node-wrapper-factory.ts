@@ -60,7 +60,7 @@ export class RdoNodeWrapperFactory {
 
     // Check if custom collection type
     if (typeInfo.type === 'ISyncableCollection') {
-      logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+      logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
       return new RdoSyncableCollectionNW<K, S, D>({
         value: value as ISyncableRDOCollection<K, S, D>,
         typeInfo,
@@ -83,11 +83,11 @@ export class RdoNodeWrapperFactory {
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        throw new Error(`Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers. Key:${key}. SourceNodePath:${wrappedSourceNode.sourceNodePath}`);
+        throw new Error(`Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers. Key:${key}. SourceNodePath:${wrappedSourceNode.sourceNodeTypePath}`);
       }
       case '[object Object]': {
         if (typeof key === 'string' || typeof key === 'undefined') {
-          logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+          logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
           const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
           const o = new RdoObjectNW({
             value,
@@ -110,7 +110,7 @@ export class RdoNodeWrapperFactory {
         }
       }
       case '[object Array]': {
-        logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+        logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
         const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
         const a = new RdoArrayNW<S, D>({
           value: value as Array<D>,
@@ -129,7 +129,7 @@ export class RdoNodeWrapperFactory {
         return (a as unknown) as IRdoNodeWrapper<K, S, D>;
       }
       case '[object Map]': {
-        logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+        logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
         return new RdoMapNW<K, S, D>({
           value: value as Map<K, D>,
           typeInfo,
@@ -146,7 +146,7 @@ export class RdoNodeWrapperFactory {
         });
       }
       case '[object Set]': {
-        logger.trace(`Wrapping Node ${key} with RdoSetNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+        logger.trace(`Wrapping Node ${key} with RdoSetNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
         return new RdoSetNW<K, S, D>({
           value: value as Set<D>,
           typeInfo,

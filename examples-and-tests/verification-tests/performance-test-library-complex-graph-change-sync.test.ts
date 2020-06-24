@@ -34,7 +34,7 @@ const CHANGE_SYNC_MAX_TIME_MS = 2000;
 // CONFIG
 // --------------------------------------------------------------
 const config: IGraphSyncOptions = {
-  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors.books' }, makeRdo: (book: Book) => new BookRDO() }],
+  targetedNodeOptions: [{ sourceNodeMatcher: { nodePath: 'authors/books' }, makeRdo: (book: Book) => new BookRDO() }],
   globalNodeOptions: { commonRdoFieldnamePostfix: '$' },
 };
 
