@@ -119,6 +119,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     // Loop through and execute (note, the operations are in descending order by index
 
     for (const patchOp of patchOperations) {
+      // EXECUTE
       switch (patchOp.op) {
         case 'add':
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
@@ -135,6 +136,16 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
           throw new Error(`Unknown operation: ${patchOp.op}`);
           break;
       }
+
+      // PUBLISH
+      this.eventEmitter.publish('nodeChange', {
+        changeType: patchOp.op,
+        sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+        sourceKey: patchOp.key,
+        rdoKey: patchOp.key,
+        previousSourceValue: patchOp.previousSourceValue,
+        newSourceValue: patchOp.newSourceValue,
+      });
     }
   }
 }

@@ -1,6 +1,6 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { Marray } from '@ablestack/rdo';
+import { ListMap } from '@ablestack/rdo';
 
 const logger = Logger.make('map-sync.test.ts');
 
@@ -14,7 +14,7 @@ type AllCollectionTypesWithObjects = {
   arrayOfObjects: (SimpleObject | undefined | null)[];
   mapOfObjects: (SimpleObject | undefined | null)[];
   setOfObjects: (SimpleObject | undefined | null)[];
-  customCollectionOfObjects: (SimpleObject | undefined | null)[];
+  listMapOfObjects: (SimpleObject | undefined | null)[];
 };
 
 export type SimpleObject = { id: string; __type?: string };
@@ -25,7 +25,7 @@ export const allCollectionsTypesWithObjectsJSON: AllCollectionTypesWithObjects =
   arrayOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
   mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
   setOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-  customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  listMapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
 };
 
 //
@@ -35,7 +35,7 @@ export class AllCollectionTypesWithObjectsRDO {
   public arrayOfObjects = new Array<SimpleRDO>();
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
-  public customCollectionOfObjects = new Marray({
+  public listMapOfObjects = new ListMap({
     makeCollectionKey: (o: SimpleObject) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });
@@ -65,7 +65,7 @@ const config: IGraphSyncOptions = {
       makeRdo: (o: SimpleObject) => new SimpleRDO(),
     },
     {
-      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'listMapOfObjectsObject' },
       makeRdo: (o: SimpleObject) => new SimpleRDO(),
     },
   ],
@@ -83,7 +83,7 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(0);
 
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsTypesWithObjectsJSON });
@@ -92,5 +92,5 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3);
 });

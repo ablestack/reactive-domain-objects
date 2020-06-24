@@ -1,6 +1,6 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { Marray } from '@ablestack/rdo';
+import { ListMap } from '@ablestack/rdo';
 import _ from 'lodash';
 import { librarySourceJSON } from '../supporting-files/library-source-data';
 import { LibraryRDO, BookRDO } from '../supporting-files/library-rdo-models';

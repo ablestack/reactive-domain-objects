@@ -14,7 +14,7 @@ class RdoNodeWrapperFactory {
         this._defaultEqualityComparer = defaultEqualityComparer;
         this._targetedOptionMatchersArray = targetedOptionMatchersArray;
     }
-    make({ value, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }) {
+    make({ value, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }) {
         if (value === null || value === undefined)
             throw new Error('Rdo value should not be null or undefined');
         const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
@@ -23,18 +23,7 @@ class RdoNodeWrapperFactory {
             case '[object Date]':
             case '[object Number]':
             case '[object String]': {
-                logger.trace(`Wrapping Node ${key} with RdoPrimitiveNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
-                return new _1.RdoPrimitiveNW({
-                    value: value,
-                    key,
-                    wrappedParentRdoNode,
-                    wrappedSourceNode,
-                    typeInfo,
-                    matchingNodeOptions,
-                    globalNodeOptions: this._globalNodeOptions,
-                    targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-                    eventEmitter: this._eventEmitter,
-                });
+                throw new Error('Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers');
             }
             case '[object Object]': {
                 if (typeof key === 'string' || typeof key === 'undefined') {
@@ -43,6 +32,7 @@ class RdoNodeWrapperFactory {
                     const o = new _1.RdoObjectNW({
                         value,
                         key,
+                        mutableNodeCache,
                         wrappedParentRdoNode,
                         wrappedSourceNode: wrappedSourceNodeTyped,
                         typeInfo,
@@ -67,6 +57,7 @@ class RdoNodeWrapperFactory {
                     value: value,
                     typeInfo,
                     key: String(key),
+                    mutableNodeCache,
                     wrappedParentRdoNode,
                     wrappedSourceNode: wrappedSourceNodeTyped,
                     syncChildNode: this._syncChildNode,
@@ -84,6 +75,7 @@ class RdoNodeWrapperFactory {
                     value: value,
                     typeInfo,
                     key,
+                    mutableNodeCache,
                     wrappedParentRdoNode,
                     wrappedSourceNode,
                     syncChildNode: this._syncChildNode,
@@ -100,6 +92,7 @@ class RdoNodeWrapperFactory {
                     value: value,
                     typeInfo,
                     key,
+                    mutableNodeCache,
                     wrappedParentRdoNode,
                     wrappedSourceNode,
                     syncChildNode: this._syncChildNode,

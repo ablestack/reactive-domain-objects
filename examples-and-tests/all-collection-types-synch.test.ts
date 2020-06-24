@@ -1,5 +1,5 @@
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { Marray } from '@ablestack/rdo';
+import { ListMap } from '@ablestack/rdo';
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import _ from 'lodash';
 
@@ -23,7 +23,7 @@ const config: IGraphSyncOptions = {
       makeRdo: (o: SimpleObject) => new SimpleRDO(),
     },
     {
-      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'customCollectionOfObjectsObject' },
+      sourceNodeMatcher: { nodeContent: (sourceNode) => sourceNode && sourceNode.__type === 'listMapOfObjectsObject' },
       makeRdo: (o: SimpleObject) => new SimpleRDO(),
     },
   ],
@@ -47,7 +47,7 @@ test('Synchronize collection additions', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
 
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
@@ -57,7 +57,7 @@ test('Synchronize collection additions', () => {
   allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '4' });
   allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '4' });
   allCollectionSourceModelWithEdits.setOfObjects.push({ id: '4' });
-  allCollectionSourceModelWithEdits.customCollectionOfObjects.push({ id: '4' });
+  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '4' });
 
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
@@ -70,7 +70,7 @@ test('Synchronize collection additions', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(5);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(5);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(5);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(5);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(5);
 });
 
 // --------------------------------------------------------------
@@ -90,7 +90,7 @@ test.only('Synchronize collection removals', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
 
   // EXECUTE
   // Mutate data
@@ -101,7 +101,7 @@ test.only('Synchronize collection removals', () => {
   allCollectionSourceModelWithEdits.arrayOfObjects.pop();
   allCollectionSourceModelWithEdits.mapOfObjects.pop();
   allCollectionSourceModelWithEdits.setOfObjects.pop();
-  allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
+  allCollectionSourceModelWithEdits.listMapOfObjects.pop();
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
@@ -111,7 +111,7 @@ test.only('Synchronize collection removals', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3);
 });
 
 // --------------------------------------------------------------
@@ -131,7 +131,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(1);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(1);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(1);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(1);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(1);
 
   // EXECUTE
   // Mutate data
@@ -142,7 +142,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   allCollectionSourceModelWithEdits.arrayOfObjects.pop();
   allCollectionSourceModelWithEdits.mapOfObjects.pop();
   allCollectionSourceModelWithEdits.setOfObjects.pop();
-  allCollectionSourceModelWithEdits.customCollectionOfObjects.pop();
+  allCollectionSourceModelWithEdits.listMapOfObjects.pop();
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
@@ -152,7 +152,7 @@ test('Synchronize collection removals - down to zero - with sourceNodeMatcher ta
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(0);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(0);
 });
 
 // --------------------------------------------------------------
@@ -172,7 +172,7 @@ test('Synchronize collection element edit', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
 
   // EXECUTE
   // Mutate data
@@ -183,7 +183,7 @@ test('Synchronize collection element edit', () => {
   allCollectionSourceModelWithEdits.arrayOfObjects[0]!.id = '4';
   allCollectionSourceModelWithEdits.mapOfObjects[0]!.id = '4';
   allCollectionSourceModelWithEdits.setOfObjects[0]!.id = '4';
-  allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
+  allCollectionSourceModelWithEdits.listMapOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
@@ -197,8 +197,8 @@ test('Synchronize collection element edit', () => {
   expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.listMapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.listMapOfObjects.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------
@@ -218,7 +218,7 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.customCollectionOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
 
   // EXECUTE
   // Mutate data
@@ -229,7 +229,7 @@ test('Synchronize collection element - handle null value edits', () => {
   allCollectionSourceModelWithEdits.arrayOfObjects[0]!.id = '4';
   allCollectionSourceModelWithEdits.mapOfObjects[0]!.id = '4';
   allCollectionSourceModelWithEdits.setOfObjects[0]!.id = '4';
-  allCollectionSourceModelWithEdits.customCollectionOfObjects[0]!.id = '4';
+  allCollectionSourceModelWithEdits.listMapOfObjects[0]!.id = '4';
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
@@ -244,8 +244,8 @@ test('Synchronize collection element - handle null value edits', () => {
   expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesRDO.customCollectionOfObjects.get('4')?.id).toEqual('4');
-  expect(allCollectionTypesRDO.customCollectionOfObjects.get('1')).toBeUndefined();
+  expect(allCollectionTypesRDO.listMapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.listMapOfObjects.get('1')).toBeUndefined();
 });
 
 // --------------------------------------------------------------
@@ -264,8 +264,8 @@ export type AllCollections = {
   setOfNumbers: (number | undefined | null)[];
   setOfObjects: (SimpleObject | undefined | null)[];
 
-  customCollectionOfNumbers: (number | undefined | null)[];
-  customCollectionOfObjects: (SimpleObject | undefined | null)[];
+  listMapOfNumbers: (number | undefined | null)[];
+  listMapOfObjects: (SimpleObject | undefined | null)[];
 };
 
 export type SimpleObject = { id: string; __type?: string };
@@ -279,8 +279,8 @@ export const allCollectionsJSON_Trio: AllCollections = {
   mapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
   setOfNumbers: [1, 2, 2, undefined, null, 3],
   setOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
-  customCollectionOfNumbers: [1, 2, 2, undefined, null, 3],
-  customCollectionOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
+  listMapOfNumbers: [1, 2, 2, undefined, null, 3],
+  listMapOfObjects: [{ id: '1', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, { id: '2', __type: 'arrayOfObjectsObject' }, null, undefined, { id: '3', __type: 'arrayOfObjectsObject' }],
 };
 
 export const allCollectionsJSON_Uno: AllCollections = {
@@ -290,8 +290,8 @@ export const allCollectionsJSON_Uno: AllCollections = {
   mapOfObjects: [{ id: '1', __type: 'mapOfObjectsObject' }],
   setOfNumbers: [1],
   setOfObjects: [{ id: '1', __type: 'setOfObjectsObject' }],
-  customCollectionOfNumbers: [1],
-  customCollectionOfObjects: [{ id: '1', __type: 'customCollectionOfObjectsObject' }],
+  listMapOfNumbers: [1],
+  listMapOfObjects: [{ id: '1', __type: 'listMapOfObjectsObject' }],
 };
 
 //
@@ -300,7 +300,7 @@ export class AllCollectionTypesRDO {
   public arrayOfObjects = new Array<SimpleRDO>();
   public mapOfObjects = new Map<string, SimpleRDO>();
   public setOfObjects = new Set<SimpleRDO>();
-  public customCollectionOfObjects = new Marray({
+  public listMapOfObjects = new ListMap({
     makeCollectionKey: (o: SimpleObject) => o.id,
     makeRdo: (o: SimpleRDO) => new SimpleRDO(),
   });

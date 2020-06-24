@@ -7,20 +7,20 @@ const source_base_nw_1 = require("../base/source-base-nw");
 const node_type_utils_1 = require("../../rdo-node-wrappers/utils/node-type.utils");
 const types_1 = require("../../types");
 class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
-    constructor({ value, sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions, }) {
-        super({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions });
+    constructor({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
+        super({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
         //------------------------------
         // ISourceCollectionNodeWrapper
         //------------------------------
         this.makeCollectionKey = (item) => {
             var _a, _b;
             if (item === null || item === undefined)
-                return undefined;
+                throw new Error(`Can not make collection key from null or undefined source object`);
             if ((_b = (_a = this.matchingNodeOptions) === null || _a === void 0 ? void 0 : _a.makeRdoCollectionKey) === null || _b === void 0 ? void 0 : _b.fromSourceElement) {
                 // Use IMakeCollectionKey provided on options if available
                 return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
             }
-            if (types_1.isIMakeCollectionKeyFromSourceElement(this.wrappedRdoNode)) {
+            if (types_1.isIMakeCollectionKey(this.wrappedRdoNode)) {
                 return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
             }
             // If primitive, the item is the key
@@ -31,7 +31,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             if (item[__1.config.defaultIdKey]) {
                 return item[__1.config.defaultIdKey];
             }
-            return undefined;
+            throw new Error(`Could not make collection `);
         };
         this._value = value.filter((element) => element !== null && element !== undefined);
     }

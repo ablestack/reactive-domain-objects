@@ -1,4 +1,4 @@
-import { RdoArrayNW, RdoObjectNW, RdoPrimitiveNW, RdoMapNW, RdoSetNW } from '.';
+import { RdoArrayNW, RdoObjectNW, RdoMapNW, RdoSetNW } from '.';
 import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes, IRdoInternalNodeWrapper } from '..';
 import { Logger } from '../infrastructure/logger';
 import { NodeTypeUtils } from './utils/node-type.utils';
@@ -63,19 +63,7 @@ export class RdoNodeWrapperFactory {
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        logger.trace(`Wrapping Node ${key} with RdoPrimitiveNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
-        return new RdoPrimitiveNW<K, S, D>({
-          value: value as D,
-          key,
-          mutableNodeCache,
-          wrappedParentRdoNode,
-          wrappedSourceNode,
-          typeInfo,
-          matchingNodeOptions,
-          globalNodeOptions: this._globalNodeOptions,
-          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-          eventEmitter: this._eventEmitter,
-        });
+        throw new Error('Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers');
       }
       case '[object Object]': {
         if (typeof key === 'string' || typeof key === 'undefined') {

@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphSynchronizer = void 0;
 const _1 = require(".");
-const rdo_node_wrapper_factory_1 = require("./rdo-node-wrappers/rdo-node-wrapper-factory");
-const logger_1 = require("./infrastructure/logger");
 const event_emitter_1 = require("./infrastructure/event-emitter");
+const logger_1 = require("./infrastructure/logger");
+const mutable_node_cache_1 = require("./infrastructure/mutable-node-cache");
+const rdo_node_wrapper_factory_1 = require("./rdo-node-wrappers/rdo-node-wrapper-factory");
+const node_tracker_1 = require("./infrastructure/node-tracker");
 const logger = logger_1.Logger.make('GraphSynchronizer');
 /**
  *
@@ -14,12 +16,12 @@ const logger = logger_1.Logger.make('GraphSynchronizer');
  */
 class GraphSynchronizer {
     // ------------------------------------------------------------------------------------------------------------------
+    // PRIVATE PROPERTIES
+    // ------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     // ------------------------------------------------------------------------------------------------------------------
     constructor(options) {
-        this._sourceObjectMap = new Map();
-        this._sourceNodeInstancePathStack = new Array();
-        this._sourceNodePathStack = new Array();
         // ------------------------------------------------------------------------------------------------------------------
         // PRIVATE METHODS
         // ------------------------------------------------------------------------------------------------------------------
@@ -28,8 +30,8 @@ class GraphSynchronizer {
          */
         this.wrapRdoNode = ({ sourceNodePath, sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey, wrappedParentRdoNode, }) => {
             const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodePath);
-            const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, lastSourceNode: this.getLastSourceNodeInstancePathValue(), matchingNodeOptions });
-            const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
+            const wrappedSourceNode = this._sourceNodeWrapperFactory.make({ sourceNodePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
+            const wrappedRdoNode = this._rdoNodeWrapperFactory.make({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
             return wrappedRdoNode;
         };
         /**
@@ -41,32 +43,31 @@ class GraphSynchronizer {
             const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
             // Validate
             if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
-                throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+                throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
             if (rdoNodeItemValue === undefined) {
-                logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`);
+                logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`);
                 return false;
             }
             const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
             if (sourceNode === undefined) {
-                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
+                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
                 return false;
             }
             // Node traversal tracking - step-in
-            this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
+            this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
             // Wrap Node
-            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+            const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this._nodeTracker.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
             // Test to see if node should be ignored, if not, synchronize
             if (wrappedRdoNode.ignore) {
                 logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
                 changed = false;
             }
             else {
-                logger.trace(`running smartSync on (${this.getSourceNodePath()})`);
+                logger.trace(`running smartSync on (${this._nodeTracker.getSourceNodePath()})`);
                 changed = wrappedRdoNode.smartSync();
             }
             // Node traversal tracking - step-out
-            this.setLastSourceNodeInstancePathValue(sourceNode);
-            this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
+            this._nodeTracker.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
             return changed;
         };
         this._eventEmitter = new event_emitter_1.EventEmitter();
@@ -74,6 +75,8 @@ class GraphSynchronizer {
         this._globalNodeOptions = options === null || options === void 0 ? void 0 : options.globalNodeOptions;
         this._targetedOptionNodePathsMap = new Map();
         this._targetedOptionMatchersArray = new Array();
+        this._mutableNodeCache = new mutable_node_cache_1.MutableNodeCache();
+        this._nodeTracker = new node_tracker_1.NodeTracker();
         if (options === null || options === void 0 ? void 0 : options.targetedNodeOptions) {
             options === null || options === void 0 ? void 0 : options.targetedNodeOptions.forEach((targetedNodeOptionsItem) => {
                 if (targetedNodeOptionsItem.sourceNodeMatcher.nodePath)
@@ -90,49 +93,6 @@ class GraphSynchronizer {
             defaultEqualityComparer: this._defaultEqualityComparer,
             targetedOptionMatchersArray: this._targetedOptionMatchersArray,
         });
-    }
-    // ------------------------------------------------------------------------------------------------------------------
-    // PRIVATE PROPERTIES
-    // ------------------------------------------------------------------------------------------------------------------
-    pushSourceNodeInstancePathOntoStack(key, sourceNodeKind) {
-        logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
-        this._sourceNodeInstancePathStack.push(key.toString());
-        // reset locally cached dependencies
-        this._sourceNodeInstancePath = undefined;
-        // push to typepath if objectProperty
-        if (sourceNodeKind === 'Object') {
-            this._sourceNodePathStack.push(key.toString());
-            // reset locally cached dependencies
-            this._sourceNodePath = undefined;
-        }
-    }
-    popSourceNodeInstancePathFromStack(sourceNodeKind) {
-        const key = this._sourceNodeInstancePathStack.pop();
-        logger.trace(`Popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
-        // reset locally cached dependencies
-        this._sourceNodeInstancePath = undefined;
-        // pop from typepath if objectProperty
-        if (sourceNodeKind === 'Object') {
-            this._sourceNodePathStack.pop();
-            // reset locally cached dependencies
-            this._sourceNodePath = undefined;
-        }
-    }
-    getSourceNodeInstancePath() {
-        if (!this._sourceNodeInstancePath)
-            this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join('.');
-        return this._sourceNodeInstancePath || '';
-    }
-    getSourceNodePath() {
-        if (!this._sourceNodePath)
-            this._sourceNodePath = this._sourceNodePathStack.join('.');
-        return this._sourceNodePath || '';
-    }
-    setLastSourceNodeInstancePathValue(value) {
-        this._sourceObjectMap.set(this.getSourceNodeInstancePath(), value);
-    }
-    getLastSourceNodeInstancePathValue() {
-        return this._sourceObjectMap.get(this.getSourceNodeInstancePath());
     }
     // ------------------------------------------------------------------------------------------------------------------
     // PUBLIC METHODS
@@ -155,15 +115,6 @@ class GraphSynchronizer {
     }
     unsubscribeToNodeChanges(func) {
         this._eventEmitter.unsubscribe('nodeChange', func);
-    }
-    /**
-     *
-     *
-     * @memberof GraphSynchronizer
-     * @description clears the previously tracked data
-     */
-    clearTrackedData() {
-        this._sourceObjectMap.clear();
     }
 }
 exports.GraphSynchronizer = GraphSynchronizer;

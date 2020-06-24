@@ -2,12 +2,14 @@ import { RdoCollectionNWBase } from '..';
 import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 export declare class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
     private _value;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
+    constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: Map<K, D>;
         typeInfo: NodeTypeInfo;
         key: K | undefined;
+        mutableNodeCache: MutableNodeCache;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
         defaultEqualityComparer: IEqualityComparer;
@@ -19,14 +21,7 @@ export declare class RdoMapNW<K extends string | number, S, D> extends RdoCollec
     });
     get leafNode(): boolean;
     get value(): Map<K, D>;
-    itemKeys(): IterableIterator<K>;
-    getItem(key: K): D | undefined;
-    updateItem(key: K, value: D): boolean;
-    insertItem(key: K, value: D): void;
-    smartSync(): boolean;
     elements(): Iterable<D>;
     childElementCount(): number;
-    deleteElement(key: K): D | undefined;
-    clearElements(): boolean;
     executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]): void;
 }

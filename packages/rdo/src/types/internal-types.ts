@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
 import { IGlobalNodeOptions, INodeSyncOptions } from '.';
-import { ISyncableRDOCollection, IMakeCollectionKey, isIMakeCollectionKey, IMakeRdoElement, isIMakeRdoElement } from './rdo-collection-types';
-import { MutableNodeCache } from '../infrastructure/mutable-node-cache';
+import { IMakeCollectionKey, IMakeRdoElement, isIMakeCollectionKey, isIMakeRdoElement, ISyncableRDOCollection } from './rdo-collection-types';
 
 export type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 
@@ -10,8 +9,8 @@ export type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type NodeTypeInfo = { kind: NodeKind; type?: RdoFieldType; builtInType: JavaScriptBuiltInType };
-export type NodePatchOperationType = 'add' | 'delete' | 'update';
-export type CollectionNodePatchOperation<K extends string | number, D> = { op: NodePatchOperationType; index: number; key: K; rdo?: D };
+export type NodePatchOperationType = 'add' | 'update' | 'delete';
+export type CollectionNodePatchOperation<K extends string | number, D> = { op: NodePatchOperationType; index: number; key: K; previousSourceValue: any; newSourceValue: any; rdo?: D };
 
 export interface ISourceNodeWrapper<K extends string | number, S, D> {
   readonly typeInfo: NodeTypeInfo;

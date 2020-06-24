@@ -8,15 +8,15 @@ class SourceNodeWrapperFactory {
     constructor({ globalNodeOptions }) {
         this._globalNodeOptions = globalNodeOptions;
     }
-    make({ sourceNodePath, value, key, lastSourceNode, matchingNodeOptions, }) {
+    make({ sourceNodePath, value, key, matchingNodeOptions, }) {
         const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
         switch (typeInfo.kind) {
             case 'Primitive': {
-                return new source_primitive_nw_1.SourcePrimitiveNW({ value, key, sourceNodePath, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+                return new source_primitive_nw_1.SourcePrimitiveNW({ value, key, sourceNodePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
             }
             case 'Object': {
                 if (typeof key === 'string' || typeof key === 'undefined') {
-                    const o = new _1.SourceObjectNW({ value, sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+                    const o = new _1.SourceObjectNW({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
                     return o;
                 }
                 else {
@@ -24,7 +24,7 @@ class SourceNodeWrapperFactory {
                 }
             }
             case 'Collection': {
-                return new _1.SourceArrayNW({ value, sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+                return new _1.SourceArrayNW({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
             }
             default: {
                 throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);

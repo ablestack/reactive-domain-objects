@@ -7,8 +7,8 @@ const logger_1 = require("../../infrastructure/logger");
 const types_1 = require("../../types");
 const logger = logger_1.Logger.make('RdoObjectNW');
 class RdoObjectNW extends __1.RdoInternalNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         /** */
         this.makeContinueSmartSyncFunction = ({ originalSourceNodePath }) => {
             // Build method
@@ -27,6 +27,18 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         this._wrapRdoNode = wrapRdoNode;
     }
     //------------------------------
+    // Protected
+    //------------------------------
+    /** */
+    getNodeInstanceCache() {
+        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath });
+        if (!mutableNodeCacheItem) {
+            mutableNodeCacheItem = { sourceData: null };
+            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodePath, data: mutableNodeCacheItem });
+        }
+        return mutableNodeCacheItem;
+    }
+    //------------------------------
     // IRdoNodeWrapper
     //------------------------------
     get leafNode() {
@@ -43,9 +55,9 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
         const rdo = this.value;
         const sourceObject = this.wrappedSourceNode.value;
-        const lastSourceObject = this.wrappedSourceNode.lastSourceNode;
+        const previousSourceData = this.getNodeInstanceCache();
         // Check if previous source state and new source state are equal
-        const isAlreadyInSync = this._equalityComparer(sourceObject, lastSourceObject);
+        const isAlreadyInSync = this._equalityComparer(sourceObject, previousSourceData.sourceData);
         // Call lifecycle methods if found
         if (__2.IsIBeforeSyncIfNeeded(rdo))
             rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
@@ -76,34 +88,34 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         // Call lifecycle methods if found
         if (__2.IsIAfterSyncIfNeeded(rdo))
             rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
+        // Update cache
+        previousSourceData.sourceData = sourceObject;
         return changed;
     }
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
-    itemKeys() {
-        return Object.keys(this._value);
-    }
-    getItem(key) {
-        return this._value[key];
-    }
-    updateItem(key, value) {
-        if (key in this._value) {
-            //@ts-ignore
-            this._value[key] = value;
-            return true;
-        }
-        else
-            return false;
-    }
-    insertItem(key, value) {
-        if (!(key in this._value)) {
-            //@ts-ignore
-            this._value[key] = value;
-            return true;
-        }
-        return false;
-    }
+    // public itemKeys() {
+    //   return Object.keys(this._value);
+    // }
+    // public getItem(key: K) {
+    //   return this._value[key];
+    // }
+    // public updateItem(key: K, value: D | undefined) {
+    //   if (key in this._value) {
+    //     //@ts-ignore
+    //     this._value[key] = value;
+    //     return true;
+    //   } else return false;
+    // }
+    // public insertItem(key: K, value: D | undefined) {
+    //   if (!(key in this._value)) {
+    //     //@ts-ignore
+    //     this._value[key] = value;
+    //     return true;
+    //   }
+    //   return false;
+    // }
     //--------------------------------------
     // Private Methods
     //--------------------------------------
@@ -122,7 +134,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
             let rdoNodeItemValue;
             if (rdoFieldname) {
-                rdoNodeItemValue = this.getItem(rdoFieldname);
+                rdoNodeItemValue = this.value[rdoFieldname];
             }
             else {
                 // Auto-create Rdo object field if autoMakeRdoTypes.objectFields
@@ -135,9 +147,9 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                     rdoFieldname = sourceFieldname;
                     rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
                     // Insert
-                    this.insertItem(rdoFieldname, rdoNodeItemValue);
+                    this.value[rdoFieldname] = rdoNodeItemValue;
                     // Emit
-                    this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, oldSourceValue: undefined, newSourceValue: sourceFieldVal });
+                    this.eventEmitter.publish('nodeChange', { changeType: 'add', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousSourceValue: undefined, newSourceValue: sourceFieldVal });
                 }
                 else {
                     logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
@@ -148,7 +160,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             // Or else step into child and sync
             if (sourceFieldVal === null || sourceFieldVal === undefined || __1.NodeTypeUtils.isPrimitive(sourceFieldVal)) {
                 logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
-                changed = __1.RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
+                changed = this.primitiveDirectSync({ sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousValue: rdoNodeItemValue, newValue: sourceFieldVal });
             }
             else {
                 logger.trace(`Syncing Field '${rdoFieldname}' in object`);
@@ -216,6 +228,24 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             }
         }
         return rdoFieldname;
+    }
+    /** */
+    primitiveDirectSync({ sourceKey, rdoKey, previousValue, newValue }) {
+        if (Object.is(previousValue, newValue)) {
+            logger.trace(`smartSync - SourceNodePath:${this.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
+            return false;
+        }
+        logger.trace(`primitive value found in domainPropKey ${rdoKey}. Setting from old value to new value`, previousValue, newValue);
+        this.value[rdoKey] = newValue;
+        this.eventEmitter.publish('nodeChange', {
+            changeType: 'update',
+            sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+            sourceKey,
+            rdoKey,
+            previousSourceValue: previousValue,
+            newSourceValue: newValue,
+        });
+        return true;
     }
 }
 exports.RdoObjectNW = RdoObjectNW;

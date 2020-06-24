@@ -1,4 +1,4 @@
-import { RdoInternalNWBase, NodeTypeUtils, RdoPrimitiveNW } from '..';
+import { RdoInternalNWBase, NodeTypeUtils } from '..';
 import {
   IContinueSmartSync,
   IEqualityComparer,
@@ -100,10 +100,10 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     const sourceNodePath = this.wrappedSourceNode.sourceNodePath;
     const rdo = this.value;
     const sourceObject = this.wrappedSourceNode.value;
-    const mutableNodeCacheItem = this.getNodeInstanceCache();
+    const previousSourceData = this.getNodeInstanceCache();
 
     // Check if previous source state and new source state are equal
-    const isAlreadyInSync = this._equalityComparer(sourceObject, mutableNodeCacheItem.sourceData);
+    const isAlreadyInSync = this._equalityComparer(sourceObject, previousSourceData.sourceData);
 
     // Call lifecycle methods if found
     if (IsIBeforeSyncIfNeeded(rdo)) rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
@@ -135,7 +135,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
 
     // Update cache
-    mutableNodeCacheItem.sourceData = sourceObject as S;
+    previousSourceData.sourceData = sourceObject as S;
 
     return changed;
   }
@@ -144,30 +144,30 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
   // IRdoInternalNodeWrapper
   //------------------------------
 
-  public itemKeys() {
-    return Object.keys(this._value);
-  }
+  // public itemKeys() {
+  //   return Object.keys(this._value);
+  // }
 
-  public getItem(key: K) {
-    return this._value[key];
-  }
+  // public getItem(key: K) {
+  //   return this._value[key];
+  // }
 
-  public updateItem(key: K, value: D | undefined) {
-    if (key in this._value) {
-      //@ts-ignore
-      this._value[key] = value;
-      return true;
-    } else return false;
-  }
+  // public updateItem(key: K, value: D | undefined) {
+  //   if (key in this._value) {
+  //     //@ts-ignore
+  //     this._value[key] = value;
+  //     return true;
+  //   } else return false;
+  // }
 
-  public insertItem(key: K, value: D | undefined) {
-    if (!(key in this._value)) {
-      //@ts-ignore
-      this._value[key] = value;
-      return true;
-    }
-    return false;
-  }
+  // public insertItem(key: K, value: D | undefined) {
+  //   if (!(key in this._value)) {
+  //     //@ts-ignore
+  //     this._value[key] = value;
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   //--------------------------------------
   // Private Methods
@@ -189,7 +189,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
 
       let rdoNodeItemValue: any;
       if (rdoFieldname) {
-        rdoNodeItemValue = this.getItem(rdoFieldname);
+        rdoNodeItemValue = this.value[rdoFieldname];
       } else {
         // Auto-create Rdo object field if autoMakeRdoTypes.objectFields
         // Note: this creates an observable tree in the exact shape of the source data
@@ -203,10 +203,10 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
           rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
 
           // Insert
-          this.insertItem(rdoFieldname, rdoNodeItemValue);
+          this.value[rdoFieldname] = rdoNodeItemValue;
 
           // Emit
-          this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, oldSourceValue: undefined, newSourceValue: sourceFieldVal });
+          this.eventEmitter.publish('nodeChange', { changeType: 'add', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousSourceValue: undefined, newSourceValue: sourceFieldVal });
         } else {
           logger.trace(`sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
           continue;
@@ -217,7 +217,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
       // Or else step into child and sync
       if (sourceFieldVal === null || sourceFieldVal === undefined || NodeTypeUtils.isPrimitive(sourceFieldVal)) {
         logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
-        changed = RdoPrimitiveNW.sync({ wrappedParentNode: this, sourceKey: sourceFieldname, rdoKey: rdoFieldname, newValue: sourceFieldVal, eventEmitter: this.eventEmitter });
+        changed = this.primitiveDirectSync({ sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousValue: rdoNodeItemValue, newValue: sourceFieldVal });
       } else {
         logger.trace(`Syncing Field '${rdoFieldname}' in object`);
         changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
@@ -303,4 +303,27 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     // return method
     return continueSmartSync;
   };
+
+  /** */
+  private primitiveDirectSync<S, D>({ sourceKey, rdoKey, previousValue, newValue }: { sourceKey: string | number; rdoKey: string; previousValue: any; newValue: D }) {
+    if (Object.is(previousValue, newValue)) {
+      logger.trace(`smartSync - SourceNodePath:${this.wrappedSourceNode.sourceNodePath}, values evaluate to Object.is equal. Not allocating value`, newValue);
+      return false;
+    }
+
+    logger.trace(`primitive value found in domainPropKey ${rdoKey}. Setting from old value to new value`, previousValue, newValue);
+
+    this.value[rdoKey] = newValue;
+
+    this.eventEmitter.publish('nodeChange', {
+      changeType: 'update',
+      sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+      sourceKey,
+      rdoKey,
+      previousSourceValue: previousValue,
+      newSourceValue: newValue,
+    });
+
+    return true;
+  }
 }

@@ -7,8 +7,8 @@ const __1 = require("../..");
 const mobx_1 = require("mobx");
 const logger = logger_1.Logger.make('RdoMapNW');
 class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
-    constructor({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._syncChildNode = syncChildNode;
     }
     //------------------------------
@@ -54,6 +54,10 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
         }
         return rdo;
     }
+    // public abstract itemKeys();
+    // public abstract getItem(key: K);
+    // public abstract updateItem(key: K, value: D);
+    // public abstract insertItem(key: K, value: D);
     //------------------------------
     // Private
     //------------------------------

@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
-export type nodeChangeType = 'create' | 'update' | 'delete';
+
+import { NodePatchOperationType } from '.';
 
 export interface NodeChange {
-  changeType: nodeChangeType;
+  changeType: NodePatchOperationType;
   sourceNodePath: string;
   sourceKey: any;
   rdoKey: any;
-  oldSourceValue: any | undefined;
+  previousSourceValue: any | undefined;
   newSourceValue: any | undefined;
 }

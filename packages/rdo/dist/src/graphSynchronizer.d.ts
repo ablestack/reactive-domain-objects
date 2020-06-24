@@ -1,6 +1,6 @@
-import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IRdoNodeWrapper, RdoNodeTypes, ISyncChildNode } from '.';
-import { NodeChange } from './types/event-types';
+import { IGraphSynchronizer, IGraphSyncOptions, IRdoInternalNodeWrapper, IRdoNodeWrapper, ISyncChildNode, RdoNodeTypes } from '.';
 import { SubscriptionFunction } from './infrastructure/event-emitter';
+import { NodeChange } from './types/event-types';
 /**
  *
  *
@@ -13,19 +13,10 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     private _globalNodeOptions;
     private _targetedOptionNodePathsMap;
     private _targetedOptionMatchersArray;
-    private _sourceObjectMap;
-    private _sourceNodeInstancePathStack;
-    private _sourceNodePathStack;
+    private _mutableNodeCache;
+    private _nodeTracker;
     private _sourceNodeWrapperFactory;
     private _rdoNodeWrapperFactory;
-    private pushSourceNodeInstancePathOntoStack;
-    private popSourceNodeInstancePathFromStack;
-    private _sourceNodeInstancePath;
-    private getSourceNodeInstancePath;
-    private _sourceNodePath;
-    private getSourceNodePath;
-    private setLastSourceNodeInstancePathValue;
-    private getLastSourceNodeInstancePathValue;
     constructor(options?: IGraphSyncOptions);
     /**
      *
@@ -36,13 +27,6 @@ export declare class GraphSynchronizer implements IGraphSynchronizer {
     }): void;
     subscribeToNodeChanges(func: SubscriptionFunction<NodeChange>): void;
     unsubscribeToNodeChanges(func: SubscriptionFunction<NodeChange>): void;
-    /**
-     *
-     *
-     * @memberof GraphSynchronizer
-     * @description clears the previously tracked data
-     */
-    clearTrackedData(): void;
     /**
      *
      */

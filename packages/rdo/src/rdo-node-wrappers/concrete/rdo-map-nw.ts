@@ -116,6 +116,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   public executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]) {
     // Loop through and execute (note, the operations are in descending order by index
 
+    // EXECUTE
     for (const patchOp of patchOperations) {
       switch (patchOp.op) {
         case 'add':
@@ -133,6 +134,16 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
           throw new Error(`Unknown operation: ${patchOp.op}`);
           break;
       }
+
+      // PUBLISH
+      this.eventEmitter.publish('nodeChange', {
+        changeType: patchOp.op,
+        sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+        sourceKey: patchOp.key,
+        rdoKey: patchOp.key,
+        previousSourceValue: patchOp.previousSourceValue,
+        newSourceValue: patchOp.newSourceValue,
+      });
     }
   }
 }

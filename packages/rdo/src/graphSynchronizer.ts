@@ -18,6 +18,7 @@ import { Logger } from './infrastructure/logger';
 import { MutableNodeCache } from './infrastructure/mutable-node-cache';
 import { RdoNodeWrapperFactory } from './rdo-node-wrappers/rdo-node-wrapper-factory';
 import { NodeChange } from './types/event-types';
+import { NodeTracker } from './infrastructure/node-tracker';
 
 const logger = Logger.make('GraphSynchronizer');
 
@@ -37,55 +38,13 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
   private _mutableNodeCache: MutableNodeCache;
-  private _sourceNodeInstancePathStack = new Array<string>();
-  private _sourceNodePathStack = new Array<string>();
+  private _nodeTracker: NodeTracker;
   private _sourceNodeWrapperFactory: SourceNodeWrapperFactory;
   private _rdoNodeWrapperFactory: RdoNodeWrapperFactory;
 
   // ------------------------------------------------------------------------------------------------------------------
   // PRIVATE PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
-  private pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind) {
-    logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
-    this._sourceNodeInstancePathStack.push(key.toString());
-    // reset locally cached dependencies
-    this._sourceNodeInstancePath = undefined;
-
-    // push to typepath if objectProperty
-    if (sourceNodeKind === 'Object') {
-      this._sourceNodePathStack.push(key.toString());
-      // reset locally cached dependencies
-      this._sourceNodePath = undefined;
-    }
-  }
-
-  private popSourceNodeInstancePathFromStack(sourceNodeKind: InternalNodeKind) {
-    const key = this._sourceNodeInstancePathStack.pop();
-    logger.trace(`Popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
-    // reset locally cached dependencies
-    this._sourceNodeInstancePath = undefined;
-
-    // pop from typepath if objectProperty
-    if (sourceNodeKind === 'Object') {
-      this._sourceNodePathStack.pop();
-      // reset locally cached dependencies
-      this._sourceNodePath = undefined;
-    }
-  }
-
-  // sourceNodeInstancePath is used for persisting previous source state
-  private _sourceNodeInstancePath: string | undefined;
-  private getSourceNodeInstancePath(): string {
-    if (!this._sourceNodeInstancePath) this._sourceNodeInstancePath = this._sourceNodeInstancePathStack.join('.');
-    return this._sourceNodeInstancePath || '';
-  }
-
-  // sourceNodePath is used for configuration generated options. It is essentially the node sourceNodeInstancePath, with the collection keys skipped. It is static, but  not unique per node
-  private _sourceNodePath: string | undefined;
-  private getSourceNodePath(): string {
-    if (!this._sourceNodePath) this._sourceNodePath = this._sourceNodePathStack.join('.');
-    return this._sourceNodePath || '';
-  }
 
   // ------------------------------------------------------------------------------------------------------------------
   // CONSTRUCTOR
@@ -97,6 +56,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any, any>>();
     this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any, any>>();
     this._mutableNodeCache = new MutableNodeCache();
+    this._nodeTracker = new NodeTracker();
 
     if (options?.targetedNodeOptions) {
       options?.targetedNodeOptions.forEach((targetedNodeOptionsItem) => {
@@ -184,36 +144,36 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
 
     // Validate
-    if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+    if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
     if (rdoNodeItemValue === undefined) {
-      logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`);
+      logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`);
       return false;
     }
 
     const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
     if (sourceNode === undefined) {
-      logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
+      logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
       return false;
     }
 
     // Node traversal tracking - step-in
-    this.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
+    this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     // Wrap Node
-    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
+    const wrappedRdoNode = this.wrapRdoNode({ sourceNodePath: this._nodeTracker.getSourceNodePath(), sourceNode, rdoNode: rdoNodeItemValue, wrappedParentRdoNode: wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey });
 
     // Test to see if node should be ignored, if not, synchronize
     if (wrappedRdoNode.ignore) {
       logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - ignore node`);
       changed = false;
     } else {
-      logger.trace(`running smartSync on (${this.getSourceNodePath()})`);
+      logger.trace(`running smartSync on (${this._nodeTracker.getSourceNodePath()})`);
       changed = wrappedRdoNode.smartSync();
     }
 
     // Node traversal tracking - step-out
 
-    this.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
+    this._nodeTracker.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;
   };

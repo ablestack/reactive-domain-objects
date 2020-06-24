@@ -1,30 +1,18 @@
-import { IMakeRdo } from './internal-types';
-export declare type MakeCollectionKeyMethod<K extends string | number, T> = (item: T) => K | undefined;
+import { IMakeRdo, CollectionNodePatchOperation } from './internal-types';
+export declare type MakeCollectionKeyMethod<K extends string | number, T> = (item: T) => K;
 export interface IMakeCollectionKey<K extends string | number, T> {
-    makeCollectionKey: (item: T) => K | undefined;
+    makeCollectionKey: (item: T) => K;
 }
 export declare function isIMakeCollectionKey(o: any): o is IMakeCollectionKey<any, any>;
-export interface IMakeCollectionKeyFromSourceElement<K extends string | number, T> {
-    makeCollectionKeyFromSourceElement: IMakeCollectionKey<K, T>['makeCollectionKey'];
-}
-export declare function isIMakeCollectionKeyFromSourceElement(o: any): o is IMakeCollectionKeyFromSourceElement<any, any>;
-export interface IMakeCollectionKeyFromRdoElement<K extends string | number, T> {
-    makeCollectionKeyFromRdoElement: IMakeCollectionKey<K, T>['makeCollectionKey'];
-}
-export declare function isIMakeCollectionKeyFromRdoElement(o: any): o is IMakeCollectionKeyFromRdoElement<any, any>;
 export interface IMakeRdoElement<S, D> {
     makeRdoElement(sourceObject: S): D | undefined;
 }
 export declare function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any>;
-export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKeyFromSourceElement<K, S>, IMakeCollectionKeyFromRdoElement<K, D> {
+export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKey<K, S> {
     readonly size: number;
     elements(): Iterable<D>;
-    getCollectionKeys: () => K[];
-    getElement: (key: K) => D | null | undefined;
-    insertElement: (key: K, value: D) => void;
-    updateElement: (key: K, value: D) => boolean;
-    deleteElement: (key: K) => D | undefined;
-    clearElements: () => boolean;
+    patchAdd(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>): any;
+    patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>): any;
 }
 export declare function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any>;
 export interface ISyncableRDOCollection<K extends string | number, S, D> extends IMakeRdo<K, S, D>, ISyncableCollection<K, S, D> {

@@ -1,5 +1,5 @@
 import { IGlobalNodeOptions, INodeSyncOptions } from '.';
-import { ISyncableRDOCollection, IMakeCollectionKey, IMakeRdoElement } from './rdo-collection-types';
+import { IMakeCollectionKey, IMakeRdoElement, ISyncableRDOCollection } from './rdo-collection-types';
 export declare type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 export declare type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export declare type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
@@ -9,11 +9,13 @@ export declare type NodeTypeInfo = {
     type?: RdoFieldType;
     builtInType: JavaScriptBuiltInType;
 };
-export declare type NodePatchOperationType = 'add' | 'remove' | 'update';
+export declare type NodePatchOperationType = 'add' | 'update' | 'delete';
 export declare type CollectionNodePatchOperation<K extends string | number, D> = {
     op: NodePatchOperationType;
     index: number;
     key: K;
+    previousSourceValue: any;
+    newSourceValue: any;
     rdo?: D;
 };
 export interface ISourceNodeWrapper<K extends string | number, S, D> {
@@ -21,7 +23,6 @@ export interface ISourceNodeWrapper<K extends string | number, S, D> {
     readonly value: S | Iterable<S> | null | undefined;
     readonly key: K | undefined;
     readonly sourceNodePath: string;
-    readonly lastSourceNode: S | undefined;
     readonly matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
     readonly globalNodeOptions: IGlobalNodeOptions | undefined;
     readonly wrappedRdoNode: IRdoNodeWrapper<K, S, D> | undefined;
@@ -54,16 +55,10 @@ export interface IRdoNodeWrapper<K extends string | number, S, D> {
 }
 export declare function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any, any>;
 export interface IRdoInternalNodeWrapper<K extends string | number, S, D> extends IRdoNodeWrapper<K, S, D>, IMakeRdoElement<S, D> {
-    itemKeys(): Iterable<K>;
-    getItem(key: K): D | null | undefined;
-    updateItem(key: K, value: D | undefined): boolean;
-    insertItem(key: K, value: D | undefined): void;
 }
 export declare function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<any, any, any>;
-export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, D> {
+export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D> {
     elements(): Iterable<D | undefined>;
-    deleteElement(key: K): D | undefined;
-    clearElements(): boolean;
 }
 export declare function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any, any>;
 export interface IMakeRdo<K extends string | number, S, D> {

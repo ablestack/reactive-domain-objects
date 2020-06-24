@@ -3,14 +3,19 @@ import { IEqualityComparer, IGlobalNodeOptions, ISourceNodeWrapper, ISyncChildNo
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { INodeSyncOptions, IRdoInternalNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+declare type MutableCachedNodeItemType<S> = {
+    sourceData: S | null | undefined;
+};
 export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends RdoInternalNWBase<K, S, D> {
     private _value;
     private _equalityComparer;
     private _wrapRdoNode;
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
+    constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: D;
         typeInfo: NodeTypeInfo;
         key: K | undefined;
+        mutableNodeCache: MutableNodeCache;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
         wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
         defaultEqualityComparer: IEqualityComparer;
@@ -21,14 +26,12 @@ export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> 
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
+    /** */
+    getNodeInstanceCache(): MutableCachedNodeItemType<S>;
     get leafNode(): boolean;
     get value(): D;
     childElementCount(): number;
     smartSync(): boolean;
-    itemKeys(): string[];
-    getItem(key: K): D[K];
-    updateItem(key: K, value: D | undefined): boolean;
-    insertItem(key: K, value: D | undefined): boolean;
     /**
      *
      */
@@ -42,4 +45,7 @@ export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> 
     }): K | undefined;
     /** */
     private makeContinueSmartSyncFunction;
+    /** */
+    private primitiveDirectSync;
 }
+export {};

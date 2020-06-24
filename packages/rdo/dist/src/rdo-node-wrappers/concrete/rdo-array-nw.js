@@ -2,13 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoArrayNW = void 0;
 const __1 = require("..");
-const __2 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
-const collection_utils_1 = require("../utils/collection.utils");
 const logger = logger_1.Logger.make('RdoArrayNW');
 class RdoArrayNW extends __1.RdoCollectionNWBase {
-    constructor({ value, typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
+        super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
         this._value = value;
     }
     //------------------------------
@@ -20,41 +18,36 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     get value() {
         return this._value;
     }
-    itemKeys() {
-        if (this.childElementCount() === 0)
-            return [];
-        return collection_utils_1.CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-    }
-    getItem(key) {
-        if (this.childElementCount() === 0)
-            return undefined;
-        const item = collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-        return item;
-    }
-    updateItem(key, value) {
-        if (this.childElementCount() === 0)
-            return false;
-        return collection_utils_1.CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
-    }
-    insertItem(key, value) {
-        collection_utils_1.CollectionUtils.Array.insertElement({ collection: this._value, key, value });
-    }
+    // public itemKeys() {
+    //   if (this.childElementCount() === 0) return [];
+    //   return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
+    // }
+    // public getItem(key: string) {
+    //   if (this.childElementCount() === 0) return undefined;
+    //   const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+    //   return item;
+    // }
+    // public updateItem(key: string, value: D) {
+    //   if (this.childElementCount() === 0) return false;
+    //   return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
+    // }
+    // public insertItem(key: string, value: D) {
+    //   CollectionUtils.Array.insertElement({ collection: this._value, key, value });
+    // }
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
-    smartSync() {
-        if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-            return this.clearElements();
-        }
-        else {
-            __1.RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
-            if (!__2.isISourceCollectionNodeWrapper(this.wrappedSourceNode))
-                throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
-            // Execute
-            const changed = super.synchronizeCollection();
-            return changed;
-        }
-    }
+    // public smartSync(): boolean {
+    //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
+    //     return this.clearElements();
+    //   } else {
+    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
+    //     // Execute
+    //     const changed = super.synchronizeCollection();
+    //     return changed;
+    //   }
+    // }
     //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
@@ -64,18 +57,19 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.length;
     }
-    deleteElement(key) {
-        return collection_utils_1.CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-    }
-    clearElements() {
-        return collection_utils_1.CollectionUtils.Array.clear({ collection: this._value });
-    }
+    // public deleteElement(key: string): D | undefined {
+    //   return CollectionUtils.Array.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+    // }
+    // public clearElements(): boolean {
+    //   return CollectionUtils.Array.clear({ collection: this._value });
+    // }
     //------------------------------
     // RdoSyncableCollectionNW
     //------------------------------
     executePatchOperations(patchOperations) {
-        // Should already be in reverse index order. Loop through and execute
+        // Loop through and execute (note, the operations are in descending order by index
         for (const patchOp of patchOperations) {
+            // EXECUTE
             switch (patchOp.op) {
                 case 'add':
                     if (!patchOp.rdo)
@@ -87,13 +81,22 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
                         throw new Error('Rdo must not be null for patch-update operations');
                     this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
                     break;
-                case 'remove':
+                case 'delete':
                     this.value.splice(patchOp.index, 1);
                     break;
                 default:
                     throw new Error(`Unknown operation: ${patchOp.op}`);
                     break;
             }
+            // PUBLISH
+            this.eventEmitter.publish('nodeChange', {
+                changeType: patchOp.op,
+                sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+                sourceKey: patchOp.key,
+                rdoKey: patchOp.key,
+                previousSourceValue: patchOp.previousSourceValue,
+                newSourceValue: patchOp.newSourceValue,
+            });
         }
     }
 }

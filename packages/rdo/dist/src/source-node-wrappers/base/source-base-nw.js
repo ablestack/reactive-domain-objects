@@ -2,11 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SourceBaseNW = void 0;
 class SourceBaseNW {
-    constructor({ sourceNodePath, key, typeInfo, lastSourceNode, matchingNodeOptions, globalNodeOptions, }) {
+    constructor({ sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
         this._typeInfo = typeInfo;
         this._key = key;
         this._sourceNodePath = sourceNodePath;
-        this._lastSourceNode = lastSourceNode;
         this._matchingNodeOptions = matchingNodeOptions;
         this._globalNodeOptions = globalNodeOptions;
     }
@@ -21,9 +20,6 @@ class SourceBaseNW {
     }
     get sourceNodePath() {
         return this._sourceNodePath;
-    }
-    get lastSourceNode() {
-        return this._lastSourceNode;
     }
     get matchingNodeOptions() {
         return this._matchingNodeOptions;

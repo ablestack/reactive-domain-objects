@@ -208,9 +208,9 @@ There are two types of path that are used throughout the configuration: NodePath
 
 #### NodePath
 
-This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
+This is a slash-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node
 
-For example, the NodePath: `child.grandchild` matches the `grandchild` node of the following sourceJSON:
+For example, the NodePath: `child/grandchild` matches the `grandchild` node of the following sourceJSON:
 
 ```TypeScript
 const rootSourceNode = {
@@ -222,11 +222,11 @@ const rootSourceNode = {
 }
 ```
 
-The NodePath is: `child.grandchild`
+The NodePath is: `child/grandchild`
 
 For arrays items in the source JSON, the NodePath doesn't need to factor in the element index or key.
 
-For example, the NodePath:`children.grandchildren` matches the `grandchild` type in the following source graph:
+For example, the NodePath:`children/grandchildren` matches the `grandchild` type in the following source graph:
 
 ```TypeScript
 const rootSourceNode = {
@@ -246,7 +246,7 @@ In this instance, the NodePath represents _all_ the `grandchildren` nodes (of _a
 
 NodeInstancePath is the same as NodePath, with the exception that collection keys are _included_ in the path. So, in the first example of the [NodePath section](TODO) the path string is identical. However when collections are in the Source graph, it would differ.
 
-For example, the path `children.child-1.grandchildren.grandchild-1` would be a match for the specific data node 'grandchild1' below:
+For example, the path `children/child-1/grandchildren/grandchild-1` would be a match for the specific data node 'grandchild1' below:
 
 ```TypeScript
 const rootSourceNode = {
@@ -353,7 +353,7 @@ The sourceNodeMatcher configuration lets the graphSynchronizer know which source
 
 #### SourceNodeInstancePath
 
-This is a dot-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node. See [Source Node Paths Section](#Source-Node-Paths) for further details.
+This is a slash-delimited string that represents the path _from_ the root of the source graph _to_ the targeted node. See [Source Node Paths Section](#Source-Node-Paths) for further details.
 
 For example, to target the grandchildren node of the following sourceJSON:
 
@@ -372,7 +372,7 @@ The configuration item would be:
 ```TypeScript
 const graphSynchronizerOptions = {
     targetedNodeOptions: [{
-      sourceNodeMatcher: { nodePath: 'child.grandchild' },
+      sourceNodeMatcher: { nodePath: 'child/grandchild' },
       //... config options here
     }],
   }

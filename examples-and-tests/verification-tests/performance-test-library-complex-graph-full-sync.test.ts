@@ -45,33 +45,28 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   // SETUP
   const iterations = FULL_SYNC_ITERATION_COUNT;
   const libraryRDO = new LibraryRDO();
-  const graphSynchronizer = new GraphSynchronizer(config);
+  const fieldChangeCounter = new Map<string, number>();
+  const targetBookPath = 'authors/2/books/8/pages';
 
-  // initiate a smart sync
-  graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
-
-  // setup spys to ensure the data is actually being set as expected
-  const authors_2_books_7_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[7], 'pages$', 'set');
-  const authors_2_books_8_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[8], 'pages$', 'set');
-  const authors_2_books_9_pages_spy_set = jest.spyOn(libraryRDO.authors.array$[2].books[9], 'pages$', 'set');
-
-  // clone library for edits
-  const libraryWithEdits = _.cloneDeep(librarySourceJSON);
+  const graphSyncronizerArray: GraphSynchronizer[] = [];
+  for (let i = 0; i < iterations; i++) {
+    // Instantiate
+    graphSyncronizerArray[i] = new GraphSynchronizer(config);
+    // Tegister
+    graphSyncronizerArray[i].subscribeToNodeChanges((data) => {
+      if (data.sourceNodePath === targetBookPath) {
+        if (data.sourceNodePath) if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
+        fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
+      }
+    });
+  }
 
   // EXECUTE
   const startTime = performance.now();
 
+  // Loop n sync
   for (let i = 0; i < iterations; i++) {
-    // clear the tracked data
-    graphSynchronizer.clearTrackedData();
-
-    // change some values to get around the source -> domain value check for primitive types, allowing the spying on the set methods to be hit
-    libraryWithEdits.authors[2].books[7].pages = i;
-    libraryWithEdits.authors[2].books[8].pages = i;
-    libraryWithEdits.authors[2].books[9].pages = i;
-
-    // initiate a smart sync
-    graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: libraryWithEdits });
+    graphSyncronizerArray[i].smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
   }
 
   const finishTime = performance.now();
@@ -88,8 +83,6 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   expect(totalTimeMs).toBeLessThan(FULL_SYNC_MAX_TIME_MS);
 
   // Verify changes were made as expected (indicating the full sync did actually occur)
-  expect(authors_2_books_7_pages_spy_set).toHaveBeenCalledTimes(iterations);
-  expect(authors_2_books_8_pages_spy_set).toHaveBeenCalledTimes(iterations);
-  expect(authors_2_books_9_pages_spy_set).toHaveBeenCalledTimes(iterations);
-  expect(libraryRDO.authors.array$[2].books[8].pages$).toEqual(libraryWithEdits.authors[2].books[8].pages);
+  expect(fieldChangeCounter.get(targetBookPath)).toHaveBeenCalledTimes(iterations);
+  expect(libraryRDO.authors.array$[2].books[8].pages$).toEqual(librarySourceJSON.authors[2].books[8].pages);
 });

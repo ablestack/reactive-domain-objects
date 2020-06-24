@@ -1,6 +1,6 @@
 import { GraphSynchronizer, IGraphSyncOptions } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
-import { Marray } from '@ablestack/rdo';
+import { ListMap } from '@ablestack/rdo';
 
 const logger = Logger.make('map-sync.test.ts');
 
@@ -14,7 +14,7 @@ export type AllCollectionTypesWithPrimitives = {
   arrayOfNumbers: (number | undefined | null)[];
   mapOfNumbers: (number | undefined | null)[];
   setOfNumbers: (number | undefined | null)[];
-  customCollectionOfNumbers: (number | undefined | null)[];
+  listMapOfNumbers: (number | undefined | null)[];
 };
 
 //
@@ -23,13 +23,13 @@ const allCollectionsTypesWithPrimitivesJSON = {
   arrayOfNumbers: [1, 2, undefined, null, 3],
   mapOfNumbers: [1, 2, undefined, null, 3],
   setOfNumbers: [1, 2, undefined, null, 3],
-  customCollectionOfNumbers: [1, 2, undefined, null, 3],
+  listMapOfNumbers: [1, 2, undefined, null, 3],
 };
 
 //
 // RDO Graphs
 export class AllCollectionTypesWithPrimitivesRdo {
-  public customCollectionOfObjects = new Marray<string, Number, Number>();
+  public listMapOfObjects = new ListMap<string, Number, Number>();
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();

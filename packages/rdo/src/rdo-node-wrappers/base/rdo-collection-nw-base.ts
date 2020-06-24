@@ -67,11 +67,11 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     const count = Math.max(origSourceArray.length, newSourceArray.length);
 
     for (let i = count - 1; i >= 0; i--) {
-      const origSourceElement = origSourceArray[i];
+      const previousSourceElement = origSourceArray[i];
       const newSourceElement = newSourceArray[i];
       let op: NodePatchOperationType | undefined;
 
-      if (isNullOrUndefined(origSourceElement) && !isNullOrUndefined(newSourceElement)) {
+      if (isNullOrUndefined(previousSourceElement) && !isNullOrUndefined(newSourceElement)) {
         // ---------------------------
         // New Key
         // ---------------------------
@@ -79,15 +79,15 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         const newRdo = this.makeRdoElement(newSourceElement);
 
         // Add operation
-        operations.push({ op: 'add', index: i, key: newElementKey, rdo: newRdo });
+        operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
 
         // Update Rdo Map
         rdoMap.set(newElementKey, newRdo);
-      } else if (!isNullOrUndefined(origSourceElement) && !isNullOrUndefined(newSourceElement)) {
+      } else if (!isNullOrUndefined(previousSourceElement) && !isNullOrUndefined(newSourceElement)) {
         // ---------------------------
         // Existing Key
         // ---------------------------
-        const origElementKey = wrappedSourceNode.makeCollectionKey(origSourceElement);
+        const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
         const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
 
         if (origElementKey !== newElementKey) {
@@ -99,8 +99,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
           const newRdo = this.makeRdoElement(newElementKey);
 
           // Add operations
-          operations.push({ op: 'remove', index: i, key: origElementKey, rdo: origRdo });
-          operations.push({ op: 'add', index: i, key: newElementKey, rdo: newRdo });
+          operations.push({ op: 'delete', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
+          operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
 
           // Update Rdo Map
           rdoMap.delete(origElementKey);
@@ -109,26 +109,26 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
           // ---------------------------
           // Keys Match
           // ---------------------------
-          if (this._equalityComparer(origSourceElement, newSourceElement)) {
+          if (this._equalityComparer(previousSourceElement, newSourceElement)) {
             // No change, no patch needed
           } else {
             // Add operations
-            operations.push({ op: 'update', index: i, key: origElementKey });
+            operations.push({ op: 'update', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement });
 
             // Update Rdo Map
             // No update needed
           }
         }
-      } else if (!isNullOrUndefined(origSourceElement) && isNullOrUndefined(newSourceElement)) {
+      } else if (!isNullOrUndefined(previousSourceElement) && isNullOrUndefined(newSourceElement)) {
         // ---------------------------
         // Missing Key
         // ---------------------------
-        const origElementKey = wrappedSourceNode.makeCollectionKey(origSourceElement);
+        const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
         const origRdo = rdoMap.get(origElementKey);
         if (!origRdo) throw new Error(`Could not find original Rdo with key ${origElementKey}`);
 
         // Add operations
-        operations.push({ op: 'remove', index: i, key: wrappedSourceNode.makeCollectionKey(origSourceElement), rdo: origRdo });
+        operations.push({ op: 'delete', index: i, key: wrappedSourceNode.makeCollectionKey(previousSourceElement), previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
 
         // Update Rdo Map
         rdoMap.delete(origElementKey);
@@ -192,7 +192,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //         }
   //         this.insertItem(key, targetItem);
   //         changed = true;
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: undefined, newSourceValue: sourceItem });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, previousSourceValue: undefined, newSourceValue: sourceItem });
   //       }
 
   //       // Update directly if Leaf node
@@ -218,7 +218,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //     if (targetCollectionKeysInDestinationOnly.length > 0) {
   //       targetCollectionKeysInDestinationOnly.forEach((key) => {
   //         const deletedItem = this.deleteElement(key);
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, oldSourceValue: deletedItem, newSourceValue: undefined });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodePath: this.wrappedSourceNode.sourceNodePath, sourceKey: key, rdoKey: key, previousSourceValue: deletedItem, newSourceValue: undefined });
   //       });
   //       changed = true;
   //     }

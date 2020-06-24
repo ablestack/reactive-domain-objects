@@ -119,6 +119,7 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
     // Loop through and execute (note, the operations are in descending order by index
 
     for (const patchOp of patchOperations) {
+      // EXECUTE
       switch (patchOp.op) {
         case 'add':
           this.value.patchAdd(patchOp);
@@ -134,6 +135,16 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
           throw new Error(`Unknown operation: ${patchOp.op}`);
           break;
       }
+
+      // PUBLISH
+      this.eventEmitter.publish('nodeChange', {
+        changeType: patchOp.op,
+        sourceNodePath: this.wrappedSourceNode.sourceNodePath,
+        sourceKey: patchOp.key,
+        rdoKey: patchOp.key,
+        previousSourceValue: patchOp.previousSourceValue,
+        newSourceValue: patchOp.newSourceValue,
+      });
     }
   }
 }
