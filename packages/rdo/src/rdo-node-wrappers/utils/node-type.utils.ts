@@ -33,7 +33,6 @@ function getNodeType(rdoNodeVal: any): NodeTypeInfo {
       return { kind: 'Collection', type: 'Set', stringifiedType: stringifiedNodeType };
     }
     default: {
-      console.log('--------------', rdoNodeVal);
       throw new Error(`Unable to find RDO Node Type for type: ${stringifiedNodeType}`);
     }
   }

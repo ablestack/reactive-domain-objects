@@ -81,7 +81,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
       return item[config.defaultIdKey];
     }
 
-    throw new Error(`Could not make collection `);
+    throw new Error(`Could not make makeCollectionKey from item: ${JSON.stringify(item)}`);
   };
 
   public elements(): Iterable<S> {

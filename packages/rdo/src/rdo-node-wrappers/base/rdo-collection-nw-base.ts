@@ -85,6 +85,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         // ---------------------------
         // Existing Key
         // ---------------------------
+
         const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
         const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
 
@@ -144,7 +145,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
 
     // Instrumentation
-    console.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
+    //consol e.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
     logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
 
     // Execute

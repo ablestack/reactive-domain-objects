@@ -105,7 +105,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             throw new Error('Can only sync Rdo collection types with Collection source types');
         const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
         // Instrumentation
-        console.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
+        //consol e.log(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
         logger.trace(`synchronizeCollection - sourceNodePath: ${this.wrappedSourceNode.sourceNodePath} - prepared patch operations`, patchOperations);
         // Execute
         this.executePatchOperations(patchOperations);

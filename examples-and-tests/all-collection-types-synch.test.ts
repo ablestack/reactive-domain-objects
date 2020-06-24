@@ -42,12 +42,12 @@ test('Synchronize collection additions', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
 
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
@@ -65,18 +65,18 @@ test('Synchronize collection additions', () => {
   // RESULTS VERIFICATION
 
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(5);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(5);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(5);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(5);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(5);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4); // one less array, as doesn't accept duplicates
 });
 
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test.only('Synchronize collection removals', () => {
+test('Synchronize collection removals', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 
@@ -85,12 +85,12 @@ test.only('Synchronize collection removals', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
 
   // EXECUTE
   // Mutate data
@@ -106,12 +106,12 @@ test.only('Synchronize collection removals', () => {
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(2); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(2); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(2); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(2); // one less array, as doesn't accept duplicates
 });
 
 // --------------------------------------------------------------
@@ -167,14 +167,13 @@ test('Synchronize collection element edit', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
 
-  // EXECUTE
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers[0] = 4;
@@ -185,10 +184,12 @@ test('Synchronize collection element edit', () => {
   allCollectionSourceModelWithEdits.setOfObjects[0]!.id = '4';
   allCollectionSourceModelWithEdits.listMapOfObjects[0]!.id = '4';
 
-  // RESULTS VERIFICATION
+  // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
-  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(5);
+
+  // RESULTS VERIFICATION
+  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get(1)).toBeUndefined();
   expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
   expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
@@ -213,38 +214,38 @@ test('Synchronize collection element - handle null value edits', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4);
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4);
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
 
   // EXECUTE
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
-  allCollectionSourceModelWithEdits.arrayOfNumbers[0] = 4;
-  allCollectionSourceModelWithEdits.mapOfNumbers[0] = 4;
-  allCollectionSourceModelWithEdits.setOfNumbers[0] = 4;
-  allCollectionSourceModelWithEdits.arrayOfObjects[0]!.id = '4';
-  allCollectionSourceModelWithEdits.mapOfObjects[0]!.id = '4';
-  allCollectionSourceModelWithEdits.setOfObjects[0]!.id = '4';
-  allCollectionSourceModelWithEdits.listMapOfObjects[0]!.id = '4';
+  allCollectionSourceModelWithEdits.arrayOfNumbers[0] = null;
+  allCollectionSourceModelWithEdits.mapOfNumbers[0] = null;
+  allCollectionSourceModelWithEdits.setOfNumbers[0] = null;
+  allCollectionSourceModelWithEdits.arrayOfObjects[0] = (null as unknown) as any;
+  allCollectionSourceModelWithEdits.mapOfObjects[0] = (null as unknown) as any;
+  allCollectionSourceModelWithEdits.setOfObjects[0] = (null as unknown) as any;
+  allCollectionSourceModelWithEdits.listMapOfObjects[0] = (null as unknown) as any;
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
 
-  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(5);
+  expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 2)).toEqual(2);
+  expect(allCollectionTypesRDO.mapOfNumbers.get(2)).toEqual(2);
   expect(allCollectionTypesRDO.mapOfNumbers.get(1)).toBeUndefined();
-  expect(allCollectionTypesRDO.setOfNumbers.has(4)).toBeTruthy();
+  expect(allCollectionTypesRDO.setOfNumbers.has(2)).toBeTruthy();
   expect(allCollectionTypesRDO.setOfNumbers.has(1)).not.toBeTruthy();
-  expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '4')).toBeTruthy();
-  expect(allCollectionTypesRDO.mapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.arrayOfObjects.find((item) => item.id === '2')).toBeTruthy();
+  expect(allCollectionTypesRDO.mapOfObjects.get('2')?.id).toEqual('2');
   expect(allCollectionTypesRDO.mapOfObjects.get('1')).toBeUndefined();
-  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '4')).toBeDefined();
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '2')).toBeDefined();
   expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).find((item) => item.id === '1')).toBeUndefined();
-  expect(allCollectionTypesRDO.listMapOfObjects.get('4')?.id).toEqual('4');
+  expect(allCollectionTypesRDO.listMapOfObjects.get('2')?.id).toEqual('2');
   expect(allCollectionTypesRDO.listMapOfObjects.get('1')).toBeUndefined();
 });
 

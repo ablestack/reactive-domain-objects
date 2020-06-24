@@ -31,7 +31,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             if (item[__1.config.defaultIdKey]) {
                 return item[__1.config.defaultIdKey];
             }
-            throw new Error(`Could not make collection `);
+            throw new Error(`Could not make makeCollectionKey from item: ${JSON.stringify(item)}`);
         };
         this._value = value.filter((element) => element !== null && element !== undefined);
     }
