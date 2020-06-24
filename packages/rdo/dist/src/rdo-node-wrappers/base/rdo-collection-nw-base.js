@@ -30,7 +30,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         const rdoMap = mutableNodeCacheItem.rdoMap;
         const newSourceArray = this.wrappedSourceNode.value;
         const count = Math.max(origSourceArray.length, newSourceArray.length);
-        for (let i = count - 1; i >= 0; i--) {
+        for (let i = 0; i <= count; i++) {
             const previousSourceElement = origSourceArray[i];
             const newSourceElement = newSourceArray[i];
             let op;
@@ -105,7 +105,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             throw new Error('Can only sync Rdo collection types with Collection source types');
         const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
         // Instrumentation
-        console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
+        //console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
         logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
         // Execute
         this.executePatchOperations(patchOperations);

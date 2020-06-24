@@ -18,7 +18,7 @@ const config: IGraphSyncOptions = {
 // TEST
 // --------------------------------------------------------------
 
-test('Simple usage demo with notes', () => {
+test('Custom Sync Demo', () => {
   const fooRdo = new FooRdo();
   const graphSynchronizer = new GraphSynchronizer(config);
 

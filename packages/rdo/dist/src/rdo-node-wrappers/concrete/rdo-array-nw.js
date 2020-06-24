@@ -68,13 +68,16 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     //------------------------------
     executePatchOperations(patchOperations) {
         // Loop through and execute (note, the operations are in descending order by index
+        // use offset to adjust index based on additions and removals
+        let offset = 0;
         for (const patchOp of patchOperations) {
             // EXECUTE
             switch (patchOp.op) {
                 case 'add':
                     if (!patchOp.rdo)
                         throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
-                    this.value.splice(patchOp.index, 0, patchOp.rdo);
+                    this.value.splice(patchOp.index + offset, 0, patchOp.rdo);
+                    offset++;
                     // If primitive, break. Else, fall through to update, so the values sync to the new item
                     if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
                         break;
@@ -84,7 +87,8 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
                     this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
                     break;
                 case 'delete':
-                    this.value.splice(patchOp.index, 1);
+                    this.value.splice(patchOp.index + offset, 1);
+                    offset--;
                     break;
                 default:
                     throw new Error(`Unknown operation: ${patchOp.op}`);

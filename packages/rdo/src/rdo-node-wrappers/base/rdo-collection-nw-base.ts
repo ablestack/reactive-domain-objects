@@ -64,7 +64,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
     const count = Math.max(origSourceArray.length, newSourceArray.length);
 
-    for (let i = count - 1; i >= 0; i--) {
+    for (let i = 0; i <= count; i++) {
       const previousSourceElement = origSourceArray[i];
       const newSourceElement = newSourceArray[i];
       let op: NodePatchOperationType | undefined;
@@ -145,7 +145,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
 
     // Instrumentation
-    console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
+    //console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
     logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
 
     // Execute

@@ -30,9 +30,9 @@ test('Synchronize updates complex graph as expected', () => {
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
 
-  console.log(`librarySourceJSON.authors`, JSON.stringify(librarySourceJSON.authors[0].books, null, 2));
-  console.log(` ------------------------------------------- `);
-  console.log(`libraryRDO.authors.array$`, JSON.stringify(libraryRDO.authors.array$[0].books, null, 2));
+  // console.log(`librarySourceJSON.authors`, JSON.stringify(librarySourceJSON.authors[0].books, null, 2));
+  // console.log(` ------------------------------------------- `);
+  // console.log(`libraryRDO.authors.array$`, JSON.stringify(libraryRDO.authors.array$[0].books, null, 2));
 
   // RESULTS VERIFICATION
   expect(libraryRDO.name).not.toBeFalsy();
