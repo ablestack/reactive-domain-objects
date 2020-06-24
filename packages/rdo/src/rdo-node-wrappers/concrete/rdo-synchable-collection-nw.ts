@@ -1,21 +1,9 @@
-import { RdoCollectionNWBase } from '..';
-import {
-  IGlobalNodeOptions,
-  INodeSyncOptions,
-  IRdoNodeWrapper,
-  isISourceCollectionNodeWrapper,
-  ISourceNodeWrapper,
-  ISyncableRDOCollection,
-  ISyncChildNode,
-  NodeTypeInfo,
-  IRdoInternalNodeWrapper,
-  IEqualityComparer,
-  CollectionNodePatchOperation,
-} from '../..';
-import { Logger } from '../../infrastructure/logger';
+import { NodeTypeUtils, RdoCollectionNWBase } from '..';
+import { CollectionNodePatchOperation, IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
-import { NodeChange } from '../../types/event-types';
+import { Logger } from '../../infrastructure/logger';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoSyncableCollectionNW');
 
@@ -123,7 +111,8 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
       switch (patchOp.op) {
         case 'add':
           this.value.patchAdd(patchOp);
-        // now fall through to update, so the values sync to the new item
+          // If primitive, break. Else, fall through to update, so the values sync to the new item
+          if (NodeTypeUtils.isPrimitive(patchOp.rdo)) break;
         case 'update':
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
           this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });

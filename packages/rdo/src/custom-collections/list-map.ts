@@ -75,7 +75,7 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
     return this._map$.entries();
   }
 
-  [Symbol.toStringTag]: string = 'Map';
+  [Symbol.toStringTag]: string = 'ListMap';
 
   // -----------------------------------
   // ISyncableRdoCollection
@@ -95,14 +95,13 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
   }
 
   public patchAdd(patchOp: CollectionNodePatchOperation<K, D>) {
-    if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
+    if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath - Key:${patchOp.key}`);
     this._map$.set(patchOp.key, patchOp.rdo);
     this._array$.splice(patchOp.index, 0, patchOp.rdo);
   }
 
   public patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>) {
-    if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
-    this._map$.set(patchOp.key, patchOp.rdo);
-    this._array$.splice(patchOp.index, 0, patchOp.rdo);
+    this._map$.delete(patchOp.key);
+    this._array$.splice(patchOp.index, 1);
   }
 }

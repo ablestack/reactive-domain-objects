@@ -1,8 +1,8 @@
 import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation } from '../..';
+import { CollectionNodePatchOperation, IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
-import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { NodeChange } from '../../types/event-types';
 export declare class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {

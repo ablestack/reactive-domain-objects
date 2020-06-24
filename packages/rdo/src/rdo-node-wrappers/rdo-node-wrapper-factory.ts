@@ -1,5 +1,5 @@
-import { RdoArrayNW, RdoObjectNW, RdoMapNW, RdoSetNW } from '.';
-import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes, IRdoInternalNodeWrapper } from '..';
+import { RdoArrayNW, RdoObjectNW, RdoMapNW, RdoSetNW, RdoSyncableCollectionNW } from '.';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes, IRdoInternalNodeWrapper, ISyncableRDOCollection } from '..';
 import { Logger } from '../infrastructure/logger';
 import { NodeTypeUtils } from './utils/node-type.utils';
 import { EventEmitter } from '../infrastructure/event-emitter';
@@ -58,12 +58,32 @@ export class RdoNodeWrapperFactory {
 
     const typeInfo = NodeTypeUtils.getNodeType(value);
 
-    switch (typeInfo.builtInType) {
+    // Check if custom collection type
+    if (typeInfo.type === 'ISyncableCollection') {
+      logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodePath: ${wrappedSourceNode.sourceNodePath}`);
+      return new RdoSyncableCollectionNW<K, S, D>({
+        value: value as ISyncableRDOCollection<K, S, D>,
+        typeInfo,
+        key,
+        mutableNodeCache,
+        wrappedParentRdoNode,
+        wrappedSourceNode,
+        syncChildNode: this._syncChildNode,
+        defaultEqualityComparer: this._defaultEqualityComparer,
+        matchingNodeOptions,
+        globalNodeOptions: this._globalNodeOptions,
+        targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        eventEmitter: this._eventEmitter,
+      });
+    }
+
+    // Else use built in stringified types to generate appropriate wrapper
+    switch (typeInfo.stringifiedType) {
       case '[object Boolean]':
       case '[object Date]':
       case '[object Number]':
       case '[object String]': {
-        throw new Error('Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers');
+        throw new Error(`Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers. Key:${key}. SourceNodePath:${wrappedSourceNode.sourceNodePath}`);
       }
       case '[object Object]': {
         if (typeof key === 'string' || typeof key === 'undefined') {
@@ -143,7 +163,7 @@ export class RdoNodeWrapperFactory {
         });
       }
       default: {
-        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);
+        throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.stringifiedType}`);
       }
     }
   }

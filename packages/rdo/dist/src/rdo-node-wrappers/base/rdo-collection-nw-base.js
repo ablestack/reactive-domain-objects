@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoCollectionNWBase = void 0;
 const logger_1 = require("../../infrastructure/logger");
 const types_1 = require("../../types");
-const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
 const global_utils_1 = require("../utils/global.utils");
+const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
 const logger = logger_1.Logger.make('RdoCollectionNWBase');
 class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {

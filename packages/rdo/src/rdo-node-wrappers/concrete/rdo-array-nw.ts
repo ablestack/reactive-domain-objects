@@ -81,7 +81,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
   //     return this.clearElements();
   //   } else {
-  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+  //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
 
   //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
 
@@ -122,9 +122,10 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
       // EXECUTE
       switch (patchOp.op) {
         case 'add':
-          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-add operations');
+          if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath:${this.wrappedSourceNode.sourceNodePath},  Key:${patchOp.key}`);
           this.value.splice(patchOp.index, 0, patchOp.rdo);
-        // now fall through to update, so the values sync to the new item
+          // If primitive, break. Else, fall through to update, so the values sync to the new item
+          if (NodeTypeUtils.isPrimitive(patchOp.rdo)) break;
         case 'update':
           if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
           this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });

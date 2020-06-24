@@ -19,7 +19,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
 class ListMap {
     constructor({ makeCollectionKey, makeRdo, } = {}) {
         this._array$ = new Array();
-        this[Symbol.toStringTag] = 'Map';
+        this[Symbol.toStringTag] = 'ListMap';
         // -----------------------------------
         // ISyncableRdoCollection
         // -----------------------------------
@@ -72,15 +72,13 @@ class ListMap {
     }
     patchAdd(patchOp) {
         if (!patchOp.rdo)
-            throw new Error('Rdo must not be null for patch-add operations');
+            throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath - Key:${patchOp.key}`);
         this._map$.set(patchOp.key, patchOp.rdo);
         this._array$.splice(patchOp.index, 0, patchOp.rdo);
     }
     patchDelete(patchOp) {
-        if (!patchOp.rdo)
-            throw new Error('Rdo must not be null for patch-add operations');
-        this._map$.set(patchOp.key, patchOp.rdo);
-        this._array$.splice(patchOp.index, 0, patchOp.rdo);
+        this._map$.delete(patchOp.key);
+        this._array$.splice(patchOp.index, 1);
     }
 }
 tslib_1.__decorate([

@@ -20,11 +20,11 @@ function isIRdoNodeWrapper(o) {
 }
 exports.isIRdoNodeWrapper = isIRdoNodeWrapper;
 function isIRdoInternalNodeWrapper(o) {
-    return o && o.itemKeys && o.getItem && o.updateItem && rdo_collection_types_1.isIMakeRdoElement(o) && isIRdoNodeWrapper(o);
+    return o && rdo_collection_types_1.isIMakeRdoElement(o) && isIRdoNodeWrapper(o);
 }
 exports.isIRdoInternalNodeWrapper = isIRdoInternalNodeWrapper;
 function isIRdoCollectionNodeWrapper(o) {
-    return o && o.elements && o.deleteElement && o.clearElements && isIRdoInternalNodeWrapper(o) && rdo_collection_types_1.isIMakeCollectionKey(o);
+    return o && o.elements && isIRdoInternalNodeWrapper(o) && rdo_collection_types_1.isIMakeCollectionKey(o);
 }
 exports.isIRdoCollectionNodeWrapper = isIRdoCollectionNodeWrapper;
 function isIMakeRdo(o) {

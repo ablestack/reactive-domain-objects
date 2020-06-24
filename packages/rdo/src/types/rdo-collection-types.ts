@@ -29,16 +29,10 @@ export interface ISyncableCollection<K extends string | number, S, D> extends IM
   elements(): Iterable<D>;
   patchAdd(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
   patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
-  // getCollectionKeys: () => K[];
-  // getElement: (key: K) => D | null | undefined;
-  // insertElement: (key: K, value: D) => void;
-  // updateElement: (key: K, value: D) => boolean;
-  // deleteElement: (key: K) => D | undefined;
-  // clearElements: () => boolean;
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any> {
-  return o && o.size && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements && isIMakeCollectionKey(o);
+  return o && o.size !== undefined && o.elements && o.patchAdd && o.patchDelete && isIMakeCollectionKey(o);
 }
 
 export interface ISyncableRDOCollection<K extends string | number, S, D> extends IMakeRdo<K, S, D>, ISyncableCollection<K, S, D> {}

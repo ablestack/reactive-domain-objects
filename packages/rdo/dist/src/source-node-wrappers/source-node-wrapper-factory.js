@@ -27,7 +27,7 @@ class SourceNodeWrapperFactory {
                 return new _1.SourceArrayNW({ value, sourceNodePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
             }
             default: {
-                throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.builtInType}`);
+                throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.stringifiedType}`);
             }
         }
     }

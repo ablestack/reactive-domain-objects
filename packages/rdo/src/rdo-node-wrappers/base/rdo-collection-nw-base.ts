@@ -1,13 +1,11 @@
-import _ from 'lodash';
-import { config, IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
+import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
-import { IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, NodePatchOperationType, IEqualityComparer, CollectionNodePatchOperation, ISourceCollectionNodeWrapper } from '../../types';
-import { NodeChange } from '../../types/event-types';
-import { NodeTypeUtils } from '../utils/node-type.utils';
-import { RdoInternalNWBase } from './rdo-internal-nw-base';
-import { isNullOrUndefined } from '../utils/global.utils';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { CollectionNodePatchOperation, IEqualityComparer, IRdoInternalNodeWrapper, isISourceCollectionNodeWrapper, ISourceCollectionNodeWrapper, NodePatchOperationType } from '../../types';
+import { NodeChange } from '../../types/event-types';
+import { isNullOrUndefined } from '../utils/global.utils';
+import { RdoInternalNWBase } from './rdo-internal-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
 type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; rdoMap: Map<K, D> };

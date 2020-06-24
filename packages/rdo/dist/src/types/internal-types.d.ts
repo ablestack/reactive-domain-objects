@@ -1,13 +1,13 @@
 import { IGlobalNodeOptions, INodeSyncOptions } from '.';
 import { IMakeCollectionKey, IMakeRdoElement, ISyncableRDOCollection } from './rdo-collection-types';
-export declare type JavaScriptBuiltInType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
+export declare type JavaScriptStringifiedType = '[object Array]' | '[object Boolean]' | '[object Date]' | '[object Error]' | '[object Map]' | '[object Number]' | '[object Object]' | '[object RegExp]' | '[object Set]' | '[object String]' | '[object Undefined]';
 export declare type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export declare type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 export declare type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export declare type NodeTypeInfo = {
     kind: NodeKind;
     type?: RdoFieldType;
-    builtInType: JavaScriptBuiltInType;
+    stringifiedType: JavaScriptStringifiedType;
 };
 export declare type NodePatchOperationType = 'add' | 'update' | 'delete';
 export declare type CollectionNodePatchOperation<K extends string | number, D> = {

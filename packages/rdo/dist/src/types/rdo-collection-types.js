@@ -11,7 +11,7 @@ function isIMakeRdoElement(o) {
 }
 exports.isIMakeRdoElement = isIMakeRdoElement;
 function IsISyncableCollection(o) {
-    return o && o.size && o.elements && o.getCollectionKeys && o.getElement && o.insertElement && o.updateElement && o.deleteElement && o.clearElements && isIMakeCollectionKey(o);
+    return o && o.size !== undefined && o.elements && o.patchAdd && o.patchDelete && isIMakeCollectionKey(o);
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {

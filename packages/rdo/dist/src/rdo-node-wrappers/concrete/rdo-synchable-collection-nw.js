@@ -66,7 +66,9 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
             switch (patchOp.op) {
                 case 'add':
                     this.value.patchAdd(patchOp);
-                // now fall through to update, so the values sync to the new item
+                    // If primitive, break. Else, fall through to update, so the values sync to the new item
+                    if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
+                        break;
                 case 'update':
                     if (!patchOp.rdo)
                         throw new Error('Rdo must not be null for patch-update operations');

@@ -41,7 +41,7 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
     //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
     //     return this.clearElements();
     //   } else {
-    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.builtInType });
+    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodePath: this.wrappedSourceNode.sourceNodePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
     //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodePath}'`);
     //     // Execute
     //     const changed = super.synchronizeCollection();
@@ -73,9 +73,11 @@ class RdoArrayNW extends __1.RdoCollectionNWBase {
             switch (patchOp.op) {
                 case 'add':
                     if (!patchOp.rdo)
-                        throw new Error('Rdo must not be null for patch-add operations');
+                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodePath:${this.wrappedSourceNode.sourceNodePath},  Key:${patchOp.key}`);
                     this.value.splice(patchOp.index, 0, patchOp.rdo);
-                // now fall through to update, so the values sync to the new item
+                    // If primitive, break. Else, fall through to update, so the values sync to the new item
+                    if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
+                        break;
                 case 'update':
                     if (!patchOp.rdo)
                         throw new Error('Rdo must not be null for patch-update operations');

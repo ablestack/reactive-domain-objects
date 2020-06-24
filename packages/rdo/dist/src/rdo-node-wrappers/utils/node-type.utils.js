@@ -8,31 +8,32 @@ const logger = logger_1.Logger.make('node-type.utils');
  *
  */
 function getNodeType(rdoNodeVal) {
-    const builtInNodeType = toString.call(rdoNodeVal);
+    const stringifiedNodeType = toString.call(rdoNodeVal);
     if (__1.IsISyncableCollection(rdoNodeVal)) {
-        return { kind: 'Collection', type: 'ISyncableCollection', builtInType: builtInNodeType };
+        return { kind: 'Collection', type: 'ISyncableCollection', stringifiedType: stringifiedNodeType };
     }
-    switch (builtInNodeType) {
+    switch (stringifiedNodeType) {
         case '[object Boolean]':
         case '[object Date]':
         case '[object Number]':
         case '[object String]': {
-            return { kind: 'Primitive', type: 'Primitive', builtInType: builtInNodeType };
+            return { kind: 'Primitive', type: 'Primitive', stringifiedType: stringifiedNodeType };
         }
         case '[object Object]': {
-            return { kind: 'Object', type: 'Object', builtInType: builtInNodeType };
+            return { kind: 'Object', type: 'Object', stringifiedType: stringifiedNodeType };
         }
         case '[object Array]': {
-            return { kind: 'Collection', type: 'Array', builtInType: builtInNodeType };
+            return { kind: 'Collection', type: 'Array', stringifiedType: stringifiedNodeType };
         }
         case '[object Map]': {
-            return { kind: 'Collection', type: 'Map', builtInType: builtInNodeType };
+            return { kind: 'Collection', type: 'Map', stringifiedType: stringifiedNodeType };
         }
         case '[object Set]': {
-            return { kind: 'Collection', type: 'Set', builtInType: builtInNodeType };
+            return { kind: 'Collection', type: 'Set', stringifiedType: stringifiedNodeType };
         }
         default: {
-            throw new Error(`Unable to find RDO Node Type for type: ${builtInNodeType}`);
+            console.log('--------------', rdoNodeVal);
+            throw new Error(`Unable to find RDO Node Type for type: ${stringifiedNodeType}`);
         }
     }
 }

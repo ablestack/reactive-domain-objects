@@ -1,9 +1,9 @@
 import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
-import { IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation, ISourceCollectionNodeWrapper } from '../../types';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { CollectionNodePatchOperation, IEqualityComparer, IRdoInternalNodeWrapper, ISourceCollectionNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
-import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 declare type MutableCachedNodeItemType<K, S, D> = {
     sourceData: Array<S>;
     rdoMap: Map<K, D>;
