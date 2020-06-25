@@ -9,7 +9,7 @@ import { IRdoNodeWrapper, IMakeRdo, CollectionNodePatchOperation } from './inter
 export type MakeCollectionKeyMethod<K extends string | number, T> = (item: T) => K;
 
 export interface IMakeCollectionKey<K extends string | number, T> {
-  makeCollectionKey: (item: T) => K;
+  makeCollectionKey: (item: T, index: number) => K;
 }
 
 export function isIMakeCollectionKey(o: any): o is IMakeCollectionKey<any, any> {

@@ -235,6 +235,8 @@ test('Synchronize collection element - handle null value edits', () => {
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
 
+  console.log(allCollectionTypesRDO.mapOfNumbers);
+
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 2)).toEqual(2);
   expect(allCollectionTypesRDO.mapOfNumbers.get(2)).toEqual(2);
   expect(allCollectionTypesRDO.mapOfNumbers.get(1)).toBeUndefined();

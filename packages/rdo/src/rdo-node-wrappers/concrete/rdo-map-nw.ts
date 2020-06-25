@@ -1,11 +1,27 @@
 import { RdoCollectionNWBase, NodeTypeUtils } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, isISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation } from '../..';
+import {
+  IGlobalNodeOptions,
+  INodeSyncOptions,
+  IRdoNodeWrapper,
+  isISourceCollectionNodeWrapper,
+  ISourceNodeWrapper,
+  ISyncChildNode,
+  NodeTypeInfo,
+  IRdoInternalNodeWrapper,
+  IEqualityComparer,
+  CollectionNodePatchOperation,
+  ISourceCollectionNodeWrapper,
+  NodePatchOperationType,
+} from '../..';
 import { Logger } from '../../infrastructure/logger';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { isNullOrUndefined } from '../utils/global.utils';
+import _ from 'lodash';
 
 const logger = Logger.make('RdoMapNW');
+type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; sourceMap: Map<K, S> };
 
 export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Map<K, D>;
@@ -39,6 +55,18 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
+  }
+
+  //------------------------------
+  // Private
+  //------------------------------
+  protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
+    if (!mutableNodeCacheItem) {
+      mutableNodeCacheItem = { sourceData: new Array<S>(), sourceMap: new Map<K, S>() };
+      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
+    }
+    return mutableNodeCacheItem;
   }
 
   //------------------------------
@@ -113,38 +141,95 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //------------------------------
   // RdoSyncableCollectionNW
   //------------------------------
-  public executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]) {
-    // Loop through and execute (note, the operations are in descending order by index
+  protected sync(): boolean {
+    //
+    // Setup
+    let changed = false;
+    const mutableNodeCacheItem = this.getNodeInstanceCache();
+    const origSourceMap = mutableNodeCacheItem.sourceMap;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
+    const newSourceArray = this.wrappedSourceNode.value as Array<S>;
+    const newSourceMap = new Map<K, S>();
+    const processedKeys = new Array<K>();
 
-    // EXECUTE
-    for (const patchOp of patchOperations) {
-      switch (patchOp.op) {
-        case 'add':
-          if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
-          this.value.set(patchOp.key, patchOp.rdo);
-          // If primitive, break. Else, fall through to update, so the values sync to the new item
-          if (NodeTypeUtils.isPrimitive(patchOp.rdo)) break;
-        case 'update':
-          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
-          this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
-          break;
-        case 'delete':
-          this.value.delete(patchOp.key);
-          break;
-        default:
-          throw new Error(`Unknown operation: ${patchOp.op}`);
-          break;
+    //
+    // Loop and build out sourceMap
+    for (let i = 0; i < newSourceArray.length; i++) {
+      const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceArray[i], i);
+      newSourceMap.set(newElementKey, newSourceArray[i]);
+    }
+
+    for (const sourceEntry of newSourceMap) {
+      const elementKey = sourceEntry[0];
+      const newSourceElement = sourceEntry[1];
+      const previousSourceElement = origSourceMap.get(elementKey);
+      processedKeys.push(elementKey);
+
+      if (previousSourceElement === null || previousSourceElement === undefined) {
+        // ---------------------------
+        // New Key - ADD
+        // ---------------------------
+      } else {
+        // ---------------------------
+        // Existing Key
+        // ---------------------------
+        if (this.equalityComparer(previousSourceElement, newSourceElement)) {
+          // No change, no patch needed
+        } else {
+          if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+            // ---------------------------
+            // REPLACE
+            // ---------------------------
+            // If non-equal primitive with same keys, just do a replace operation
+            this._value.set(elementKey, (newSourceElement as unknown) as D);
+
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+              changeType: 'replace',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index: undefined,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceElement,
+              newSourceValue: newSourceElement,
+            });
+          } else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: this.value.get(elementKey), rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+              changeType: 'update',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index: undefined,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceElement,
+              newSourceValue: newSourceElement,
+            });
+          }
+        }
       }
 
-      // PUBLISH
-      this.eventEmitter.publish('nodeChange', {
-        changeType: patchOp.op,
-        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-        sourceKey: patchOp.key,
-        rdoKey: patchOp.key,
-        previousSourceValue: patchOp.previousSourceValue,
-        newSourceValue: patchOp.newSourceValue,
-      });
+      const origCollectionKeys = Array.from<K>(origSourceMap.keys());
+      const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
+      if (keysInOrigOnly.length > 0) {
+        keysInOrigOnly.forEach((origKey) => {
+          const deletedItem = this._value.get(origKey);
+          this._value.delete(origKey);
+          this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, index: undefined, sourceKey: origKey, rdoKey: origKey, previousSourceValue: deletedItem, newSourceValue: undefined });
+        });
+        changed = true;
+      }
     }
+
+    // Update NodeCache
+    mutableNodeCacheItem.sourceData = newSourceArray;
+    mutableNodeCacheItem.sourceMap = newSourceMap;
+
+    return changed;
   }
 }

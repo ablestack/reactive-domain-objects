@@ -9,7 +9,7 @@ export type NodeKind = 'Primitive' | 'Collection' | 'Object';
 export type InternalNodeKind = Exclude<NodeKind, 'Primitive'>;
 export type RdoFieldType = 'Primitive' | 'Array' | 'Map' | 'Set' | 'ISyncableCollection' | 'Object';
 export type NodeTypeInfo = { kind: NodeKind; type?: RdoFieldType; stringifiedType: JavaScriptStringifiedType };
-export type NodePatchOperationType = 'add' | 'update' | 'delete';
+export type NodePatchOperationType = 'add' | 'replace' | 'update' | 'delete';
 export type CollectionNodePatchOperation<K extends string | number, D> = { op: NodePatchOperationType; index: number; key: K; previousSourceValue: any; newSourceValue: any; rdo?: D };
 
 export interface ISourceNodeWrapper<K extends string | number, S, D> {
@@ -29,15 +29,20 @@ export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any, any, 
   return o && o.typeInfo && 'value' in o && o.setRdoNode && o.childElementCount;
 }
 
-export interface ISourceInternalNodeWrapper<K extends string | number, S, D> extends ISourceNodeWrapper<K, S, D> {
-  nodeKeys(): Iterable<K>;
-  getItem(key: K): S | null | undefined;
-}
+export interface ISourceInternalNodeWrapper<K extends string | number, S, D> extends ISourceNodeWrapper<K, S, D> {}
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any, any, any> {
   return o && o.nodeKeys && o.getItem && isISourceNodeWrapper(o);
 }
 
+export interface ISourceObjectNodeWrapper<S, D> extends ISourceInternalNodeWrapper<string, S, D> {
+  nodeKeys(): Iterable<string>;
+  getItem(key: string): S | null | undefined;
+}
+
+export function isISourceObjectNodeWrapper(o: any): o is ISourceObjectNodeWrapper<any, any> {
+  return o && o.nodeKeys && o.getItem && isISourceInternalNodeWrapper(o);
+}
 export interface ISourceCollectionNodeWrapper<K extends string | number, S, D> extends ISourceInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, S> {
   elements(): Iterable<S>;
 }

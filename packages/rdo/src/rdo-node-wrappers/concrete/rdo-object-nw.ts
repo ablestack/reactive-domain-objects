@@ -18,7 +18,7 @@ import {
 } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
-import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper } from '../../types';
+import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper, ISourceObjectNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { NodeTracker } from '../../infrastructure/node-tracker';
@@ -26,7 +26,7 @@ import { NodeTracker } from '../../infrastructure/node-tracker';
 const logger = Logger.make('RdoObjectNW');
 type MutableCachedNodeItemType<S> = { sourceData: S | null | undefined };
 
-export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends RdoInternalNWBase<K, S, D> {
+export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string, S, D> {
   private _value: D;
   private _equalityComparer: IEqualityComparer;
   private _wrapRdoNode: IWrapRdoNode;
@@ -51,7 +51,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     key: K | undefined;
     mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
     wrapRdoNode: IWrapRdoNode;
@@ -178,14 +178,15 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
    */
   private sync(): boolean {
     let changed = false;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceObjectNodeWrapper<S, D>;
 
     if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) {
       throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
     }
 
     // Loop properties
-    for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
-      const sourceFieldVal = this.wrappedSourceNode.getItem(sourceFieldname);
+    for (const sourceFieldname of wrappedSourceNode.nodeKeys()) {
+      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname);
       let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 
       let rdoNodeItemValue: any;
@@ -200,7 +201,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
           logger.trace(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - domainFieldname '${sourceFieldname}' auto making RDO`, sourceFieldVal);
 
           // Allocate fieldname and empty val
-          rdoFieldname = sourceFieldname as K;
+          rdoFieldname = sourceFieldname as string;
           rdoNodeItemValue = this.makeRdoElement(sourceFieldVal);
 
           // Insert
@@ -231,7 +232,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
   /**
    *
    */
-  public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: K; sourceFieldVal: any }): K | undefined {
+  public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: string; sourceFieldVal: any }): string | undefined {
     // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
     let rdoFieldname: K | undefined;
 
@@ -262,7 +263,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     }
 
     //
-    // Try stright match for sourceFieldname
+    // Try straight match for sourceFieldname
     if (!rdoFieldname) {
       rdoFieldname = sourceFieldname;
       if (rdoFieldname && !(rdoFieldname in this._value)) {
@@ -277,7 +278,7 @@ export class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends 
     //
     if (!rdoFieldname && this.globalNodeOptions?.commonRdoFieldnamePostfix) {
       const domainPropKeyWithPostfix = `${sourceFieldname}${this.globalNodeOptions.commonRdoFieldnamePostfix}`;
-      rdoFieldname = domainPropKeyWithPostfix as K | undefined;
+      rdoFieldname = domainPropKeyWithPostfix as string | undefined;
 
       // If fieldName not in wrappedParentRdoNode, set to null
       if (rdoFieldname && !(rdoFieldname in this._value)) {

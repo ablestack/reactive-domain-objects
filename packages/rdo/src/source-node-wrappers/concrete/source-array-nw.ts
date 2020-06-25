@@ -45,13 +45,13 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public nodeKeys() {
-    return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-  }
+  // public nodeKeys() {
+  //   return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
+  // }
 
-  public getItem(key: K) {
-    return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-  }
+  // public getItem(key: K) {
+  //   return CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
+  // }
 
   public getNode(): any {
     return this._value;
@@ -61,7 +61,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // ISourceCollectionNodeWrapper
   //------------------------------
 
-  public makeCollectionKey = (item: S) => {
+  public makeCollectionKey = (item: S; index: number): K => {
     if (item === null || item === undefined) throw new Error(`Can not make collection key from null or undefined source object`);
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
@@ -73,17 +73,13 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
       return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
     }
 
-    // If primitive, the item is the key
-    if (NodeTypeUtils.isPrimitive(item)) {
-      return item;
-    }
-
     // Last option - look for idKey
     if (item[config.defaultIdKey]) {
       return item[config.defaultIdKey];
     }
 
-    throw new Error(`Could not make makeCollectionKey from item: ${JSON.stringify(item)}`);
+    // If no key here, just use index
+    return index as K;
   };
 
   public elements(): Iterable<S> {

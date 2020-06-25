@@ -777,7 +777,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "0f7c30a25b716a67c2e84cf6bbc97f49356199df0764b6f99f2af541942c16f6",
+        "version": "25e55468e2956b9ebf2edee121d8d530c7ad54c3044064a2550c715200f691cf",
         "signature": "f5c0745e0fe2550e6aee85ba2d44d6734da156feadff2c594ee6e44d4b48baff",
         "affectsGlobalScope": false
       },
