@@ -131,23 +131,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
 
   /** */
   public smartSync(): boolean {
-    // Setup
-    const mutableNodeCacheItem = this.getNodeInstanceCache();
-    if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error('Can only sync Rdo collection types with Collection source types');
-    const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
-
-    // Instrumentation
-    //console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
-    logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
-
-    // Execute
-    this.executePatchOperations(patchOperations);
-
-    // Update cache
-    mutableNodeCacheItem.sourceData = this.wrappedSourceNode.value;
-
-    // Return
-    return patchOperations.length > 0;
+    return this.sync();
   }
 
   // protected synchronizeCollection() {

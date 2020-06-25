@@ -48,7 +48,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }: {
     value: D;
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | undefined;
     mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
@@ -89,7 +89,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }
 
   public get value() {
-    return this._value;
+    return this._value as Record<string, any>;
   }
 
   public childElementCount(): number {
@@ -234,7 +234,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
    */
   public getFieldname({ sourceFieldname, sourceFieldVal }: { sourceFieldname: string; sourceFieldVal: any }): string | undefined {
     // Set Destination Prop Key, and if not found, fall back to name with prefix if supplied
-    let rdoFieldname: K | undefined;
+    let rdoFieldname: string | undefined;
 
     //
     // Try IHasCustomRdoFieldNames

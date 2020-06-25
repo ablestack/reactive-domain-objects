@@ -1,24 +1,10 @@
-import { RdoCollectionNWBase, NodeTypeUtils } from '..';
-import {
-  IGlobalNodeOptions,
-  INodeSyncOptions,
-  IRdoNodeWrapper,
-  isISourceCollectionNodeWrapper,
-  ISourceNodeWrapper,
-  ISyncChildNode,
-  NodeTypeInfo,
-  IRdoInternalNodeWrapper,
-  IEqualityComparer,
-  CollectionNodePatchOperation,
-  ISourceCollectionNodeWrapper,
-  NodePatchOperationType,
-} from '../..';
-import { Logger } from '../../infrastructure/logger';
-import { EventEmitter } from '../../infrastructure/event-emitter';
-import { NodeChange } from '../../types/event-types';
-import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
-import { isNullOrUndefined } from '../utils/global.utils';
 import _ from 'lodash';
+import { NodeTypeUtils, RdoCollectionNWBase } from '..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceCollectionNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
+import { EventEmitter } from '../../infrastructure/event-emitter';
+import { Logger } from '../../infrastructure/logger';
+import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { NodeChange } from '../../types/event-types';
 
 const logger = Logger.make('RdoMapNW');
 type MutableCachedNodeItemType<K, S> = { sourceArray: Array<S>; sourceMap: Map<K, S> };
@@ -235,9 +221,15 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
       const origCollectionKeys = Array.from<K>(origSourceMap.keys());
       const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
       if (keysInOrigOnly.length > 0) {
+        // ---------------------------
+        // Missing Index - DELETE
+        // ---------------------------
         keysInOrigOnly.forEach((origKey) => {
+          // Delete operation
           const deletedItem = this._value.get(origKey);
           this._value.delete(origKey);
+
+          // Publish
           this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, index: undefined, sourceKey: origKey, rdoKey: origKey, previousSourceValue: deletedItem, newSourceValue: undefined });
         });
         changed = true;

@@ -227,12 +227,13 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
       const origCollectionKeys = Array.from<K>(origSourceMap.keys());
       const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
       if (keysInOrigOnly.length > 0) {
-        // ---------------------------
-        // Missing Index - DELETE
-        // ---------------------------
         keysInOrigOnly.forEach((origKey) => {
-          // Delete operation
+          // ---------------------------
+          // Missing Index - DELETE
+          // ---------------------------
           const deletedSourceElement = origSourceMap.get(origKey);
+
+          // Delete operation
           const rdoToDelete = rdoMap.get(origKey);
           this._value.delete(rdoToDelete!);
           rdoMap.delete(elementKey);

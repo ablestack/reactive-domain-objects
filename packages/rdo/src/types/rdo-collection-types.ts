@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IRdoNodeWrapper, IMakeRdo, CollectionNodePatchOperation } from './internal-types';
+import { IRdoNodeWrapper, IMakeRdo, CollectionNodePatchOperation, IRdoInternalNodeWrapper, ISyncChildNode } from './internal-types';
+import { IEqualityComparer, NodeChange } from '.';
+import { EventEmitter } from '../infrastructure/event-emitter';
 
 //--------------------------------------------------------
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
@@ -27,8 +29,7 @@ export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
 export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKey<K, S> {
   readonly size: number;
   elements(): Iterable<D>;
-  patchAdd(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
-  patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>);
+  sync({ wrappedRdoNode, equalityComparer, syncChildNode, eventEmitter }: { wrappedRdoNode: IRdoInternalNodeWrapper<K, S, D>; equalityComparer: IEqualityComparer; syncChildNode: ISyncChildNode; eventEmitter: EventEmitter<NodeChange> }): boolean;
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any> {

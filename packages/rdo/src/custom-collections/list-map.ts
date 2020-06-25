@@ -1,6 +1,8 @@
 import { observable, computed } from 'mobx';
-import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionUtils, CollectionNodePatchOperation } from '..';
+import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionUtils, CollectionNodePatchOperation, IRdoInternalNodeWrapper, ISourceCollectionNodeWrapper, ISyncChildNode, NodeTypeUtils, NodeChange, IEqualityComparer } from '..';
 import { Logger } from '../infrastructure/logger';
+import { EventEmitter } from '../infrastructure/event-emitter';
+import _ from 'lodash';
 
 const logger = Logger.make('SyncableCollection');
 /**
@@ -103,5 +105,143 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
   public patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>) {
     this._map$.delete(patchOp.key);
     this._array$.splice(patchOp.index, 1);
+  }
+
+  //------------------------------
+  // RdoSyncableCollectionNW
+  //------------------------------
+  private origSourceMap = new Map<K, S>();
+  private origElementIndexMap = new Map<K, number>();
+  public sync({ wrappedRdoNode, equalityComparer, syncChildNode, eventEmitter }: { wrappedRdoNode: IRdoInternalNodeWrapper<K, S, D>; equalityComparer: IEqualityComparer; syncChildNode: ISyncChildNode; eventEmitter: EventEmitter<NodeChange> }): boolean {
+    //
+    // Setup
+    let changed = false;
+    const wrappedSourceNode = wrappedRdoNode.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
+    const newSourceArray = wrappedRdoNode.wrappedSourceNode.value as Array<S>;
+    const newSourceMap = new Map<K, S>();
+    const newElementIndexMap = new Map<K, number>();
+    const processedKeys = new Array<K>();
+
+    //
+    // Loop and build out sourceMap
+    for (let i = 0; i < newSourceArray.length; i++) {
+      const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceArray[i], i);
+      newSourceMap.set(newElementKey, newSourceArray[i]);
+      if (!newElementIndexMap.has(newElementKey)) newElementIndexMap.set(newElementKey, i);
+    }
+
+    // Loop and execute
+    let offset = 0;
+    for (const sourceEntry of newSourceMap) {
+      const elementKey = sourceEntry[0];
+      const newSourceElement = sourceEntry[1];
+      const previousSourceElement = this.origSourceMap.get(elementKey);
+      processedKeys.push(elementKey);
+
+      if (previousSourceElement === null || previousSourceElement === undefined) {
+        // ---------------------------
+        // New Key - ADD
+        // ---------------------------
+        const newRdo = wrappedRdoNode.makeRdoElement(newSourceElement);
+        if (newRdo === null || newRdo === undefined) throw new Error('RDO can not be null or undefined');
+
+        // Add operation
+        this._map$.set(elementKey, newRdo);
+        this._array$.splice(this.origElementIndexMap.get(elementKey)! + offset, 0, newRdo);
+        offset++;
+
+        // If not primitive, sync so child nodes are hydrated
+        if (NodeTypeUtils.isPrimitive(newRdo)) syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+
+        // Publish
+        eventEmitter.publish('nodeChange', {
+          changeType: 'add',
+          sourceNodeTypePath: wrappedRdoNode.wrappedSourceNode.sourceNodeTypePath,
+          index: undefined,
+          sourceKey: elementKey,
+          rdoKey: elementKey,
+          previousSourceValue: undefined,
+          newSourceValue: newSourceElement,
+        });
+      } else {
+        // ---------------------------
+        // Existing Key
+        // ---------------------------
+        if (equalityComparer(previousSourceElement, newSourceElement)) {
+          // No change, no patch needed
+        } else {
+          if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+            // ---------------------------
+            // REPLACE
+            // ---------------------------
+            // If non-equal primitive with same keys, just do a replace operation
+            this._map$.set(elementKey, (newSourceElement as unknown) as D);
+            this._array$.splice(this.origElementIndexMap.get(elementKey)! + offset, 1, (newSourceElement as unknown) as D);
+
+            // Publish
+            eventEmitter.publish('nodeChange', {
+              changeType: 'replace',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index: undefined,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceElement,
+              newSourceValue: newSourceElement,
+            });
+          } else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue: this._map$.get(elementKey), rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+
+            // Publish
+            eventEmitter.publish('nodeChange', {
+              changeType: 'update',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index: undefined,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceElement,
+              newSourceValue: newSourceElement,
+            });
+          }
+        }
+      }
+
+      const origCollectionKeys = Array.from<K>(this.origSourceMap.keys());
+      const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
+      if (keysInOrigOnly.length > 0) {
+        keysInOrigOnly.forEach((origKey) => {
+          // ---------------------------
+          // Missing Index - DELETE
+          // ---------------------------
+          const deletedItem = this._map$.get(origKey);
+
+          // Delete operation
+          this._map$.delete(elementKey);
+          this._array$.splice(this.origElementIndexMap.get(origKey)! + offset, 1);
+          offset--;
+
+          // Publish
+          eventEmitter.publish('nodeChange', {
+            changeType: 'delete',
+            sourceNodeTypePath: wrappedRdoNode.wrappedSourceNode.sourceNodeTypePath,
+            index: undefined,
+            sourceKey: origKey,
+            rdoKey: origKey,
+            previousSourceValue: deletedItem,
+            newSourceValue: undefined,
+          });
+        });
+        changed = true;
+      }
+    }
+
+    // Update NodeCache
+    this.origElementIndexMap = newElementIndexMap;
+    this.origSourceMap = newSourceMap;
+
+    return changed;
   }
 }
