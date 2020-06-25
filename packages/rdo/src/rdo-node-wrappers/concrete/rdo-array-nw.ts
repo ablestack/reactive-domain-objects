@@ -7,7 +7,7 @@ import { NodeChange } from '../../types/event-types';
 import { isNullOrUndefined } from '../utils/global.utils';
 
 const logger = Logger.make('RdoArrayNW');
-type MutableCachedNodeItemType<S> = { sourceData: Array<S> };
+type MutableCachedNodeItemType<S> = { sourceArray: Array<S> };
 
 export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   private _value: Array<D>;
@@ -48,7 +48,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   protected getNodeInstanceCache(): MutableCachedNodeItemType<S> {
     let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<S>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceData: new Array<S>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -131,7 +131,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     // Setup
     let changed = false;
     const mutableNodeCacheItem = this.getNodeInstanceCache();
-    const origSourceArray = mutableNodeCacheItem.sourceData;
+    const origSourceArray = mutableNodeCacheItem.sourceArray;
     const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<string, S, D>;
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
     const count = Math.max(origSourceArray.length, newSourceArray.length);
@@ -148,7 +148,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
         // ---------------------------
         // New Index - ADD
         // ---------------------------
-        const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement, index);
+        const elementKey = wrappedSourceNode.makeCollectionKey(newSourceElement, index);
         const newRdo = this.makeRdoElement(newSourceElement);
 
         // Add operation
@@ -157,15 +157,15 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
         offset++;
 
         // If not primitive, sync so child nodes are hydrated
-        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: newElementKey, sourceNodeItemKey: newElementKey });
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
         // Publish
         this.eventEmitter.publish('nodeChange', {
           changeType: 'add',
           sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
           index,
-          sourceKey: newElementKey,
-          rdoKey: newElementKey,
+          sourceKey: elementKey,
+          rdoKey: elementKey,
           previousSourceValue: undefined,
           newSourceValue: newSourceElement,
         });
@@ -249,6 +249,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
         changed = true;
         offset--;
 
+        // Publish
         this.eventEmitter.publish('nodeChange', {
           changeType: 'update',
           sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
@@ -262,7 +263,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
     }
 
     // Update NodeCache
-    mutableNodeCacheItem.sourceData = newSourceArray;
+    mutableNodeCacheItem.sourceArray = newSourceArray;
 
     return changed;
   }

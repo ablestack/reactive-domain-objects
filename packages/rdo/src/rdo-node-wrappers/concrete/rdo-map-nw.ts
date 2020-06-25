@@ -21,7 +21,7 @@ import { isNullOrUndefined } from '../utils/global.utils';
 import _ from 'lodash';
 
 const logger = Logger.make('RdoMapNW');
-type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; sourceMap: Map<K, S> };
+type MutableCachedNodeItemType<K, S> = { sourceArray: Array<S>; sourceMap: Map<K, S> };
 
 export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Map<K, D>;
@@ -60,10 +60,10 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //------------------------------
   // Private
   //------------------------------
-  protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
+  protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceData: new Array<S>(), sourceMap: new Map<K, S>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceMap: new Map<K, S>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -169,6 +169,24 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
         // ---------------------------
         // New Key - ADD
         // ---------------------------
+        const newRdo = this.makeRdoElement(newSourceElement);
+
+        // Add operation
+        this.value.set(elementKey, newRdo);
+
+        // If not primitive, sync so child nodes are hydrated
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+
+        // Publish
+        this.eventEmitter.publish('nodeChange', {
+          changeType: 'add',
+          sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+          index: undefined,
+          sourceKey: elementKey,
+          rdoKey: elementKey,
+          previousSourceValue: undefined,
+          newSourceValue: newSourceElement,
+        });
       } else {
         // ---------------------------
         // Existing Key
@@ -227,7 +245,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     }
 
     // Update NodeCache
-    mutableNodeCacheItem.sourceData = newSourceArray;
+    mutableNodeCacheItem.sourceArray = newSourceArray;
     mutableNodeCacheItem.sourceMap = newSourceMap;
 
     return changed;

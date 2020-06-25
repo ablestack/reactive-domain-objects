@@ -1,9 +1,6 @@
-import { NodeTypeInfo, ISourceCollectionNodeWrapper, INodeSyncOptions, IGlobalNodeOptions, NodeKind, config } from '../..';
-import { CollectionUtils } from '../../rdo-node-wrappers/utils/collection.utils';
-import { SourceBaseNW } from '../base/source-base-nw';
-import { NodeTypeUtils } from '../../rdo-node-wrappers/utils/node-type.utils';
+import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrapper, NodeTypeInfo } from '../..';
 import { isIMakeCollectionKey } from '../../types';
-import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
+import { SourceBaseNW } from '../base/source-base-nw';
 
 export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
   private _value: Array<S>;
