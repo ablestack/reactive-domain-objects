@@ -18,6 +18,8 @@ const logger = Logger.make('SyncableCollection');
  */
 export class ListMap<K extends string | number, S, D> implements ISyncableRDOCollection<K, S, D> {
   @observable.shallow private _map$: Map<K, D>;
+  private origSourceMap = new Map<K, S>();
+  private origElementIndexMap = new Map<K, number>();
 
   // -----------------------------------
   // IRdoFactory
@@ -87,55 +89,29 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
     return this._makeCollectionKey(item);
   };
 
-  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>) {
-    if (!this._makeRdo) return undefined;
-    return this._makeRdo(sourceItem);
-  }
-
   public elements(): Iterable<D> {
     return this._map$.values();
   }
 
-  public patchAdd(patchOp: CollectionNodePatchOperation<K, D>) {
-    if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath - Key:${patchOp.key}`);
-    this._map$.set(patchOp.key, patchOp.rdo);
-    this._array$.splice(patchOp.index, 0, patchOp.rdo);
+  public getItem(key: K) {
+    return this._map$.get(key);
   }
 
-  public patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>) {
-    this._map$.delete(patchOp.key);
-    this._array$.splice(patchOp.index, 1);
-  }
-
-  //------------------------------
-  // RdoSyncableCollectionNW
-  //------------------------------
-  private origSourceMap = new Map<K, S>();
-  private origElementIndexMap = new Map<K, number>();
   public sync({ wrappedRdoNode, equalityComparer, syncChildNode, eventEmitter }: { wrappedRdoNode: IRdoInternalNodeWrapper<K, S, D>; equalityComparer: IEqualityComparer; syncChildNode: ISyncChildNode; eventEmitter: EventEmitter<NodeChange> }): boolean {
     //
     // Setup
     let changed = false;
     const wrappedSourceNode = wrappedRdoNode.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
-    const newSourceArray = wrappedRdoNode.wrappedSourceNode.value as Array<S>;
+    const origSourceMap = this.origSourceMap;
     const newSourceMap = new Map<K, S>();
     const newElementIndexMap = new Map<K, number>();
     const processedKeys = new Array<K>();
 
-    //
-    // Loop and build out sourceMap
-    for (let i = 0; i < newSourceArray.length; i++) {
-      const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceArray[i], i);
-      newSourceMap.set(newElementKey, newSourceArray[i]);
-      if (!newElementIndexMap.has(newElementKey)) newElementIndexMap.set(newElementKey, i);
-    }
-
     // Loop and execute
-    let offset = 0;
-    for (const sourceEntry of newSourceMap) {
-      const elementKey = sourceEntry[0];
-      const newSourceElement = sourceEntry[1];
-      const previousSourceElement = this.origSourceMap.get(elementKey);
+    let indexOffset = 0;
+    for (const elementKey of wrappedSourceNode.nodeKeys()) {
+      const newSourceElement = wrappedSourceNode.getItem(elementKey)!;
+      const previousSourceElement = origSourceMap.get(elementKey);
       processedKeys.push(elementKey);
 
       if (previousSourceElement === null || previousSourceElement === undefined) {
@@ -147,11 +123,11 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
 
         // Add operation
         this._map$.set(elementKey, newRdo);
-        this._array$.splice(this.origElementIndexMap.get(elementKey)! + offset, 0, newRdo);
-        offset++;
+        this._array$.splice(this.origElementIndexMap.get(elementKey)! + indexOffset, 0, newRdo);
+        indexOffset++;
 
         // If not primitive, sync so child nodes are hydrated
-        if (NodeTypeUtils.isPrimitive(newRdo)) syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+        if (NodeTypeUtils.isPrimitive(newRdo)) syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
         // Publish
         eventEmitter.publish('nodeChange', {
@@ -176,7 +152,7 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
             // ---------------------------
             // If non-equal primitive with same keys, just do a replace operation
             this._map$.set(elementKey, (newSourceElement as unknown) as D);
-            this._array$.splice(this.origElementIndexMap.get(elementKey)! + offset, 1, (newSourceElement as unknown) as D);
+            this._array$.splice(this.origElementIndexMap.get(elementKey)! + indexOffset, 1, (newSourceElement as unknown) as D);
 
             // Publish
             eventEmitter.publish('nodeChange', {
@@ -193,7 +169,7 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
             // UPDATE
             // ---------------------------
             // If non-equal non-primitive, step into child and sync
-            changed = syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue: this._map$.get(elementKey), rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+            changed = syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
 
             // Publish
             eventEmitter.publish('nodeChange', {
@@ -220,8 +196,8 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
 
           // Delete operation
           this._map$.delete(elementKey);
-          this._array$.splice(this.origElementIndexMap.get(origKey)! + offset, 1);
-          offset--;
+          this._array$.splice(this.origElementIndexMap.get(origKey)! + indexOffset, 1);
+          indexOffset--;
 
           // Publish
           eventEmitter.publish('nodeChange', {
@@ -243,5 +219,14 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
     this.origSourceMap = newSourceMap;
 
     return changed;
+  }
+
+  //------------------------------
+  // RdoSyncableCollectionNW
+  //------------------------------
+
+  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>) {
+    if (!this._makeRdo) return undefined;
+    return this._makeRdo(sourceItem);
   }
 }

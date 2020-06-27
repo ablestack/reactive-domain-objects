@@ -7,7 +7,7 @@ import { NodeChange } from '../../types/event-types';
 import { isNullOrUndefined } from '../utils/global.utils';
 
 const logger = Logger.make('RdoArrayNW');
-type MutableCachedNodeItemType<S> = { sourceArray: Array<S> };
+type MutableCachedNodeItemType<K, S, D> = { sourceArray: Array<S>; sourceMap: Map<K, S>; rdoMap: Map<K, D> };
 
 export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   private _value: Array<D>;
@@ -45,10 +45,10 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //------------------------------
   // Private
   //------------------------------
-  protected getNodeInstanceCache(): MutableCachedNodeItemType<S> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<S>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
+  protected getNodeInstanceCache(): MutableCachedNodeItemType<string, S, D> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<string, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceArray: new Array<S>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceMap: new Map<string, S>(), rdoMap: new Map<string, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -70,12 +70,6 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //   return CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   // }
 
-  // public getItem(key: string) {
-  //   if (this.childElementCount() === 0) return undefined;
-  //   const item = CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-  //   return item;
-  // }
-
   // public updateItem(key: string, value: D) {
   //   if (this.childElementCount() === 0) return false;
   //   return CollectionUtils.Array.updateElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
@@ -88,6 +82,9 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
+  public getItem(key: string) {
+    //this.getNodeInstanceCache()
+  }
   // public smartSync(): boolean {
   //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
   //     return this.clearElements();
@@ -125,8 +122,120 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
   //------------------------------
   // RdoSyncableCollectionNW
   //------------------------------
-
   protected sync(): boolean {
+    //
+    // Setup
+    let changed = false;
+    const mutableNodeCacheItem = this.getNodeInstanceCache();
+    const rdoMap = mutableNodeCacheItem.rdoMap;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<string, S, D>;
+    const newSourceArray = wrappedSourceNode.elements;
+    const processedKeys = new Array<string>();
+
+    //
+    // Loop and execute
+    let indexOffset = 0;
+    for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
+      const previousSourceElement = mutableNodeCacheItem.sourceArray[i];
+      const newSourceElement = newSourceArray[i];
+      const index = i + indexOffset;
+
+      if (previousSourceElement === null || previousSourceElement === undefined) {
+        // ---------------------------
+        // New Key - ADD
+        // ---------------------------
+        const newRdo = this.makeRdoElement(newSourceElement);
+
+        // Add operation
+        this.value.splice(index, 0, newRdo);
+        changed = true;
+        indexOffset++;
+
+        // If not primitive, sync so child nodes are hydrated
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+
+        // Publish
+        this.eventEmitter.publish('nodeChange', {
+          changeType: 'add',
+          sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+          index: undefined,
+          sourceKey: elementKey,
+          rdoKey: elementKey,
+          previousSourceValue: undefined,
+          newSourceValue: newSourceElement,
+        });
+      } else {
+        // ---------------------------
+        // Existing Key
+        // ---------------------------
+        if (this.equalityComparer(previousSourceElement, newSourceElement)) {
+          // No change, no patch needed
+        } else {
+          if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+            // ---------------------------
+            // REPLACE
+            // ---------------------------
+            // If non-equal primitive with same keys
+            // Assumption, this is not possible with Sets. Throw an error if we get here, because something is not as it is assumed to be!
+            throw new Error('Sets should not result in non-equal items with the same sourceKey');
+          } else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+              changeType: 'update',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index: undefined,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceElement,
+              newSourceValue: newSourceElement,
+            });
+          }
+        }
+      }
+
+      const origCollectionKeys = Array.from<K>(origSourceMap.keys());
+      const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
+      if (keysInOrigOnly.length > 0) {
+        keysInOrigOnly.forEach((origKey) => {
+          // ---------------------------
+          // Missing Index - DELETE
+          // ---------------------------
+          const deletedSourceElement = origSourceMap.get(origKey);
+
+          // Delete operation
+          const rdoToDelete = rdoMap.get(origKey);
+          this._value.delete(rdoToDelete!);
+          rdoMap.delete(elementKey);
+
+          // Publish
+          this.eventEmitter.publish('nodeChange', {
+            changeType: 'delete',
+            sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+            index: undefined,
+            sourceKey: origKey,
+            rdoKey: origKey,
+            previousSourceValue: deletedSourceElement,
+            newSourceValue: undefined,
+          });
+        });
+        changed = true;
+      }
+    }
+
+    // Update NodeCache
+    mutableNodeCacheItem.sourceArray = newSourceArray;
+    mutableNodeCacheItem.sourceMap = wrappedSourceNode.mapOfElementByKey;
+
+    return changed;
+  }
+
+  protected syncOld(): boolean {
     //
     // Setup
     let changed = false;
@@ -157,7 +266,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
         offset++;
 
         // If not primitive, sync so child nodes are hydrated
-        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
         // Publish
         this.eventEmitter.publish('nodeChange', {
@@ -224,7 +333,7 @@ export class RdoArrayNW<S, D> extends RdoCollectionNWBase<string, S, D> {
               // UPDATE
               // ---------------------------
               // If non-equal non-primitive, step into child and sync
-              changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: this.value[index], rdoNodeItemKey: newElementKey, sourceNodeItemKey: newElementKey }) && changed;
+              changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: newElementKey, sourceNodeItemKey: newElementKey }) && changed;
 
               // Publish
               this.eventEmitter.publish('nodeChange', {

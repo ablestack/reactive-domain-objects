@@ -149,9 +149,9 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   //   return Object.keys(this._value);
   // }
 
-  // public getItem(key: K) {
-  //   return this._value[key];
-  // }
+  public getItem(key: string) {
+    return this._value[key];
+  }
 
   // public updateItem(key: K, value: D | undefined) {
   //   if (key in this._value) {
@@ -222,7 +222,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
         changed = this.primitiveDirectSync({ sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousValue: rdoNodeItemValue, newValue: sourceFieldVal });
       } else {
         logger.trace(`Syncing Field '${rdoFieldname}' in object`);
-        changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+        changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
       }
     }
 
@@ -301,7 +301,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
       const wrappedRdoNode = this._wrapRdoNode({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
       if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodeTypePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
-      return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
+      return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemKey, sourceNodeItemKey });
     };
 
     // return method

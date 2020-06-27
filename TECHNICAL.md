@@ -200,6 +200,28 @@ The data payload contains the following properties:
 
 See [Usage Section](#Usage) Examples above for primary documentation for usage. See below for notes and configuration documentation.
 
+### Collection Types
+
+A note on the subtle differences in synchronization behavior based on RDO collection choice
+
+| Collection Type   | Duplicate Key Handling                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Array             | Duplicates supported. Deletion events will apply to the first matching item                                                               |
+| Map               | Elements with duplicate keys will be filtered out, and only the first item of a given key will be present in the resulting RDO collection |
+| Set               | Elements with duplicate keys will be filtered out, and only the first item of a given key will be present in the resulting RDO collection |
+| ListMap           | Elements with duplicate keys will be filtered out, and only the first item of a given key will be present in the resulting RDO collection |
+| ICustomCollection | Varies based on custom implementation                                                                                                     |
+
+### Key Generation Steps
+
+Keys are required in order to reconcile source collection items across synchronizations, and determine which Rdo items need adding, updating, or deleting. The following mechanisms are used, in the given order, to determine a key:
+TODO
+
+### RDO Generation Steps
+
+The following mechanisms are used, in the given order, when attempting to generate a new RDO object from a source item:
+TODO
+
 ## GraphSynchronizer.smartSync Configuration Options
 
 ### Core Concept: Source Node Paths

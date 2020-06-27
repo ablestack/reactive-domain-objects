@@ -66,6 +66,13 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   }
 
   //------------------------------
+  // IRdoInternalNodeWrapper
+  //------------------------------
+  public getItem(key: K) {
+    return this.value.getItem(key);
+  }
+
+  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public elements(): Iterable<D> {

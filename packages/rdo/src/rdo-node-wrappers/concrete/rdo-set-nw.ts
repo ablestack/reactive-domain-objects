@@ -22,7 +22,7 @@ import { isNullOrUndefined } from '../utils/global.utils';
 import _ from 'lodash';
 
 const logger = Logger.make('RdoSetNW');
-type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; sourceMap: Map<K, S>; rdoMap: Map<K, D> };
+type MutableCachedNodeItemType<K, S, D> = { sourceArray: Array<S>; sourceMap: Map<K, S>; rdoMap: Map<K, D> };
 
 export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
   private _value: Set<D>;
@@ -64,7 +64,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
   protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
     let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceData: new Array<S>(), sourceMap: new Map<K, S>(), rdoMap: new Map<K, D>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceMap: new Map<K, S>(), rdoMap: new Map<K, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -86,10 +86,9 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //   return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
   // }
 
-  // public getItem(key: K) {
-  //   if (this.childElementCount() === 0) return undefined;
-  //   return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
-  // }
+  public getItem(key: K) {
+    this.getNodeInstanceCache().rdoMap.get(key);
+  }
 
   // public updateItem(key: K, value: D) {
   //   if (this.childElementCount() === 0) return false;
@@ -146,24 +145,16 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
     // Setup
     let changed = false;
     const mutableNodeCacheItem = this.getNodeInstanceCache();
-    const origSourceMap = mutableNodeCacheItem.sourceMap;
     const rdoMap = mutableNodeCacheItem.rdoMap;
     const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
-    const newSourceMap = new Map<K, S>();
     const processedKeys = new Array<K>();
 
     //
-    // Loop and build out sourceMap
-    for (let i = 0; i < newSourceArray.length; i++) {
-      const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceArray[i], i);
-      newSourceMap.set(newElementKey, newSourceArray[i]);
-    }
-
-    for (const sourceEntry of newSourceMap) {
-      const elementKey = sourceEntry[0];
-      const newSourceElement = sourceEntry[1];
-      const previousSourceElement = origSourceMap.get(elementKey);
+    // Loop and execute
+    for (const elementKey of wrappedSourceNode.nodeKeys()) {
+      const newSourceElement = wrappedSourceNode.getItem(elementKey);
+      const previousSourceElement = mutableNodeCacheItem.sourceMap.get(elementKey);
       processedKeys.push(elementKey);
 
       if (previousSourceElement === null || previousSourceElement === undefined) {
@@ -177,7 +168,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
         rdoMap.set(elementKey, newRdo);
 
         // If not primitive, sync so child nodes are hydrated
-        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
         // Publish
         this.eventEmitter.publish('nodeChange', {
@@ -208,7 +199,7 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
             // UPDATE
             // ---------------------------
             // If non-equal non-primitive, step into child and sync
-            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: rdoMap.get(elementKey), rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
 
             // Publish
             this.eventEmitter.publish('nodeChange', {
@@ -224,14 +215,14 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
         }
       }
 
-      const origCollectionKeys = Array.from<K>(origSourceMap.keys());
+      const origCollectionKeys = Array.from<K>(mutableNodeCacheItem.sourceMap.keys());
       const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
       if (keysInOrigOnly.length > 0) {
         keysInOrigOnly.forEach((origKey) => {
           // ---------------------------
           // Missing Index - DELETE
           // ---------------------------
-          const deletedSourceElement = origSourceMap.get(origKey);
+          const deletedSourceElement = mutableNodeCacheItem.sourceMap.get(origKey);
 
           // Delete operation
           const rdoToDelete = rdoMap.get(origKey);
@@ -254,45 +245,9 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoCollectionNWBa
     }
 
     // Update NodeCache
-    mutableNodeCacheItem.sourceData = newSourceArray;
-    mutableNodeCacheItem.sourceMap = newSourceMap;
+    mutableNodeCacheItem.sourceArray = newSourceArray;
+    mutableNodeCacheItem.sourceMap = wrappedSourceNode.mapOfElementByKey;
 
     return changed;
-  }
-
-  public executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]) {
-    // Loop through and execute (note, the operations are in descending order by index
-
-    for (const patchOp of patchOperations) {
-      // EXECUTE
-      switch (patchOp.op) {
-        case 'add':
-          if (!patchOp.rdo) throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
-          this.value.add(patchOp.rdo);
-          // If primitive, break. Else, fall through to update, so the values sync to the new item
-          if (NodeTypeUtils.isPrimitive(patchOp.rdo)) break;
-        case 'update':
-          if (!patchOp.rdo) throw new Error('Rdo must not be null for patch-update operations');
-          this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
-          break;
-        case 'delete':
-          if (!patchOp.rdo) throw new Error('Rdo must not be null for Set patch-delete operations');
-          this.value.delete(patchOp.rdo);
-          break;
-        default:
-          throw new Error(`Unknown operation: ${patchOp.op}`);
-          break;
-      }
-
-      // Publish
-      this.eventEmitter.publish('nodeChange', {
-        changeType: patchOp.op,
-        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-        sourceKey: patchOp.key,
-        rdoKey: patchOp.key,
-        previousSourceValue: patchOp.previousSourceValue,
-        newSourceValue: patchOp.newSourceValue,
-      });
-    }
   }
 }

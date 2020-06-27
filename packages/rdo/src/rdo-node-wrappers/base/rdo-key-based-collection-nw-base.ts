@@ -6,10 +6,9 @@ import { CollectionNodePatchOperation, IEqualityComparer, IRdoInternalNodeWrappe
 import { NodeChange } from '../../types/event-types';
 import { isNullOrUndefined } from '../utils/global.utils';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
-import { multiply } from 'lodash';
 
 const logger = Logger.make('RdoCollectionNWBase');
-type MutableCachedNodeItemType<K, S, D> = { sourceArray: Array<S>; sourceByIndexMap: Map<K, S>; keyByIndexMap: Map<number, K>; rdoByIndexMap: Map<number, D> };
+type MutableCachedNodeItemType<K, S, D> = { sourceArray: Array<S>; sourceMap: Map<K, S>; rdoMap: Map<K, D> };
 
 export abstract class RdoCollectionNWBase<K extends string | number, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
   private _equalityComparer: IEqualityComparer;
@@ -49,7 +48,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
     let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceByIndexMap: new Map<K, S>(), rdoByIndexMap: new Map<K, D>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceMap: new Map<K, S>(), rdoMap: new Map<K, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -66,7 +65,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   // protected generatePatchOperations({ wrappedSourceNode, mutableNodeCacheItem }: { wrappedSourceNode: ISourceCollectionNodeWrapper<K, S, D>; mutableNodeCacheItem: MutableCachedNodeItemType<K, S, D> }): CollectionNodePatchOperation<K, D>[] {
   //   const operations = new Array<CollectionNodePatchOperation<K, D>>();
   //   const origSourceArray = mutableNodeCacheItem.sourceData;
-  //   const rdoByIndexMap = mutableNodeCacheItem.rdoByIndexMap;
+  //   const rdoMap = mutableNodeCacheItem.rdoMap;
   //   const newSourceArray = this.wrappedSourceNode.value as Array<S>;
   //   const count = Math.max(origSourceArray.length, newSourceArray.length);
 
@@ -83,10 +82,10 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //       const newRdo = this.makeRdoElement(newSourceElement);
 
   //       // Add operation
-  //       operations.push({ op: 'add', index: i, key: newElementKey, previousSourceElement: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
+  //       operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
 
   //       // Update Rdo Map
-  //       rdoByIndexMap.set(newElementKey, newRdo);
+  //       rdoMap.set(newElementKey, newRdo);
   //     } else if (!isNullOrUndefined(previousSourceElement) && !isNullOrUndefined(newSourceElement)) {
   //       // ---------------------------
   //       // Existing Key
@@ -99,17 +98,17 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //         // ---------------------------
   //         // Keys don't match
   //         // ---------------------------
-  //         const origRdo = rdoByIndexMap.get(origElementKey);
+  //         const origRdo = rdoMap.get(origElementKey);
   //         if (!origRdo) throw new Error(`Could not find original Rdo with key ${origElementKey}`);
   //         const newRdo = this.makeRdoElement(newElementKey);
 
   //         // Add operations
-  //         operations.push({ op: 'delete', index: i, key: origElementKey, previousSourceElement: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
-  //         operations.push({ op: 'add', index: i, key: newElementKey, previousSourceElement: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
+  //         operations.push({ op: 'delete', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
+  //         operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
 
   //         // Update Rdo Map
-  //         rdoByIndexMap.delete(origElementKey);
-  //         rdoByIndexMap.set(newElementKey, newRdo);
+  //         rdoMap.delete(origElementKey);
+  //         rdoMap.set(newElementKey, newRdo);
   //       } else {
   //         // ---------------------------
   //         // Keys Match
@@ -118,7 +117,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //           // No change, no patch needed
   //         } else {
   //           // Add operations
-  //           operations.push({ op: 'update', index: i, key: origElementKey, previousSourceElement: previousSourceElement, newSourceValue: newSourceElement });
+  //           operations.push({ op: 'update', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement });
 
   //           // Update Rdo Map
   //           // No update needed
@@ -129,14 +128,14 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //       // Missing Key
   //       // ---------------------------
   //       const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
-  //       const origRdo = rdoByIndexMap.get(origElementKey);
+  //       const origRdo = rdoMap.get(origElementKey);
   //       if (!origRdo) throw new Error(`Could not find original Rdo with key ${origElementKey}`);
 
   //       // Add operations
-  //       operations.push({ op: 'delete', index: i, key: wrappedSourceNode.makeCollectionKey(previousSourceElement), previousSourceElement: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
+  //       operations.push({ op: 'delete', index: i, key: wrappedSourceNode.makeCollectionKey(previousSourceElement), previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
 
   //       // Update Rdo Map
-  //       rdoByIndexMap.delete(origElementKey);
+  //       rdoMap.delete(origElementKey);
   //     }
   //   }
 
@@ -150,38 +149,101 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     let changed = false;
     const mutableNodeCacheItem = this.getNodeInstanceCache();
     const previousSourceArray = mutableNodeCacheItem.sourceArray;
-    const previousSourceByIndexMap = mutableNodeCacheItem.sourceByIndexMap;
-    const previousRdoByIndexMap = mutableNodeCacheItem.rdoByIndexMap;
+    const previousSourceMap = mutableNodeCacheItem.sourceMap;
+    const previousRdoMap = mutableNodeCacheItem.rdoMap;
     const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
     const newSourceArray = wrappedSourceNode.elements();
-    const newSourceByIndexMap = new Map<K, S>();
-    const newRdoByIndexMap = new Map<number, D>();
-    const previousKeyByIndexMap = mutableNodeCacheItem.keyByIndexMap;
-    const newKeyByIndexMap = new Map<number, K>();
+    const newSourceMap = new Map<K, S>();
+    const newRdoMap = new Map<K, D>();
+    const processedKeys = new Array<string>();
 
     //
     // Loop and execute
     let indexOffset = 0;
     for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
       // SETUP
-      const previousSourceElement = previousSourceArray[i];
       const newSourceElement = newSourceArray[i];
       const index = i + indexOffset;
       const elementKey = wrappedSourceNode.makeCollectionKey(newSourceElement, index);
-      newKeyByIndexMap.set(i, elementKey);
+      let isNewKey = false;
+      let newRdo: any;
+
+      // Set key if new
+      if (!newSourceMap.has(elementKey)) {
+        newSourceMap.set(elementKey, newSourceElement);
+        isNewKey = true;
+      }
 
       // ---------------------------
       // New Index - ADD
       // ---------------------------
       // If index is not in previous source array, but in new source array
       if (previousSourceArray[i] === null || previousSourceArray[i] === undefined) {
-        // EXECUTE
-        changed = this.handleAddElement({ addHandler: this.onNewIndex, index, elementKey, newRdo: this.makeRdoElement(newSourceElement), newSourceElement }) && changed;
+        // Action
+        if (this.onNewIndex) {
+          newRdo = newRdo !== null && newRdo !== undefined ? newRdo : this.makeRdoElement(newSourceElement);
 
-        // Update local values
-        indexOffset++;
+          // EXECUTE
+          this.onNewIndex({ index, key: elementKey, newRdo });
+
+          // If not primitive, sync so child nodes are hydrated
+          if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+
+          // Publish
+          this.eventEmitter.publish('nodeChange', {
+            changeType: 'add',
+            sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+            index: index,
+            sourceKey: elementKey,
+            rdoKey: elementKey,
+            previousSourceValue: undefined,
+            newSourceValue: newSourceElement,
+          });
+
+          // Update local values that depend on lifecycle method executing
+          changed = changed && true;
+          indexOffset++;
+        }
+        // Update local values that don't depend on lifecycle method executing
         newSourceArray.push(newSourceElement);
-      } else {
+      }
+
+      // ---------------------------
+      // New Key - ADD
+      // ---------------------------
+      // If key is not in previous source array AND not in new source array already
+      if ((previousSourceMap.get(elementKey) === null || previousSourceMap.get(elementKey) === undefined) && !newSourceMap.has(elementKey)) {
+        newRdo = newRdo !== null && newRdo !== undefined ? newRdo : this.makeRdoElement(newSourceElement);
+
+        // Action
+        if (this.onNewKey) {
+          this.onNewKey({ index, key: elementKey, newRdo });
+
+          // If not primitive, sync so child nodes are hydrated
+          if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+
+          // Publish
+          this.eventEmitter.publish('nodeChange', {
+            changeType: 'add',
+            sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+            index: index,
+            sourceKey: elementKey,
+            rdoKey: elementKey,
+            previousSourceValue: undefined,
+            newSourceValue: newSourceElement,
+          });
+
+          // Update local values that depend on lifecycle method executing
+          changed = changed && true;
+        }
+        // Update local values that don't depend on lifecycle method executing
+        newSourceMap.set(elementKey, newSourceElement);
+      }
+
+      // ---------------------------
+      // Existing Index
+      // ---------------------------
+      if (previousSourceArray[i] !== null && previousSourceArray[i] !== undefined) {
         if (this.equalityComparer(previousSourceArray[i], newSourceElement)) {
           // No change, no patch needed
         } else {
@@ -189,124 +251,118 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
           // REPLACE
           // ---------------------------
           // If non-equal primitive with same indexes, just do a replace operation
-          this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceIndex, index, elementKey, newRdo: this.makeRdoElement(newSourceElement), newSourceElement, previousSourceElement });
+          if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+            if (this.onReplaceIndex) {
+              newRdo = newRdo !== null && newRdo !== undefined ? newRdo : this.makeRdoElement(newSourceElement);
+              this.onReplaceIndex({ index, key: elementKey, newRdo });
+
+              // Publish
+              this.eventEmitter.publish('nodeChange', {
+                changeType: 'replace',
+                sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+                index,
+                sourceKey: elementKey,
+                rdoKey: elementKey,
+                previousSourceValue: previousSourceArray[i],
+                newSourceValue: newSourceElement,
+              });
+
+              changed = true;
+            }
+          } else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+              changeType: 'update',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceArray[i],
+              newSourceValue: newSourceElement,
+            });
+          }
         }
 
         // Update local values that don't depend on lifecycle method executing
         newSourceArray.push(newSourceElement);
       }
-    }
 
-    if (previousSourceArray.length > newSourceArray.length) {
-      // ---------------------------
-      // Missing Index - DELETE
-      // ---------------------------
-      for (let i = newSourceArray.length; i < previousSourceArray.length; i++) {
-        const index = i + indexOffset;
-        const previousSourceElement = previousSourceArray[i];
-        const elementKey = previousKeyByIndexMap.get(i)!;
-        const rdoToDelete = previousRdoByIndexMap.get(i);
-        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, elementKey, rdoToDelete, previousSourceElement }) && changed);
+      if (previousSourceMap.get(elementKey) !== null && previousSourceMap.get(elementKey) !== undefined && !newSourceMap.has(elementKey)) {
+        // ---------------------------
+        // Existing Key
+        // ---------------------------
+        if (this.equalityComparer(previousSourceMap.get(elementKey), newSourceElement)) {
+          // No change, no patch needed
+        } else {
+          // ---------------------------
+          // REPLACE
+          // ---------------------------
+          // If non-equal primitive with same keys, just do a replace operation
+          if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+            if (this.onReplaceKey) {
+              newRdo = newRdo !== null && newRdo !== undefined ? newRdo : this.makeRdoElement(newSourceElement);
+              this.onReplaceKey({ index, key: elementKey, newRdo });
+
+              // Publish
+              this.eventEmitter.publish('nodeChange', {
+                changeType: 'replace',
+                sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+                index,
+                sourceKey: elementKey,
+                rdoKey: elementKey,
+                previousSourceValue: previousSourceArray[i],
+                newSourceValue: newSourceElement,
+              });
+
+              changed = true;
+            }
+          } else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+              changeType: 'update',
+              sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
+              index,
+              sourceKey: elementKey,
+              rdoKey: elementKey,
+              previousSourceValue: previousSourceArray[i],
+              newSourceValue: newSourceElement,
+            });
+          }
+        }
+
+        // Update local values that don't depend on lifecycle method executing
+        newSourceMap.set(elementKey, newSourceElement);
       }
     }
 
-    // Update nodeInstanceCache
-    mutableNodeCacheItem.keyByIndexMap = newKeyByIndexMap;
-    mutableNodeCacheItem.rdoByIndexMap = newRdoByIndexMap;
-    mutableNodeCacheItem.sourceArray = newSourceArray;
-    mutableNodeCacheItem.sourceByIndexMap = newSourceByIndexMap;
-  }
+    const origCollectionKeys = Array.from<K>(mutableNodeCacheItem.sourceMap.keys());
+    const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
+    if (keysInOrigOnly.length > 0) {
+      // ---------------------------
+      // Missing Index - DELETE
+      // ---------------------------
+      keysInOrigOnly.forEach((origKey) => {
+        // Delete operation
+        const deletedItem = this._value.get(origKey);
+        this._value.delete(origKey);
 
-  /** */
-  protected handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }: { index: number; elementKey: K; newRdo: any; newSourceElement: S; addHandler: NodeChangeHandler<K> }) {
-    const changed = addHandler({ index, key: elementKey, rdo: newRdo });
-
-    if (changed) {
-      // If not primitive, sync so child nodes are hydrated
-      if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
-
-      // Publish
-      this.eventEmitter.publish('nodeChange', {
-        changeType: 'add',
-        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-        index: index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
-        previousSourceValue: undefined,
-        newSourceValue: newSourceElement,
+        // Publish
+        this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, index: undefined, sourceKey: origKey, rdoKey: origKey, previousSourceValue: deletedItem, newSourceValue: undefined });
       });
-    }
-
-    return changed;
-  }
-
-  protected handleReplaceOrUpdate({
-    replaceHandler,
-    index,
-    elementKey,
-    newRdo,
-    newSourceElement,
-    previousSourceElement,
-  }: {
-    index: number;
-    elementKey: K;
-    newRdo: any;
-    newSourceElement: S;
-    replaceHandler: NodeChangeHandler<K>;
-    previousSourceElement: any;
-  }) {
-    let changed = false;
-    if (NodeTypeUtils.isPrimitive(newSourceElement)) {
-      replaceHandler({ index, key: elementKey, rdo: newRdo });
-
-      // Publish
-      this.eventEmitter.publish('nodeChange', {
-        changeType: 'replace',
-        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-        index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
-        previousSourceValue: previousSourceElement,
-        newSourceValue: newSourceElement,
-      });
-
       changed = true;
-    } else {
-      // ---------------------------
-      // UPDATE
-      // ---------------------------
-      // If non-equal non-primitive, step into child and sync
-      changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
-
-      // Publish
-      this.eventEmitter.publish('nodeChange', {
-        changeType: 'update',
-        sourceNodeTypePath: wrappedSourceNode.sourceNodeTypePath,
-        index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
-        previousSourceElement: previousSourceArray[i],
-        newSourceValue: newSourceElement,
-      });
     }
-  }
-
-  /** */
-  protected handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }: { index: number; elementKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeChangeHandler<K> }) {
-    const changed = deleteHandler({ index, key: elementKey, rdo: rdoToDelete });
-
-    // Publish
-    this.eventEmitter.publish('nodeChange', {
-      changeType: 'delete',
-      sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-      index: index,
-      sourceKey: elementKey,
-      rdoKey: elementKey,
-      previousSourceValue: previousSourceElement,
-      newSourceValue: undefined,
-    });
-
-    return changed;
   }
 
   // protected synchronizeCollection() {
@@ -342,7 +398,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //         }
   //         this.insertItem(key, targetItem);
   //         changed = true;
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceElement: undefined, newSourceValue: sourceItem });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'create', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceValue: undefined, newSourceValue: sourceItem });
   //       }
 
   //       // Update directly if Leaf node
@@ -368,7 +424,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   //     if (targetCollectionKeysInDestinationOnly.length > 0) {
   //       targetCollectionKeysInDestinationOnly.forEach((key) => {
   //         const deletedItem = this.deleteElement(key);
-  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceElement: deletedItem, newSourceValue: undefined });
+  //         this.eventEmitter.publish('nodeChange', { changeType: 'delete', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: key, rdoKey: key, previousSourceValue: deletedItem, newSourceValue: undefined });
   //       });
   //       changed = true;
   //     }
@@ -438,14 +494,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   // public abstract insertItem(key: K, value: D);
   // public abstract deleteElement(key: K): D | undefined;
   protected abstract sync();
-  protected abstract onNewIndex: NodeChangeHandler<K>;
-  protected abstract onNewKey: NodeChangeHandler<K>;
-  protected abstract onReplaceIndex: NodeChangeHandler<K>;
-  protected abstract onReplaceKey: NodeChangeHandler<K>;
-  protected abstract onDeleteIndex: NodeChangeHandler<K>;
-  protected abstract onDeleteKey: NodeChangeHandler<K>;
-}
-
-interface NodeChangeHandler<K extends string | number> {
-  ({ index, key, rdo }: { index: number; key: K; rdo: any }): boolean;
+  protected onNewIndex?: (({ index, key, newRdo }: { index: number; key: K; newRdo: any }) => boolean) | undefined = undefined;
+  protected onNewKey?: (({ index, key, newRdo }: { index: number; key: K; newRdo: any }) => boolean) | undefined = undefined;
+  protected onReplaceIndex?: (({ index, key, newRdo }: { index: number; key: K; newRdo: any }) => boolean) | undefined = undefined;
+  protected onReplaceKey?: (({ index, key, newRdo }: { index: number; key: K; newRdo: any }) => boolean) | undefined = undefined;
 }

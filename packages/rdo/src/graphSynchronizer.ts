@@ -140,18 +140,23 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public syncChildNode: ISyncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }) => {
+  public syncChildNode: ISyncChildNode = ({ wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
     const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
 
-    // Validate
+    // SETUP AND VALIDATION
+    // Node Type
     if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+
+    // RdoNode
+    const rdoNodeItemValue = wrappedParentRdoNode.getItem(rdoNodeItemKey);
     if (rdoNodeItemValue === undefined) {
       logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`);
       return false;
     }
 
+    // SourceNode
     const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
     if (sourceNode === undefined) {
       logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);

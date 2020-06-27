@@ -29,6 +29,7 @@ export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
 export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKey<K, S> {
   readonly size: number;
   elements(): Iterable<D>;
+  getItem(key: K): D | null | undefined;
   sync({ wrappedRdoNode, equalityComparer, syncChildNode, eventEmitter }: { wrappedRdoNode: IRdoInternalNodeWrapper<K, S, D>; equalityComparer: IEqualityComparer; syncChildNode: ISyncChildNode; eventEmitter: EventEmitter<NodeChange> }): boolean;
 }
 

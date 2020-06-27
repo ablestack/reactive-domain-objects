@@ -70,10 +70,6 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //   return this._value.keys();
   // }
 
-  // public getItem(key: K) {
-  //   return this._value.get(key);
-  // }
-
   // public updateItem(key: K, value: D) {
   //   if (this._value.has(key)) {
   //     this._value.set(key, value);
@@ -88,6 +84,9 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
+  public getItem(key: K) {
+    return this._value.get(key);
+  }
 
   // public smartSync(): boolean {
   //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
@@ -132,23 +131,15 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
     // Setup
     let changed = false;
     const mutableNodeCacheItem = this.getNodeInstanceCache();
-    const origSourceMap = mutableNodeCacheItem.sourceMap;
     const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
     const newSourceArray = this.wrappedSourceNode.value as Array<S>;
-    const newSourceMap = new Map<K, S>();
     const processedKeys = new Array<K>();
 
     //
-    // Loop and build out sourceMap
-    for (let i = 0; i < newSourceArray.length; i++) {
-      const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceArray[i], i);
-      newSourceMap.set(newElementKey, newSourceArray[i]);
-    }
-
-    for (const sourceEntry of newSourceMap) {
-      const elementKey = sourceEntry[0];
-      const newSourceElement = sourceEntry[1];
-      const previousSourceElement = origSourceMap.get(elementKey);
+    // Loop and execute
+    for (const elementKey of wrappedSourceNode.nodeKeys()) {
+      const newSourceElement = wrappedSourceNode.getItem(elementKey);
+      const previousSourceElement = mutableNodeCacheItem.sourceMap.get(elementKey);
       processedKeys.push(elementKey);
 
       if (previousSourceElement === null || previousSourceElement === undefined) {
@@ -161,7 +152,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
         this.value.set(elementKey, newRdo);
 
         // If not primitive, sync so child nodes are hydrated
-        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: newRdo, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+        if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
         // Publish
         this.eventEmitter.publish('nodeChange', {
@@ -202,7 +193,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
             // UPDATE
             // ---------------------------
             // If non-equal non-primitive, step into child and sync
-            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: this.value.get(elementKey), rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
 
             // Publish
             this.eventEmitter.publish('nodeChange', {
@@ -218,7 +209,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
         }
       }
 
-      const origCollectionKeys = Array.from<K>(origSourceMap.keys());
+      const origCollectionKeys = Array.from<K>(mutableNodeCacheItem.sourceMap.keys());
       const keysInOrigOnly = _.difference(origCollectionKeys, processedKeys);
       if (keysInOrigOnly.length > 0) {
         // ---------------------------
