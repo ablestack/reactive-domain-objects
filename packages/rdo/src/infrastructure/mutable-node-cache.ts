@@ -1,12 +1,17 @@
-export class MutableNodeCache {
-  private _sourceMap = new Map<string, any>();
+const defaultDataKey = 'default';
 
-  public set({ sourceNodeInstancePath, data }: { sourceNodeInstancePath: string; data: any }) {
-    this._sourceMap.set(sourceNodeInstancePath, data);
+export class MutableNodeCache {
+  private _sourceMap = new Map<string, Map<string, any>>();
+
+  public set({ sourceNodeInstancePath, dataKey = defaultDataKey, data }: { sourceNodeInstancePath: string; dataKey?: string; data: any }) {
+    let dataItem = this._sourceMap.get(sourceNodeInstancePath);
+    if (!dataItem) dataItem = new Map<string, any>();
+    dataItem.set(dataKey, data);
+    this._sourceMap.set(sourceNodeInstancePath, dataItem);
   }
 
-  public get<T>({ sourceNodeInstancePath }: { sourceNodeInstancePath: string }): T {
-    return this._sourceMap.get(sourceNodeInstancePath);
+  public get<T>({ sourceNodeInstancePath, dataKey = defaultDataKey }: { sourceNodeInstancePath: string; dataKey?: string }): T | undefined {
+    return this._sourceMap.get(sourceNodeInstancePath)?.get(dataKey);
   }
 
   public clear() {

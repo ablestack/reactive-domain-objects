@@ -42,3 +42,7 @@ export interface ISyncableRDOCollection<K extends string | number, S, D> extends
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any, any> {
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }
+
+export interface NodeChangeHandler<K extends string | number> {
+  ({ index, key, rdo }: { index: number; key: K; rdo: any }): boolean;
+}

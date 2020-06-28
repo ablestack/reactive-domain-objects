@@ -57,7 +57,7 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get leafNode() {
+  public get isLeafNode() {
     return false;
   }
 

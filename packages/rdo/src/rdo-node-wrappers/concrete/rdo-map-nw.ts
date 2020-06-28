@@ -58,7 +58,7 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBa
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get leafNode() {
+  public get isLeafNode() {
     return false;
   }
 

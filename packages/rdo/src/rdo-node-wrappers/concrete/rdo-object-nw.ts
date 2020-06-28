@@ -84,7 +84,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   //------------------------------
   // IRdoNodeWrapper
   //------------------------------
-  public get leafNode() {
+  public get isLeafNode() {
     return false;
   }
 

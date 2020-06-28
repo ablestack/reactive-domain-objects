@@ -124,7 +124,7 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
     return this._nodeOptions;
   }
 
-  public abstract get leafNode();
+  public abstract get isLeafNode();
   public abstract get value();
   public abstract smartSync();
   public abstract childElementCount();
