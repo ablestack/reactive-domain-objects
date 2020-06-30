@@ -56,7 +56,9 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
   // IRdoInternalNodeWrapper
   //------------------------------
   public getItem(key: string) {
-    //this.getNodeInstanceCache()
+    const index = this.last.indexByKeyMap.get(key);
+    if (index === null || index === undefined) return undefined;
+    return this.last.rdoByIndexMap.get(index);
   }
 
   //------------------------------
@@ -73,17 +75,20 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onNewIndex = ({ index, key, rdo }: { index: number; key: string; rdo: any }) => {
-    this.value.splice(index, 0, rdo);
+  protected onNewIndex = ({ index, key, nextRdo }: { index?: number; key: string; nextRdo: any }) => {
+    if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
+    this.value.splice(index, 0, nextRdo);
     return true;
   };
 
-  protected onReplaceIndex = ({ index, key, rdo }: { index: number; key: string; rdo: any }) => {
-    this.value.splice(index, 1, rdo);
+  protected onReplaceIndex = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string; lastRdo: any; nextRdo: any }) => {
+    if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
+    this.value.splice(index, 1, nextRdo);
     return true;
   };
 
-  protected onDeleteIndex = ({ index, key, rdo }: { index: number; key: string; rdo: any }) => {
+  protected onDeleteIndex = ({ index, key, lastRdo }: { index?: number; key: string; lastRdo: any }) => {
+    if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
     this.value.splice(index, 1);
     return true;
   };

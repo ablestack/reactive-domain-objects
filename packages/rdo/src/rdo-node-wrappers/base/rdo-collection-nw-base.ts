@@ -2,7 +2,7 @@ import { IGlobalNodeOptions, INodeSyncOptions, IRdoCollectionNodeWrapper, ISourc
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
-import { IEqualityComparer, IRdoInternalNodeWrapper, ISourceCollectionNodeWrapper, NodeChangeHandler } from '../../types';
+import { IEqualityComparer, IRdoInternalNodeWrapper, NodeReplaceHandler, NodeAddHandler, NodeDeleteHandler } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { RdoInternalNWBase } from './rdo-internal-nw-base';
 
@@ -48,8 +48,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   /** */
-  protected handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }: { index: number; elementKey: K; newRdo: any; newSourceElement: S; addHandler: NodeChangeHandler<K> }) {
-    const changed = addHandler({ index, key: elementKey, rdo: newRdo });
+  protected handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }: { index: number; elementKey: K; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler<K> }) {
+    const changed = addHandler({ index, key: elementKey, nextRdo: newRdo });
 
     if (changed) {
       // If not primitive, sync so child nodes are hydrated
@@ -71,10 +71,30 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   /** */
-  protected handleReplaceOrUpdate({ replaceHandler, index, elementKey, newRdo, newSourceElement, previousSourceElement }: { index: number; elementKey: K; newRdo: any; newSourceElement: S; replaceHandler: NodeChangeHandler<K>; previousSourceElement: S }) {
+  protected handleReplaceOrUpdate({
+    replaceHandler,
+    index,
+    elementKey,
+    lastRdo,
+    newSourceElement,
+    previousSourceElement,
+  }: {
+    index: number;
+    elementKey: K;
+    lastRdo: any;
+    newSourceElement: S;
+    replaceHandler: NodeReplaceHandler<K>;
+    previousSourceElement: S;
+  }) {
     let changed = false;
+
+    // ---------------------------
+    // REPLACE
+    // ---------------------------
+    // If non-equal primitive with same indexes, just do a replace operation
     if (NodeTypeUtils.isPrimitive(newSourceElement)) {
-      replaceHandler({ index, key: elementKey, rdo: newRdo });
+      const nextRdo = this.makeRdoElement(newSourceElement);
+      replaceHandler({ index, key: elementKey, lastRdo, nextRdo });
 
       // Publish
       this.eventEmitter.publish('nodeChange', {
@@ -87,7 +107,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         newSourceValue: newSourceElement,
       });
 
-      changed = true;
+      return { changed: true, nextRdo };
     } else {
       // ---------------------------
       // UPDATE
@@ -105,12 +125,14 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         previousSourceValue: previousSourceElement,
         newSourceValue: newSourceElement,
       });
+
+      return { changed, nextRdo: this.getItem(elementKey) };
     }
   }
 
   /** */
-  protected handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }: { index: number; elementKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeChangeHandler<K> }) {
-    const changed = deleteHandler({ index, key: elementKey, rdo: rdoToDelete });
+  protected handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }: { index?: number; elementKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler<K> }) {
+    const changed = deleteHandler({ index, key: elementKey, lastRdo: rdoToDelete });
 
     // Publish
     this.eventEmitter.publish('nodeChange', {

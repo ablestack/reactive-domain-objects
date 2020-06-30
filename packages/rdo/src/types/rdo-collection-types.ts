@@ -30,7 +30,9 @@ export interface ISyncableCollection<K extends string | number, S, D> extends IM
   readonly size: number;
   elements(): Iterable<D>;
   getItem(key: K): D | null | undefined;
-  sync({ wrappedRdoNode, equalityComparer, syncChildNode, eventEmitter }: { wrappedRdoNode: IRdoInternalNodeWrapper<K, S, D>; equalityComparer: IEqualityComparer; syncChildNode: ISyncChildNode; eventEmitter: EventEmitter<NodeChange> }): boolean;
+  handleNewKey({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any });
+  handleReplaceKey({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any });
+  handleDeleteKey({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any });
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any> {
@@ -43,6 +45,14 @@ export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<an
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }
 
-export interface NodeChangeHandler<K extends string | number> {
-  ({ index, key, rdo }: { index: number; key: K; rdo: any }): boolean;
+export interface NodeAddHandler<K extends string | number> {
+  ({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any }): boolean;
+}
+
+export interface NodeReplaceHandler<K extends string | number> {
+  ({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any }): boolean;
+}
+
+export interface NodeDeleteHandler<K extends string | number> {
+  ({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any }): boolean;
 }
