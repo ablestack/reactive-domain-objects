@@ -128,4 +128,6 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   public abstract get value();
   public abstract smartSync();
   public abstract childElementCount();
+  public abstract getSourceNodeKeys();
+  public abstract getSourceNodeItem(key: K);
 }

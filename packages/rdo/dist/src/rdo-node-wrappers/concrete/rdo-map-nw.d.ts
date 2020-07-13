@@ -1,9 +1,9 @@
-import { RdoCollectionNWBase } from '..';
-import { IGlobalNodeOptions, INodeSyncOptions, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo, IRdoInternalNodeWrapper, IEqualityComparer, CollectionNodePatchOperation } from '../..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
-import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
-export declare class RdoMapNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+import { NodeChange } from '../../types/event-types';
+import { RdoKeyCollectionNWBase } from '../base/rdo-key-based-collection-nw-base';
+export declare class RdoMapNW<K extends string | number, S, D> extends RdoKeyCollectionNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: Map<K, D>;
@@ -19,9 +19,25 @@ export declare class RdoMapNW<K extends string | number, S, D> extends RdoCollec
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    get leafNode(): boolean;
+    get isLeafNode(): boolean;
     get value(): Map<K, D>;
+    getItem(key: K): D | undefined;
     elements(): Iterable<D>;
     childElementCount(): number;
-    executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]): void;
+    protected onNewKey: ({ index, key, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        nextRdo: any;
+    }) => boolean;
+    protected onReplaceKey: ({ index, key, lastRdo, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+        nextRdo: any;
+    }) => boolean;
+    protected onDeleteKey: ({ index, key, lastRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+    }) => boolean;
 }

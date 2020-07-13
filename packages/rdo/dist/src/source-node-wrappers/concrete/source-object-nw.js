@@ -17,7 +17,7 @@ class SourceObjectNW extends source_base_nw_1.SourceBaseNW {
         return 0;
     }
     //------------------------------
-    // ISourceInternalNodeWrapper
+    // ISourceObjectNodeWrapper
     //------------------------------
     //@ts-ignore
     nodeKeys() {

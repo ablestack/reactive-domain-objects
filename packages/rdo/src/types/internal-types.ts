@@ -39,15 +39,18 @@ export function isISourceNodeWrapper(o: any): o is ISourceNodeWrapper<any, any, 
 }
 
 export interface ISourceInternalNodeWrapper<K extends string | number, S, D> extends ISourceNodeWrapper<K, S, D> {
-  nodeKeys(): Iterable<K>;
-  getItem(key: K): S | null | undefined;
+  // nodeKeys(): Iterable<K>;
+  // getItem(key: K): S | null | undefined;
 }
 
 export function isISourceInternalNodeWrapper(o: any): o is ISourceInternalNodeWrapper<any, any, any> {
   return o && o.nodeKeys && o.getItem && isISourceNodeWrapper(o);
 }
 
-export interface ISourceObjectNodeWrapper<S, D> extends ISourceInternalNodeWrapper<string, S, D> {}
+export interface ISourceObjectNodeWrapper<S, D> extends ISourceInternalNodeWrapper<string, S, D> {
+  getNodeKeys(): Iterable<string>;
+  getNodeItem(key: string): S | null | undefined;
+}
 
 export function isISourceObjectNodeWrapper(o: any): o is ISourceObjectNodeWrapper<any, any> {
   return o && o.nodeKeys && o.getItem && isISourceInternalNodeWrapper(o);
@@ -55,8 +58,6 @@ export function isISourceObjectNodeWrapper(o: any): o is ISourceObjectNodeWrappe
 
 export interface ISourceCollectionNodeWrapper<K extends string | number, S, D> extends ISourceInternalNodeWrapper<K, S, D>, IMakeCollectionKey<K, S> {
   elements(): Array<S>;
-  //mapOfElementByKey: Map<K, S>;
-  //mapOfIndexByKey: Map<K, number>;
 }
 
 export function isISourceCollectionNodeWrapper(o: any): o is ISourceCollectionNodeWrapper<any, any, any> {
@@ -77,6 +78,8 @@ export interface IRdoNodeWrapper<K extends string | number, S, D> {
   getNodeOptions(): INodeSyncOptions<any, any, any> | null;
   childElementCount(): number;
   smartSync(): boolean;
+  getSourceNodeKeys(): Iterable<K>;
+  getSourceNodeItem(key: K): S | null | undefined;
 }
 
 export function isIRdoNodeWrapper(o: any): o is IRdoNodeWrapper<any, any, any> {

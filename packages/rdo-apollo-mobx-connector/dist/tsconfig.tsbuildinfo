@@ -211,14 +211,14 @@
         "signature": "6776c72f0598d582bf77bc7b828313342becbfab675e30b9016f53f288cfc467",
         "affectsGlobalScope": false
       },
-      "../../rdo/dist/src/custom-collections/syncablecollection.d.ts": {
-        "version": "880d1c2e526b584f87f6ef4350a01c18c80846091103ac3d5933da1396cf73be",
-        "signature": "880d1c2e526b584f87f6ef4350a01c18c80846091103ac3d5933da1396cf73be",
+      "../../rdo/dist/src/custom-collections/list-map.d.ts": {
+        "version": "e5cbef7370e738e8307eb28713e585620b3b5b97a1ee663582f623d8e7b5da6a",
+        "signature": "e5cbef7370e738e8307eb28713e585620b3b5b97a1ee663582f623d8e7b5da6a",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/custom-collections/index.d.ts": {
-        "version": "99dd1709f7e10054382d8705383787d344dd4e5454fdbdc6e8ca646e3046d309",
-        "signature": "99dd1709f7e10054382d8705383787d344dd4e5454fdbdc6e8ca646e3046d309",
+        "version": "597bb5ddc6d712e34dd6936f8e443df8aaa0d32c97932a079002c4b25b6ddf9a",
+        "signature": "597bb5ddc6d712e34dd6936f8e443df8aaa0d32c97932a079002c4b25b6ddf9a",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/infrastructure/event-emitter.d.ts": {
@@ -226,9 +226,14 @@
         "signature": "256732d82d782df8ee5ed90a9bb1c614ab5f06e63ea0539bf1d3e5aff2b9fd4c",
         "affectsGlobalScope": false
       },
+      "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts": {
+        "version": "82579850d495155c3e9c826044a26d8cf758714cb37ceb0bed0f470cc8b95a33",
+        "signature": "82579850d495155c3e9c826044a26d8cf758714cb37ceb0bed0f470cc8b95a33",
+        "affectsGlobalScope": false
+      },
       "../../rdo/dist/src/types/event-types.d.ts": {
-        "version": "9e7fc01fb9d10aee25200e799de974882d5efca335ed6b1ca06f97624efd40af",
-        "signature": "9e7fc01fb9d10aee25200e799de974882d5efca335ed6b1ca06f97624efd40af",
+        "version": "e247ff80b8ff8d05fa6d85f1707a1cacffb818eb85812b503c3248b7a128be34",
+        "signature": "e247ff80b8ff8d05fa6d85f1707a1cacffb818eb85812b503c3248b7a128be34",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/general-types.d.ts": {
@@ -237,23 +242,23 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-collection-types.d.ts": {
-        "version": "e6f8ae93e4b3f813a6eacb58369d4aade5317377e8cacd76361cd3340d14cb25",
-        "signature": "e6f8ae93e4b3f813a6eacb58369d4aade5317377e8cacd76361cd3340d14cb25",
+        "version": "1e12fe12f039c92764715abe4168f364e16d3c5277f9964718715c7a5cc9be0c",
+        "signature": "1e12fe12f039c92764715abe4168f364e16d3c5277f9964718715c7a5cc9be0c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/internal-types.d.ts": {
-        "version": "e0a83ff225680ead0494222f498f523af113b116e59cab7a5a0dc30f886a053f",
-        "signature": "e0a83ff225680ead0494222f498f523af113b116e59cab7a5a0dc30f886a053f",
+        "version": "de06b752485c885838174534f8012ae04d2cf1c4548782206894d86a9b9da3b3",
+        "signature": "de06b752485c885838174534f8012ae04d2cf1c4548782206894d86a9b9da3b3",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-config-option-types.d.ts": {
-        "version": "19f0aaf7158767097f7117f0b3b94338a58c6848a43c86390772c6646179904d",
-        "signature": "19f0aaf7158767097f7117f0b3b94338a58c6848a43c86390772c6646179904d",
+        "version": "1b5445157862478cc88a7ac81e78ebadfcede1dd3ee85087c6e070d24286a35c",
+        "signature": "1b5445157862478cc88a7ac81e78ebadfcede1dd3ee85087c6e070d24286a35c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/rdo-customization-types.d.ts": {
-        "version": "ea977337241c7ea40af90583b08208da745bb485fe7f0123231d1844fcb9b1c4",
-        "signature": "ea977337241c7ea40af90583b08208da745bb485fe7f0123231d1844fcb9b1c4",
+        "version": "51c0d4f920916ec64f440cd9bf12bccd38c52dd1b884f2b1b3508ac1248e3187",
+        "signature": "51c0d4f920916ec64f440cd9bf12bccd38c52dd1b884f2b1b3508ac1248e3187",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/types/index.d.ts": {
@@ -262,18 +267,18 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts": {
-        "version": "9dae6afbab7f635c43dcc9791b9818a656affa307a2aea4f07cee7d4c54dd029",
-        "signature": "9dae6afbab7f635c43dcc9791b9818a656affa307a2aea4f07cee7d4c54dd029",
+        "version": "68721205cc195241e8361b39d4c11cf3a305184b7a2cedc6ab8a798c4a9a23d5",
+        "signature": "68721205cc195241e8361b39d4c11cf3a305184b7a2cedc6ab8a798c4a9a23d5",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts": {
-        "version": "c45cf38b8ace89fc03de7cf8b16ad2ea26a9ef11a799086464cd2351ba61731a",
-        "signature": "c45cf38b8ace89fc03de7cf8b16ad2ea26a9ef11a799086464cd2351ba61731a",
+        "version": "97ff0dbf29f3434aae4fa8b34b29cfb14c9dd59001b116df47cffdc1d88fb07f",
+        "signature": "97ff0dbf29f3434aae4fa8b34b29cfb14c9dd59001b116df47cffdc1d88fb07f",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts": {
-        "version": "99f2128c06a7b47fb6afd7550a10e650da02b959fe5160338488ef71dd57ca8e",
-        "signature": "99f2128c06a7b47fb6afd7550a10e650da02b959fe5160338488ef71dd57ca8e",
+        "version": "3819e205ddb735dd8160ebbafda56495aac109b740a9bdf72da8f0a6cb751125",
+        "signature": "3819e205ddb735dd8160ebbafda56495aac109b740a9bdf72da8f0a6cb751125",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/base/index.d.ts": {
@@ -281,44 +286,49 @@
         "signature": "685a26b9932e7ec5833b4a1f3ec8cd4f55166fbb986316e45261269cdcf8d392",
         "affectsGlobalScope": false
       },
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts": {
+        "version": "43eaaacd634473bc1aae4688e3f71af28ac5352233a1052500e1af279ceb0764",
+        "signature": "43eaaacd634473bc1aae4688e3f71af28ac5352233a1052500e1af279ceb0764",
+        "affectsGlobalScope": false
+      },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts": {
-        "version": "eb9fccac678276faf8f19ff084ef48569091a6fdd33828e311ffad6a966563e2",
-        "signature": "eb9fccac678276faf8f19ff084ef48569091a6fdd33828e311ffad6a966563e2",
+        "version": "4ceb6e2a9b5842f1b2ab0b71e1c3efb2b920acab4dd3dcfc9f0a93e844d30534",
+        "signature": "4ceb6e2a9b5842f1b2ab0b71e1c3efb2b920acab4dd3dcfc9f0a93e844d30534",
+        "affectsGlobalScope": false
+      },
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts": {
+        "version": "5939c1eada9985975fdebaa722cfd5c9502bb80d5217b038b3f9699c8cef907c",
+        "signature": "5939c1eada9985975fdebaa722cfd5c9502bb80d5217b038b3f9699c8cef907c",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts": {
-        "version": "28541ecb8869362422e34b3b1874845eb71e6ff64632008e8c78fd554b209aa5",
-        "signature": "28541ecb8869362422e34b3b1874845eb71e6ff64632008e8c78fd554b209aa5",
+        "version": "338e4759deae00de64041de321ea6c7153c96751b0423602655281c8735be668",
+        "signature": "338e4759deae00de64041de321ea6c7153c96751b0423602655281c8735be668",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts": {
-        "version": "48d92d165bcd67411e5e96e89fb8fcd4d06e4fcbc43293d72e9d7dc00b61d077",
-        "signature": "48d92d165bcd67411e5e96e89fb8fcd4d06e4fcbc43293d72e9d7dc00b61d077",
-        "affectsGlobalScope": false
-      },
-      "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts": {
-        "version": "7a5a3d4ea354808469482fcc49a5477a4d647534ab3afc8c9665647ce8b3b14d",
-        "signature": "7a5a3d4ea354808469482fcc49a5477a4d647534ab3afc8c9665647ce8b3b14d",
+        "version": "2f91ff6283da76f5929482bb36a34c80bc34d89ee08928a91a7751fe8669d81b",
+        "signature": "2f91ff6283da76f5929482bb36a34c80bc34d89ee08928a91a7751fe8669d81b",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts": {
-        "version": "0ce1a69f5a5836c775923232113378e32365f19df8f57f022968d59592009fc6",
-        "signature": "0ce1a69f5a5836c775923232113378e32365f19df8f57f022968d59592009fc6",
+        "version": "889d05ac549455bb66e0ceaa9a4b4a678c2c2450f71c96aad4174211526a6e18",
+        "signature": "889d05ac549455bb66e0ceaa9a4b4a678c2c2450f71c96aad4174211526a6e18",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts": {
-        "version": "ecce0a85c68766aa369fd0b344daf8d11d38c7984c1c86b2b36890e5b6c7d45f",
-        "signature": "ecce0a85c68766aa369fd0b344daf8d11d38c7984c1c86b2b36890e5b6c7d45f",
+        "version": "89780e6af0d3bf5653cabc4778336588cfe05245633bfb30a7920629b849da6a",
+        "signature": "89780e6af0d3bf5653cabc4778336588cfe05245633bfb30a7920629b849da6a",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/concrete/index.d.ts": {
-        "version": "6ac91774868401792dd6751564dbc87c28e69c6bcce088ec01668a7d9e7aac01",
-        "signature": "6ac91774868401792dd6751564dbc87c28e69c6bcce088ec01668a7d9e7aac01",
+        "version": "69e108243ec2e5d9b7eeaf1f668aee71cf90795b3f10083598c5152f76864d57",
+        "signature": "69e108243ec2e5d9b7eeaf1f668aee71cf90795b3f10083598c5152f76864d57",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/collection.utils.d.ts": {
-        "version": "2293566e58b23ef8642e807cec0b04869ab4511d1dc05470f13e328f6dbeb584",
-        "signature": "2293566e58b23ef8642e807cec0b04869ab4511d1dc05470f13e328f6dbeb584",
+        "version": "96ee3cdfd8152852dd28c66aa5d37121299d15b72425d081f961048cd6177993",
+        "signature": "96ee3cdfd8152852dd28c66aa5d37121299d15b72425d081f961048cd6177993",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/node-type.utils.d.ts": {
@@ -327,8 +337,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/rdo-wrapper-validation.utils.d.ts": {
-        "version": "62667854faee058d5740cd4b44d55abb86c2fc64ecc376e93adec55a99350e8e",
-        "signature": "62667854faee058d5740cd4b44d55abb86c2fc64ecc376e93adec55a99350e8e",
+        "version": "e5a5d83721b15333a7014d6efa764b149e91bfd3c5be8e1745da7d44116eaef0",
+        "signature": "e5a5d83721b15333a7014d6efa764b149e91bfd3c5be8e1745da7d44116eaef0",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/utils/index.d.ts": {
@@ -337,8 +347,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/rdo-node-wrapper-factory.d.ts": {
-        "version": "95783abdc0ac9411262534292ad5352ee9bbf67dc8c1bb10a0be8517fa43d433",
-        "signature": "95783abdc0ac9411262534292ad5352ee9bbf67dc8c1bb10a0be8517fa43d433",
+        "version": "c040dc1d5e4156b7ab3510f96cb877ad0fd06ad47d986eae254b5f95f862c085",
+        "signature": "c040dc1d5e4156b7ab3510f96cb877ad0fd06ad47d986eae254b5f95f862c085",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/rdo-node-wrappers/index.d.ts": {
@@ -347,23 +357,23 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/base/source-base-nw.d.ts": {
-        "version": "1b9f07f31b0670f5fb5e7c2e1ee21cd8953a9e41e7e67db48ea3657f98569b90",
-        "signature": "1b9f07f31b0670f5fb5e7c2e1ee21cd8953a9e41e7e67db48ea3657f98569b90",
+        "version": "f0d88210be4eeb4515fea3f4c2d3dd182b5799321b0d8c3228db34d983dcd506",
+        "signature": "f0d88210be4eeb4515fea3f4c2d3dd182b5799321b0d8c3228db34d983dcd506",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/concrete/source-array-nw.d.ts": {
-        "version": "94ff84a9aa78af83dba7ca6afbe974866d970e3ef22a75690a0c6fca3c9f0d07",
-        "signature": "94ff84a9aa78af83dba7ca6afbe974866d970e3ef22a75690a0c6fca3c9f0d07",
+        "version": "6bdbbcbeb4e6f2a8975567d045a3f2be944bc407d3c10716b66a6e62f7c50fce",
+        "signature": "6bdbbcbeb4e6f2a8975567d045a3f2be944bc407d3c10716b66a6e62f7c50fce",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/concrete/source-object-nw.d.ts": {
-        "version": "7ac6437896a53e66bcaeb8ff063c5366c14d820d17ff907741a54f785493b2ba",
-        "signature": "7ac6437896a53e66bcaeb8ff063c5366c14d820d17ff907741a54f785493b2ba",
+        "version": "6cb9b066848b316903226c2abdf8fd72a2140c300ee9a9e2524f6cedab3ba1e9",
+        "signature": "6cb9b066848b316903226c2abdf8fd72a2140c300ee9a9e2524f6cedab3ba1e9",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/concrete/source-primitive-nw.d.ts": {
-        "version": "d05fd5beedcaf239f0b0f7ce247a8faf754ddf1362146b9b3a05fd558157bb92",
-        "signature": "d05fd5beedcaf239f0b0f7ce247a8faf754ddf1362146b9b3a05fd558157bb92",
+        "version": "569e98dbf73cb9c5581383be69726639c390e7bfc7a495e34f7f5200dc204ca3",
+        "signature": "569e98dbf73cb9c5581383be69726639c390e7bfc7a495e34f7f5200dc204ca3",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/concrete/index.d.ts": {
@@ -372,8 +382,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/source-node-wrapper-factory.d.ts": {
-        "version": "5b23689653e5777659e46bae45e3e16c2ef7ab392a883e11062277b3a1817909",
-        "signature": "5b23689653e5777659e46bae45e3e16c2ef7ab392a883e11062277b3a1817909",
+        "version": "34bc1c965a8e0f1ce94e9a60ebc8bf414acf53367938634ff7e7a83e434447fa",
+        "signature": "34bc1c965a8e0f1ce94e9a60ebc8bf414acf53367938634ff7e7a83e434447fa",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/source-node-wrappers/index.d.ts": {
@@ -392,8 +402,8 @@
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/graphsynchronizer.d.ts": {
-        "version": "60fd114cee5f207e9a4291b6a706a133b9c2c1dd898225ddd1b0b5c44aa93b4e",
-        "signature": "60fd114cee5f207e9a4291b6a706a133b9c2c1dd898225ddd1b0b5c44aa93b4e",
+        "version": "455f5c21cde26998f93f250e411582bf29c68957dbf790449554a4fcb3ace381",
+        "signature": "455f5c21cde26998f93f250e411582bf29c68957dbf790449554a4fcb3ace381",
         "affectsGlobalScope": false
       },
       "../../rdo/dist/src/static.config.d.ts": {
@@ -5423,14 +5433,14 @@
         "../src/apollo-mobx-connector/index.ts"
       ],
       "../../rdo/dist/src/custom-collections/index.d.ts": [
-        "../../rdo/dist/src/custom-collections/syncablecollection.d.ts",
+        "../../rdo/dist/src/custom-collections/list-map.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdo/dist/src/custom-collections/syncablecollection.d.ts": [
+      "../../rdo/dist/src/custom-collections/list-map.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5476,6 +5486,13 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
+      "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
       "../../rdo/dist/src/rdo-node-wrappers/base/index.d.ts": [
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts",
@@ -5489,7 +5506,21 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts",
+        "../../rdo/dist/src/types/event-types.d.ts",
+        "../../rdo/dist/src/types/index.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts": [
+        "../../rdo/dist/src/index.d.ts",
+        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -5501,8 +5532,22 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts": [
+        "../../rdo/dist/src/index.d.ts",
+        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
+        "../../rdo/dist/src/types/event-types.d.ts",
+        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -5512,6 +5557,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -5524,7 +5570,6 @@
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -5536,7 +5581,8 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5547,7 +5593,8 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5558,6 +5605,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
@@ -5567,21 +5615,11 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts": [
-        "../../rdo/dist/src/index.d.ts",
-        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
-        "../../rdo/dist/src/types/event-types.d.ts",
-        "../node_modules/@types/graceful-fs/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts",
-        "../node_modules/@types/node/util.d.ts"
-      ],
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5592,6 +5630,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -5614,6 +5653,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/rdo-node-wrapper-factory.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -5622,7 +5662,6 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/rdo-node-wrappers/utils/collection.utils.d.ts": [
-        "../../rdo/dist/src/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -5724,6 +5763,7 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/types/event-types.d.ts": [
+        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -9183,14 +9223,14 @@
         "../src/apollo-mobx-connector/index.ts"
       ],
       "../../rdo/dist/src/custom-collections/index.d.ts": [
-        "../../rdo/dist/src/custom-collections/syncablecollection.d.ts",
+        "../../rdo/dist/src/custom-collections/list-map.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdo/dist/src/custom-collections/syncablecollection.d.ts": [
+      "../../rdo/dist/src/custom-collections/list-map.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -9236,6 +9276,13 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
+      "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts": [
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
       "../../rdo/dist/src/rdo-node-wrappers/base/index.d.ts": [
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts",
@@ -9249,7 +9296,21 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts",
+        "../../rdo/dist/src/types/event-types.d.ts",
+        "../../rdo/dist/src/types/index.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts": [
+        "../../rdo/dist/src/index.d.ts",
+        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -9261,8 +9322,22 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
+        "../node_modules/@types/graceful-fs/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts"
+      ],
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts": [
+        "../../rdo/dist/src/index.d.ts",
+        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
+        "../../rdo/dist/src/types/event-types.d.ts",
+        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -9272,6 +9347,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -9284,7 +9360,6 @@
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -9296,7 +9371,8 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -9307,7 +9383,8 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -9318,6 +9395,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../../rdo/dist/src/types/index.d.ts",
@@ -9327,21 +9405,11 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
-      "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts": [
-        "../../rdo/dist/src/index.d.ts",
-        "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
-        "../../rdo/dist/src/types/event-types.d.ts",
-        "../node_modules/@types/graceful-fs/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts",
-        "../node_modules/@types/node/util.d.ts"
-      ],
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
-        "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
+        "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -9352,6 +9420,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
@@ -9374,6 +9443,7 @@
       "../../rdo/dist/src/rdo-node-wrappers/rdo-node-wrapper-factory.d.ts": [
         "../../rdo/dist/src/index.d.ts",
         "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
+        "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
         "../../rdo/dist/src/types/event-types.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -9382,7 +9452,6 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/rdo-node-wrappers/utils/collection.utils.d.ts": [
-        "../../rdo/dist/src/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -9484,6 +9553,7 @@
         "../node_modules/@types/node/util.d.ts"
       ],
       "../../rdo/dist/src/types/event-types.d.ts": [
+        "../../rdo/dist/src/types/index.d.ts",
         "../node_modules/@types/graceful-fs/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -9917,20 +9987,22 @@
       "../src/apollo-mobx-connector/querywatcher.ts",
       "../src/index.ts",
       "../../rdo/dist/src/custom-collections/index.d.ts",
-      "../../rdo/dist/src/custom-collections/syncablecollection.d.ts",
+      "../../rdo/dist/src/custom-collections/list-map.d.ts",
       "../../rdo/dist/src/graphsynchronizer.d.ts",
       "../../rdo/dist/src/index.d.ts",
       "../../rdo/dist/src/infrastructure/event-emitter.d.ts",
       "../../rdo/dist/src/infrastructure/logger.d.ts",
+      "../../rdo/dist/src/infrastructure/mutable-node-cache.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/base/index.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-collection-nw-base.d.ts",
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-index-collection-nw-base.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-internal-nw-base.d.ts",
+      "../../rdo/dist/src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/base/rdo-nw-base.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/index.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-array-nw.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-map-nw.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-object-nw.d.ts",
-      "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-primitive-nw.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-set-nw.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/concrete/rdo-synchable-collection-nw.d.ts",
       "../../rdo/dist/src/rdo-node-wrappers/index.d.ts",

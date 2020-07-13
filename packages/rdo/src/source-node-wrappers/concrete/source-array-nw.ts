@@ -84,14 +84,6 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // ISourceInternalNodeWrapper
   //------------------------------
 
-  public nodeKeys() {
-    return this.mapOfElementByKey.keys();
-  }
-
-  public getItem(key: K) {
-    return this.mapOfElementByKey.get(key);
-  }
-
   public getNode(): any {
     return this._value;
   }
@@ -121,7 +113,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
     return index as K;
   };
 
-  public elements(): Iterable<S> {
+  public elements(): Array<S> {
     return this._value;
   }
 }

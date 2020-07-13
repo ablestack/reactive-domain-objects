@@ -129,6 +129,14 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     return changed;
   }
 
+  public getSourceNodeKeys() {
+    return this.last.sourceByKeyMap.keys();
+  }
+
+  public getSourceNodeItem(key: K) {
+    return this.last.sourceByKeyMap.get(key);
+  }
+
   /** */
   protected abstract onNewKey: NodeAddHandler<K>;
   protected abstract onReplaceKey: NodeReplaceHandler<K>;

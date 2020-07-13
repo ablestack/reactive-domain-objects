@@ -132,6 +132,16 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
     return changed;
   }
 
+  public getSourceNodeKeys() {
+    return this.last.indexByKeyMap.keys();
+  }
+
+  public getSourceNodeItem(key: K) {
+    const index = this.last.indexByKeyMap.get(key);
+    if (!index) return;
+    return this.last.sourceArray[index];
+  }
+
   /** */
   protected abstract onNewIndex: NodeAddHandler<K>;
   protected abstract onReplaceIndex: NodeReplaceHandler<K>;

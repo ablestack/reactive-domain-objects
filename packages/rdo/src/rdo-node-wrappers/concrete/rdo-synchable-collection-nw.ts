@@ -86,7 +86,22 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   //------------------------------
   // RdoSyncableCollectionNW
   //------------------------------
-  protected sync() {
-    this.value.sync({ wrappedRdoNode: this, equalityComparer: this.equalityComparer, eventEmitter: this.eventEmitter, syncChildNode: this.syncChildNode });
+  // protected sync() {
+  //   //TODO
+  //   //this.value.sync({ wrappedRdoNode: this, equalityComparer: this.equalityComparer, eventEmitter: this.eventEmitter, syncChildNode: this.syncChildNode });
+  // }
+
+  public getSourceNodeKeys() {
+    //TODO
+    //this.value.getSourceNodeKeys();
+    return [];
+  }
+
+  public getSourceNodeItem(key: K) {
+    return this.value.getItem(key);
+  }
+  public smartSync() {
+    //TODO
+    return false;
   }
 }

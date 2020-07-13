@@ -7,17 +7,17 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 declare type MutableCachedNodeItemType<S> = {
     sourceData: S | null | undefined;
 };
-export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> extends RdoInternalNWBase<K, S, D> {
+export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string, S, D> {
     private _value;
     private _equalityComparer;
     private _wrapRdoNode;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: D;
         typeInfo: NodeTypeInfo;
-        key: K | undefined;
+        key: string | undefined;
         mutableNodeCache: MutableNodeCache;
         wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+        wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode;
         wrapRdoNode: IWrapRdoNode;
@@ -28,10 +28,13 @@ export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> 
     });
     /** */
     getNodeInstanceCache(): MutableCachedNodeItemType<S>;
-    get leafNode(): boolean;
-    get value(): D;
+    get isLeafNode(): boolean;
+    get value(): Record<string, any>;
     childElementCount(): number;
     smartSync(): boolean;
+    getSourceNodeKeys(): Iterable<string>;
+    getSourceNodeItem(key: string): any;
+    getItem(key: string): any;
     /**
      *
      */
@@ -40,9 +43,9 @@ export declare class RdoObjectNW<K extends string, S, D extends Record<K, any>> 
      *
      */
     getFieldname({ sourceFieldname, sourceFieldVal }: {
-        sourceFieldname: K;
+        sourceFieldname: string;
         sourceFieldVal: any;
-    }): K | undefined;
+    }): string | undefined;
     /** */
     private makeContinueSmartSyncFunction;
     /** */

@@ -1,8 +1,12 @@
 import { RdoCollectionNWBase } from '..';
-import { CollectionNodePatchOperation, IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { NodeChange } from '../../types/event-types';
+declare type MutableCachedNodeItemType<K, S, D> = {
+    sourceData: Array<S>;
+    rdoMap: Map<K, D>;
+};
 export declare class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
@@ -19,9 +23,14 @@ export declare class RdoSyncableCollectionNW<K extends string | number, S, D> ex
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    get leafNode(): boolean;
+    protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D>;
+    get isLeafNode(): boolean;
     get value(): ISyncableRDOCollection<K, S, D>;
+    getItem(key: K): D | null | undefined;
     elements(): Iterable<D>;
     childElementCount(): number;
-    executePatchOperations(patchOperations: CollectionNodePatchOperation<K, D>[]): void;
+    getSourceNodeKeys(): never[];
+    getSourceNodeItem(key: K): D | null | undefined;
+    smartSync(): boolean;
 }
+export {};

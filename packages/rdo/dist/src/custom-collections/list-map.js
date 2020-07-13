@@ -18,6 +18,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
  */
 class ListMap {
     constructor({ makeCollectionKey, makeRdo, } = {}) {
+        this.indexByKeyMap = new Map();
         this._array$ = new Array();
         this[Symbol.toStringTag] = 'ListMap';
         // -----------------------------------
@@ -27,6 +28,23 @@ class ListMap {
             if (!this._makeCollectionKey)
                 throw new Error('Could not find makeCollectionKey method');
             return this._makeCollectionKey(item);
+        };
+        this.handleNewKey = ({ index, key, nextRdo }) => {
+            this._map$.set(key, nextRdo);
+            this.indexByKeyMap.set(key, this._array$.length);
+            this._array$.push(nextRdo);
+            return true;
+        };
+        this.handleReplaceKey = ({ index, key, lastRdo, nextRdo }) => {
+            this._map$.set(key, nextRdo);
+            this._array$.splice(this.indexByKeyMap.get(key), 1, nextRdo);
+            return true;
+        };
+        this.handleDeleteKey = ({ index, key, lastRdo }) => {
+            this._map$.delete(key);
+            this._array$.splice(this.indexByKeyMap.get(key), 1);
+            this.indexByKeyMap.delete(key);
+            return true;
         };
         this._makeCollectionKey = makeCollectionKey;
         this._makeRdo = makeRdo;
@@ -62,23 +80,19 @@ class ListMap {
     [Symbol.iterator]() {
         return this._map$.entries();
     }
+    elements() {
+        return this._map$.values();
+    }
+    getItem(key) {
+        return this._map$.get(key);
+    }
+    //------------------------------
+    // RdoSyncableCollectionNW
+    //------------------------------
     makeRdo(sourceItem, parentRdoNodeWrapper) {
         if (!this._makeRdo)
             return undefined;
         return this._makeRdo(sourceItem);
-    }
-    elements() {
-        return this._map$.values();
-    }
-    patchAdd(patchOp) {
-        if (!patchOp.rdo)
-            throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath - Key:${patchOp.key}`);
-        this._map$.set(patchOp.key, patchOp.rdo);
-        this._array$.splice(patchOp.index, 0, patchOp.rdo);
-    }
-    patchDelete(patchOp) {
-        this._map$.delete(patchOp.key);
-        this._array$.splice(patchOp.index, 1);
     }
 }
 tslib_1.__decorate([

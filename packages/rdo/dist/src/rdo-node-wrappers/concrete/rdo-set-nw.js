@@ -1,48 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoSetNW = void 0;
-const __1 = require("..");
 const logger_1 = require("../../infrastructure/logger");
+const rdo_key_based_collection_nw_base_1 = require("../base/rdo-key-based-collection-nw-base");
 const logger = logger_1.Logger.make('RdoSetNW');
-class RdoSetNW extends __1.RdoCollectionNWBase {
+class RdoSetNW extends rdo_key_based_collection_nw_base_1.RdoKeyCollectionNWBase {
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
         super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+        //------------------------------
+        // RdoSyncableCollectionNW
+        //------------------------------
+        this.onNewKey = ({ index, key, nextRdo }) => {
+            this.value.add(nextRdo);
+            return true;
+        };
+        this.onReplaceKey = ({ index, key, lastRdo, nextRdo }) => {
+            this.value.delete(lastRdo);
+            this.value.add(nextRdo);
+            return true;
+        };
+        this.onDeleteKey = ({ index, key, lastRdo }) => {
+            this.value.delete(lastRdo);
+            return true;
+        };
         this._value = value;
     }
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
-    get leafNode() {
+    get isLeafNode() {
         return false;
     }
     get value() {
         return this._value;
     }
-    // public itemKeys() {
-    //   if (this.childElementCount() === 0) return [];
-    //   return CollectionUtils.Set.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-    // }
-    // public getItem(key: K) {
-    //   if (this.childElementCount() === 0) return undefined;
-    //   return CollectionUtils.Set.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey!, key });
-    // }
-    // public updateItem(key: K, value: D) {
-    //   if (this.childElementCount() === 0) return false;
-    //   return CollectionUtils.Set.updateElement<K, D>({ collection: this._value, makeCollectionKey: this.makeCollectionKey, value });
-    // }
-    //------------------------------
-    // IRdoInternalNodeWrapper
-    //------------------------------
-    // public smartSync(): boolean {
-    //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-    //     return this.clearElements();
-    //   } else {
-    //     RdoWrapperValidationUtils.nonKeyedCollectionSizeCheck({ sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, collectionSize: this.childElementCount(), collectionType: this.typeInfo.stringifiedType });
-    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
-    //     // Execute
-    //     return super.synchronizeCollection();
-    //   }
-    // }
+    getItem(key) {
+        return this.last.rdoByKeyMap.get(key);
+    }
     //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
@@ -51,57 +45,6 @@ class RdoSetNW extends __1.RdoCollectionNWBase {
     }
     childElementCount() {
         return this._value.size;
-    }
-    // public insertItem(key: K, value: D) {
-    //   CollectionUtils.Set.insertElement({ collection: this._value, key, value });
-    // }
-    // public deleteElement(key: K): D | undefined {
-    //   return CollectionUtils.Set.deleteElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-    // }
-    // public clearElements(): boolean {
-    //   if (this.childElementCount() === 0) return false;
-    //   this._value.clear();
-    //   return true;
-    // }
-    //------------------------------
-    // RdoSyncableCollectionNW
-    //------------------------------
-    executePatchOperations(patchOperations) {
-        // Loop through and execute (note, the operations are in descending order by index
-        for (const patchOp of patchOperations) {
-            // EXECUTE
-            switch (patchOp.op) {
-                case 'add':
-                    if (!patchOp.rdo)
-                        throw new Error(`Rdo must not be null for patch-add operations - sourceNodeTypePath:${this.wrappedSourceNode.sourceNodeTypePath},  Key:${patchOp.key}`);
-                    this.value.add(patchOp.rdo);
-                    // If primitive, break. Else, fall through to update, so the values sync to the new item
-                    if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
-                        break;
-                case 'update':
-                    if (!patchOp.rdo)
-                        throw new Error('Rdo must not be null for patch-update operations');
-                    this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
-                    break;
-                case 'delete':
-                    if (!patchOp.rdo)
-                        throw new Error('Rdo must not be null for Set patch-delete operations');
-                    this.value.delete(patchOp.rdo);
-                    break;
-                default:
-                    throw new Error(`Unknown operation: ${patchOp.op}`);
-                    break;
-            }
-            // PUBLISH
-            this.eventEmitter.publish('nodeChange', {
-                changeType: patchOp.op,
-                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-                sourceKey: patchOp.key,
-                rdoKey: patchOp.key,
-                previousSourceValue: patchOp.previousSourceValue,
-                newSourceValue: patchOp.newSourceValue,
-            });
-        }
     }
 }
 exports.RdoSetNW = RdoSetNW;

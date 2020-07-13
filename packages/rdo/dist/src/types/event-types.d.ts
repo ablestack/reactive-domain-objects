@@ -2,6 +2,7 @@ import { NodePatchOperationType } from '.';
 export interface NodeChange {
     changeType: NodePatchOperationType;
     sourceNodeTypePath: string;
+    index?: number;
     sourceKey: any;
     rdoKey: any;
     previousSourceValue: any | undefined;

@@ -1,11 +1,13 @@
 export declare class MutableNodeCache {
     private _sourceMap;
-    set({ sourceNodeInstancePath, data }: {
+    set({ sourceNodeInstancePath, dataKey, data }: {
         sourceNodeInstancePath: string;
+        dataKey?: string;
         data: any;
     }): void;
-    get<T>({ sourceNodeInstancePath }: {
+    get<T>({ sourceNodeInstancePath, dataKey }: {
         sourceNodeInstancePath: string;
-    }): T;
+        dataKey?: string;
+    }): T | undefined;
     clear(): void;
 }

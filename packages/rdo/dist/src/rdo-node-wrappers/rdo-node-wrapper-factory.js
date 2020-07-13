@@ -19,23 +19,24 @@ class RdoNodeWrapperFactory {
             throw new Error('Rdo value should not be null or undefined');
         const typeInfo = node_type_utils_1.NodeTypeUtils.getNodeType(value);
         // Check if custom collection type
-        if (typeInfo.type === 'ISyncableCollection') {
-            logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-            return new _1.RdoSyncableCollectionNW({
-                value: value,
-                typeInfo,
-                key,
-                mutableNodeCache,
-                wrappedParentRdoNode,
-                wrappedSourceNode,
-                syncChildNode: this._syncChildNode,
-                defaultEqualityComparer: this._defaultEqualityComparer,
-                matchingNodeOptions,
-                globalNodeOptions: this._globalNodeOptions,
-                targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-                eventEmitter: this._eventEmitter,
-            });
-        }
+        //TODO
+        // if (typeInfo.type === 'ISyncableCollection') {
+        //   logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
+        //   return new RdoSyncableCollectionNW<K, S, D>({
+        //     value: value as ISyncableRDOCollection<K, S, D>,
+        //     typeInfo,
+        //     key,
+        //     mutableNodeCache,
+        //     wrappedParentRdoNode,
+        //     wrappedSourceNode,
+        //     syncChildNode: this._syncChildNode,
+        //     defaultEqualityComparer: this._defaultEqualityComparer,
+        //     matchingNodeOptions,
+        //     globalNodeOptions: this._globalNodeOptions,
+        //     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        //     eventEmitter: this._eventEmitter,
+        //   });
+        // }
         // Else use built in stringified types to generate appropriate wrapper
         switch (typeInfo.stringifiedType) {
             case '[object Boolean]':

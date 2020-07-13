@@ -37,24 +37,27 @@ class GraphSynchronizer {
         /**
          *
          */
-        this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey }) => {
+        this.syncChildNode = ({ wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
             logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
             let changed = false;
-            const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
-            // Validate
-            if (!_1.isISourceInternalNodeWrapper(parentSourceNode))
-                throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+            //const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
+            // SETUP AND VALIDATION
+            // Node Type
+            //if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
+            // RdoNode
+            const rdoNodeItemValue = wrappedParentRdoNode.getItem(rdoNodeItemKey);
             if (rdoNodeItemValue === undefined) {
                 logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`);
                 return false;
             }
-            const sourceNode = parentSourceNode.getItem(sourceNodeItemKey);
+            // SourceNode
+            const sourceNode = wrappedParentRdoNode.getSourceNodeItem(sourceNodeItemKey);
             if (sourceNode === undefined) {
-                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`, parentSourceNode);
+                logger.trace(`Could not find child sourceNode with key ${sourceNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`, wrappedParentRdoNode.wrappedSourceNode);
                 return false;
             }
             // Node traversal tracking - step-in
-            this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, parentSourceNode.typeInfo.kind);
+            this._nodeTracker.pushSourceNodeInstancePathOntoStack(sourceNodeItemKey, wrappedParentRdoNode.wrappedSourceNode.typeInfo.kind);
             // Wrap Node
             const wrappedRdoNode = this.wrapRdoNode({
                 sourceNodeTypePath: this._nodeTracker.getSourceNodePath(),
@@ -75,7 +78,7 @@ class GraphSynchronizer {
                 changed = wrappedRdoNode.smartSync();
             }
             // Node traversal tracking - step-out
-            this._nodeTracker.popSourceNodeInstancePathFromStack(parentSourceNode.typeInfo.kind);
+            this._nodeTracker.popSourceNodeInstancePathFromStack(wrappedParentRdoNode.wrappedSourceNode.typeInfo.kind);
             return changed;
         };
         this._eventEmitter = new event_emitter_1.EventEmitter();

@@ -54,10 +54,6 @@ class RdoInternalNWBase extends rdo_nw_base_1.RdoNWBase {
         }
         return rdo;
     }
-    // public abstract itemKeys();
-    // public abstract getItem(key: K);
-    // public abstract updateItem(key: K, value: D);
-    // public abstract insertItem(key: K, value: D);
     //------------------------------
     // Private
     //------------------------------

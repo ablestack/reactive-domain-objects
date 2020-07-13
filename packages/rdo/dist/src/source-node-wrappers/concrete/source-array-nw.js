@@ -2,17 +2,39 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SourceArrayNW = void 0;
 const __1 = require("../..");
-const collection_utils_1 = require("../../rdo-node-wrappers/utils/collection.utils");
-const source_base_nw_1 = require("../base/source-base-nw");
-const node_type_utils_1 = require("../../rdo-node-wrappers/utils/node-type.utils");
 const types_1 = require("../../types");
+const source_base_nw_1 = require("../base/source-base-nw");
 class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
+    // /**
+    //  *
+    //  *
+    //  * @readonly
+    //  * @memberof SourceArrayNW
+    //  * @description Returns map of element indexes by key. Note that if elements with duplicate keys are present in the source array, the first index with the corresponding key will be in the Map
+    //  */
+    // public get mapOfIndexByKey() {
+    //   if (!this._mapOfIndexByKey) this.initializeMaps();
+    //   return this._mapOfIndexByKey!;
+    // }
+    // private _mapOfIndexByKey: Map<K, number> | undefined;
+    // /**
+    //  *
+    //  *
+    //  * @readonly
+    //  * @memberof SourceArrayNW
+    //  * @description Returns map of elements by key. Note that if elements with duplicate keys are present in the source array, the first element with the corresponding key will be in the Map
+    //  */
+    // public get mapOfElementByKey() {
+    //   if (!this._mapOfElementByKey) this.initializeMaps();
+    //   return this._mapOfElementByKey!;
+    // }
+    // private _mapOfElementByKey: Map<K, S> | undefined;
     constructor({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
         super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
         //------------------------------
         // ISourceCollectionNodeWrapper
         //------------------------------
-        this.makeCollectionKey = (item) => {
+        this.makeCollectionKey = (item, index) => {
             var _a, _b;
             if (item === null || item === undefined)
                 throw new Error(`Can not make collection key from null or undefined source object`);
@@ -23,18 +45,29 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             if (types_1.isIMakeCollectionKey(this.wrappedRdoNode)) {
                 return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
             }
-            // If primitive, the item is the key
-            if (node_type_utils_1.NodeTypeUtils.isPrimitive(item)) {
-                return item;
-            }
             // Last option - look for idKey
             if (item[__1.config.defaultIdKey]) {
                 return item[__1.config.defaultIdKey];
             }
-            throw new Error(`Could not make makeCollectionKey from item: ${JSON.stringify(item)}`);
+            // If no key here, just use index
+            return index;
         };
         this._value = value.filter((element) => element !== null && element !== undefined);
     }
+    // //------------------------------
+    // // Private
+    // //------------------------------
+    // private initializeMaps() {
+    //   this._mapOfElementByKey = new Map<K, S>();
+    //   this._mapOfIndexByKey = new Map<K, number>();
+    //   for (let i = 0; i < this.value.length; i++) {
+    //     const newElementKey = this.makeCollectionKey(this.value[i], i);
+    //     if (!this._mapOfElementByKey.has(newElementKey)) {
+    //       this._mapOfElementByKey.set(newElementKey, this.value[i]);
+    //       this._mapOfIndexByKey.set(newElementKey, i);
+    //     }
+    //   }
+    // }
     //------------------------------
     // ISourceNodeWrapper
     //------------------------------
@@ -47,12 +80,6 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     //------------------------------
     // ISourceInternalNodeWrapper
     //------------------------------
-    nodeKeys() {
-        return collection_utils_1.CollectionUtils.Array.getCollectionKeys({ collection: this._value, makeCollectionKey: this.makeCollectionKey });
-    }
-    getItem(key) {
-        return collection_utils_1.CollectionUtils.Array.getElement({ collection: this._value, makeCollectionKey: this.makeCollectionKey, key });
-    }
     getNode() {
         return this._value;
     }

@@ -39,7 +39,7 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
   }
 
   //------------------------------
-  // ISourceInternalNodeWrapper
+  // ISourceObjectNodeWrapper
   //------------------------------
 
   //@ts-ignore

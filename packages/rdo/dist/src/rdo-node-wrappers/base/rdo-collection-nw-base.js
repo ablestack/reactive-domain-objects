@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoCollectionNWBase = void 0;
+const __1 = require("../..");
 const logger_1 = require("../../infrastructure/logger");
-const types_1 = require("../../types");
-const global_utils_1 = require("../utils/global.utils");
 const rdo_internal_nw_base_1 = require("./rdo-internal-nw-base");
 const logger = logger_1.Logger.make('RdoCollectionNWBase');
 class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
@@ -14,108 +13,84 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
     //------------------------------
     // Protected
     //------------------------------
-    /** */
-    getNodeInstanceCache() {
-        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
-        if (!mutableNodeCacheItem) {
-            mutableNodeCacheItem = { sourceData: new Array(), rdoMap: new Map() };
-            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
-        }
-        return mutableNodeCacheItem;
+    get equalityComparer() {
+        return this._equalityComparer;
     }
     /** */
-    generatePatchOperations({ wrappedSourceNode, mutableNodeCacheItem }) {
-        const operations = new Array();
-        const origSourceArray = mutableNodeCacheItem.sourceData;
-        const rdoMap = mutableNodeCacheItem.rdoMap;
-        const newSourceArray = this.wrappedSourceNode.value;
-        const count = Math.max(origSourceArray.length, newSourceArray.length);
-        for (let i = 0; i <= count; i++) {
-            const previousSourceElement = origSourceArray[i];
-            const newSourceElement = newSourceArray[i];
-            let op;
-            if (global_utils_1.isNullOrUndefined(previousSourceElement) && !global_utils_1.isNullOrUndefined(newSourceElement)) {
-                // ---------------------------
-                // New Key
-                // ---------------------------
-                const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
-                const newRdo = this.makeRdoElement(newSourceElement);
-                // Add operation
-                operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
-                // Update Rdo Map
-                rdoMap.set(newElementKey, newRdo);
-            }
-            else if (!global_utils_1.isNullOrUndefined(previousSourceElement) && !global_utils_1.isNullOrUndefined(newSourceElement)) {
-                // ---------------------------
-                // Existing Key
-                // ---------------------------
-                const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
-                const newElementKey = wrappedSourceNode.makeCollectionKey(newSourceElement);
-                if (origElementKey !== newElementKey) {
-                    // ---------------------------
-                    // Keys don't match
-                    // ---------------------------
-                    const origRdo = rdoMap.get(origElementKey);
-                    if (!origRdo)
-                        throw new Error(`Could not find original Rdo with key ${origElementKey}`);
-                    const newRdo = this.makeRdoElement(newElementKey);
-                    // Add operations
-                    operations.push({ op: 'delete', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
-                    operations.push({ op: 'add', index: i, key: newElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: newRdo });
-                    // Update Rdo Map
-                    rdoMap.delete(origElementKey);
-                    rdoMap.set(newElementKey, newRdo);
-                }
-                else {
-                    // ---------------------------
-                    // Keys Match
-                    // ---------------------------
-                    if (this._equalityComparer(previousSourceElement, newSourceElement)) {
-                        // No change, no patch needed
-                    }
-                    else {
-                        // Add operations
-                        operations.push({ op: 'update', index: i, key: origElementKey, previousSourceValue: previousSourceElement, newSourceValue: newSourceElement });
-                        // Update Rdo Map
-                        // No update needed
-                    }
-                }
-            }
-            else if (!global_utils_1.isNullOrUndefined(previousSourceElement) && global_utils_1.isNullOrUndefined(newSourceElement)) {
-                // ---------------------------
-                // Missing Key
-                // ---------------------------
-                const origElementKey = wrappedSourceNode.makeCollectionKey(previousSourceElement);
-                const origRdo = rdoMap.get(origElementKey);
-                if (!origRdo)
-                    throw new Error(`Could not find original Rdo with key ${origElementKey}`);
-                // Add operations
-                operations.push({ op: 'delete', index: i, key: wrappedSourceNode.makeCollectionKey(previousSourceElement), previousSourceValue: previousSourceElement, newSourceValue: newSourceElement, rdo: origRdo });
-                // Update Rdo Map
-                rdoMap.delete(origElementKey);
-            }
+    handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }) {
+        const changed = addHandler({ index, key: elementKey, nextRdo: newRdo });
+        if (changed) {
+            // If not primitive, sync so child nodes are hydrated
+            if (__1.NodeTypeUtils.isPrimitive(newRdo))
+                this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+                changeType: 'add',
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+                index: index,
+                sourceKey: elementKey,
+                rdoKey: elementKey,
+                previousSourceValue: undefined,
+                newSourceValue: newSourceElement,
+            });
         }
-        return operations;
+        return changed;
     }
     /** */
-    smartSync() {
-        // Setup
-        const mutableNodeCacheItem = this.getNodeInstanceCache();
-        if (!types_1.isISourceCollectionNodeWrapper(this.wrappedSourceNode))
-            throw new Error('Can only sync Rdo collection types with Collection source types');
-        const patchOperations = this.generatePatchOperations({ wrappedSourceNode: this.wrappedSourceNode, mutableNodeCacheItem });
-        if (this.key === 'mapOfNumbers') {
-            console.log('patchOperations', patchOperations);
+    handleReplaceOrUpdate({ replaceHandler, index, elementKey, lastRdo, newSourceElement, previousSourceElement, }) {
+        let changed = false;
+        // ---------------------------
+        // REPLACE
+        // ---------------------------
+        // If non-equal primitive with same indexes, just do a replace operation
+        if (__1.NodeTypeUtils.isPrimitive(newSourceElement)) {
+            const nextRdo = this.makeRdoElement(newSourceElement);
+            replaceHandler({ index, key: elementKey, lastRdo, nextRdo });
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+                changeType: 'replace',
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+                index,
+                sourceKey: elementKey,
+                rdoKey: elementKey,
+                previousSourceValue: previousSourceElement,
+                newSourceValue: newSourceElement,
+            });
+            return { changed: true, nextRdo };
         }
-        // Instrumentation
-        //console.log(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
-        logger.trace(`synchronizeCollection - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - prepared patch operations`, patchOperations);
-        // Execute
-        this.executePatchOperations(patchOperations);
-        // Update cache
-        mutableNodeCacheItem.sourceData = this.wrappedSourceNode.value;
-        // Return
-        return patchOperations.length > 0;
+        else {
+            // ---------------------------
+            // UPDATE
+            // ---------------------------
+            // If non-equal non-primitive, step into child and sync
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+            // Publish
+            this.eventEmitter.publish('nodeChange', {
+                changeType: 'update',
+                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+                index,
+                sourceKey: elementKey,
+                rdoKey: elementKey,
+                previousSourceValue: previousSourceElement,
+                newSourceValue: newSourceElement,
+            });
+            return { changed, nextRdo: this.getItem(elementKey) };
+        }
+    }
+    /** */
+    handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }) {
+        const changed = deleteHandler({ index, key: elementKey, lastRdo: rdoToDelete });
+        // Publish
+        this.eventEmitter.publish('nodeChange', {
+            changeType: 'delete',
+            sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+            index: index,
+            sourceKey: elementKey,
+            rdoKey: elementKey,
+            previousSourceValue: previousSourceElement,
+            newSourceValue: undefined,
+        });
+        return changed;
     }
 }
 exports.RdoCollectionNWBase = RdoCollectionNWBase;

@@ -10,34 +10,31 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
         this._value = value;
     }
     //------------------------------
+    // Private
+    //------------------------------
+    getNodeInstanceCache() {
+        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
+        if (!mutableNodeCacheItem) {
+            mutableNodeCacheItem = { sourceData: new Array(), rdoMap: new Map() };
+            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
+        }
+        return mutableNodeCacheItem;
+    }
+    //------------------------------
     // IRdoNodeWrapper
     //------------------------------
-    get leafNode() {
+    get isLeafNode() {
         return false;
     }
     get value() {
         return this._value;
     }
-    // public itemKeys() {
-    //   return this._value.getCollectionKeys();
-    // }
-    // public getItem(key: K) {
-    //   return this._value.getElement(key);
-    // }
-    // public updateItem(key: K, value: D) {
-    //   return this._value.updateElement(key, value);
-    // }
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
-    // public smartSync(): boolean {
-    //   if (this.wrappedSourceNode.childElementCount() === 0 && this.childElementCount() > 0) {
-    //     return this.clearElements();
-    //   } else {
-    //     if (!isISourceCollectionNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO collection nodes can only be synced with Source collection nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}'`);
-    //     return super.synchronizeCollection();
-    //   }
-    // }
+    getItem(key) {
+        return this.value.getItem(key);
+    }
     //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
@@ -47,50 +44,24 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     childElementCount() {
         return this._value.size;
     }
-    // public insertItem(key: K, value: D) {
-    //   this._value.insertElement(key, value);
-    // }
-    // public deleteElement(key: K): D | undefined {
-    //   return this._value.deleteElement(key);
-    // }
-    // public clearElements(): boolean {
-    //   return this._value.clearElements();
-    // }
     //------------------------------
     // RdoSyncableCollectionNW
     //------------------------------
-    executePatchOperations(patchOperations) {
-        // Loop through and execute (note, the operations are in descending order by index
-        for (const patchOp of patchOperations) {
-            // EXECUTE
-            switch (patchOp.op) {
-                case 'add':
-                    this.value.patchAdd(patchOp);
-                    // If primitive, break. Else, fall through to update, so the values sync to the new item
-                    if (__1.NodeTypeUtils.isPrimitive(patchOp.rdo))
-                        break;
-                case 'update':
-                    if (!patchOp.rdo)
-                        throw new Error('Rdo must not be null for patch-update operations');
-                    this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue: patchOp.rdo, rdoNodeItemKey: patchOp.key, sourceNodeItemKey: patchOp.key });
-                    break;
-                case 'delete':
-                    this.value.patchDelete(patchOp);
-                    break;
-                default:
-                    throw new Error(`Unknown operation: ${patchOp.op}`);
-                    break;
-            }
-            // PUBLISH
-            this.eventEmitter.publish('nodeChange', {
-                changeType: patchOp.op,
-                sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
-                sourceKey: patchOp.key,
-                rdoKey: patchOp.key,
-                previousSourceValue: patchOp.previousSourceValue,
-                newSourceValue: patchOp.newSourceValue,
-            });
-        }
+    // protected sync() {
+    //   //TODO
+    //   //this.value.sync({ wrappedRdoNode: this, equalityComparer: this.equalityComparer, eventEmitter: this.eventEmitter, syncChildNode: this.syncChildNode });
+    // }
+    getSourceNodeKeys() {
+        //TODO
+        //this.value.getSourceNodeKeys();
+        return [];
+    }
+    getSourceNodeItem(key) {
+        return this.value.getItem(key);
+    }
+    smartSync() {
+        //TODO
+        return false;
     }
 }
 exports.RdoSyncableCollectionNW = RdoSyncableCollectionNW;

@@ -18,7 +18,7 @@ import {
 } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
-import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper, ISourceObjectNodeWrapper } from '../../types';
+import { INodeSyncOptions, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper, ISourceObjectNodeWrapper, isISourceObjectNodeWrapper } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { NodeTracker } from '../../infrastructure/node-tracker';
@@ -141,6 +141,16 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     return changed;
   }
 
+  public getSourceNodeKeys() {
+    if (!isISourceObjectNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
+    return this.wrappedSourceNode.getNodeKeys();
+  }
+
+  public getSourceNodeItem(key: string) {
+    if (!isISourceObjectNodeWrapper(this.wrappedSourceNode)) throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
+    return this.wrappedSourceNode.getNodeItem(key);
+  }
+
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
@@ -180,13 +190,13 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     let changed = false;
     const wrappedSourceNode = this.wrappedSourceNode as ISourceObjectNodeWrapper<S, D>;
 
-    if (!isISourceInternalNodeWrapper(this.wrappedSourceNode)) {
+    if (!isISourceObjectNodeWrapper(this.wrappedSourceNode)) {
       throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
     }
 
     // Loop properties
-    for (const sourceFieldname of wrappedSourceNode.nodeKeys()) {
-      const sourceFieldVal = wrappedSourceNode.getItem(sourceFieldname);
+    for (const sourceFieldname of wrappedSourceNode.getNodeKeys()) {
+      const sourceFieldVal = wrappedSourceNode.getNodeItem(sourceFieldname);
       let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
 
       let rdoNodeItemValue: any;

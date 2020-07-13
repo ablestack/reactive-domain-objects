@@ -34,8 +34,10 @@ export declare abstract class RdoNWBase<K extends string | number, S, D> impleme
     get globalNodeOptions(): IGlobalNodeOptions | undefined;
     private _nodeOptions;
     getNodeOptions(): INodeSyncOptions<K, S, D> | null;
-    abstract get leafNode(): any;
+    abstract get isLeafNode(): any;
     abstract get value(): any;
     abstract smartSync(): any;
     abstract childElementCount(): any;
+    abstract getSourceNodeKeys(): any;
+    abstract getSourceNodeItem(key: K): any;
 }

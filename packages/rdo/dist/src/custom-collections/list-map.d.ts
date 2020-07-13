@@ -1,4 +1,4 @@
-import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionNodePatchOperation } from '..';
+import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper } from '..';
 /**
  *
  *
@@ -12,6 +12,7 @@ import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, Colle
  */
 export declare class ListMap<K extends string | number, S, D> implements ISyncableRDOCollection<K, S, D> {
     private _map$;
+    private indexByKeyMap;
     private _makeCollectionKey?;
     private _makeRdo?;
     get size(): number;
@@ -30,8 +31,23 @@ export declare class ListMap<K extends string | number, S, D> implements ISyncab
     [Symbol.iterator](): IterableIterator<[K, D]>;
     [Symbol.toStringTag]: string;
     makeCollectionKey: (item: S) => K;
-    makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>): D | undefined;
     elements(): Iterable<D>;
-    patchAdd(patchOp: CollectionNodePatchOperation<K, D>): void;
-    patchDelete(patchOp: Omit<CollectionNodePatchOperation<K, D>, 'op'>): void;
+    getItem(key: K): D | undefined;
+    handleNewKey: ({ index, key, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        nextRdo: any;
+    }) => boolean;
+    handleReplaceKey: ({ index, key, lastRdo, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+        nextRdo: any;
+    }) => boolean;
+    handleDeleteKey: ({ index, key, lastRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+    }) => boolean;
+    makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>): D | undefined;
 }

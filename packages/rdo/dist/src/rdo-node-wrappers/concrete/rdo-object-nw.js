@@ -19,7 +19,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                 const wrappedRdoNode = this._wrapRdoNode({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
                 if (!types_1.isIRdoInternalNodeWrapper(wrappedRdoNode))
                     throw new Error(`(${sourceNodeTypePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
-                return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemValue, rdoNodeItemKey, sourceNodeItemKey });
+                return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemKey, sourceNodeItemKey });
             };
             // return method
             return continueSmartSync;
@@ -43,7 +43,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     //------------------------------
     // IRdoNodeWrapper
     //------------------------------
-    get leafNode() {
+    get isLeafNode() {
         return false;
     }
     get value() {
@@ -94,15 +94,25 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         previousSourceData.sourceData = sourceObject;
         return changed;
     }
+    getSourceNodeKeys() {
+        if (!types_1.isISourceObjectNodeWrapper(this.wrappedSourceNode))
+            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
+        return this.wrappedSourceNode.getNodeKeys();
+    }
+    getSourceNodeItem(key) {
+        if (!types_1.isISourceObjectNodeWrapper(this.wrappedSourceNode))
+            throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
+        return this.wrappedSourceNode.getNodeItem(key);
+    }
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
     // public itemKeys() {
     //   return Object.keys(this._value);
     // }
-    // public getItem(key: K) {
-    //   return this._value[key];
-    // }
+    getItem(key) {
+        return this._value[key];
+    }
     // public updateItem(key: K, value: D | undefined) {
     //   if (key in this._value) {
     //     //@ts-ignore
@@ -127,12 +137,13 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     sync() {
         var _a, _b;
         let changed = false;
-        if (!__2.isISourceInternalNodeWrapper(this.wrappedSourceNode)) {
+        const wrappedSourceNode = this.wrappedSourceNode;
+        if (!types_1.isISourceObjectNodeWrapper(this.wrappedSourceNode)) {
             throw new Error(`RDO object node can only be synced with Source object nodes (Path: '${this.wrappedSourceNode.sourceNodeTypePath}')`);
         }
         // Loop properties
-        for (const sourceFieldname of this.wrappedSourceNode.nodeKeys()) {
-            const sourceFieldVal = this.wrappedSourceNode.getItem(sourceFieldname);
+        for (const sourceFieldname of wrappedSourceNode.getNodeKeys()) {
+            const sourceFieldVal = wrappedSourceNode.getNodeItem(sourceFieldname);
             let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
             let rdoNodeItemValue;
             if (rdoFieldname) {
@@ -166,7 +177,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             }
             else {
                 logger.trace(`Syncing Field '${rdoFieldname}' in object`);
-                changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemValue, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
+                changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: rdoFieldname, sourceNodeItemKey: sourceFieldname }) && changed;
             }
         }
         return changed;
@@ -205,7 +216,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
             }
         }
         //
-        // Try stright match for sourceFieldname
+        // Try straight match for sourceFieldname
         if (!rdoFieldname) {
             rdoFieldname = sourceFieldname;
             if (rdoFieldname && !(rdoFieldname in this._value)) {
