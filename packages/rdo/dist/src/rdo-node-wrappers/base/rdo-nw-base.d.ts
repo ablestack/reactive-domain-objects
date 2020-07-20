@@ -3,7 +3,7 @@ import { IRdoInternalNodeWrapper } from '../../types';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
-export declare abstract class RdoNWBase<K extends string | number, S, D> implements IRdoNodeWrapper<K, S, D> {
+export declare abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
     private _typeInfo;
     private _key;
     private _mutableNodeCache;
@@ -15,29 +15,29 @@ export declare abstract class RdoNWBase<K extends string | number, S, D> impleme
     private _eventEmitter;
     constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
-        key: K | undefined;
+        key: string | number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
-        matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
+        matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<S, D>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
     protected get eventEmitter(): EventEmitter<NodeChange>;
     protected get mutableNodeCache(): MutableNodeCache;
     get ignore(): boolean;
-    get key(): K | undefined;
-    get wrappedParentRdoNode(): IRdoInternalNodeWrapper<any, S, D> | undefined;
+    get key(): string | number | undefined;
+    get wrappedParentRdoNode(): IRdoInternalNodeWrapper<S, D> | undefined;
     get typeInfo(): NodeTypeInfo;
-    get wrappedSourceNode(): ISourceNodeWrapper<K, S, D>;
+    get wrappedSourceNode(): ISourceNodeWrapper<S, D>;
     get globalNodeOptions(): IGlobalNodeOptions | undefined;
     private _nodeOptions;
-    getNodeOptions(): INodeSyncOptions<K, S, D> | null;
+    getNodeOptions(): INodeSyncOptions<S, D> | null;
     abstract get isLeafNode(): any;
     abstract get value(): any;
     abstract smartSync(): any;
     abstract childElementCount(): any;
     abstract getSourceNodeKeys(): any;
-    abstract getSourceNodeItem(key: K): any;
+    abstract getSourceNodeItem(key: string | number): any;
 }

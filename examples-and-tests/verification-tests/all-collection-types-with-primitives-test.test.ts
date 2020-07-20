@@ -29,7 +29,7 @@ const allCollectionsTypesWithPrimitivesJSON = {
 //
 // RDO Graphs
 export class AllCollectionTypesWithPrimitivesRdo {
-  public listMapOfObjects = new ListMap<string, Number, Number>();
+  public listMapOfObjects = new ListMap<Number, Number>();
   public arrayOfNumbers = new Array<Number>();
   public mapOfNumbers = new Map<string, number>();
   public setOfNumbers = new Set<number>();

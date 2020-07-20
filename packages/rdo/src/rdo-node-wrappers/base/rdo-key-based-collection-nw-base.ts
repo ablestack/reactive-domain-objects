@@ -8,9 +8,9 @@ import { NodeChange } from '../../types/event-types';
 import { RdoCollectionNWBase } from './rdo-collection-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
-export type RdoKeyCollectionNWBaseViews<K, S, D> = { sourceArray: Array<S>; sourceByKeyMap: Map<K, S>; rdoByKeyMap: Map<K, D> };
+export type RdoKeyCollectionNWBaseViews<S, D> = { sourceArray: Array<S>; sourceByKeyMap: Map<string | number, S>; rdoByKeyMap: Map<string | number, D> };
 
-export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S, D> {
   constructor({
     typeInfo,
     key,
@@ -25,15 +25,15 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -42,10 +42,10 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
   //------------------------------
   // Protected
   //------------------------------
-  protected get views(): RdoKeyCollectionNWBaseViews<K, S, D> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<RdoKeyCollectionNWBaseViews<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
+  protected get views(): RdoKeyCollectionNWBaseViews<S, D> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<RdoKeyCollectionNWBaseViews<S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceByKeyMap: new Map<K, S>(), rdoByKeyMap: new Map<K, D>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), sourceByKeyMap: new Map<string | number, S>(), rdoByKeyMap: new Map<string | number, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase', data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -56,7 +56,7 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     //
     // Setup
     let changed = false;
-    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<S, D>;
 
     const last = {
       sourceArray: this.views.sourceArray,
@@ -65,8 +65,8 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     };
 
     this.views.sourceArray = wrappedSourceNode.elements();
-    this.views.sourceByKeyMap = new Map<K, S>();
-    this.views.rdoByKeyMap = new Map<K, D>();
+    this.views.sourceByKeyMap = new Map<string | number, S>();
+    this.views.rdoByKeyMap = new Map<string | number, D>();
 
     //
     // Loop and execute
@@ -150,16 +150,16 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     return this.views.sourceByKeyMap.keys();
   }
 
-  public getSourceNodeItem(key: K) {
+  public getSourceNodeItem(key: string | number) {
     return this.views.sourceByKeyMap.get(key);
   }
 
-  public getRdoNodeItem(key: K) {
+  public getRdoNodeItem(key: string | number) {
     return this.views.rdoByKeyMap.get(key);
   }
 
   /** */
-  protected abstract onNewKey: NodeAddHandler<K>;
-  protected abstract onReplaceKey: NodeReplaceHandler<K>;
-  protected abstract onDeleteKey: NodeDeleteHandler<K>;
+  protected abstract onNewKey: NodeAddHandler;
+  protected abstract onReplaceKey: NodeReplaceHandler;
+  protected abstract onDeleteKey: NodeDeleteHandler;
 }

@@ -8,7 +8,7 @@ export class NodeTracker {
   private _sourceNodeInstancePathStack = new Array<string>();
   private _sourceNodeTypePathStack = new Array<string>();
 
-  public pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind) {
+  public pushSourceNodeInstancePathOntoStack(key: string | number, sourceNodeKind: InternalNodeKind) {
     logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
     this._sourceNodeInstancePathStack.push(key.toString());
     // reset locally cached dependencies

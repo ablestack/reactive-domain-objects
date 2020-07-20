@@ -3,23 +3,23 @@ import { IRdoInternalNodeWrapper, ISyncChildNode, NodeTypeInfo, ISourceNodeWrapp
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { NodeChange } from '../../types/event-types';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
-export declare abstract class RdoInternalNWBase<K extends string | number, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
+export declare abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements IRdoInternalNodeWrapper<S, D> {
     private _syncChildNode;
     constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
-        key: K | undefined;
+        key: string | number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
         syncChildNode: ISyncChildNode;
-        matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+        matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<S, D>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
     protected get syncChildNode(): ISyncChildNode;
     makeRdoElement(sourceObject: any): any;
-    abstract getRdoNodeItem(key: K): any;
+    abstract getRdoNodeItem(key: string | number): any;
     private autoInstantiateNodeAsMobxObservables;
     private autoInstantiateNodeAsPlainObjectLiterals;
 }

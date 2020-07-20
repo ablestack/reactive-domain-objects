@@ -9,19 +9,19 @@ const logger = Logger.make('SyncableCollection');
  * @export
  * @class ListMap
  * @implements {ISyncableRDOKeyBasedCollection<S, D>}
- * @implements {Map<K, D>}
+ * @implements {Map<string | number, D>}
  * @template S
  * @template D
  * @description: A readonly, syncable, Map-Array collection hybrid, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
-export class ListMap<K extends string | number, S, D> implements ISyncableRDOKeyBasedCollection<K, S, D> {
-  @observable.shallow private _map$: Map<K, D>;
-  private indexByKeyMap = new Map<K, number>();
+export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
+  @observable.shallow private _map$: Map<string | number, D>;
+  private indexByKeyMap = new Map<string | number, number>();
 
   // -----------------------------------
   // IRdoFactory
   // -----------------------------------
-  private _makeCollectionKey?: MakeCollectionKeyMethod<K, S>;
+  private _makeCollectionKey?: MakeCollectionKeyMethod<S>;
   private _makeRdo?: (sourceItem: S) => D;
 
   @computed public get size(): number {
@@ -37,34 +37,34 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOKey
     makeCollectionKey,
     makeRdo,
   }: {
-    makeCollectionKey?: MakeCollectionKeyMethod<K, S>;
+    makeCollectionKey?: MakeCollectionKeyMethod<S>;
     makeRdo?: (sourceNode: S) => D;
   } = {}) {
     this._makeCollectionKey = makeCollectionKey;
     this._makeRdo = makeRdo;
-    this._map$ = new Map<K, D>();
+    this._map$ = new Map<string | number, D>();
   }
 
   // -----------------------------------
   // Readonly Map Interface
   // -----------------------------------
-  forEach(callbackfn: (value: D, key: K, map: Map<K, D>) => void, thisArg?: any): void {
+  forEach(callbackfn: (value: D, key: string | number, map: Map<string | number, D>) => void, thisArg?: any): void {
     this._map$.forEach(callbackfn);
   }
 
-  get(key: K): D | undefined {
+  get(key: string | number): D | undefined {
     return this._map$.get(key);
   }
 
-  has(key: K): boolean {
+  has(key: string | number): boolean {
     return this._map$.has(key);
   }
 
-  entries(): IterableIterator<[K, D]> {
+  entries(): IterableIterator<[string | number, D]> {
     return this._map$.entries();
   }
 
-  keys(): IterableIterator<K> {
+  keys(): IterableIterator<string | number> {
     return this._map$.keys();
   }
 
@@ -72,7 +72,7 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOKey
     return this._map$.values();
   }
 
-  [Symbol.iterator](): IterableIterator<[K, D]> {
+  [Symbol.iterator](): IterableIterator<[string | number, D]> {
     return this._map$.entries();
   }
 
@@ -86,20 +86,20 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOKey
     return this._map$.values();
   }
 
-  public handleNewKey = ({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any }) => {
+  public handleNewKey = ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this.indexByKeyMap.set(key, this._array$.length);
     this._array$.push(nextRdo);
     return true;
   };
 
-  public handleReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any }) => {
+  public handleReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1, nextRdo);
     return true;
   };
 
-  public handleDeleteKey = ({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any }) => {
+  public handleDeleteKey = ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }) => {
     this._map$.delete(key);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1);
     this.indexByKeyMap.delete(key);
@@ -114,7 +114,7 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOKey
     return this._makeCollectionKey(item);
   }
 
-  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>) {
+  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>) {
     if (!this._makeRdo) return undefined;
     return this._makeRdo(sourceItem);
   }

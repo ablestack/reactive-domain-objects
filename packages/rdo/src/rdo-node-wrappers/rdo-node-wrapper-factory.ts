@@ -12,7 +12,7 @@ export class RdoNodeWrapperFactory {
   private _eventEmitter: EventEmitter<NodeChange>;
   private _syncChildNode: ISyncChildNode;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
-  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _wrapRdoNode: IWrapRdoNode;
   private _defaultEqualityComparer: IEqualityComparer;
 
@@ -27,7 +27,7 @@ export class RdoNodeWrapperFactory {
     eventEmitter: EventEmitter<NodeChange>;
     syncChildNode: ISyncChildNode;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     wrapRdoNode: IWrapRdoNode;
     defaultEqualityComparer: IEqualityComparer;
   }) {
@@ -39,7 +39,7 @@ export class RdoNodeWrapperFactory {
     this._targetedOptionMatchersArray = targetedOptionMatchersArray;
   }
 
-  public make<K extends string | number, S, D>({
+  public make<S, D>({
     value,
     key,
     mutableNodeCache,
@@ -47,13 +47,13 @@ export class RdoNodeWrapperFactory {
     wrappedSourceNode,
     matchingNodeOptions,
   }: {
-    value: RdoNodeTypes<K, S, D> | undefined;
-    key: K | undefined;
+    value: RdoNodeTypes<S, D> | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
-    matchingNodeOptions?: INodeSyncOptions<any, any, any> | undefined;
-  }): IRdoNodeWrapper<K, S, D> {
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
+    matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
+  }): IRdoNodeWrapper<S, D> {
     if (value === null || value === undefined) throw new Error('Rdo value should not be null or undefined');
 
     const typeInfo = NodeTypeUtils.getNodeType(value);
@@ -61,8 +61,8 @@ export class RdoNodeWrapperFactory {
     // Check if custom collection type
     if (typeInfo.type === 'ISyncableKeyBasedCollection') {
       logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-      return new RdoSyncableCollectionNW<K, S, D>({
-        value: value as ISyncableRDOKeyBasedCollection<K, S, D>,
+      return new RdoSyncableCollectionNW<S, D>({
+        value: value as ISyncableRDOKeyBasedCollection<S, D>,
         typeInfo,
         key,
         mutableNodeCache,
@@ -87,7 +87,7 @@ export class RdoNodeWrapperFactory {
       }
       case '[object Object]': {
         logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string | number, S, D>;
+        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<S, D>;
         const o = new RdoObjectNW({
           value,
           key,
@@ -103,11 +103,11 @@ export class RdoNodeWrapperFactory {
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,
           eventEmitter: this._eventEmitter,
         });
-        return (o as unknown) as IRdoNodeWrapper<K, S, D>;
+        return (o as unknown) as IRdoNodeWrapper<S, D>;
       }
       case '[object Array]': {
         logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<number, S, D>;
+        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<S, D>;
         const a = new RdoArrayNW<S, D>({
           value: value as Array<D>,
           typeInfo,
@@ -122,12 +122,12 @@ export class RdoNodeWrapperFactory {
           targetedOptionMatchersArray: this._targetedOptionMatchersArray,
           eventEmitter: this._eventEmitter,
         });
-        return (a as unknown) as IRdoNodeWrapper<K, S, D>;
+        return (a as unknown) as IRdoNodeWrapper<S, D>;
       }
       case '[object Map]': {
         logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-        return new RdoMapNW<K, S, D>({
-          value: value as Map<K, D>,
+        return new RdoMapNW<S, D>({
+          value: value as Map<string | number, D>,
           typeInfo,
           key,
           mutableNodeCache,
@@ -143,7 +143,7 @@ export class RdoNodeWrapperFactory {
       }
       case '[object Set]': {
         logger.trace(`Wrapping Node ${key} with RdoSetNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-        return new RdoSetNW<K, S, D>({
+        return new RdoSetNW<S, D>({
           value: value as Set<D>,
           typeInfo,
           key,

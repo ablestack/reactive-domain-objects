@@ -8,7 +8,7 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoInternalNWBase<K extends string | number, S, D> extends RdoNWBase<K, S, D> implements IRdoInternalNodeWrapper<K, S, D> {
+export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements IRdoInternalNodeWrapper<S, D> {
   private _syncChildNode: ISyncChildNode;
 
   constructor({
@@ -24,14 +24,14 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+    matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<S, D>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -86,7 +86,7 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
     return rdo;
   }
 
-  public abstract getRdoNodeItem(key: K);
+  public abstract getRdoNodeItem(key: string | number);
 
   //------------------------------
   // Private

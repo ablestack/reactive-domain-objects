@@ -2,7 +2,7 @@ import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrap
 import { isIMakeCollectionKey, isITryMakeCollectionKey } from '../../types';
 import { SourceBaseNW } from '../base/source-base-nw';
 
-export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
+export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCollectionNodeWrapper<S, D> {
   private _value: Array<S>;
 
   // /**
@@ -16,7 +16,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   //   if (!this._mapOfIndexByKey) this.initializeMaps();
   //   return this._mapOfIndexByKey!;
   // }
-  // private _mapOfIndexByKey: Map<K, number> | undefined;
+  // private _mapOfIndexByKey: Map<number> | undefined;
 
   // /**
   //  *
@@ -29,7 +29,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   //   if (!this._mapOfElementByKey) this.initializeMaps();
   //   return this._mapOfElementByKey!;
   // }
-  // private _mapOfElementByKey: Map<K, S> | undefined;
+  // private _mapOfElementByKey: Map<string | number, S> | undefined;
 
   constructor({
     value,
@@ -43,9 +43,9 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
     value: Array<S>;
     sourceNodeTypePath: string;
     sourceNodeInstancePath: string;
-    key: K | undefined;
+    key: string | number | undefined;
     typeInfo: NodeTypeInfo;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
@@ -56,8 +56,8 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // // Private
   // //------------------------------
   // private initializeMaps() {
-  //   this._mapOfElementByKey = new Map<K, S>();
-  //   this._mapOfIndexByKey = new Map<K, number>();
+  //   this._mapOfElementByKey = new Map<string | number, S>();
+  //   this._mapOfIndexByKey = new Map<number>();
 
   //   for (let i = 0; i < this.value.length; i++) {
   //     const newElementKey = this.makeCollectionKey(this.value[i], i);
@@ -92,7 +92,7 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
   // ISourceCollectionNodeWrapper
   //------------------------------
 
-  public makeCollectionKey = (item: S, index: number): K => {
+  public makeCollectionKey = (item: S, index: number): string | number => {
     if (item === null || item === undefined) throw new Error(`Can not make collection key from null or undefined source object`);
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
@@ -112,11 +112,11 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
 
     // If item is primitive, use that as key
     if (NodeTypeUtils.isPrimitive(item)) {
-      return (item as unknown) as K;
+      return (item as unknown) as string | number;
     }
 
     // If no key here, just use index
-    return index as K;
+    return index as string | number;
   };
 
   public elements(): Array<S> {

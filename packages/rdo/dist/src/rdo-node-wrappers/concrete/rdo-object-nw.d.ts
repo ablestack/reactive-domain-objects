@@ -7,23 +7,23 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 declare type MutableCachedNodeItemType<S> = {
     sourceData: S | null | undefined;
 };
-export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string, S, D> {
+export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
     private _value;
     private _equalityComparer;
     private _wrapRdoNode;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, wrapRdoNode, globalNodeOptions, matchingNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         value: D;
         typeInfo: NodeTypeInfo;
-        key: string | undefined;
+        key: string | number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode;
         wrapRdoNode: IWrapRdoNode;
-        matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+        matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
     /** */
@@ -32,7 +32,7 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     get value(): Record<string, any>;
     childElementCount(): number;
     smartSync(): boolean;
-    getSourceNodeKeys(): Iterable<string>;
+    getSourceNodeKeys(): Iterable<string | number>;
     getSourceNodeItem(key: string): any;
     getRdoNodeItem(key: string): any;
     /**

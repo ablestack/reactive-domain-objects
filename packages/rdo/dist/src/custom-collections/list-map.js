@@ -11,7 +11,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
  * @export
  * @class ListMap
  * @implements {ISyncableRDOKeyBasedCollection<S, D>}
- * @implements {Map<K, D>}
+ * @implements {Map<string | number, D>}
  * @template S
  * @template D
  * @description: A readonly, syncable, Map-Array collection hybrid, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary

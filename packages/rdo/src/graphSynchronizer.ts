@@ -35,8 +35,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private _eventEmitter: EventEmitter<NodeChange>;
   private _defaultEqualityComparer: IEqualityComparer;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
-  private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any, any>>;
-  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+  private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
   private _mutableNodeCache: MutableNodeCache;
   private _nodeTracker: NodeTracker;
   private _sourceNodeWrapperFactory: SourceNodeWrapperFactory;
@@ -53,8 +53,8 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     this._eventEmitter = new EventEmitter<NodeChange>();
     this._defaultEqualityComparer = options?.customEqualityComparer || comparers.apollo;
     this._globalNodeOptions = options?.globalNodeOptions;
-    this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any, any>>();
-    this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any, any>>();
+    this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any>>();
+    this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any>>();
     this._mutableNodeCache = new MutableNodeCache();
     this._nodeTracker = new NodeTracker();
 
@@ -112,7 +112,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   /**
    *
    */
-  public wrapRdoNode = <K extends string | number, S, D>({
+  public wrapRdoNode = <S, D>({
     sourceNodeTypePath,
     sourceNodeInstancePath,
     sourceNode,
@@ -123,16 +123,16 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   }: {
     sourceNodeTypePath: string;
     sourceNodeInstancePath: string;
-    rdoNode: RdoNodeTypes<K, S, D> | undefined;
+    rdoNode: RdoNodeTypes<S, D> | undefined;
     sourceNode: S;
-    wrappedParentRdoNode?: IRdoInternalNodeWrapper<any, any, any> | undefined;
-    rdoNodeItemKey?: K | undefined;
-    sourceNodeItemKey?: K | undefined;
-  }): IRdoNodeWrapper<K, S, D> => {
+    wrappedParentRdoNode?: IRdoInternalNodeWrapper<any, any> | undefined;
+    rdoNodeItemKey?: string | number | undefined;
+    sourceNodeItemKey?: string | number | undefined;
+  }): IRdoNodeWrapper<S, D> => {
     const matchingNodeOptions = this._targetedOptionNodePathsMap.get(sourceNodeTypePath);
 
-    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<K, S, D>({ sourceNodeTypePath, sourceNodeInstancePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
-    const wrappedRdoNode = this._rdoNodeWrapperFactory.make<K, S, D>({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
+    const wrappedSourceNode = this._sourceNodeWrapperFactory.make<S, D>({ sourceNodeTypePath, sourceNodeInstancePath, value: sourceNode, key: sourceNodeItemKey, matchingNodeOptions });
+    const wrappedRdoNode = this._rdoNodeWrapperFactory.make<S, D>({ value: rdoNode, key: rdoNodeItemKey, mutableNodeCache: this._mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions });
 
     return wrappedRdoNode;
   };

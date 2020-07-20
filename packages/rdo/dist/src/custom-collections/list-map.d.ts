@@ -5,12 +5,12 @@ import { IRdoNodeWrapper, ISyncableRDOKeyBasedCollection, MakeCollectionKeyMetho
  * @export
  * @class ListMap
  * @implements {ISyncableRDOKeyBasedCollection<S, D>}
- * @implements {Map<K, D>}
+ * @implements {Map<string | number, D>}
  * @template S
  * @template D
  * @description: A readonly, syncable, Map-Array collection hybrid, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
-export declare class ListMap<K extends string | number, S, D> implements ISyncableRDOKeyBasedCollection<K, S, D> {
+export declare class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
     private _map$;
     private indexByKeyMap;
     private _makeCollectionKey?;
@@ -19,34 +19,34 @@ export declare class ListMap<K extends string | number, S, D> implements ISyncab
     private _array$;
     get array$(): Array<D>;
     constructor({ makeCollectionKey, makeRdo, }?: {
-        makeCollectionKey?: MakeCollectionKeyMethod<K, S>;
+        makeCollectionKey?: MakeCollectionKeyMethod<S>;
         makeRdo?: (sourceNode: S) => D;
     });
-    forEach(callbackfn: (value: D, key: K, map: Map<K, D>) => void, thisArg?: any): void;
-    get(key: K): D | undefined;
-    has(key: K): boolean;
-    entries(): IterableIterator<[K, D]>;
-    keys(): IterableIterator<K>;
+    forEach(callbackfn: (value: D, key: string | number, map: Map<string | number, D>) => void, thisArg?: any): void;
+    get(key: string | number): D | undefined;
+    has(key: string | number): boolean;
+    entries(): IterableIterator<[string | number, D]>;
+    keys(): IterableIterator<string | number>;
     values(): IterableIterator<D>;
-    [Symbol.iterator](): IterableIterator<[K, D]>;
+    [Symbol.iterator](): IterableIterator<[string | number, D]>;
     [Symbol.toStringTag]: string;
     elements(): Iterable<D>;
     handleNewKey: ({ index, key, nextRdo }: {
         index?: number | undefined;
-        key: K;
+        key: string | number;
         nextRdo: any;
     }) => boolean;
     handleReplaceKey: ({ index, key, lastRdo, nextRdo }: {
         index?: number | undefined;
-        key: K;
+        key: string | number;
         lastRdo: any;
         nextRdo: any;
     }) => boolean;
     handleDeleteKey: ({ index, key, lastRdo }: {
         index?: number | undefined;
-        key: K;
+        key: string | number;
         lastRdo: any;
     }) => boolean;
-    tryMakeCollectionKey(item: S, index: number): K | undefined;
-    makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>): D | undefined;
+    tryMakeCollectionKey(item: S, index: number): string | number | undefined;
+    makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
 }

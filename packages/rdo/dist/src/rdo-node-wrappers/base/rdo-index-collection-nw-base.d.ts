@@ -9,18 +9,18 @@ export declare type RdoIndexCollectionNWBaseViews<S, D> = {
     keyByIndexMap: Map<number, string | number>;
     rdoByIndexMap: Map<number, D>;
 };
-export declare abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<number, S, D> {
+export declare abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<S, D> {
     constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
         key: number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode;
-        matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+        matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
     protected get views(): RdoIndexCollectionNWBaseViews<S, D>;
@@ -29,7 +29,7 @@ export declare abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollecti
     getSourceNodeItem(key: number): S;
     getRdoNodeItem(key: number): D | undefined;
     /** */
-    protected abstract onNewIndex: NodeAddHandler<number>;
-    protected abstract onReplaceIndex: NodeReplaceHandler<number>;
-    protected abstract onDeleteIndex: NodeDeleteHandler<number>;
+    protected abstract onNewIndex: NodeAddHandler;
+    protected abstract onReplaceIndex: NodeReplaceHandler;
+    protected abstract onDeleteIndex: NodeDeleteHandler;
 }

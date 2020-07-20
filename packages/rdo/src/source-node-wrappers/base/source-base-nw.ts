@@ -1,14 +1,14 @@
 import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
-export abstract class SourceBaseNW<K extends string | number, S, D> implements ISourceNodeWrapper<K, S, D> {
-  private _key: K | undefined;
+export abstract class SourceBaseNW<S, D> implements ISourceNodeWrapper<S, D> {
+  private _key: string | number | undefined;
   private _typeInfo: NodeTypeInfo;
   private _sourceNodeTypePath: string;
   private _sourceNodeInstancePath: string;
-  private _matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+  private _matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
-  private _wrappedRdoNode: IRdoNodeWrapper<K, S, any> | undefined;
+  private _wrappedRdoNode: IRdoNodeWrapper<S, any> | undefined;
 
   constructor({
     sourceNodeTypePath,
@@ -20,9 +20,9 @@ export abstract class SourceBaseNW<K extends string | number, S, D> implements I
   }: {
     sourceNodeTypePath: string;
     sourceNodeInstancePath: string;
-    key: K | undefined;
+    key: string | number | undefined;
     typeInfo: NodeTypeInfo;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     this._typeInfo = typeInfo;
@@ -53,7 +53,7 @@ export abstract class SourceBaseNW<K extends string | number, S, D> implements I
     return this._sourceNodeInstancePath;
   }
 
-  public get matchingNodeOptions(): INodeSyncOptions<any, any, any> | undefined {
+  public get matchingNodeOptions(): INodeSyncOptions<any, any> | undefined {
     return this._matchingNodeOptions;
   }
 
@@ -65,7 +65,7 @@ export abstract class SourceBaseNW<K extends string | number, S, D> implements I
     return this._wrappedRdoNode;
   }
 
-  public setRdoNode(rdoNode: IRdoNodeWrapper<K, S, any>) {
+  public setRdoNode(rdoNode: IRdoNodeWrapper<S, any>) {
     this._wrappedRdoNode = rdoNode;
   }
 

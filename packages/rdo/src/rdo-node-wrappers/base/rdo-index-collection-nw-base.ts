@@ -9,7 +9,7 @@ import { RdoCollectionNWBase } from './rdo-collection-nw-base';
 const logger = Logger.make('RdoCollectionNWBase');
 export type RdoIndexCollectionNWBaseViews<S, D> = { sourceArray: Array<S>; keyByIndexMap: Map<number, string | number>; rdoByIndexMap: Map<number, D> };
 
-export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<number, S, D> {
+export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<S, D> {
   constructor({
     typeInfo,
     key,
@@ -26,13 +26,13 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
     typeInfo: NodeTypeInfo;
     key: number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -57,7 +57,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
     //
     // Setup
     let changed = false;
-    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<number, S, D>;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<S, D>;
 
     const last = {
       sourceArray: this.views.sourceArray,
@@ -164,7 +164,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
   }
 
   /** */
-  protected abstract onNewIndex: NodeAddHandler<number>;
-  protected abstract onReplaceIndex: NodeReplaceHandler<number>;
-  protected abstract onDeleteIndex: NodeDeleteHandler<number>;
+  protected abstract onNewIndex: NodeAddHandler;
+  protected abstract onReplaceIndex: NodeReplaceHandler;
+  protected abstract onDeleteIndex: NodeDeleteHandler;
 }

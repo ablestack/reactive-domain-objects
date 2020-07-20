@@ -3,7 +3,7 @@ export declare class NodeTracker {
     static readonly nodePathSeperator = "/";
     private _sourceNodeInstancePathStack;
     private _sourceNodeTypePathStack;
-    pushSourceNodeInstancePathOntoStack<K extends string | number>(key: K, sourceNodeKind: InternalNodeKind): void;
+    pushSourceNodeInstancePathOntoStack(key: string | number, sourceNodeKind: InternalNodeKind): void;
     popSourceNodeInstancePathFromStack(sourceNodeKind: InternalNodeKind): void;
     private _sourceNodeInstancePath;
     getSourceNodeInstancePath(): string;

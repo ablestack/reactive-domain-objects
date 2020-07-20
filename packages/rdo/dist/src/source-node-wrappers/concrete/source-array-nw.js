@@ -16,7 +16,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     //   if (!this._mapOfIndexByKey) this.initializeMaps();
     //   return this._mapOfIndexByKey!;
     // }
-    // private _mapOfIndexByKey: Map<K, number> | undefined;
+    // private _mapOfIndexByKey: Map<number> | undefined;
     // /**
     //  *
     //  *
@@ -28,7 +28,7 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     //   if (!this._mapOfElementByKey) this.initializeMaps();
     //   return this._mapOfElementByKey!;
     // }
-    // private _mapOfElementByKey: Map<K, S> | undefined;
+    // private _mapOfElementByKey: Map<string | number, S> | undefined;
     constructor({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }) {
         super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
         //------------------------------
@@ -64,8 +64,8 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
     // // Private
     // //------------------------------
     // private initializeMaps() {
-    //   this._mapOfElementByKey = new Map<K, S>();
-    //   this._mapOfIndexByKey = new Map<K, number>();
+    //   this._mapOfElementByKey = new Map<string | number, S>();
+    //   this._mapOfIndexByKey = new Map<number>();
     //   for (let i = 0; i < this.value.length; i++) {
     //     const newElementKey = this.makeCollectionKey(this.value[i], i);
     //     if (!this._mapOfElementByKey.has(newElementKey)) {

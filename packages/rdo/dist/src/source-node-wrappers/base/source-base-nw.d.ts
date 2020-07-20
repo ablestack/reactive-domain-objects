@@ -1,5 +1,5 @@
 import { ISourceNodeWrapper, NodeTypeInfo, INodeSyncOptions, IGlobalNodeOptions, IRdoNodeWrapper } from '../..';
-export declare abstract class SourceBaseNW<K extends string | number, S, D> implements ISourceNodeWrapper<K, S, D> {
+export declare abstract class SourceBaseNW<S, D> implements ISourceNodeWrapper<S, D> {
     private _key;
     private _typeInfo;
     private _sourceNodeTypePath;
@@ -10,19 +10,19 @@ export declare abstract class SourceBaseNW<K extends string | number, S, D> impl
     constructor({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions, }: {
         sourceNodeTypePath: string;
         sourceNodeInstancePath: string;
-        key: K | undefined;
+        key: string | number | undefined;
         typeInfo: NodeTypeInfo;
-        matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+        matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
     });
     get typeInfo(): NodeTypeInfo;
-    get key(): K | undefined;
+    get key(): string | number | undefined;
     get sourceNodeTypePath(): string;
     get sourceNodeInstancePath(): string;
-    get matchingNodeOptions(): INodeSyncOptions<any, any, any> | undefined;
+    get matchingNodeOptions(): INodeSyncOptions<any, any> | undefined;
     get globalNodeOptions(): IGlobalNodeOptions | undefined;
-    get wrappedRdoNode(): IRdoNodeWrapper<K, S, any> | undefined;
-    setRdoNode(rdoNode: IRdoNodeWrapper<K, S, any>): void;
+    get wrappedRdoNode(): IRdoNodeWrapper<S, any> | undefined;
+    setRdoNode(rdoNode: IRdoNodeWrapper<S, any>): void;
     abstract childElementCount(): number;
     abstract get value(): any;
 }

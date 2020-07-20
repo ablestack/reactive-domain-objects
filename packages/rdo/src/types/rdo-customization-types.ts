@@ -2,11 +2,11 @@
 // RDO - SYNC CUSTOMIZATION INTERFACES TYPES
 //-------------------------------------------------------
 
-export interface IHasCustomRdoFieldNames<K extends string> {
-  tryGetRdoFieldname: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
+export interface IHasCustomRdoFieldNames {
+  tryGetRdoFieldname: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: string | number; sourceFieldVal: any }) => string | undefined;
 }
 
-export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames<any> {
+export function IsIHasCustomRdoFieldNames(o: any): o is IHasCustomRdoFieldNames {
   return o && o.tryGetRdoFieldname && typeof o.tryGetRdoFieldname === 'function';
 }
 
@@ -18,8 +18,8 @@ export function IsICustomSync(o: any): o is ICustomSync<any> {
   return o && o.synchronizeState && typeof o.synchronizeState === 'function';
 }
 
-export type IContinueSmartSync = <K extends string | number, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
-export type SmartSyncProps<K, S, D> = { sourceNodeSubPath?: string; sourceNode: S; sourceNodeItemKey: K; rdoNode: D; rdoNodeItemKey: K };
+export type IContinueSmartSync = <S, D>(smartSyncProps: SmartSyncProps<S, D>) => boolean;
+export type SmartSyncProps<S, D> = { sourceNodeSubPath?: string; sourceNode: S; sourceNodeItemKey: string | number; rdoNode: D; rdoNodeItemKey: string | number };
 
 export interface ICustomEqualityRDO<S> {
   isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;

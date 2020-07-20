@@ -91,7 +91,7 @@ export class LibraryRDO {
     this._capacity = value;
   }
 
-  public authors: ListMap<string, Author, AuthorRDO> = new ListMap({
+  public authors: ListMap<Author, AuthorRDO> = new ListMap({
     makeCollectionKey: (author: Author) => author.id,
     makeRdo: (book: Author) => new AuthorRDO(),
   });

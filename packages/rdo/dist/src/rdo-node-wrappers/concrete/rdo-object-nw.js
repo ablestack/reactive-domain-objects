@@ -126,7 +126,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         // Loop properties
         for (const sourceFieldname of wrappedSourceNode.getNodeKeys()) {
             const sourceFieldVal = wrappedSourceNode.getNodeItem(sourceFieldname);
-            let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
+            let rdoFieldname = this.getFieldname({ sourceFieldname: sourceFieldname, sourceFieldVal });
             let rdoNodeItemValue;
             if (rdoFieldname) {
                 rdoNodeItemValue = this.value[rdoFieldname];

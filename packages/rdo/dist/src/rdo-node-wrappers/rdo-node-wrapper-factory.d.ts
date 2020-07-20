@@ -13,16 +13,16 @@ export declare class RdoNodeWrapperFactory {
         eventEmitter: EventEmitter<NodeChange>;
         syncChildNode: ISyncChildNode;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         wrapRdoNode: IWrapRdoNode;
         defaultEqualityComparer: IEqualityComparer;
     });
-    make<K extends string | number, S, D>({ value, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
-        value: RdoNodeTypes<K, S, D> | undefined;
-        key: K | undefined;
+    make<S, D>({ value, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, matchingNodeOptions, }: {
+        value: RdoNodeTypes<S, D> | undefined;
+        key: string | number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any, any> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
-        matchingNodeOptions?: INodeSyncOptions<any, any, any> | undefined;
-    }): IRdoNodeWrapper<K, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<any, any> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
+        matchingNodeOptions?: INodeSyncOptions<any, any> | undefined;
+    }): IRdoNodeWrapper<S, D>;
 }

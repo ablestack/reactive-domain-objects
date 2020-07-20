@@ -45,29 +45,24 @@ class RdoNodeWrapperFactory {
                 throw new Error(`Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers. Key:${key}. SourceNodePath:${wrappedSourceNode.sourceNodeTypePath}`);
             }
             case '[object Object]': {
-                if (typeof key === 'string' || typeof key === 'undefined') {
-                    logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-                    const wrappedSourceNodeTyped = wrappedSourceNode;
-                    const o = new _1.RdoObjectNW({
-                        value,
-                        key,
-                        mutableNodeCache,
-                        wrappedParentRdoNode,
-                        wrappedSourceNode: wrappedSourceNodeTyped,
-                        typeInfo,
-                        defaultEqualityComparer: this._defaultEqualityComparer,
-                        syncChildNode: this._syncChildNode,
-                        wrapRdoNode: this._wrapRdoNode,
-                        matchingNodeOptions,
-                        globalNodeOptions: this._globalNodeOptions,
-                        targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-                        eventEmitter: this._eventEmitter,
-                    });
-                    return o;
-                }
-                else {
-                    throw new Error(`Key for SourceObjects must be of type string (or undefined in the case of the root element). Found key of type ${typeof key}`);
-                }
+                logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
+                const wrappedSourceNodeTyped = wrappedSourceNode;
+                const o = new _1.RdoObjectNW({
+                    value,
+                    key,
+                    mutableNodeCache,
+                    wrappedParentRdoNode,
+                    wrappedSourceNode: wrappedSourceNodeTyped,
+                    typeInfo,
+                    defaultEqualityComparer: this._defaultEqualityComparer,
+                    syncChildNode: this._syncChildNode,
+                    wrapRdoNode: this._wrapRdoNode,
+                    matchingNodeOptions,
+                    globalNodeOptions: this._globalNodeOptions,
+                    targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+                    eventEmitter: this._eventEmitter,
+                });
+                return o;
             }
             case '[object Array]': {
                 logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);

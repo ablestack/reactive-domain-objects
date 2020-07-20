@@ -1,7 +1,7 @@
 import { ISourceObjectNodeWrapper, NodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
 
-export class SourceObjectNW<K extends string, S extends Record<K, any>, D> extends SourceBaseNW<K, S, D> implements ISourceObjectNodeWrapper<S, D> {
+export class SourceObjectNW<S extends Record<string | number, any>, D> extends SourceBaseNW<S, D> implements ISourceObjectNodeWrapper<S, D> {
   private _value: S | null | undefined;
 
   constructor({
@@ -16,9 +16,9 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
     value: S | null | undefined;
     sourceNodeTypePath: string;
     sourceNodeInstancePath: string;
-    key: K | undefined;
+    key: string | number | undefined;
     typeInfo: NodeTypeInfo;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
   }) {
     super({ sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions });
@@ -42,11 +42,11 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
   //------------------------------
 
   //@ts-ignore
-  public getNodeKeys(): K[] {
-    return ((this._value && Object.keys(this._value)) || []) as K[];
+  public getNodeKeys(): (string | number)[] {
+    return ((this._value && Object.keys(this._value)) || []) as (string | number)[];
   }
 
-  public getNodeItem(key: K) {
+  public getNodeItem(key: string | number) {
     return this._value && this._value[key];
   }
 }

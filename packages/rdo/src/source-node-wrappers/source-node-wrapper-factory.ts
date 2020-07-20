@@ -11,7 +11,7 @@ export class SourceNodeWrapperFactory {
     this._globalNodeOptions = globalNodeOptions;
   }
 
-  public make<K extends string | number, S, D>({
+  public make<S, D>({
     sourceNodeTypePath,
     sourceNodeInstancePath,
     value,
@@ -21,21 +21,21 @@ export class SourceNodeWrapperFactory {
     sourceNodeTypePath: string;
     sourceNodeInstancePath: string;
     value: any;
-    key: K | undefined; // Key should only even be undefined on root object
-    matchingNodeOptions?: INodeSyncOptions<K, S, D> | undefined;
-  }): ISourceNodeWrapper<K, S, D> {
+    key: string | number | undefined; // Key should only even be undefined on root object
+    matchingNodeOptions?: INodeSyncOptions<S, D> | undefined;
+  }): ISourceNodeWrapper<S, D> {
     const typeInfo = NodeTypeUtils.getNodeType(value);
 
     switch (typeInfo.kind) {
       case 'Primitive': {
-        return new SourcePrimitiveNW<K, S, D>({ value, key, sourceNodeTypePath, sourceNodeInstancePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new SourcePrimitiveNW<S, D>({ value, key, sourceNodeTypePath, sourceNodeInstancePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
       }
       case 'Object': {
-        const o = new SourceObjectNW<K, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
-        return (o as unknown) as ISourceNodeWrapper<K, S, D>;
+        const o = new SourceObjectNW<S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return (o as unknown) as ISourceNodeWrapper<S, D>;
       }
       case 'Collection': {
-        return new SourceArrayNW<K, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return new SourceArrayNW<S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
       }
       default: {
         throw new Error(`Unable to make IRdoInternalNodeWrapper for type: ${typeInfo.stringifiedType}`);

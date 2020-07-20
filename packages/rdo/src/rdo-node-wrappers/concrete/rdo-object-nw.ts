@@ -26,7 +26,7 @@ import { NodeTracker } from '../../infrastructure/node-tracker';
 const logger = Logger.make('RdoObjectNW');
 type MutableCachedNodeItemType<S> = { sourceData: S | null | undefined };
 
-export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string | number, S, D> {
+export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<S, D> {
   private _value: D;
   private _equalityComparer: IEqualityComparer;
   private _wrapRdoNode: IWrapRdoNode;
@@ -50,14 +50,14 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     typeInfo: NodeTypeInfo;
     key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
     wrapRdoNode: IWrapRdoNode;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -175,7 +175,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     // Loop properties
     for (const sourceFieldname of wrappedSourceNode.getNodeKeys()) {
       const sourceFieldVal = wrappedSourceNode.getNodeItem(sourceFieldname);
-      let rdoFieldname = this.getFieldname({ sourceFieldname, sourceFieldVal });
+      let rdoFieldname = this.getFieldname({ sourceFieldname: sourceFieldname as string, sourceFieldVal });
 
       let rdoNodeItemValue: any;
       if (rdoFieldname) {

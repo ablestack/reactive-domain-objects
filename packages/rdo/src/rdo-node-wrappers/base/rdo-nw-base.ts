@@ -7,15 +7,15 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
 const logger = Logger.make('RdoMapNW');
 
-export abstract class RdoNWBase<K extends string | number, S, D> implements IRdoNodeWrapper<K, S, D> {
+export abstract class RdoNWBase<S, D> implements IRdoNodeWrapper<S, D> {
   private _typeInfo: NodeTypeInfo;
-  private _key: K | undefined;
+  private _key: string | number | undefined;
   private _mutableNodeCache: MutableNodeCache;
-  private _parent: IRdoInternalNodeWrapper<any, S, D> | undefined;
-  private _wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
-  private _matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+  private _parent: IRdoInternalNodeWrapper<S, D> | undefined;
+  private _wrappedSourceNode: ISourceNodeWrapper<S, D>;
+  private _matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
-  private _targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
+  private _targetedOptionMatchersArray: Array<INodeSyncOptions<S, D>>;
   private _eventEmitter: EventEmitter<NodeChange>;
 
   constructor({
@@ -30,13 +30,13 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
-    matchingNodeOptions: INodeSyncOptions<K, S, D> | undefined;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
+    matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<K, S, D>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<S, D>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     this._typeInfo = typeInfo;
@@ -83,7 +83,7 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
     return this._typeInfo;
   }
 
-  public get wrappedSourceNode(): ISourceNodeWrapper<K, S, D> {
+  public get wrappedSourceNode(): ISourceNodeWrapper<S, D> {
     return this._wrappedSourceNode;
   }
 
@@ -91,8 +91,8 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
     return this._globalNodeOptions;
   }
 
-  private _nodeOptions: INodeSyncOptions<K, S, D> | undefined | null;
-  public getNodeOptions(): INodeSyncOptions<K, S, D> | null {
+  private _nodeOptions: INodeSyncOptions<S, D> | undefined | null;
+  public getNodeOptions(): INodeSyncOptions<S, D> | null {
     if (this._nodeOptions === undefined) {
       // Look for node options from path match
       if (this._matchingNodeOptions) {
@@ -129,5 +129,5 @@ export abstract class RdoNWBase<K extends string | number, S, D> implements IRdo
   public abstract smartSync();
   public abstract childElementCount();
   public abstract getSourceNodeKeys();
-  public abstract getSourceNodeItem(key: K);
+  public abstract getSourceNodeItem(key: string | number);
 }

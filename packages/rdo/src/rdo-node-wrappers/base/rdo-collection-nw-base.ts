@@ -8,7 +8,7 @@ import { RdoInternalNWBase } from './rdo-internal-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
 
-export abstract class RdoCollectionNWBase<K extends string | number, S, D> extends RdoInternalNWBase<K, S, D> implements IRdoCollectionNodeWrapper<K, S, D> {
+export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> implements IRdoCollectionNodeWrapper<S, D> {
   private _equalityComparer: IEqualityComparer;
 
   constructor({
@@ -25,15 +25,15 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -48,7 +48,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   /** */
-  protected handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }: { index: number; collectionKey: K; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler<K> }) {
+  protected handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }: { index: number; collectionKey: string | number; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler }) {
     const changed = addHandler({ index, key: collectionKey, nextRdo: newRdo });
 
     if (changed) {
@@ -83,12 +83,12 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     previousSourceElement,
   }: {
     index: number;
-    collectionKey: K;
+    collectionKey: string | number;
     lastElementKey: string | number;
     nextElementKey: string | number;
     lastRdo: any;
     newSourceElement: S;
-    replaceHandler: NodeReplaceHandler<K>;
+    replaceHandler: NodeReplaceHandler;
     previousSourceElement: S;
   }) {
     let changed = false;
@@ -138,7 +138,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   /** */
-  protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { index?: number; collectionKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler<K> }) {
+  protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { index?: number; collectionKey: string | number; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler }) {
     const changed = deleteHandler({ index, key: collectionKey, lastRdo: rdoToDelete });
 
     // Publish

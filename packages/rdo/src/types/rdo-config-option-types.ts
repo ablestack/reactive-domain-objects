@@ -6,21 +6,21 @@ import { IEqualityComparer, IMakeRdo, MakeCollectionKeyMethod } from '.';
 //  GRAPH SYNCHRONIZER CONFIG OPTION TYPES
 //---------------------------------------------
 
-export interface IGraphSynchronizer<K extends string = string> {
-  smartSync<S extends Record<K, any>, D extends Record<K, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D });
+export interface IGraphSynchronizer {
+  smartSync<S extends Record<string | number, any>, D extends Record<string | number, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D });
 }
 
 export interface IGraphSyncOptions {
   customEqualityComparer?: IEqualityComparer; //customEqualityComparer is apolloComparer
   globalNodeOptions?: IGlobalNodeOptions;
-  targetedNodeOptions?: Array<INodeSyncOptions<any, any, any>>;
+  targetedNodeOptions?: Array<INodeSyncOptions<any, any>>;
 }
 
 export type autoMakeRdoAsTypes = 'plain-object-literals' | 'mobx-observable-object-literals';
 export interface IGlobalNodeOptions {
   commonRdoFieldnamePostfix?: string;
-  tryGetRdoFieldname?: <K extends string | number>({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: K; sourceFieldVal: any }) => K | undefined;
-  makeRdo?: IMakeRdo<any, any, any>['makeRdo'];
+  tryGetRdoFieldname?: ({ sourceNodeTypePath, sourceFieldname, sourceFieldVal }: { sourceNodeTypePath: string; sourceFieldname: string | number; sourceFieldVal: any }) => string | undefined;
+  makeRdo?: IMakeRdo<any, any>['makeRdo'];
   autoMakeRdoTypes?: {
     objectFields: boolean;
     collectionElements: boolean;
@@ -28,14 +28,14 @@ export interface IGlobalNodeOptions {
   };
 }
 
-export interface INodeSyncOptions<K extends string | number, S, D> {
+export interface INodeSyncOptions<S, D> {
   sourceNodeMatcher: INodeSelector<S>;
   ignore?: boolean;
   makeRdoCollectionKey?: {
-    fromSourceElement: MakeCollectionKeyMethod<K, S>;
-    fromRdoElement: MakeCollectionKeyMethod<K, D>;
+    fromSourceElement: MakeCollectionKeyMethod<S>;
+    fromRdoElement: MakeCollectionKeyMethod<D>;
   };
-  makeRdo?: IMakeRdo<K, S, D>['makeRdo'];
+  makeRdo?: IMakeRdo<S, D>['makeRdo'];
 }
 
 export interface INodeSelector<S> {

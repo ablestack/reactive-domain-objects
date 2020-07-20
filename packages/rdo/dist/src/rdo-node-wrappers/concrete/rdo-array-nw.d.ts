@@ -10,13 +10,13 @@ export declare class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<S, D> {
         typeInfo: NodeTypeInfo;
         key: number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<S, D>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode;
-        matchingNodeOptions: INodeSyncOptions<number, S, D> | undefined;
+        matchingNodeOptions: INodeSyncOptions<S, D> | undefined;
         globalNodeOptions: IGlobalNodeOptions | undefined;
-        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+        targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
     get isLeafNode(): boolean;
@@ -25,18 +25,18 @@ export declare class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<S, D> {
     childElementCount(): number;
     protected onNewIndex: ({ index, key, nextRdo }: {
         index?: number | undefined;
-        key: number;
+        key: number | string;
         nextRdo: any;
     }) => boolean;
     protected onReplaceIndex: ({ index, key, lastRdo, nextRdo }: {
         index?: number | undefined;
-        key: number;
+        key: number | string;
         lastRdo: any;
         nextRdo: any;
     }) => boolean;
     protected onDeleteIndex: ({ index, key, lastRdo }: {
         index?: number | undefined;
-        key: number;
+        key: number | string;
         lastRdo: any;
     }) => boolean;
 }

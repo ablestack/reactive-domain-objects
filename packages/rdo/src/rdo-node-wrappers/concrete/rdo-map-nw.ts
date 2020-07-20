@@ -7,8 +7,8 @@ import { RdoKeyCollectionNWBase } from '../base/rdo-key-based-collection-nw-base
 
 const logger = Logger.make('RdoMapNW');
 
-export class RdoMapNW<K extends string | number, S, D> extends RdoKeyCollectionNWBase<K, S, D> {
-  private _value: Map<K, D>;
+export class RdoMapNW<S, D> extends RdoKeyCollectionNWBase<S, D> {
+  private _value: Map<string | number, D>;
 
   constructor({
     value,
@@ -24,17 +24,17 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoKeyCollectionN
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: Map<K, D>;
+    value: Map<string | number, D>;
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
+    matchingNodeOptions: INodeSyncOptions<any, any> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
-    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
+    targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
     super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
@@ -66,17 +66,17 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoKeyCollectionN
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onNewKey = ({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any }) => {
+  protected onNewKey = ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }) => {
     this.value.set(key, nextRdo);
     return true;
   };
 
-  protected onReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any }) => {
+  protected onReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }) => {
     this.value.set(key, nextRdo);
     return true;
   };
 
-  protected onDeleteKey = ({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any }) => {
+  protected onDeleteKey = ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }) => {
     this.value.delete(key);
     return true;
   };
