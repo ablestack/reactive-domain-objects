@@ -27,8 +27,6 @@ test('Simple usage demo with notes', () => {
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: fooWithNotesRDO, rootSourceNode: fooWithNotesSourceJSON });
 
-  console.log('fooWithNotesRDO', fooWithNotesRDO);
-
   // RESULTS VERIFICATION
   expect(fooWithNotesRDO.arrayOfBar.length).toEqual(fooWithNotesSourceJSON.arrayOfBar.length);
   expect(fooWithNotesRDO.arrayOfBar[0].id).toEqual(fooWithNotesSourceJSON.arrayOfBar[0].id);

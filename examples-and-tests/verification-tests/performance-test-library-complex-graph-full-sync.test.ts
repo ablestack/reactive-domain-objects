@@ -45,7 +45,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   // SETUP
   const iterations = FULL_SYNC_ITERATION_COUNT;
   const fieldChangeCounter = new Map<string, number>();
-  const targetSourceInstancePath = 'authors/author-ss/books/book-ss-8';
+  const targetSourceInstancePath = 'authors/author-ss/books/8';
   const targetSourceKey = 'pages';
 
   const testArray: { libraryRdo: LibraryRDO; graphSynchronizer: GraphSynchronizer }[] = [];
@@ -84,7 +84,6 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   expect(totalTimeMs).toBeLessThan(FULL_SYNC_MAX_TIME_MS);
 
   // Verify changes were made as expected (indicating the full sync did actually occur)
-  console.log('fieldChangeCounter', fieldChangeCounter);
   expect(fieldChangeCounter.get(targetSourceKey)).toEqual(iterations);
   expect(testArray[iterations - 1].libraryRdo.authors.array$[2].books[8].pages$).toEqual(librarySourceJSON.authors[2].books[8].pages);
 });

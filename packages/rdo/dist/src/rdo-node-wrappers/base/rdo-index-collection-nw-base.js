@@ -75,7 +75,10 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
                     // Handle
                     const lastElementKey = last.keyByIndexMap.get(i);
                     const result = this.handleReplaceOrUpdate({
-                        replaceHandler: this.onReplaceIndex,
+                        replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
+                            this.views.rdoByIndexMap.set(i, nextRdo);
+                            return this.onReplaceIndex({ index, key, lastRdo, nextRdo });
+                        },
                         index,
                         collectionKey: i,
                         lastElementKey,

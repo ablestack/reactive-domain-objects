@@ -33,14 +33,12 @@ const config: IGraphSyncOptions = {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test.only('Synchronize collection additions', () => {
+test('Synchronize collection additions', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
-
-  console.log('Synchronize collection additions - A', allCollectionTypesRDO);
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
@@ -52,7 +50,7 @@ test.only('Synchronize collection additions', () => {
   expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
   // Make sure array of objects duplicate item has synced contents (added due to found bug)
-  expect(allCollectionTypesRDO.arrayOfObjects[2].id).toEqual(2);
+  expect(allCollectionTypesRDO.arrayOfObjects[2].id).toEqual('2');
 
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
@@ -66,8 +64,6 @@ test.only('Synchronize collection additions', () => {
 
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
-
-  console.log('Synchronize collection additions - B', allCollectionTypesRDO);
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(5);
@@ -88,8 +84,6 @@ test('Synchronize collection removals', () => {
 
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
-
-  console.log('Synchronize collection removals', allCollectionTypesRDO);
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
@@ -195,6 +189,8 @@ test('Synchronize collection element edit', () => {
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
 
+  console.log('allCollectionTypesRDO.arrayOfObjects', allCollectionTypesRDO.arrayOfObjects);
+
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 4)).toEqual(4);
   expect(allCollectionTypesRDO.mapOfNumbers.get(4)).toEqual(4);
@@ -242,8 +238,6 @@ test('Synchronize collection element - handle null value edits', () => {
 
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
-
-  console.log(allCollectionTypesRDO.mapOfNumbers);
 
   expect(allCollectionTypesRDO.arrayOfNumbers.find((item) => item === 2)).toEqual(2);
   expect(allCollectionTypesRDO.mapOfNumbers.get(2)).toEqual(2);

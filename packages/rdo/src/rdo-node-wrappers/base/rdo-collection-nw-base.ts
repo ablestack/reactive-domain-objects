@@ -92,14 +92,20 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     previousSourceElement: S;
   }) {
     let changed = false;
+    const isPrimitive = NodeTypeUtils.isPrimitive(newSourceElement);
 
     // ---------------------------
     // REPLACE
     // ---------------------------
     // If non-equal primitive with same indexes, just do a replace operation
-    if (lastElementKey !== nextElementKey || NodeTypeUtils.isPrimitive(newSourceElement)) {
+    if (lastElementKey !== nextElementKey || isPrimitive) {
       const nextRdo = this.makeRdoElement(newSourceElement);
       replaceHandler({ index, key: collectionKey, lastRdo, nextRdo });
+
+      // If not primitive, step into to sync
+      if (!isPrimitive) {
+        this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: collectionKey, sourceNodeItemKey: collectionKey });
+      }
 
       // Publish
       this.eventEmitter.publish('nodeChange', {

@@ -77,7 +77,10 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
                     this.views.rdoByKeyMap.set(elementKey, lastRdo);
                     // Handle
                     const result = this.handleReplaceOrUpdate({
-                        replaceHandler: this.onReplaceKey,
+                        replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
+                            this.views.rdoByKeyMap.set(key, lastRdo);
+                            return this.onReplaceKey({ index, key, lastRdo, nextRdo });
+                        },
                         index,
                         collectionKey: elementKey,
                         lastElementKey: elementKey,

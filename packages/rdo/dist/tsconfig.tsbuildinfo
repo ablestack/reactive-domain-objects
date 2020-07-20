@@ -772,7 +772,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "44650cde934d2f192ccac6bd3ca25e8532d5303765c750410d89d335b970450d",
+        "version": "cadd6bc71bd744a21433e7f2ef03a7fef8f4271062e4974bf93cf2d11900d371",
         "signature": "0b6899eecd2142ca2a91ba2c091dca0e0e37a7c04176369881f8e7a942fc883c",
         "affectsGlobalScope": false
       },
@@ -782,7 +782,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-index-collection-nw-base.ts": {
-        "version": "44ef56000c3d6bdfd4efab810db57a0141dd3fc45ed9a81d52db44bc55e8bef0",
+        "version": "c82b572b8838f166d0cd0db5a0171a87798ffab688572a7e73932a09e992adb8",
         "signature": "2d2a4d06ff2950812383b3678320583952ec3bfd5c6eb0e33e98105718cf5abb",
         "affectsGlobalScope": false
       },
@@ -857,7 +857,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.ts": {
-        "version": "38590681462c0d93afa399ce078d5dcbddcf48c9a98c96922cf9420abcf25e24",
+        "version": "f8163bfa43d25bb473c1a13532a4a1b4a35912a2d13cb4afb88ecc5ffc4d6f39",
         "signature": "de5719322a00d3e4ba13cb23b1dfa738957c56a301706af2c82d0a107547781f",
         "affectsGlobalScope": false
       },

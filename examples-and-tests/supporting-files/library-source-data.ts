@@ -47,7 +47,7 @@ export const librarySourceJSON: Library = {
     {
       id: 'author-ss',
       name: 'shari s',
-      age: 50,
+      age: 43,
       books: [
         { id: 'book-ss-0', title: 'book 0', pages: 200, publisher: { id: 'pub-1', name: 'super-books' }, __type: 'Book' },
         { id: 'book-ss-1', title: 'book 1', pages: 100, publisher: { id: 'pub-1', name: 'mega-books' }, __type: 'Book' },
