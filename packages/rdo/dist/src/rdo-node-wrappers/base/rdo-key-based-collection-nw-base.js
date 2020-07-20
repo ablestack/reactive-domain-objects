@@ -45,33 +45,38 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
             const index = i + indexOffset;
             const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
             // Update maps
-            this.views.sourceByKeyMap.set(elementKey, nextSourceElement);
-            if (this.views.rdoByKeyMap.has(elementKey))
+            if (this.views.sourceByKeyMap.has(elementKey))
                 continue; // If we have already seen the key, no need to add/update
+            this.views.sourceByKeyMap.set(elementKey, nextSourceElement);
             // ---------------------------
-            // New Index - ADD
+            // New key - ADD
             // ---------------------------
-            // If index is not in previous source array, but in new source array
+            // If rdo not in previous, add
             if (!last.rdoByKeyMap.has(elementKey)) {
                 // EXECUTE
                 const newRdo = this.makeRdoElement(nextSourceElement);
-                changed = this.handleAddElement({ addHandler: this.onNewKey, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // Tracking
                 this.views.rdoByKeyMap.set(elementKey, newRdo);
                 indexOffset++;
+                // Handle
+                changed = this.handleAddElement({ addHandler: this.onNewKey, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // If index is in previous source array
             }
             else {
-                const lastRdo = last.rdoByKeyMap.get(elementKey);
-                if (this.equalityComparer(lastRdo, nextSourceElement)) {
+                const lastSourceElement = last.sourceByKeyMap.get(elementKey);
+                if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
                     // No change, no patch needed
                 }
                 else {
                     // ---------------------------
                     // REPLACE or UPDATE
                     // ---------------------------
+                    // Tracking
+                    const lastRdo = last.rdoByKeyMap.get(elementKey);
+                    this.views.rdoByKeyMap.set(elementKey, lastRdo);
+                    // Handle
                     const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceKey, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
-                    // Update map
+                    // Add result in case element replaced
                     this.views.rdoByKeyMap.set(elementKey, result.nextRdo);
                 }
             }

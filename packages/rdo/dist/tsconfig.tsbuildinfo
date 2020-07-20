@@ -782,7 +782,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-index-collection-nw-base.ts": {
-        "version": "d7f3506a06fd611c1edf88f6c68147ab60926f8fc4d269bb826cd94e5cef1cd7",
+        "version": "80c6451f90b73c23dda7d75712dfe4b84d35450718fa03ad3044d60be0e6735b",
         "signature": "86e8b166dea853758da5fdce430c4c68caebede58009b7995375f6667be0be54",
         "affectsGlobalScope": false
       },
@@ -857,7 +857,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.ts": {
-        "version": "4c87d7ffc38662b7b29f93af817cd9ef4272eed18b32747d54015260364635b8",
+        "version": "690e2229a1409dcc32d67bdd8f60a52d6151660470fbbba7152df5bb8b7906fa",
         "signature": "719957ee3041b1870b5dff3700b69c827beec6c837f1a9986949b5cc209a2752",
         "affectsGlobalScope": false
       },

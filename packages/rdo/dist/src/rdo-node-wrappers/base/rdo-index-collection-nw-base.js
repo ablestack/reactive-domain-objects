@@ -47,25 +47,26 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
             const index = i + indexOffset;
             const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
             // Update maps
-            this.views.keyByIndexMap.set(i, elementKey);
             if (!this.views.indexByKeyMap.has(elementKey))
                 this.views.indexByKeyMap.set(elementKey, i);
+            this.views.keyByIndexMap.set(i, elementKey);
             // ---------------------------
             // New Index - ADD
             // ---------------------------
-            // If index is not in previous source array, but in new source array. (In new source array by virtue of the fact we are looping here in the first place)
-            if (!last.keyByIndexMap.has(i)) {
+            // If rdo not in previous, add
+            if (!last.rdoByIndexMap.has(i)) {
                 // EXECUTE
                 const newRdo = this.makeRdoElement(nextSourceElement);
-                changed = this.handleAddElement({ addHandler: this.onNewIndex, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // Tracking
                 this.views.rdoByIndexMap.set(i, newRdo);
                 indexOffset++;
+                // Handle
+                changed = this.handleAddElement({ addHandler: this.onNewIndex, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // If index is in previous source array
             }
             else {
-                const lastRdo = last.sourceArray[i];
-                if (this.equalityComparer(lastRdo, nextSourceElement)) {
+                const lastSourceElement = last.sourceArray[i];
+                if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
                     // No change, no patch needed. Just update map
                     this.views.rdoByIndexMap.set(i, last.rdoByIndexMap.get(index));
                 }
@@ -73,8 +74,12 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
                     // ---------------------------
                     // REPLACE or UPDATE
                     // ---------------------------
-                    const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceIndex, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
-                    // Update map
+                    // Tracking
+                    const lastRdo = last.rdoByIndexMap.get(i);
+                    this.views.rdoByIndexMap.set(i, lastRdo);
+                    // Handle
+                    const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceIndex, index, elementKey, lastRdo: lastSourceElement, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
+                    // Add result in case element replaced
                     this.views.rdoByIndexMap.set(i, result.nextRdo);
                 }
             }
@@ -88,6 +93,7 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
                 const previousSourceElement = last.sourceArray[i];
                 const elementKey = last.keyByIndexMap.get(i);
                 const rdoToDelete = last.rdoByIndexMap.get(i);
+                // Handle
                 changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, elementKey, rdoToDelete, previousSourceElement }) && changed;
             }
         }
@@ -103,13 +109,13 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
     }
     getSourceNodeItem(key) {
         const index = this.views.indexByKeyMap.get(key);
-        if (!index)
+        if (index === undefined)
             return;
         return this.views.sourceArray[index];
     }
     getRdoNodeItem(key) {
         const index = this.views.indexByKeyMap.get(key);
-        if (!index)
+        if (index === undefined)
             return;
         return this.views.rdoByIndexMap.get(index);
     }
