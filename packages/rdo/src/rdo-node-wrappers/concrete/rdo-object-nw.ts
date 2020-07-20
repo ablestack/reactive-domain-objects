@@ -135,7 +135,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     // Call lifecycle methods if found
     if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
 
-    // Update cache
+    // Update cache;
     previousSourceData.sourceData = sourceObject as S;
 
     return changed;

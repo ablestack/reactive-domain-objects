@@ -722,7 +722,7 @@
         "affectsGlobalScope": false
       },
       "../src/infrastructure/mutable-node-cache.ts": {
-        "version": "4488f8185493c14b14bd48da84f8e4edcc6a94bb28ccdeef25bd49f8380db3d5",
+        "version": "0054bc846df02d73cd7313ee7a04ad7d9408c0a64601538d7daf46c18ee174be",
         "signature": "82579850d495155c3e9c826044a26d8cf758714cb37ceb0bed0f470cc8b95a33",
         "affectsGlobalScope": false
       },
@@ -872,7 +872,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "da2c301bab2d6a63e999cb9dcbb94d86c0944c172ea160542c04ffb9a47b6981",
+        "version": "74519df8c143b2c0864c74a7b0ffb94ec0201b991f84ba61f15c27edaf8d303d",
         "signature": "70edb2bd5214e6065321d4e47092db9044da7a30946e3ca434708bbd236d7da7",
         "affectsGlobalScope": false
       },
@@ -982,7 +982,7 @@
         "affectsGlobalScope": false
       },
       "../src/graphsynchronizer.ts": {
-        "version": "4a63b35dde2699f9623877f7cf1c120d099242cd79d53febbbeabb65cbed3e96",
+        "version": "080fc2f52bbc861cc380cf0ccf81860ba253a3df65266ddeaf87adcc15156861",
         "signature": "455f5c21cde26998f93f250e411582bf29c68957dbf790449554a4fcb3ace381",
         "affectsGlobalScope": false
       },
@@ -2881,7 +2881,8 @@
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
-        "../node_modules/@types/node/util.d.ts"
+        "../node_modules/@types/node/util.d.ts",
+        "../src/infrastructure/logger.ts"
       ],
       "../src/infrastructure/node-tracker.ts": [
         "../node_modules/@types/graceful-fs/index.d.ts",

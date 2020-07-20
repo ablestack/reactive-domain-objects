@@ -1,3 +1,6 @@
+import { Logger } from './logger';
+
+const logger = Logger.make('MutableNodeCache');
 const defaultDataKey = 'default';
 
 export class MutableNodeCache {
@@ -8,6 +11,9 @@ export class MutableNodeCache {
     if (!dataItem) dataItem = new Map<string, any>();
     dataItem.set(dataKey, data);
     this._sourceMap.set(sourceNodeInstancePath, dataItem);
+
+    console.log(`MutableNodeCache - set(${sourceNodeInstancePath}, ${dataKey})`, dataItem);
+    //logger.trace('set', dataItem);
   }
 
   public get<T>({ sourceNodeInstancePath, dataKey = defaultDataKey }: { sourceNodeInstancePath: string; dataKey?: string }): T | undefined {

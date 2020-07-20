@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MutableNodeCache = void 0;
+const logger_1 = require("./logger");
+const logger = logger_1.Logger.make('MutableNodeCache');
 const defaultDataKey = 'default';
 class MutableNodeCache {
     constructor() {
@@ -12,6 +14,8 @@ class MutableNodeCache {
             dataItem = new Map();
         dataItem.set(dataKey, data);
         this._sourceMap.set(sourceNodeInstancePath, dataItem);
+        console.log(`MutableNodeCache - set(${sourceNodeInstancePath}, ${dataKey})`, dataItem);
+        //logger.trace('set', dataItem);
     }
     get({ sourceNodeInstancePath, dataKey = defaultDataKey }) {
         var _a;

@@ -90,7 +90,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         // Call lifecycle methods if found
         if (__2.IsIAfterSyncIfNeeded(rdo))
             rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
-        // Update cache
+        // Update cache;
         previousSourceData.sourceData = sourceObject;
         return changed;
     }

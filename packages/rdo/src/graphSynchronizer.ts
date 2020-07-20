@@ -143,11 +143,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   public syncChildNode: ISyncChildNode = ({ wrappedParentRdoNode, rdoNodeItemKey, sourceNodeItemKey }) => {
     logger.trace(`stepIntoChildNodeAndSync (${rdoNodeItemKey}) - enter`);
     let changed = false;
-    //const parentSourceNode = wrappedParentRdoNode.wrappedSourceNode;
-
-    // SETUP AND VALIDATION
-    // Node Type
-    //if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
 
     // RdoNode
     const rdoNodeItemValue = wrappedParentRdoNode.getRdoNodeItem(rdoNodeItemKey);
@@ -187,7 +182,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
     }
 
     // Node traversal tracking - step-out
-
     this._nodeTracker.popSourceNodeInstancePathFromStack(wrappedParentRdoNode.wrappedSourceNode.typeInfo.kind as InternalNodeKind);
 
     return changed;

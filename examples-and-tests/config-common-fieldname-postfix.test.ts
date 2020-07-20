@@ -27,56 +27,58 @@ const configA = {
 // --------------------------------------------------------------
 
 test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers, AND test that ignore option works', () => {
-  const targetedNodeOptionsTestRootRDO = new TargetedOptionsTestRootRDO();
+  const rdo = new TargetedOptionsTestRootRDO();
   const graphSynchronizer = new GraphSynchronizer(configA);
 
   // POSTURE VERIFICATION
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
+  expect(rdo.mapOfDefaultIdRDO.length).toBeFalsy();
+  expect(rdo.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // LOAD DATA
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootRdo: rdo, rootSourceNode: json });
 
   // RESULTS VERIFICATION STAGE 1
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultIdRDO[0].id);
+  expect(rdo.mapOfDefaultIdRDO.length).toEqual(json.mapOfDefaultIdRDO.length);
+  expect(rdo.mapOfDefaultIdRDO.values().next().value.id).toEqual(json.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefaultId$RDO[0].id);
+  expect(rdo.mapOfDefaultId$RDO.length).toEqual(json.mapOfDefaultId$RDO.length);
+  expect(rdo.mapOfDefaultId$RDO.values().next().value.id$).toEqual(json.mapOfDefaultId$RDO[0].id);
 
   // REMOVE ITEM & SYNC
-  const targetedNodeOptionsTestRootJSONWithEdits = _.cloneDeep(targetedNodeOptionsTestRootJSON);
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  let jsonWithEdits = _.cloneDeep(json);
+  jsonWithEdits.mapOfDefaultIdRDO.pop();
+  jsonWithEdits.mapOfDefaultId$RDO.pop();
+  graphSynchronizer.smartSync({ rootRdo: rdo, rootSourceNode: jsonWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
+  expect(rdo.mapOfDefaultIdRDO.length).toEqual(1);
+  expect(rdo.mapOfDefaultIdRDO.values().next().value.id).toEqual(jsonWithEdits.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
+  expect(rdo.mapOfDefaultId$RDO.length).toEqual(1);
+  expect(rdo.mapOfDefaultId$RDO.values().next().value.id$).toEqual(jsonWithEdits.mapOfDefaultId$RDO[0].id);
 
   // REMOVE ANOTHER ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.pop();
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.pop();
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  jsonWithEdits = _.cloneDeep(jsonWithEdits);
+  jsonWithEdits.mapOfDefaultIdRDO.pop();
+  jsonWithEdits.mapOfDefaultId$RDO.pop();
+  graphSynchronizer.smartSync({ rootRdo: rdo, rootSourceNode: jsonWithEdits });
 
   // RESULTS VERIFICATION STAGE 3
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
+  expect(rdo.mapOfDefaultIdRDO.length).toEqual(0);
+  expect(rdo.mapOfDefaultId$RDO.length).toEqual(0);
 
   // ADD ITEM & SYNC
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO.push({ id: '4A' });
-  targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO.push({ id: '4B' });
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSONWithEdits });
+  jsonWithEdits = _.cloneDeep(jsonWithEdits);
+  jsonWithEdits.mapOfDefaultIdRDO.push({ id: '4A' });
+  jsonWithEdits.mapOfDefaultId$RDO.push({ id: '4B' });
+  graphSynchronizer.smartSync({ rootRdo: rdo, rootSourceNode: jsonWithEdits });
 
   // RESULTS VERIFICATION STAGE 2
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.values().next().value.id).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultIdRDO[0].id);
+  expect(rdo.mapOfDefaultIdRDO.length).toEqual(1);
+  expect(rdo.mapOfDefaultIdRDO.values().next().value.id).toEqual(jsonWithEdits.mapOfDefaultIdRDO[0].id);
 
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(1);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSONWithEdits.mapOfDefaultId$RDO[0].id);
+  expect(rdo.mapOfDefaultId$RDO.length).toEqual(1);
+  expect(rdo.mapOfDefaultId$RDO.values().next().value.id$).toEqual(jsonWithEdits.mapOfDefaultId$RDO[0].id);
 });
 
 // --------------------------------------------------------------
@@ -108,14 +110,14 @@ test('commonRdoFieldnamePostfix works with DefaultSourceNodeKeyMakers', () => {
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toBeFalsy();
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: targetedNodeOptionsTestRootJSON });
+  graphSynchronizer.smartSync({ rootRdo: targetedNodeOptionsTestRootRDO, rootSourceNode: json });
 
   // RESULTS VERIFICATION
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultIdRDO.length).toEqual(0);
   expect(targetedNodeOptionsTestRootRDO.mapOfDefaultId$RDO.length).toEqual(0);
 
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.length).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO.length);
-  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.values().next().value.id$).toEqual(targetedNodeOptionsTestRootJSON.mapOfDefault_IdRDO[0].id);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.length).toEqual(json.mapOfDefault_IdRDO.length);
+  expect(targetedNodeOptionsTestRootRDO.mapOfDefault_IdRDO.values().next().value.id$).toEqual(json.mapOfDefault_IdRDO[0].id);
 });
 
 // --------------------------------------------------------------
@@ -129,7 +131,7 @@ export type PropNameTestRoot = { mapOfDefaultIdRDO: DefaultIdSourceObject[]; map
 
 //
 // Source Data
-export const targetedNodeOptionsTestRootJSON: PropNameTestRoot = {
+export const json: PropNameTestRoot = {
   mapOfDefaultIdRDO: [{ id: '1A' }, { id: '1B' }],
   mapOfDefaultId$RDO: [{ id: '2A' }, { id: '2B' }],
   mapOfDefault_IdRDO: [{ id: '3A' }, { id: '3B' }],
