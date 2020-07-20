@@ -51,6 +51,10 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
             if (item[__1.config.defaultIdKey]) {
                 return item[__1.config.defaultIdKey];
             }
+            // If item is primitive, use that as key
+            if (__1.NodeTypeUtils.isPrimitive(item)) {
+                return item;
+            }
             // If no key here, just use index
             return index;
         };

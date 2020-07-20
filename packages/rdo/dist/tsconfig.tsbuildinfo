@@ -737,7 +737,7 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-collection-types.ts": {
-        "version": "0e657b55db9176463839493f8708cae1c19bc8332fbe52de8b726ddfc457312d",
+        "version": "387cf05e7a00562cffdeedc4fc7435a8b9ce7f8c276eb804b4bf49c527b2784d",
         "signature": "7082d85a0ac352044ec36491122b7cca4181dabaa7f87d4b5671a94c72c21076",
         "affectsGlobalScope": false
       },
@@ -782,7 +782,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-index-collection-nw-base.ts": {
-        "version": "80c6451f90b73c23dda7d75712dfe4b84d35450718fa03ad3044d60be0e6735b",
+        "version": "ecbd4eb25c699c0e89d64beaed7a7127aecf72a77f1ab9e43594cd5e362f4f70",
         "signature": "86e8b166dea853758da5fdce430c4c68caebede58009b7995375f6667be0be54",
         "affectsGlobalScope": false
       },
@@ -857,7 +857,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.ts": {
-        "version": "690e2229a1409dcc32d67bdd8f60a52d6151660470fbbba7152df5bb8b7906fa",
+        "version": "e74b11821d39ca7808fe3254b4d4f6c7ed6758ced64af1b5f5bc88facdb1b3f4",
         "signature": "719957ee3041b1870b5dff3700b69c827beec6c837f1a9986949b5cc209a2752",
         "affectsGlobalScope": false
       },
@@ -917,7 +917,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-node-wrapper-factory.ts": {
-        "version": "f580b422bee1f611d89e3a480873e75ec7ea782eca51593d0a52c9e92ddf0fb3",
+        "version": "34df9a075fa991bad6e49286512fc69230f60e89a338cb3029d297333673891a",
         "signature": "c040dc1d5e4156b7ab3510f96cb877ad0fd06ad47d986eae254b5f95f862c085",
         "affectsGlobalScope": false
       },
@@ -932,7 +932,7 @@
         "affectsGlobalScope": false
       },
       "../src/source-node-wrappers/concrete/source-array-nw.ts": {
-        "version": "c7ca985326b50b400657cf6cd3614ece29f74282d2f532bed21d716e5800fd04",
+        "version": "2e3fdf62c0dca4b4b59cdb87a62ecfca91eb833d80a66296b4ac3209125ff5ef",
         "signature": "6bdbbcbeb4e6f2a8975567d045a3f2be944bc407d3c10716b66a6e62f7c50fce",
         "affectsGlobalScope": false
       },

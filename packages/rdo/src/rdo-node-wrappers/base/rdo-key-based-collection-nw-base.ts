@@ -73,7 +73,6 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
     let indexOffset = 0;
     for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
       // SETUP
-      const lastSourceElement = last.sourceArray[i];
       const nextSourceElement = this.views.sourceArray[i];
       const index = i + indexOffset;
       const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
@@ -99,15 +98,17 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
         // If index is in previous source array
       } else {
         const lastSourceElement = last.sourceByKeyMap.get(elementKey)!;
+        const lastRdo = last.rdoByKeyMap.get(elementKey);
         if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
-          // No change, no patch needed
+          // No change, no patch needed. Just update view
+          const lastRdo = last.rdoByKeyMap.get(elementKey);
+          this.views.rdoByKeyMap.set(elementKey, lastRdo!);
         } else {
           // ---------------------------
           // REPLACE or UPDATE
           // ---------------------------
 
           // Tracking
-          const lastRdo = last.rdoByKeyMap.get(elementKey);
           this.views.rdoByKeyMap.set(elementKey, lastRdo!);
 
           // Handle

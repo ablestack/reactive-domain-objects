@@ -59,24 +59,23 @@ export class RdoNodeWrapperFactory {
     const typeInfo = NodeTypeUtils.getNodeType(value);
 
     // Check if custom collection type
-    //TODO
-    // if (typeInfo.type === 'ISyncableKeyBasedCollection') {
-    //   logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-    //   return new RdoSyncableCollectionNW<K, S, D>({
-    //     value: value as ISyncableRDOKeyBasedCollection<K, S, D>,
-    //     typeInfo,
-    //     key,
-    //     mutableNodeCache,
-    //     wrappedParentRdoNode,
-    //     wrappedSourceNode,
-    //     syncChildNode: this._syncChildNode,
-    //     defaultEqualityComparer: this._defaultEqualityComparer,
-    //     matchingNodeOptions,
-    //     globalNodeOptions: this._globalNodeOptions,
-    //     targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-    //     eventEmitter: this._eventEmitter,
-    //   });
-    // }
+    if (typeInfo.type === 'ISyncableKeyBasedCollection') {
+      logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
+      return new RdoSyncableCollectionNW<K, S, D>({
+        value: value as ISyncableRDOKeyBasedCollection<K, S, D>,
+        typeInfo,
+        key,
+        mutableNodeCache,
+        wrappedParentRdoNode,
+        wrappedSourceNode,
+        syncChildNode: this._syncChildNode,
+        defaultEqualityComparer: this._defaultEqualityComparer,
+        matchingNodeOptions,
+        globalNodeOptions: this._globalNodeOptions,
+        targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+        eventEmitter: this._eventEmitter,
+      });
+    }
 
     // Else use built in stringified types to generate appropriate wrapper
     switch (typeInfo.stringifiedType) {

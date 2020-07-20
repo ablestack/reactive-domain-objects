@@ -40,7 +40,6 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
         let indexOffset = 0;
         for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
             // SETUP
-            const lastSourceElement = last.sourceArray[i];
             const nextSourceElement = this.views.sourceArray[i];
             const index = i + indexOffset;
             const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
@@ -64,15 +63,17 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
             }
             else {
                 const lastSourceElement = last.sourceByKeyMap.get(elementKey);
+                const lastRdo = last.rdoByKeyMap.get(elementKey);
                 if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
-                    // No change, no patch needed
+                    // No change, no patch needed. Just update view
+                    const lastRdo = last.rdoByKeyMap.get(elementKey);
+                    this.views.rdoByKeyMap.set(elementKey, lastRdo);
                 }
                 else {
                     // ---------------------------
                     // REPLACE or UPDATE
                     // ---------------------------
                     // Tracking
-                    const lastRdo = last.rdoByKeyMap.get(elementKey);
                     this.views.rdoByKeyMap.set(elementKey, lastRdo);
                     // Handle
                     const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceKey, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });

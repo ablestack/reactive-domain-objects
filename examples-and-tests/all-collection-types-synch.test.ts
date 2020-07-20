@@ -40,14 +40,16 @@ test('Synchronize collection additions', () => {
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
+  console.log('Synchronize collection additions - A', allCollectionTypesRDO);
+
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
@@ -62,15 +64,16 @@ test('Synchronize collection additions', () => {
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
 
-  // RESULTS VERIFICATION
+  console.log('Synchronize collection additions - B', allCollectionTypesRDO);
 
+  // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(4); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(4); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(5);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(5);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(4); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(4); // one less than array, as doesn't accept duplicates
 });
 
 // --------------------------------------------------------------
@@ -83,14 +86,16 @@ test('Synchronize collection removals', () => {
   // SETUP
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
+  console.log('Synchronize collection removals', allCollectionTypesRDO);
+
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
   // EXECUTE
   // Mutate data
@@ -106,12 +111,12 @@ test('Synchronize collection removals', () => {
   // RESULTS VERIFICATION
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(2); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(2); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(2); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(2); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(2); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(2); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(2); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(2); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(2); // one less than array, as doesn't accept duplicates
 });
 
 // --------------------------------------------------------------
@@ -167,12 +172,12 @@ test('Synchronize collection element edit', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
@@ -214,12 +219,12 @@ test('Synchronize collection element - handle null value edits', () => {
 
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
-  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
-  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(4);
-  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
   // EXECUTE
   // Mutate data

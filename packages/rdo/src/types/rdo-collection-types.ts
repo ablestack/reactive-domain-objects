@@ -58,7 +58,7 @@ export interface ISyncableKeyBasedCollection<K extends string | number, S, D> ex
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any, any> {
-  return o && o.size !== undefined && o.elements && o.patchAdd && o.patchDelete && isIMakeCollectionKey(o);
+  return o && o.size !== undefined && o.elements && o.handleNewKey && o.handleReplaceKey && o.handleDeleteKey && isITryMakeCollectionKey(o);
 }
 
 export interface ISyncableRDOKeyBasedCollection<K extends string | number, S, D> extends IMakeRdo<K, S, D>, ISyncableKeyBasedCollection<K, S, D> {}

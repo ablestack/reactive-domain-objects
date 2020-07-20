@@ -1,4 +1,4 @@
-import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrapper, NodeTypeInfo } from '../..';
+import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrapper, NodeTypeInfo, NodeTypeUtils } from '../..';
 import { isIMakeCollectionKey, isITryMakeCollectionKey } from '../../types';
 import { SourceBaseNW } from '../base/source-base-nw';
 
@@ -108,6 +108,11 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
     // Last option - look for idKey
     if (item[config.defaultIdKey]) {
       return item[config.defaultIdKey];
+    }
+
+    // If item is primitive, use that as key
+    if (NodeTypeUtils.isPrimitive(item)) {
+      return (item as unknown) as K;
     }
 
     // If no key here, just use index

@@ -42,7 +42,6 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
         let indexOffset = 0;
         for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
             // SETUP
-            const lastSourceElement = last.sourceArray[i];
             const nextSourceElement = this.views.sourceArray[i];
             const index = i + indexOffset;
             const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
@@ -67,7 +66,7 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
             else {
                 const lastSourceElement = last.sourceArray[i];
                 if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
-                    // No change, no patch needed. Just update map
+                    // No change, no patch needed. Just update view
                     this.views.rdoByIndexMap.set(i, last.rdoByIndexMap.get(index));
                 }
                 else {

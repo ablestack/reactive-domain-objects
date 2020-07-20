@@ -24,7 +24,7 @@ function isIRdoKeyBasedCollectionNodeWrapper(o) {
 }
 exports.isIRdoKeyBasedCollectionNodeWrapper = isIRdoKeyBasedCollectionNodeWrapper;
 function IsISyncableCollection(o) {
-    return o && o.size !== undefined && o.elements && o.patchAdd && o.patchDelete && isIMakeCollectionKey(o);
+    return o && o.size !== undefined && o.elements && o.handleNewKey && o.handleReplaceKey && o.handleDeleteKey && isITryMakeCollectionKey(o);
 }
 exports.IsISyncableCollection = IsISyncableCollection;
 function IsISyncableRDOCollection(o) {
