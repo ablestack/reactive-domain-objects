@@ -19,7 +19,7 @@ export function IsICustomSync(o: any): o is ICustomSync<any> {
 }
 
 export type IContinueSmartSync = <K extends string | number, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
-export type SmartSyncProps<K, S, D> = { sourceNodeItemKey: K; sourceItemValue: S; rdoNodeItemKey: K; rdoNodeItemValue: D; sourceNodeSubPath?: string };
+export type SmartSyncProps<K, S, D> = { sourceNodeSubPath?: string; sourceNode: S; sourceNodeItemKey: K; rdoNode: D; rdoNodeItemKey: K };
 
 export interface ICustomEqualityRDO<S> {
   isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;

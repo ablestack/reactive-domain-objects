@@ -722,7 +722,7 @@
         "affectsGlobalScope": false
       },
       "../src/infrastructure/mutable-node-cache.ts": {
-        "version": "0054bc846df02d73cd7313ee7a04ad7d9408c0a64601538d7daf46c18ee174be",
+        "version": "47f351f28ef7c345e91f111b3ac6ac01e86dfa69278f09217b07bb94e4a1d856",
         "signature": "82579850d495155c3e9c826044a26d8cf758714cb37ceb0bed0f470cc8b95a33",
         "affectsGlobalScope": false
       },
@@ -752,8 +752,8 @@
         "affectsGlobalScope": false
       },
       "../src/types/rdo-customization-types.ts": {
-        "version": "6aa5723339d22297f91da59d18f1bbd46e42a5b34f3d61c44eeb57084f801d1b",
-        "signature": "51c0d4f920916ec64f440cd9bf12bccd38c52dd1b884f2b1b3508ac1248e3187",
+        "version": "9cc3ff9c5e2fb0e0ab0229909d5d860bc20b21ca72bdea6df61fcc3f7bfba1ff",
+        "signature": "f1e60a625746a926674092bb89d6d9f190c8505c9f7b3383d2b7fc75a6857396",
         "affectsGlobalScope": false
       },
       "../src/types/index.ts": {
@@ -872,7 +872,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-object-nw.ts": {
-        "version": "74519df8c143b2c0864c74a7b0ffb94ec0201b991f84ba61f15c27edaf8d303d",
+        "version": "efaa2ae90cd4455c4cf8bd5958a8e0ad86e8c4e3988034d875d303e8e393c23c",
         "signature": "70edb2bd5214e6065321d4e47092db9044da7a30946e3ca434708bbd236d7da7",
         "affectsGlobalScope": false
       },

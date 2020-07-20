@@ -282,11 +282,11 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   /** */
   private makeContinueSmartSyncFunction = ({ originalSourceNodePath }: { originalSourceNodePath: string }) => {
     // Build method
-    const continueSmartSync: IContinueSmartSync = ({ sourceNodeItemKey, sourceItemValue, rdoNodeItemKey, rdoNodeItemValue, sourceNodeSubPath }) => {
+    const continueSmartSync: IContinueSmartSync = ({ sourceNodeSubPath = '', sourceNode, sourceNodeItemKey, rdoNode, rdoNodeItemKey }) => {
       const sourceNodeTypePath = sourceNodeSubPath ? `${originalSourceNodePath}${NodeTracker.nodePathSeperator}${sourceNodeSubPath}` : originalSourceNodePath;
       const sourceNodeInstancePath = `${sourceNodeTypePath}${NodeTracker.nodePathSeperator}${sourceNodeItemKey}`;
 
-      const wrappedRdoNode = this._wrapRdoNode({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode: sourceItemValue, sourceNodeItemKey: sourceNodeItemKey, rdoNode: rdoNodeItemValue, rdoNodeItemKey: rdoNodeItemKey });
+      const wrappedRdoNode = this._wrapRdoNode({ sourceNodeTypePath, sourceNodeInstancePath, sourceNode, sourceNodeItemKey: sourceNodeItemKey, rdoNode, rdoNodeItemKey: rdoNodeItemKey });
       if (!isIRdoInternalNodeWrapper(wrappedRdoNode)) throw new Error(`(${sourceNodeTypePath}) makeContinueSmartSyncFunction can not be called on Leaf nodes`);
 
       return this.syncChildNode({ wrappedParentRdoNode: wrappedRdoNode, rdoNodeItemKey, sourceNodeItemKey });

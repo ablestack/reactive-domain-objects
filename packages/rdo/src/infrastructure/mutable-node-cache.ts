@@ -11,8 +11,6 @@ export class MutableNodeCache {
     if (!dataItem) dataItem = new Map<string, any>();
     dataItem.set(dataKey, data);
     this._sourceMap.set(sourceNodeInstancePath, dataItem);
-
-    console.log(`MutableNodeCache - set(${sourceNodeInstancePath}, ${dataKey})`, dataItem);
     //logger.trace('set', dataItem);
   }
 

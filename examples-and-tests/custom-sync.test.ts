@@ -86,10 +86,10 @@ export class CustomSyncBarRDO implements ICustomSync<Bar> {
     this.id = `custom-id-${sourceObject.id}`;
 
     // sync bazzz
-    continueSmartSync({ sourceNodeItemKey: 'baz', sourceItemValue: sourceObject, rdoNodeItemKey: 'bazzz', rdoNodeItemValue: this.bazzz });
+    continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'baz', rdoNode: this, rdoNodeItemKey: 'bazzz' });
 
     // sync mapOfBazz
-    continueSmartSync({ sourceNodeItemKey: 'mapOfBaz', sourceItemValue: sourceObject, rdoNodeItemKey: 'mapOfBazzz', rdoNodeItemValue: this.mapOfBazzz });
+    continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'mapOfBaz', rdoNode: this, rdoNodeItemKey: 'mapOfBazzz' });
 
     return false;
   }

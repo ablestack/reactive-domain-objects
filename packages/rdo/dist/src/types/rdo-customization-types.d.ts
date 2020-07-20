@@ -15,11 +15,11 @@ export interface ICustomSync<S> {
 export declare function IsICustomSync(o: any): o is ICustomSync<any>;
 export declare type IContinueSmartSync = <K extends string | number, S, D>(smartSyncProps: SmartSyncProps<K, S, D>) => boolean;
 export declare type SmartSyncProps<K, S, D> = {
-    sourceNodeItemKey: K;
-    sourceItemValue: S;
-    rdoNodeItemKey: K;
-    rdoNodeItemValue: D;
     sourceNodeSubPath?: string;
+    sourceNode: S;
+    sourceNodeItemKey: K;
+    rdoNode: D;
+    rdoNodeItemKey: K;
 };
 export interface ICustomEqualityRDO<S> {
     isStateEqual: (sourceObject: S | null | undefined, previousSourceObject: S | null | undefined) => boolean;
