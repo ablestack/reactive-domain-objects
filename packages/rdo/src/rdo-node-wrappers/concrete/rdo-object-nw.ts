@@ -154,31 +154,9 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   //------------------------------
   // IRdoInternalNodeWrapper
   //------------------------------
-
-  // public itemKeys() {
-  //   return Object.keys(this._value);
-  // }
-
-  public getItem(key: string) {
+  public getRdoNodeItem(key: string) {
     return this._value[key];
   }
-
-  // public updateItem(key: K, value: D | undefined) {
-  //   if (key in this._value) {
-  //     //@ts-ignore
-  //     this._value[key] = value;
-  //     return true;
-  //   } else return false;
-  // }
-
-  // public insertItem(key: K, value: D | undefined) {
-  //   if (!(key in this._value)) {
-  //     //@ts-ignore
-  //     this._value[key] = value;
-  //     return true;
-  //   }
-  //   return false;
-  // }
 
   //--------------------------------------
   // Private Methods

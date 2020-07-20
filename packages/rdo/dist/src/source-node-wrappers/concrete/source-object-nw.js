@@ -20,10 +20,10 @@ class SourceObjectNW extends source_base_nw_1.SourceBaseNW {
     // ISourceObjectNodeWrapper
     //------------------------------
     //@ts-ignore
-    nodeKeys() {
+    getNodeKeys() {
         return ((this._value && Object.keys(this._value)) || []);
     }
-    getItem(key) {
+    getNodeItem(key) {
         return this._value && this._value[key];
     }
 }

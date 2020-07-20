@@ -21,7 +21,6 @@ export declare class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S
     });
     get isLeafNode(): boolean;
     get value(): D[];
-    getItem(key: string): D | undefined;
     elements(): Iterable<D>;
     childElementCount(): number;
     protected onNewIndex: ({ index, key, nextRdo }: {

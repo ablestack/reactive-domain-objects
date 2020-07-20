@@ -10,7 +10,7 @@ const logger = logger_1.Logger.make('SyncableCollection');
  *
  * @export
  * @class ListMap
- * @implements {ISyncableRDOCollection<S, D>}
+ * @implements {ISyncableRDOKeyBasedCollection<S, D>}
  * @implements {Map<K, D>}
  * @template S
  * @template D
@@ -21,14 +21,6 @@ class ListMap {
         this.indexByKeyMap = new Map();
         this._array$ = new Array();
         this[Symbol.toStringTag] = 'ListMap';
-        // -----------------------------------
-        // ISyncableRdoCollection
-        // -----------------------------------
-        this.makeCollectionKey = (item) => {
-            if (!this._makeCollectionKey)
-                throw new Error('Could not find makeCollectionKey method');
-            return this._makeCollectionKey(item);
-        };
         this.handleNewKey = ({ index, key, nextRdo }) => {
             this._map$.set(key, nextRdo);
             this.indexByKeyMap.set(key, this._array$.length);
@@ -80,15 +72,20 @@ class ListMap {
     [Symbol.iterator]() {
         return this._map$.entries();
     }
+    // -----------------------------------
+    // ISyncableRdoCollection
+    // -----------------------------------
     elements() {
         return this._map$.values();
-    }
-    getItem(key) {
-        return this._map$.get(key);
     }
     //------------------------------
     // RdoSyncableCollectionNW
     //------------------------------
+    tryMakeCollectionKey(item, index) {
+        if (!this._makeCollectionKey)
+            return undefined;
+        return this._makeCollectionKey(item);
+    }
     makeRdo(sourceItem, parentRdoNodeWrapper) {
         if (!this._makeRdo)
             return undefined;

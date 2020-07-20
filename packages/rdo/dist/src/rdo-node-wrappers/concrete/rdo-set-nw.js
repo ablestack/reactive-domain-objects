@@ -34,9 +34,6 @@ class RdoSetNW extends rdo_key_based_collection_nw_base_1.RdoKeyCollectionNWBase
     get value() {
         return this._value;
     }
-    getItem(key) {
-        return this.last.rdoByKeyMap.get(key);
-    }
     //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------

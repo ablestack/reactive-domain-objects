@@ -45,7 +45,7 @@ class GraphSynchronizer {
             // Node Type
             //if (!isISourceInternalNodeWrapper(parentSourceNode)) throw new Error(`(${this._nodeTracker.getSourceNodeInstancePath()}) Can not step into node. Expected Internal Node but found Leaf Node`);
             // RdoNode
-            const rdoNodeItemValue = wrappedParentRdoNode.getItem(rdoNodeItemKey);
+            const rdoNodeItemValue = wrappedParentRdoNode.getRdoNodeItem(rdoNodeItemKey);
             if (rdoNodeItemValue === undefined) {
                 logger.trace(`rdoNodeItemValue was null, for key: ${rdoNodeItemKey} in path ${this._nodeTracker.getSourceNodeInstancePath()}. Skipping`);
                 return false;

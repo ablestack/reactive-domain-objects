@@ -1,8 +1,6 @@
-import { observable, computed } from 'mobx';
-import { ISyncableRDOCollection, MakeCollectionKeyMethod, IRdoNodeWrapper, CollectionUtils, CollectionNodePatchOperation, IRdoInternalNodeWrapper, ISourceCollectionNodeWrapper, ISyncChildNode, NodeTypeUtils, NodeChange, IEqualityComparer } from '..';
+import { computed, observable } from 'mobx';
+import { IRdoNodeWrapper, ISyncableRDOKeyBasedCollection, MakeCollectionKeyMethod } from '..';
 import { Logger } from '../infrastructure/logger';
-import { EventEmitter } from '../infrastructure/event-emitter';
-import _ from 'lodash';
 
 const logger = Logger.make('SyncableCollection');
 /**
@@ -10,13 +8,13 @@ const logger = Logger.make('SyncableCollection');
  *
  * @export
  * @class ListMap
- * @implements {ISyncableRDOCollection<S, D>}
+ * @implements {ISyncableRDOKeyBasedCollection<S, D>}
  * @implements {Map<K, D>}
  * @template S
  * @template D
  * @description: A readonly, syncable, Map-Array collection hybrid, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
-export class ListMap<K extends string | number, S, D> implements ISyncableRDOCollection<K, S, D> {
+export class ListMap<K extends string | number, S, D> implements ISyncableRDOKeyBasedCollection<K, S, D> {
   @observable.shallow private _map$: Map<K, D>;
   private indexByKeyMap = new Map<K, number>();
 
@@ -83,17 +81,9 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
   // -----------------------------------
   // ISyncableRdoCollection
   // -----------------------------------
-  public makeCollectionKey = (item: S): K => {
-    if (!this._makeCollectionKey) throw new Error('Could not find makeCollectionKey method');
-    return this._makeCollectionKey(item);
-  };
 
   public elements(): Iterable<D> {
     return this._map$.values();
-  }
-
-  public getItem(key: K) {
-    return this._map$.get(key);
   }
 
   public handleNewKey = ({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any }) => {
@@ -119,6 +109,10 @@ export class ListMap<K extends string | number, S, D> implements ISyncableRDOCol
   //------------------------------
   // RdoSyncableCollectionNW
   //------------------------------
+  public tryMakeCollectionKey(item: S, index: number) {
+    if (!this._makeCollectionKey) return undefined;
+    return this._makeCollectionKey(item);
+  }
 
   public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<K, S, D>) {
     if (!this._makeRdo) return undefined;

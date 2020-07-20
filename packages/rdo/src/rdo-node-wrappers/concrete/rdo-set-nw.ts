@@ -52,10 +52,6 @@ export class RdoSetNW<K extends string | number, S, D> extends RdoKeyCollectionN
     return this._value;
   }
 
-  public getItem(key: K) {
-    return this.last.rdoByKeyMap.get(key);
-  }
-
   //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------

@@ -34,12 +34,6 @@ class RdoMapNW extends rdo_key_based_collection_nw_base_1.RdoKeyCollectionNWBase
         return this._value;
     }
     //------------------------------
-    // IRdoInternalNodeWrapper
-    //------------------------------
-    getItem(key) {
-        return this._value.get(key);
-    }
-    //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
     elements() {

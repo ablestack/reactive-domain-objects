@@ -21,7 +21,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         const changed = addHandler({ index, key: elementKey, nextRdo: newRdo });
         if (changed) {
             // If not primitive, sync so child nodes are hydrated
-            if (__1.NodeTypeUtils.isPrimitive(newRdo))
+            if (!__1.NodeTypeUtils.isPrimitive(newRdo))
                 this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
             // Publish
             this.eventEmitter.publish('nodeChange', {
@@ -74,7 +74,7 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
                 previousSourceValue: previousSourceElement,
                 newSourceValue: newSourceElement,
             });
-            return { changed, nextRdo: this.getItem(elementKey) };
+            return { changed, nextRdo: this.getRdoNodeItem(elementKey) };
         }
     }
     /** */

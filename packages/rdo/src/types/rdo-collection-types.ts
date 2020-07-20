@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { IRdoNodeWrapper, IMakeRdo, CollectionNodePatchOperation, IRdoInternalNodeWrapper, ISyncChildNode } from './internal-types';
-import { IEqualityComparer, NodeChange } from '.';
-import { EventEmitter } from '../infrastructure/event-emitter';
+import { IMakeRdo, IRdoInternalNodeWrapper, isIRdoInternalNodeWrapper } from './internal-types';
 
 //--------------------------------------------------------
 // RDO COLLECTION - SYNC CUSTOMIZATION INTERFACES
@@ -10,6 +8,13 @@ import { EventEmitter } from '../infrastructure/event-emitter';
 
 export type MakeCollectionKeyMethod<K extends string | number, T> = (item: T) => K;
 
+export interface ITryMakeCollectionKey<K extends string | number, T> {
+  tryMakeCollectionKey: (item: T, index: number) => K | undefined;
+}
+
+export function isITryMakeCollectionKey(o: any): o is IMakeCollectionKey<any, any> {
+  return o && o.tryMakeCollectionKey;
+}
 export interface IMakeCollectionKey<K extends string | number, T> {
   makeCollectionKey: (item: T, index: number) => K;
 }
@@ -26,22 +31,39 @@ export function isIMakeRdoElement(o: any): o is IMakeRdoElement<any, any> {
   return o && o.makeRdoElement;
 }
 
-export interface ISyncableCollection<K extends string | number, S, D> extends IMakeCollectionKey<K, S> {
+export interface IRdoCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D> {
+  elements(): Iterable<D | undefined>;
+}
+
+export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any, any> {
+  return o && o.elements && isIRdoInternalNodeWrapper(o) && isIMakeCollectionKey(o);
+}
+
+export interface IRdoKeyBasedCollectionNodeWrapper<K extends string | number, S, D> extends IRdoInternalNodeWrapper<K, S, D> {
+  onNewKey: NodeAddHandler<K>;
+  onReplaceKey: NodeReplaceHandler<K>;
+  onDeleteKey: NodeDeleteHandler<K>;
+}
+
+export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any, any> {
+  return o && o.onNewKey && o.onReplaceKey && o.onDeleteKey && isIRdoCollectionNodeWrapper(o);
+}
+
+export interface ISyncableKeyBasedCollection<K extends string | number, S, D> extends ITryMakeCollectionKey<K, S> {
   readonly size: number;
   elements(): Iterable<D>;
-  getItem(key: K): D | null | undefined;
   handleNewKey({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any });
   handleReplaceKey({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any });
   handleDeleteKey({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any });
 }
 
-export function IsISyncableCollection(o: any): o is ISyncableCollection<any, any, any> {
+export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any, any> {
   return o && o.size !== undefined && o.elements && o.patchAdd && o.patchDelete && isIMakeCollectionKey(o);
 }
 
-export interface ISyncableRDOCollection<K extends string | number, S, D> extends IMakeRdo<K, S, D>, ISyncableCollection<K, S, D> {}
+export interface ISyncableRDOKeyBasedCollection<K extends string | number, S, D> extends IMakeRdo<K, S, D>, ISyncableKeyBasedCollection<K, S, D> {}
 
-export function IsISyncableRDOCollection(o: any): o is ISyncableRDOCollection<any, any, any> {
+export function IsISyncableRDOCollection(o: any): o is ISyncableRDOKeyBasedCollection<any, any, any> {
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }
 

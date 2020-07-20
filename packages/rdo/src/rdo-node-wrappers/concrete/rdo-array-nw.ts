@@ -53,15 +53,6 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
   }
 
   //------------------------------
-  // IRdoInternalNodeWrapper
-  //------------------------------
-  public getItem(key: string) {
-    const index = this.last.indexByKeyMap.get(key);
-    if (index === null || index === undefined) return undefined;
-    return this.last.rdoByIndexMap.get(index);
-  }
-
-  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public elements(): Iterable<D> {

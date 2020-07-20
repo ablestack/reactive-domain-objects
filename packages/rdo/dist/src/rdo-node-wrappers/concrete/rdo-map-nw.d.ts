@@ -21,7 +21,6 @@ export declare class RdoMapNW<K extends string | number, S, D> extends RdoKeyCol
     });
     get isLeafNode(): boolean;
     get value(): Map<K, D>;
-    getItem(key: K): D | undefined;
     elements(): Iterable<D>;
     childElementCount(): number;
     protected onNewKey: ({ index, key, nextRdo }: {

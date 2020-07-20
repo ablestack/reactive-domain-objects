@@ -10,7 +10,7 @@ function getNodeType(rdoNodeVal: any): NodeTypeInfo {
   const stringifiedNodeType = toString.call(rdoNodeVal) as JavaScriptStringifiedType;
 
   if (IsISyncableCollection(rdoNodeVal)) {
-    return { kind: 'Collection', type: 'ISyncableCollection', stringifiedType: stringifiedNodeType };
+    return { kind: 'Collection', type: 'ISyncableKeyBasedCollection', stringifiedType: stringifiedNodeType };
   }
 
   switch (stringifiedNodeType) {

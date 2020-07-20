@@ -49,5 +49,4 @@ export declare abstract class RdoCollectionNWBase<K extends string | number, S, 
         deleteHandler: NodeDeleteHandler<K>;
     }): boolean;
     abstract elements(): Iterable<D>;
-    abstract getItem(key: K): D | null | undefined;
 }

@@ -1,5 +1,5 @@
 import { RdoArrayNW, RdoObjectNW, RdoMapNW, RdoSetNW, RdoSyncableCollectionNW } from '.';
-import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes, IRdoInternalNodeWrapper, ISyncableRDOCollection } from '..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoNodeWrapper, ISourceNodeWrapper, ISyncChildNode, IWrapRdoNode, RdoNodeTypes, IRdoInternalNodeWrapper, ISyncableRDOKeyBasedCollection } from '..';
 import { Logger } from '../infrastructure/logger';
 import { NodeTypeUtils } from './utils/node-type.utils';
 import { EventEmitter } from '../infrastructure/event-emitter';
@@ -60,10 +60,10 @@ export class RdoNodeWrapperFactory {
 
     // Check if custom collection type
     //TODO
-    // if (typeInfo.type === 'ISyncableCollection') {
+    // if (typeInfo.type === 'ISyncableKeyBasedCollection') {
     //   logger.trace(`Wrapping Node ${key} with RdoMapNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
     //   return new RdoSyncableCollectionNW<K, S, D>({
-    //     value: value as ISyncableRDOCollection<K, S, D>,
+    //     value: value as ISyncableRDOKeyBasedCollection<K, S, D>,
     //     typeInfo,
     //     key,
     //     mutableNodeCache,

@@ -1,16 +1,12 @@
-import { RdoCollectionNWBase } from '..';
-import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOKeyBasedCollection, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { NodeChange } from '../../types/event-types';
-declare type MutableCachedNodeItemType<K, S, D> = {
-    sourceData: Array<S>;
-    rdoMap: Map<K, D>;
-};
-export declare class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+import { RdoKeyCollectionNWBase } from '../base/rdo-key-based-collection-nw-base';
+export declare class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoKeyCollectionNWBase<K, S, D> {
     private _value;
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
-        value: ISyncableRDOCollection<K, S, D>;
+        value: ISyncableRDOKeyBasedCollection<K, S, D>;
         typeInfo: NodeTypeInfo;
         key: K | undefined;
         mutableNodeCache: MutableNodeCache;
@@ -23,14 +19,24 @@ export declare class RdoSyncableCollectionNW<K extends string | number, S, D> ex
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D>;
     get isLeafNode(): boolean;
-    get value(): ISyncableRDOCollection<K, S, D>;
-    getItem(key: K): D | null | undefined;
+    get value(): ISyncableRDOKeyBasedCollection<K, S, D>;
     elements(): Iterable<D>;
     childElementCount(): number;
-    getSourceNodeKeys(): never[];
-    getSourceNodeItem(key: K): D | null | undefined;
-    smartSync(): boolean;
+    protected onNewKey: ({ index, key, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        nextRdo: any;
+    }) => boolean;
+    protected onReplaceKey: ({ index, key, lastRdo, nextRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+        nextRdo: any;
+    }) => boolean;
+    protected onDeleteKey: ({ index, key, lastRdo }: {
+        index?: number | undefined;
+        key: K;
+        lastRdo: any;
+    }) => boolean;
 }
-export {};

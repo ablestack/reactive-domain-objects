@@ -13,7 +13,7 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
     //------------------------------
     // Protected
     //------------------------------
-    get last() {
+    get views() {
         let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
         if (!mutableNodeCacheItem) {
             mutableNodeCacheItem = { sourceArray: new Array(), sourceByKeyMap: new Map(), rdoByKeyMap: new Map() };
@@ -27,40 +27,42 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
         // Setup
         let changed = false;
         const wrappedSourceNode = this.wrappedSourceNode;
-        const next = {
-            sourceArray: wrappedSourceNode.elements(),
-            sourceByKeyMap: new Map(),
-            rdoByKeyMap: new Map(),
+        const last = {
+            sourceArray: this.views.sourceArray,
+            sourceByKeyMap: this.views.sourceByKeyMap,
+            rdoByKeyMap: this.views.rdoByKeyMap,
         };
+        this.views.sourceArray = wrappedSourceNode.elements();
+        this.views.sourceByKeyMap = new Map();
+        this.views.rdoByKeyMap = new Map();
         //
         // Loop and execute
         let indexOffset = 0;
         for (let i = 0; i < wrappedSourceNode.childElementCount(); i++) {
             // SETUP
-            const lastSourceElement = this.last.sourceArray[i];
-            const nextSourceElement = next.sourceArray[i];
+            const lastSourceElement = last.sourceArray[i];
+            const nextSourceElement = this.views.sourceArray[i];
             const index = i + indexOffset;
             const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
             // Update maps
-            next.sourceByKeyMap.set(elementKey, nextSourceElement);
-            if (next.rdoByKeyMap.has(elementKey))
+            this.views.sourceByKeyMap.set(elementKey, nextSourceElement);
+            if (this.views.rdoByKeyMap.has(elementKey))
                 continue; // If we have already seen the key, no need to add/update
             // ---------------------------
             // New Index - ADD
             // ---------------------------
             // If index is not in previous source array, but in new source array
-            if (this.last.rdoByKeyMap.has(elementKey)) {
+            if (!last.rdoByKeyMap.has(elementKey)) {
                 // EXECUTE
                 const newRdo = this.makeRdoElement(nextSourceElement);
                 changed = this.handleAddElement({ addHandler: this.onNewKey, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // Tracking
-                next.rdoByKeyMap.set(elementKey, newRdo);
+                this.views.rdoByKeyMap.set(elementKey, newRdo);
                 indexOffset++;
-                next.sourceArray.push(nextSourceElement);
                 // If index is in previous source array
             }
             else {
-                const lastRdo = this.last.rdoByKeyMap.get(elementKey);
+                const lastRdo = last.rdoByKeyMap.get(elementKey);
                 if (this.equalityComparer(lastRdo, nextSourceElement)) {
                     // No change, no patch needed
                 }
@@ -70,34 +72,33 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
                     // ---------------------------
                     const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceKey, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
                     // Update map
-                    next.rdoByKeyMap.set(elementKey, result.nextRdo);
+                    this.views.rdoByKeyMap.set(elementKey, result.nextRdo);
                 }
             }
         }
-        const nextKeys = Array.from(next.rdoByKeyMap.keys());
-        const lastKeys = Array.from(this.last.rdoByKeyMap.keys());
+        const nextKeys = Array.from(this.views.rdoByKeyMap.keys());
+        const lastKeys = Array.from(last.rdoByKeyMap.keys());
         const missingKeys = lodash_1.default.difference(lastKeys, nextKeys);
         if (missingKeys.length > 0) {
             // ---------------------------
             // Missing Index - DELETE
             // ---------------------------
             for (const elementKey of missingKeys) {
-                const previousSourceElement = this.last.sourceByKeyMap.get(elementKey);
-                const rdoToDelete = this.last.rdoByKeyMap.get(elementKey);
+                const previousSourceElement = last.sourceByKeyMap.get(elementKey);
+                const rdoToDelete = last.rdoByKeyMap.get(elementKey);
                 changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, elementKey, rdoToDelete, previousSourceElement }) && changed;
             }
         }
-        // Update nodeInstanceCache
-        this.last.sourceArray = next.sourceArray;
-        this.last.sourceByKeyMap = next.sourceByKeyMap;
-        this.last.rdoByKeyMap = next.rdoByKeyMap;
         return changed;
     }
     getSourceNodeKeys() {
-        return this.last.sourceByKeyMap.keys();
+        return this.views.sourceByKeyMap.keys();
     }
     getSourceNodeItem(key) {
-        return this.last.sourceByKeyMap.get(key);
+        return this.views.sourceByKeyMap.get(key);
+    }
+    getRdoNodeItem(key) {
+        return this.views.rdoByKeyMap.get(key);
     }
 }
 exports.RdoKeyCollectionNWBase = RdoKeyCollectionNWBase;

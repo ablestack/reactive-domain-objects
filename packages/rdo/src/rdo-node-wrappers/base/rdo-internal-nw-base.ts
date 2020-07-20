@@ -86,7 +86,7 @@ export abstract class RdoInternalNWBase<K extends string | number, S, D> extends
     return rdo;
   }
 
-  public abstract getItem(key: K);
+  public abstract getRdoNodeItem(key: K);
 
   //------------------------------
   // Private

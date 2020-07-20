@@ -10,7 +10,7 @@ const logger = logger_1.Logger.make('node-type.utils');
 function getNodeType(rdoNodeVal) {
     const stringifiedNodeType = toString.call(rdoNodeVal);
     if (__1.IsISyncableCollection(rdoNodeVal)) {
-        return { kind: 'Collection', type: 'ISyncableCollection', stringifiedType: stringifiedNodeType };
+        return { kind: 'Collection', type: 'ISyncableKeyBasedCollection', stringifiedType: stringifiedNodeType };
     }
     switch (stringifiedNodeType) {
         case '[object Boolean]':

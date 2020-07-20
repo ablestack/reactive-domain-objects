@@ -107,27 +107,9 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
     //------------------------------
     // IRdoInternalNodeWrapper
     //------------------------------
-    // public itemKeys() {
-    //   return Object.keys(this._value);
-    // }
-    getItem(key) {
+    getRdoNodeItem(key) {
         return this._value[key];
     }
-    // public updateItem(key: K, value: D | undefined) {
-    //   if (key in this._value) {
-    //     //@ts-ignore
-    //     this._value[key] = value;
-    //     return true;
-    //   } else return false;
-    // }
-    // public insertItem(key: K, value: D | undefined) {
-    //   if (!(key in this._value)) {
-    //     //@ts-ignore
-    //     this._value[key] = value;
-    //     return true;
-    //   }
-    //   return false;
-    // }
     //--------------------------------------
     // Private Methods
     //--------------------------------------

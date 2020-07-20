@@ -34,7 +34,7 @@ export declare class RdoObjectNW<S, D extends Record<string, any>> extends RdoIn
     smartSync(): boolean;
     getSourceNodeKeys(): Iterable<string>;
     getSourceNodeItem(key: string): any;
-    getItem(key: string): any;
+    getRdoNodeItem(key: string): any;
     /**
      *
      */

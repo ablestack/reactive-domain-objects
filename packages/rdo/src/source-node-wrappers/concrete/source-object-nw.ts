@@ -1,8 +1,7 @@
-import { ISourceInternalNodeWrapper, NodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNodeOptions } from '../..';
+import { ISourceObjectNodeWrapper, NodeTypeInfo, MakeCollectionKeyMethod, INodeSyncOptions, IGlobalNodeOptions } from '../..';
 import { SourceBaseNW } from '../base/source-base-nw';
-import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 
-export class SourceObjectNW<K extends string, S extends Record<K, any>, D> extends SourceBaseNW<K, S, D> implements ISourceInternalNodeWrapper<K, S, D> {
+export class SourceObjectNW<K extends string, S extends Record<K, any>, D> extends SourceBaseNW<K, S, D> implements ISourceObjectNodeWrapper<S, D> {
   private _value: S | null | undefined;
 
   constructor({
@@ -43,11 +42,11 @@ export class SourceObjectNW<K extends string, S extends Record<K, any>, D> exten
   //------------------------------
 
   //@ts-ignore
-  public nodeKeys(): K[] {
+  public getNodeKeys(): K[] {
     return ((this._value && Object.keys(this._value)) || []) as K[];
   }
 
-  public getItem(key: K) {
+  public getNodeItem(key: K) {
     return this._value && this._value[key];
   }
 }

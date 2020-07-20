@@ -13,13 +13,13 @@ function identityComparer(a: any, b: any): boolean {
 }
 
 // function structuralComparer(a: any, b: any): boolean {
-//   // Todo
+//   // FUTURE
 //   // return deepEqual(a, b);
 //   return false;
 // }
 
 // function shallowComparer(a: any, b: any): boolean {
-//   // TODO
+//   // FUTURE
 //   //return deepEqual(a, b, 1);
 //   return false;
 // }

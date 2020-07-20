@@ -1,15 +1,14 @@
-import { NodeTypeUtils, RdoCollectionNWBase } from '..';
-import { CollectionNodePatchOperation, IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOCollection, ISyncChildNode, NodeTypeInfo } from '../..';
+import { IEqualityComparer, IGlobalNodeOptions, INodeSyncOptions, IRdoInternalNodeWrapper, ISourceNodeWrapper, ISyncableRDOKeyBasedCollection, ISyncChildNode, NodeTypeInfo } from '../..';
 import { EventEmitter } from '../../infrastructure/event-emitter';
 import { Logger } from '../../infrastructure/logger';
 import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { NodeChange } from '../../types/event-types';
+import { RdoKeyCollectionNWBase } from '../base/rdo-key-based-collection-nw-base';
 
 const logger = Logger.make('RdoSyncableCollectionNW');
-type MutableCachedNodeItemType<K, S, D> = { sourceData: Array<S>; rdoMap: Map<K, D> };
 
-export class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
-  private _value: ISyncableRDOCollection<K, S, D>;
+export class RdoSyncableCollectionNW<K extends string | number, S, D> extends RdoKeyCollectionNWBase<K, S, D> {
+  private _value: ISyncableRDOKeyBasedCollection<K, S, D>;
 
   constructor({
     value,
@@ -25,7 +24,7 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
     targetedOptionMatchersArray,
     eventEmitter,
   }: {
-    value: ISyncableRDOCollection<K, S, D>;
+    value: ISyncableRDOKeyBasedCollection<K, S, D>;
     typeInfo: NodeTypeInfo;
     key: K | undefined;
     mutableNodeCache: MutableNodeCache;
@@ -38,20 +37,8 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
   }) {
-    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+    super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
     this._value = value;
-  }
-
-  //------------------------------
-  // Private
-  //------------------------------
-  protected getNodeInstanceCache(): MutableCachedNodeItemType<K, S, D> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<MutableCachedNodeItemType<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
-    if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceData: new Array<S>(), rdoMap: new Map<K, D>() };
-      this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
-    }
-    return mutableNodeCacheItem;
   }
 
   //------------------------------
@@ -66,13 +53,6 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   }
 
   //------------------------------
-  // IRdoInternalNodeWrapper
-  //------------------------------
-  public getItem(key: K) {
-    return this.value.getItem(key);
-  }
-
-  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public elements(): Iterable<D> {
@@ -84,24 +64,20 @@ export class RdoSyncableCollectionNW<K extends string | number, S, D> extends Rd
   }
 
   //------------------------------
-  // RdoSyncableCollectionNW
+  // RdoIndexCollectionNWBase
   //------------------------------
-  // protected sync() {
-  //   //TODO
-  //   //this.value.sync({ wrappedRdoNode: this, equalityComparer: this.equalityComparer, eventEmitter: this.eventEmitter, syncChildNode: this.syncChildNode });
-  // }
+  protected onNewKey = ({ index, key, nextRdo }: { index?: number; key: K; nextRdo: any }) => {
+    this.value.handleNewKey({ index, key, nextRdo });
+    return true;
+  };
 
-  public getSourceNodeKeys() {
-    //TODO
-    //this.value.getSourceNodeKeys();
-    return [];
-  }
+  protected onReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: K; lastRdo: any; nextRdo: any }) => {
+    this.value.handleReplaceKey({ index, key, lastRdo, nextRdo });
+    return true;
+  };
 
-  public getSourceNodeItem(key: K) {
-    return this.value.getItem(key);
-  }
-  public smartSync() {
-    //TODO
-    return false;
-  }
+  protected onDeleteKey = ({ index, key, lastRdo }: { index?: number; key: K; lastRdo: any }) => {
+    this.value.handleDeleteKey({ index, key, lastRdo });
+    return true;
+  };
 }

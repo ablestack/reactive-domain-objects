@@ -42,8 +42,10 @@ class SourceArrayNW extends source_base_nw_1.SourceBaseNW {
                 // Use IMakeCollectionKey provided on options if available
                 return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
             }
-            if (types_1.isIMakeCollectionKey(this.wrappedRdoNode)) {
-                return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
+            if (types_1.isITryMakeCollectionKey(this.wrappedRdoNode)) {
+                const key = this.wrappedRdoNode.value.tryMakeKeyFromSourceElement(item);
+                if (key !== undefined)
+                    return key;
             }
             // Last option - look for idKey
             if (item[__1.config.defaultIdKey]) {

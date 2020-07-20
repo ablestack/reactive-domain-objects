@@ -53,7 +53,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
 
     if (changed) {
       // If not primitive, sync so child nodes are hydrated
-      if (NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+      if (!NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
 
       // Publish
       this.eventEmitter.publish('nodeChange', {
@@ -126,7 +126,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         newSourceValue: newSourceElement,
       });
 
-      return { changed, nextRdo: this.getItem(elementKey) };
+      return { changed, nextRdo: this.getRdoNodeItem(elementKey) };
     }
   }
 
@@ -149,5 +149,4 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   public abstract elements(): Iterable<D>;
-  public abstract getItem(key: K): D | null | undefined;
 }

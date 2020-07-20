@@ -576,10 +576,10 @@ interface ICustomSync<S> {
 
 ## Custom Collection Types
 
-### ISyncableCollection
+### ISyncableKeyBasedCollection
 
 ```TypeScript
-interface ISyncableCollection<T> extends Iterable<T> {
+interface ISyncableKeyBasedCollection<T> extends Iterable<T> {
   readonly size: number;
   getKeys: () => string[];
   tryGetItemFromTargetCollection: (key: string) => T | null | undefined;

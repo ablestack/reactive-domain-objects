@@ -1,24 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdoSyncableCollectionNW = void 0;
-const __1 = require("..");
 const logger_1 = require("../../infrastructure/logger");
+const rdo_key_based_collection_nw_base_1 = require("../base/rdo-key-based-collection-nw-base");
 const logger = logger_1.Logger.make('RdoSyncableCollectionNW');
-class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
+class RdoSyncableCollectionNW extends rdo_key_based_collection_nw_base_1.RdoKeyCollectionNWBase {
     constructor({ value, typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }) {
-        super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, syncChildNode, defaultEqualityComparer, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+        super({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter });
+        //------------------------------
+        // RdoIndexCollectionNWBase
+        //------------------------------
+        this.onNewKey = ({ index, key, nextRdo }) => {
+            this.value.handleNewKey({ index, key, nextRdo });
+            return true;
+        };
+        this.onReplaceKey = ({ index, key, lastRdo, nextRdo }) => {
+            this.value.handleReplaceKey({ index, key, lastRdo, nextRdo });
+            return true;
+        };
+        this.onDeleteKey = ({ index, key, lastRdo }) => {
+            this.value.handleDeleteKey({ index, key, lastRdo });
+            return true;
+        };
         this._value = value;
-    }
-    //------------------------------
-    // Private
-    //------------------------------
-    getNodeInstanceCache() {
-        let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath });
-        if (!mutableNodeCacheItem) {
-            mutableNodeCacheItem = { sourceData: new Array(), rdoMap: new Map() };
-            this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, data: mutableNodeCacheItem });
-        }
-        return mutableNodeCacheItem;
     }
     //------------------------------
     // IRdoNodeWrapper
@@ -30,12 +34,6 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
         return this._value;
     }
     //------------------------------
-    // IRdoInternalNodeWrapper
-    //------------------------------
-    getItem(key) {
-        return this.value.getItem(key);
-    }
-    //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
     elements() {
@@ -43,25 +41,6 @@ class RdoSyncableCollectionNW extends __1.RdoCollectionNWBase {
     }
     childElementCount() {
         return this._value.size;
-    }
-    //------------------------------
-    // RdoSyncableCollectionNW
-    //------------------------------
-    // protected sync() {
-    //   //TODO
-    //   //this.value.sync({ wrappedRdoNode: this, equalityComparer: this.equalityComparer, eventEmitter: this.eventEmitter, syncChildNode: this.syncChildNode });
-    // }
-    getSourceNodeKeys() {
-        //TODO
-        //this.value.getSourceNodeKeys();
-        return [];
-    }
-    getSourceNodeItem(key) {
-        return this.value.getItem(key);
-    }
-    smartSync() {
-        //TODO
-        return false;
     }
 }
 exports.RdoSyncableCollectionNW = RdoSyncableCollectionNW;

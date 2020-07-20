@@ -4,7 +4,7 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { IEqualityComparer, IRdoInternalNodeWrapper, NodeReplaceHandler, NodeAddHandler, NodeDeleteHandler } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { RdoCollectionNWBase } from './rdo-collection-nw-base';
-export declare type RdoKeyCollectionNWBaseLastData<K, S, D> = {
+export declare type RdoKeyCollectionNWBaseViews<K, S, D> = {
     sourceArray: Array<S>;
     sourceByKeyMap: Map<K, S>;
     rdoByKeyMap: Map<K, D>;
@@ -23,11 +23,12 @@ export declare abstract class RdoKeyCollectionNWBase<K extends string | number, 
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    protected get last(): RdoKeyCollectionNWBaseLastData<K, S, D>;
+    protected get views(): RdoKeyCollectionNWBaseViews<K, S, D>;
     /** */
     smartSync(): boolean;
     getSourceNodeKeys(): IterableIterator<K>;
     getSourceNodeItem(key: K): S | undefined;
+    getRdoNodeItem(key: K): D | undefined;
     /** */
     protected abstract onNewKey: NodeAddHandler<K>;
     protected abstract onReplaceKey: NodeReplaceHandler<K>;

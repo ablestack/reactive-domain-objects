@@ -19,7 +19,7 @@ export declare abstract class RdoInternalNWBase<K extends string | number, S, D>
     });
     protected get syncChildNode(): ISyncChildNode;
     makeRdoElement(sourceObject: any): any;
-    abstract getItem(key: K): any;
+    abstract getRdoNodeItem(key: K): any;
     private autoInstantiateNodeAsMobxObservables;
     private autoInstantiateNodeAsPlainObjectLiterals;
 }

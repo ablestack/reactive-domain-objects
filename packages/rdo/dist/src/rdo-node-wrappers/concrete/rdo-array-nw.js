@@ -40,15 +40,6 @@ class RdoArrayNW extends rdo_index_collection_nw_base_1.RdoIndexCollectionNWBase
         return this._value;
     }
     //------------------------------
-    // IRdoInternalNodeWrapper
-    //------------------------------
-    getItem(key) {
-        const index = this.last.indexByKeyMap.get(key);
-        if (index === null || index === undefined)
-            return undefined;
-        return this.last.rdoByIndexMap.get(index);
-    }
-    //------------------------------
     // IRdoCollectionNodeWrapper
     //------------------------------
     elements() {

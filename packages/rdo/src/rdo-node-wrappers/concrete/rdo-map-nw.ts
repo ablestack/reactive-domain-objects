@@ -53,13 +53,6 @@ export class RdoMapNW<K extends string | number, S, D> extends RdoKeyCollectionN
   }
 
   //------------------------------
-  // IRdoInternalNodeWrapper
-  //------------------------------
-  public getItem(key: K) {
-    return this._value.get(key);
-  }
-
-  //------------------------------
   // IRdoCollectionNodeWrapper
   //------------------------------
   public elements(): Iterable<D> {

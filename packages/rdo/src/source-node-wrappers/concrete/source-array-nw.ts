@@ -1,5 +1,5 @@
 import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrapper, NodeTypeInfo } from '../..';
-import { isIMakeCollectionKey } from '../../types';
+import { isIMakeCollectionKey, isITryMakeCollectionKey } from '../../types';
 import { SourceBaseNW } from '../base/source-base-nw';
 
 export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW<K, S, D> implements ISourceCollectionNodeWrapper<K, S, D> {
@@ -100,8 +100,9 @@ export class SourceArrayNW<K extends string | number, S, D> extends SourceBaseNW
       return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
     }
 
-    if (isIMakeCollectionKey(this.wrappedRdoNode)) {
-      return this.wrappedRdoNode.value.makeKeyFromSourceElement(item);
+    if (isITryMakeCollectionKey(this.wrappedRdoNode)) {
+      const key = this.wrappedRdoNode.value.tryMakeKeyFromSourceElement(item);
+      if (key !== undefined) return key;
     }
 
     // Last option - look for idKey
