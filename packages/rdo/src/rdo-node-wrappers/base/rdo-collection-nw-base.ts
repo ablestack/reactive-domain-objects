@@ -59,6 +59,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
       this.eventEmitter.publish('nodeChange', {
         changeType: 'add',
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+        sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index: index,
         sourceKey: elementKey,
         rdoKey: elementKey,
@@ -100,6 +101,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
       this.eventEmitter.publish('nodeChange', {
         changeType: 'replace',
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+        sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index,
         sourceKey: elementKey,
         rdoKey: elementKey,
@@ -119,6 +121,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
       this.eventEmitter.publish('nodeChange', {
         changeType: 'update',
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+        sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index,
         sourceKey: elementKey,
         rdoKey: elementKey,
@@ -138,6 +141,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     this.eventEmitter.publish('nodeChange', {
       changeType: 'delete',
       sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+      sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
       index: index,
       sourceKey: elementKey,
       rdoKey: elementKey,

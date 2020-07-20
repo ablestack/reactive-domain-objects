@@ -5,6 +5,7 @@ import { NodePatchOperationType } from '.';
 export interface NodeChange {
   changeType: NodePatchOperationType;
   sourceNodeTypePath: string;
+  sourceNodeInstancePath: string;
   index?: number;
   sourceKey: any;
   rdoKey: any;

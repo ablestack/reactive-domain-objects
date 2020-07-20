@@ -7,7 +7,7 @@ import { Book } from '../supporting-files/library-source-models';
 
 const logger = Logger.make('library-complex-graph-full-sync-performance.test.ts');
 
-const FULL_SYNC_ITERATION_COUNT = 500;
+const FULL_SYNC_ITERATION_COUNT = 5000;
 const FULL_SYNC_MAX_TIME_MS = 5000;
 
 // --------------------------------------------------------------
@@ -44,19 +44,20 @@ const config: IGraphSyncOptions = {
 test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in ${FULL_SYNC_MAX_TIME_MS / 1000} or less, on a medium sized graph`, () => {
   // SETUP
   const iterations = FULL_SYNC_ITERATION_COUNT;
-  const libraryRDO = new LibraryRDO();
   const fieldChangeCounter = new Map<string, number>();
-  const targetBookPath = 'authors/2/books/8/pages';
+  const targetSourceInstancePath = 'authors/author-ss/books/book-ss-8';
+  const targetSourceKey = 'pages';
 
-  const graphSyncronizerArray: GraphSynchronizer[] = [];
+  const testArray: { libraryRdo: LibraryRDO; graphSynchronizer: GraphSynchronizer }[] = [];
   for (let i = 0; i < iterations; i++) {
     // Instantiate
-    graphSyncronizerArray[i] = new GraphSynchronizer(config);
-    // Tegister
-    graphSyncronizerArray[i].subscribeToNodeChanges((data) => {
-      if (data.sourceNodeTypePath === targetBookPath) {
-        if (data.sourceNodeTypePath) if (!fieldChangeCounter.has(data.rdoKey)) fieldChangeCounter.set(data.rdoKey, 0);
-        fieldChangeCounter.set(data.rdoKey, fieldChangeCounter.get(data.rdoKey)! + 1);
+    testArray[i] = { libraryRdo: new LibraryRDO(), graphSynchronizer: new GraphSynchronizer(config) };
+
+    // Register
+    testArray[i].graphSynchronizer.subscribeToNodeChanges((data) => {
+      if (data.sourceNodeInstancePath === targetSourceInstancePath && data.sourceKey === targetSourceKey) {
+        if (!fieldChangeCounter.has(data.sourceKey)) fieldChangeCounter.set(data.sourceKey, 0);
+        fieldChangeCounter.set(data.sourceKey, fieldChangeCounter.get(data.sourceKey)! + 1);
       }
     });
   }
@@ -66,7 +67,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
 
   // Loop n sync
   for (let i = 0; i < iterations; i++) {
-    graphSyncronizerArray[i].smartSync({ rootRdo: libraryRDO, rootSourceNode: librarySourceJSON });
+    testArray[i].graphSynchronizer.smartSync({ rootRdo: testArray[i].libraryRdo, rootSourceNode: librarySourceJSON });
   }
 
   const finishTime = performance.now();
@@ -83,6 +84,7 @@ test(`achieves more than ${FULL_SYNC_ITERATION_COUNT} FULL synchronizations in $
   expect(totalTimeMs).toBeLessThan(FULL_SYNC_MAX_TIME_MS);
 
   // Verify changes were made as expected (indicating the full sync did actually occur)
-  expect(fieldChangeCounter.get(targetBookPath)).toHaveBeenCalledTimes(iterations);
-  expect(libraryRDO.authors.array$[2].books[8].pages$).toEqual(librarySourceJSON.authors[2].books[8].pages);
+  console.log('fieldChangeCounter', fieldChangeCounter);
+  expect(fieldChangeCounter.get(targetSourceKey)).toEqual(iterations);
+  expect(testArray[iterations - 1].libraryRdo.authors.array$[2].books[8].pages$).toEqual(librarySourceJSON.authors[2].books[8].pages);
 });

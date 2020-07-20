@@ -144,7 +144,15 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
                     // Insert
                     this.value[rdoFieldname] = rdoNodeItemValue;
                     // Emit
-                    this.eventEmitter.publish('nodeChange', { changeType: 'add', sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath, sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousSourceValue: undefined, newSourceValue: sourceFieldVal });
+                    this.eventEmitter.publish('nodeChange', {
+                        changeType: 'add',
+                        sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+                        sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
+                        sourceKey: sourceFieldname,
+                        rdoKey: rdoFieldname,
+                        previousSourceValue: undefined,
+                        newSourceValue: sourceFieldVal,
+                    });
                 }
                 else {
                     logger.trace(`sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - fieldname '${sourceFieldname}' key not found in RDO. Skipping property`);
@@ -235,6 +243,7 @@ class RdoObjectNW extends __1.RdoInternalNWBase {
         this.eventEmitter.publish('nodeChange', {
             changeType: 'update',
             sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
+            sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
             sourceKey,
             rdoKey,
             previousSourceValue: previousValue,
