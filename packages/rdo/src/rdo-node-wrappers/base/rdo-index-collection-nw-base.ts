@@ -7,9 +7,9 @@ import { NodeChange } from '../../types/event-types';
 import { RdoCollectionNWBase } from './rdo-collection-nw-base';
 
 const logger = Logger.make('RdoCollectionNWBase');
-export type RdoIndexCollectionNWBaseViews<K, S, D> = { sourceArray: Array<S>; keyByIndexMap: Map<number, K>; rdoByIndexMap: Map<number, D>; indexByKeyMap: Map<K, number> };
+export type RdoIndexCollectionNWBaseViews<S, D> = { sourceArray: Array<S>; keyByIndexMap: Map<number, string | number>; rdoByIndexMap: Map<number, D> };
 
-export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<number, S, D> {
   constructor({
     typeInfo,
     key,
@@ -24,10 +24,10 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
     eventEmitter,
   }: {
     typeInfo: NodeTypeInfo;
-    key: K | undefined;
+    key: number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
     matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
@@ -41,10 +41,10 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
   //------------------------------
   // Protected
   //------------------------------
-  protected get views(): RdoIndexCollectionNWBaseViews<K, S, D> {
-    let mutableNodeCacheItem = this.mutableNodeCache.get<RdoIndexCollectionNWBaseViews<K, S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
+  protected get views(): RdoIndexCollectionNWBaseViews<S, D> {
+    let mutableNodeCacheItem = this.mutableNodeCache.get<RdoIndexCollectionNWBaseViews<S, D>>({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
     if (!mutableNodeCacheItem) {
-      mutableNodeCacheItem = { sourceArray: new Array<S>(), keyByIndexMap: new Map<number, K>(), rdoByIndexMap: new Map<number, D>(), indexByKeyMap: new Map<K, number>() };
+      mutableNodeCacheItem = { sourceArray: new Array<S>(), keyByIndexMap: new Map<number, string | number>(), rdoByIndexMap: new Map<number, D>() };
       this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase', data: mutableNodeCacheItem });
     }
     return mutableNodeCacheItem;
@@ -57,18 +57,16 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
     //
     // Setup
     let changed = false;
-    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<K, S, D>;
+    const wrappedSourceNode = this.wrappedSourceNode as ISourceCollectionNodeWrapper<number, S, D>;
 
     const last = {
       sourceArray: this.views.sourceArray,
       keyByIndexMap: this.views.keyByIndexMap,
-      indexByKeyMap: this.views.indexByKeyMap,
       rdoByIndexMap: this.views.rdoByIndexMap,
     };
 
     this.views.sourceArray = wrappedSourceNode.elements();
-    this.views.keyByIndexMap = new Map<number, K>();
-    this.views.indexByKeyMap = new Map<K, number>();
+    this.views.keyByIndexMap = new Map<number, string | number>();
     this.views.rdoByIndexMap = new Map<number, D>();
 
     //
@@ -78,9 +76,9 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
       // SETUP
       const nextSourceElement = this.views.sourceArray[i];
       const index = i + indexOffset;
-      const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
+
       // Update maps
-      if (!this.views.indexByKeyMap.has(elementKey)) this.views.indexByKeyMap.set(elementKey, i);
+      const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
       this.views.keyByIndexMap.set(i, elementKey);
 
       // ---------------------------
@@ -96,7 +94,7 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onNewIndex, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onNewIndex, index, collectionKey: i, newRdo, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
@@ -114,7 +112,17 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
           this.views.rdoByIndexMap.set(i, lastRdo);
 
           // Handle
-          const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceIndex, index, elementKey, lastRdo: lastSourceElement, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
+          const lastElementKey = last.keyByIndexMap.get(i)!;
+          const result = this.handleReplaceOrUpdate({
+            replaceHandler: this.onReplaceIndex,
+            index,
+            collectionKey: i,
+            lastElementKey,
+            nextElementKey: elementKey,
+            lastRdo: lastSourceElement,
+            newSourceElement: nextSourceElement,
+            previousSourceElement: lastSourceElement,
+          });
 
           // Add result in case element replaced
           this.views.rdoByIndexMap.set(i, result.nextRdo);
@@ -129,41 +137,34 @@ export abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> 
       for (let i = this.views.sourceArray.length; i < last.sourceArray.length; i++) {
         const index = i + indexOffset;
         const previousSourceElement = last.sourceArray[i];
-        const elementKey = last.keyByIndexMap.get(i)!;
         const rdoToDelete = last.rdoByIndexMap.get(i);
 
         // Handle
-        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, elementKey, rdoToDelete, previousSourceElement }) && changed;
+        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, collectionKey: i, rdoToDelete, previousSourceElement }) && changed;
       }
     }
 
     // Update nodeInstanceCache
     last.sourceArray = this.views.sourceArray;
-    last.keyByIndexMap = this.views.keyByIndexMap;
-    last.indexByKeyMap = this.views.indexByKeyMap;
     last.rdoByIndexMap = this.views.rdoByIndexMap;
 
     return changed;
   }
 
   public getSourceNodeKeys() {
-    return this.views.indexByKeyMap.keys();
+    return this.views.sourceArray.keys();
   }
 
-  public getSourceNodeItem(key: K) {
-    const index = this.views.indexByKeyMap.get(key);
-    if (index === undefined) return;
-    return this.views.sourceArray[index];
+  public getSourceNodeItem(key: number) {
+    return this.views.sourceArray[key];
   }
 
-  public getRdoNodeItem(key: K) {
-    const index = this.views.indexByKeyMap.get(key);
-    if (index === undefined) return;
-    return this.views.rdoByIndexMap.get(index);
+  public getRdoNodeItem(key: number) {
+    return this.views.rdoByIndexMap.get(key);
   }
 
   /** */
-  protected abstract onNewIndex: NodeAddHandler<K>;
-  protected abstract onReplaceIndex: NodeReplaceHandler<K>;
-  protected abstract onDeleteIndex: NodeDeleteHandler<K>;
+  protected abstract onNewIndex: NodeAddHandler<number>;
+  protected abstract onReplaceIndex: NodeReplaceHandler<number>;
+  protected abstract onDeleteIndex: NodeDeleteHandler<number>;
 }

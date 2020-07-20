@@ -48,12 +48,12 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   }
 
   /** */
-  protected handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }: { index: number; elementKey: K; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler<K> }) {
-    const changed = addHandler({ index, key: elementKey, nextRdo: newRdo });
+  protected handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }: { index: number; collectionKey: K; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler<K> }) {
+    const changed = addHandler({ index, key: collectionKey, nextRdo: newRdo });
 
     if (changed) {
       // If not primitive, sync so child nodes are hydrated
-      if (!NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+      if (!NodeTypeUtils.isPrimitive(newRdo)) this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: collectionKey, sourceNodeItemKey: collectionKey });
 
       // Publish
       this.eventEmitter.publish('nodeChange', {
@@ -61,8 +61,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
         sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index: index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
+        sourceKey: collectionKey,
+        rdoKey: collectionKey,
         previousSourceValue: undefined,
         newSourceValue: newSourceElement,
       });
@@ -75,13 +75,17 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
   protected handleReplaceOrUpdate({
     replaceHandler,
     index,
-    elementKey,
+    collectionKey,
+    lastElementKey,
+    nextElementKey,
     lastRdo,
     newSourceElement,
     previousSourceElement,
   }: {
     index: number;
-    elementKey: K;
+    collectionKey: K;
+    lastElementKey: string | number;
+    nextElementKey: string | number;
     lastRdo: any;
     newSourceElement: S;
     replaceHandler: NodeReplaceHandler<K>;
@@ -93,9 +97,9 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
     // REPLACE
     // ---------------------------
     // If non-equal primitive with same indexes, just do a replace operation
-    if (NodeTypeUtils.isPrimitive(newSourceElement)) {
+    if (lastElementKey !== nextElementKey || NodeTypeUtils.isPrimitive(newSourceElement)) {
       const nextRdo = this.makeRdoElement(newSourceElement);
-      replaceHandler({ index, key: elementKey, lastRdo, nextRdo });
+      replaceHandler({ index, key: collectionKey, lastRdo, nextRdo });
 
       // Publish
       this.eventEmitter.publish('nodeChange', {
@@ -103,8 +107,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
         sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
+        sourceKey: collectionKey,
+        rdoKey: collectionKey,
         previousSourceValue: previousSourceElement,
         newSourceValue: newSourceElement,
       });
@@ -115,7 +119,7 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
       // UPDATE
       // ---------------------------
       // If non-equal non-primitive, step into child and sync
-      changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+      changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: collectionKey, sourceNodeItemKey: collectionKey }) && changed;
 
       // Publish
       this.eventEmitter.publish('nodeChange', {
@@ -123,19 +127,19 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
         sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
         sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
         index,
-        sourceKey: elementKey,
-        rdoKey: elementKey,
+        sourceKey: collectionKey,
+        rdoKey: collectionKey,
         previousSourceValue: previousSourceElement,
         newSourceValue: newSourceElement,
       });
 
-      return { changed, nextRdo: this.getRdoNodeItem(elementKey) };
+      return { changed, nextRdo: this.getRdoNodeItem(collectionKey) };
     }
   }
 
   /** */
-  protected handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }: { index?: number; elementKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler<K> }) {
-    const changed = deleteHandler({ index, key: elementKey, lastRdo: rdoToDelete });
+  protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { index?: number; collectionKey: K; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler<K> }) {
+    const changed = deleteHandler({ index, key: collectionKey, lastRdo: rdoToDelete });
 
     // Publish
     this.eventEmitter.publish('nodeChange', {
@@ -143,8 +147,8 @@ export abstract class RdoCollectionNWBase<K extends string | number, S, D> exten
       sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
       sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
       index: index,
-      sourceKey: elementKey,
-      rdoKey: elementKey,
+      sourceKey: collectionKey,
+      rdoKey: collectionKey,
       previousSourceValue: previousSourceElement,
       newSourceValue: undefined,
     });

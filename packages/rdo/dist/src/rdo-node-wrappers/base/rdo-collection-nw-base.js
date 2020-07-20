@@ -17,20 +17,20 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         return this._equalityComparer;
     }
     /** */
-    handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }) {
-        const changed = addHandler({ index, key: elementKey, nextRdo: newRdo });
+    handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }) {
+        const changed = addHandler({ index, key: collectionKey, nextRdo: newRdo });
         if (changed) {
             // If not primitive, sync so child nodes are hydrated
             if (!__1.NodeTypeUtils.isPrimitive(newRdo))
-                this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey });
+                this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: collectionKey, sourceNodeItemKey: collectionKey });
             // Publish
             this.eventEmitter.publish('nodeChange', {
                 changeType: 'add',
                 sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
                 index: index,
-                sourceKey: elementKey,
-                rdoKey: elementKey,
+                sourceKey: collectionKey,
+                rdoKey: collectionKey,
                 previousSourceValue: undefined,
                 newSourceValue: newSourceElement,
             });
@@ -38,23 +38,23 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
         return changed;
     }
     /** */
-    handleReplaceOrUpdate({ replaceHandler, index, elementKey, lastRdo, newSourceElement, previousSourceElement, }) {
+    handleReplaceOrUpdate({ replaceHandler, index, collectionKey, lastElementKey, nextElementKey, lastRdo, newSourceElement, previousSourceElement, }) {
         let changed = false;
         // ---------------------------
         // REPLACE
         // ---------------------------
         // If non-equal primitive with same indexes, just do a replace operation
-        if (__1.NodeTypeUtils.isPrimitive(newSourceElement)) {
+        if (lastElementKey !== nextElementKey || __1.NodeTypeUtils.isPrimitive(newSourceElement)) {
             const nextRdo = this.makeRdoElement(newSourceElement);
-            replaceHandler({ index, key: elementKey, lastRdo, nextRdo });
+            replaceHandler({ index, key: collectionKey, lastRdo, nextRdo });
             // Publish
             this.eventEmitter.publish('nodeChange', {
                 changeType: 'replace',
                 sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
                 index,
-                sourceKey: elementKey,
-                rdoKey: elementKey,
+                sourceKey: collectionKey,
+                rdoKey: collectionKey,
                 previousSourceValue: previousSourceElement,
                 newSourceValue: newSourceElement,
             });
@@ -65,32 +65,32 @@ class RdoCollectionNWBase extends rdo_internal_nw_base_1.RdoInternalNWBase {
             // UPDATE
             // ---------------------------
             // If non-equal non-primitive, step into child and sync
-            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: elementKey, sourceNodeItemKey: elementKey }) && changed;
+            changed = this.syncChildNode({ wrappedParentRdoNode: this, rdoNodeItemKey: collectionKey, sourceNodeItemKey: collectionKey }) && changed;
             // Publish
             this.eventEmitter.publish('nodeChange', {
                 changeType: 'update',
                 sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
                 sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
                 index,
-                sourceKey: elementKey,
-                rdoKey: elementKey,
+                sourceKey: collectionKey,
+                rdoKey: collectionKey,
                 previousSourceValue: previousSourceElement,
                 newSourceValue: newSourceElement,
             });
-            return { changed, nextRdo: this.getRdoNodeItem(elementKey) };
+            return { changed, nextRdo: this.getRdoNodeItem(collectionKey) };
         }
     }
     /** */
-    handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }) {
-        const changed = deleteHandler({ index, key: elementKey, lastRdo: rdoToDelete });
+    handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }) {
+        const changed = deleteHandler({ index, key: collectionKey, lastRdo: rdoToDelete });
         // Publish
         this.eventEmitter.publish('nodeChange', {
             changeType: 'delete',
             sourceNodeTypePath: this.wrappedSourceNode.sourceNodeTypePath,
             sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath,
             index: index,
-            sourceKey: elementKey,
-            rdoKey: elementKey,
+            sourceKey: collectionKey,
+            rdoKey: collectionKey,
             previousSourceValue: previousSourceElement,
             newSourceValue: undefined,
         });

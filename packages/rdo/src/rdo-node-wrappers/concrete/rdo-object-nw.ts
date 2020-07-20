@@ -26,7 +26,7 @@ import { NodeTracker } from '../../infrastructure/node-tracker';
 const logger = Logger.make('RdoObjectNW');
 type MutableCachedNodeItemType<S> = { sourceData: S | null | undefined };
 
-export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string, S, D> {
+export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNWBase<string | number, S, D> {
   private _value: D;
   private _equalityComparer: IEqualityComparer;
   private _wrapRdoNode: IWrapRdoNode;
@@ -48,7 +48,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
   }: {
     value: D;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
+    key: string | number | undefined;
     mutableNodeCache: MutableNodeCache;
     wrappedParentRdoNode: IRdoInternalNodeWrapper<any, S, D> | undefined;
     wrappedSourceNode: ISourceNodeWrapper<string, S, D>;

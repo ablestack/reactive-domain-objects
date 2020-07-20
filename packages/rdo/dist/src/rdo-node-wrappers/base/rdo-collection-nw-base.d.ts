@@ -21,17 +21,19 @@ export declare abstract class RdoCollectionNWBase<K extends string | number, S, 
     });
     protected get equalityComparer(): IEqualityComparer;
     /** */
-    protected handleAddElement({ index, elementKey, newRdo, newSourceElement, addHandler }: {
+    protected handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }: {
         index: number;
-        elementKey: K;
+        collectionKey: K;
         newRdo: any;
         newSourceElement: S;
         addHandler: NodeAddHandler<K>;
     }): boolean;
     /** */
-    protected handleReplaceOrUpdate({ replaceHandler, index, elementKey, lastRdo, newSourceElement, previousSourceElement, }: {
+    protected handleReplaceOrUpdate({ replaceHandler, index, collectionKey, lastElementKey, nextElementKey, lastRdo, newSourceElement, previousSourceElement, }: {
         index: number;
-        elementKey: K;
+        collectionKey: K;
+        lastElementKey: string | number;
+        nextElementKey: string | number;
         lastRdo: any;
         newSourceElement: S;
         replaceHandler: NodeReplaceHandler<K>;
@@ -41,9 +43,9 @@ export declare abstract class RdoCollectionNWBase<K extends string | number, S, 
         nextRdo: any;
     };
     /** */
-    protected handleDeleteElement({ deleteHandler, index, elementKey, rdoToDelete, previousSourceElement }: {
+    protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: {
         index?: number;
-        elementKey: K;
+        collectionKey: K;
         rdoToDelete: any;
         previousSourceElement: S;
         deleteHandler: NodeDeleteHandler<K>;

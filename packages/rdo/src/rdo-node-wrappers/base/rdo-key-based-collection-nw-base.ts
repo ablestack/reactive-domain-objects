@@ -93,7 +93,7 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onNewKey, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onNewKey, index, collectionKey: elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
@@ -112,7 +112,16 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
           this.views.rdoByKeyMap.set(elementKey, lastRdo!);
 
           // Handle
-          const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceKey, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
+          const result = this.handleReplaceOrUpdate({
+            replaceHandler: this.onReplaceKey,
+            index,
+            collectionKey: elementKey,
+            lastElementKey: elementKey,
+            nextElementKey: elementKey,
+            lastRdo,
+            newSourceElement: nextSourceElement,
+            previousSourceElement: lastSourceElement,
+          });
 
           // Add result in case element replaced
           this.views.rdoByKeyMap.set(elementKey, result.nextRdo);
@@ -130,7 +139,7 @@ export abstract class RdoKeyCollectionNWBase<K extends string | number, S, D> ex
       for (const elementKey of missingKeys) {
         const previousSourceElement = last.sourceByKeyMap.get(elementKey)!;
         const rdoToDelete = last.rdoByKeyMap.get(elementKey);
-        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, elementKey, rdoToDelete, previousSourceElement }) && changed;
+        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, collectionKey: elementKey, rdoToDelete, previousSourceElement }) && changed;
       }
     }
 

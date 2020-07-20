@@ -33,7 +33,7 @@ const config: IGraphSyncOptions = {
 // --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
-test('Synchronize collection additions', () => {
+test.only('Synchronize collection additions', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 
@@ -51,15 +51,18 @@ test('Synchronize collection additions', () => {
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
 
+  // Make sure array of objects duplicate item has synced contents (added due to found bug)
+  expect(allCollectionTypesRDO.arrayOfObjects[2].id).toEqual(2);
+
   // Mutate data
   const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
   allCollectionSourceModelWithEdits.arrayOfNumbers.push(4);
   allCollectionSourceModelWithEdits.mapOfNumbers.push(4);
   allCollectionSourceModelWithEdits.setOfNumbers.push(4);
-  allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '4' });
-  allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '4' });
-  allCollectionSourceModelWithEdits.setOfObjects.push({ id: '4' });
-  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '4' });
+  allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEdits.setOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
 
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });

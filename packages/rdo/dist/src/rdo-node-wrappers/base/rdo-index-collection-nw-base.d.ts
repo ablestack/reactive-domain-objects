@@ -4,19 +4,18 @@ import { MutableNodeCache } from '../../infrastructure/mutable-node-cache';
 import { IEqualityComparer, IRdoInternalNodeWrapper, NodeAddHandler, NodeDeleteHandler, NodeReplaceHandler } from '../../types';
 import { NodeChange } from '../../types/event-types';
 import { RdoCollectionNWBase } from './rdo-collection-nw-base';
-export declare type RdoIndexCollectionNWBaseViews<K, S, D> = {
+export declare type RdoIndexCollectionNWBaseViews<S, D> = {
     sourceArray: Array<S>;
-    keyByIndexMap: Map<number, K>;
+    keyByIndexMap: Map<number, string | number>;
     rdoByIndexMap: Map<number, D>;
-    indexByKeyMap: Map<K, number>;
 };
-export declare abstract class RdoIndexCollectionNWBase<K extends string | number, S, D> extends RdoCollectionNWBase<K, S, D> {
+export declare abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase<number, S, D> {
     constructor({ typeInfo, key, mutableNodeCache, wrappedParentRdoNode, wrappedSourceNode, defaultEqualityComparer, syncChildNode, matchingNodeOptions, globalNodeOptions, targetedOptionMatchersArray, eventEmitter, }: {
         typeInfo: NodeTypeInfo;
-        key: K | undefined;
+        key: number | undefined;
         mutableNodeCache: MutableNodeCache;
-        wrappedParentRdoNode: IRdoInternalNodeWrapper<K, S, D> | undefined;
-        wrappedSourceNode: ISourceNodeWrapper<K, S, D>;
+        wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
+        wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
         defaultEqualityComparer: IEqualityComparer;
         syncChildNode: ISyncChildNode;
         matchingNodeOptions: INodeSyncOptions<any, any, any> | undefined;
@@ -24,13 +23,13 @@ export declare abstract class RdoIndexCollectionNWBase<K extends string | number
         targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
         eventEmitter: EventEmitter<NodeChange>;
     });
-    protected get views(): RdoIndexCollectionNWBaseViews<K, S, D>;
+    protected get views(): RdoIndexCollectionNWBaseViews<S, D>;
     smartSync(): boolean;
-    getSourceNodeKeys(): IterableIterator<K>;
-    getSourceNodeItem(key: K): S | undefined;
-    getRdoNodeItem(key: K): D | undefined;
+    getSourceNodeKeys(): IterableIterator<number>;
+    getSourceNodeItem(key: number): S;
+    getRdoNodeItem(key: number): D | undefined;
     /** */
-    protected abstract onNewIndex: NodeAddHandler<K>;
-    protected abstract onReplaceIndex: NodeReplaceHandler<K>;
-    protected abstract onDeleteIndex: NodeDeleteHandler<K>;
+    protected abstract onNewIndex: NodeAddHandler<number>;
+    protected abstract onReplaceIndex: NodeReplaceHandler<number>;
+    protected abstract onDeleteIndex: NodeDeleteHandler<number>;
 }

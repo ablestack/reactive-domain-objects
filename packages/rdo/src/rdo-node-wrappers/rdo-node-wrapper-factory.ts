@@ -86,36 +86,32 @@ export class RdoNodeWrapperFactory {
         throw new Error(`Can not wrap primitive nodes. Primitive node sync should be handled in objects and collection wrappers. Key:${key}. SourceNodePath:${wrappedSourceNode.sourceNodeTypePath}`);
       }
       case '[object Object]': {
-        if (typeof key === 'string' || typeof key === 'undefined') {
-          logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-          const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
-          const o = new RdoObjectNW({
-            value,
-            key,
-            mutableNodeCache,
-            wrappedParentRdoNode,
-            wrappedSourceNode: wrappedSourceNodeTyped,
-            typeInfo,
-            defaultEqualityComparer: this._defaultEqualityComparer,
-            syncChildNode: this._syncChildNode,
-            wrapRdoNode: this._wrapRdoNode,
-            matchingNodeOptions,
-            globalNodeOptions: this._globalNodeOptions,
-            targetedOptionMatchersArray: this._targetedOptionMatchersArray,
-            eventEmitter: this._eventEmitter,
-          });
-          return (o as unknown) as IRdoNodeWrapper<K, S, D>;
-        } else {
-          throw new Error(`Key for SourceObjects must be of type string (or undefined in the case of the root element). Found key of type ${typeof key}`);
-        }
+        logger.trace(`Wrapping Node ${key} with RdoObjectNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
+        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string | number, S, D>;
+        const o = new RdoObjectNW({
+          value,
+          key,
+          mutableNodeCache,
+          wrappedParentRdoNode,
+          wrappedSourceNode: wrappedSourceNodeTyped,
+          typeInfo,
+          defaultEqualityComparer: this._defaultEqualityComparer,
+          syncChildNode: this._syncChildNode,
+          wrapRdoNode: this._wrapRdoNode,
+          matchingNodeOptions,
+          globalNodeOptions: this._globalNodeOptions,
+          targetedOptionMatchersArray: this._targetedOptionMatchersArray,
+          eventEmitter: this._eventEmitter,
+        });
+        return (o as unknown) as IRdoNodeWrapper<K, S, D>;
       }
       case '[object Array]': {
         logger.trace(`Wrapping Node ${key} with RdoArrayNW - sourceNodeTypePath: ${wrappedSourceNode.sourceNodeTypePath}`);
-        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<string, S, D>;
+        const wrappedSourceNodeTyped = (wrappedSourceNode as unknown) as ISourceNodeWrapper<number, S, D>;
         const a = new RdoArrayNW<S, D>({
           value: value as Array<D>,
           typeInfo,
-          key: String(key),
+          key: key as number,
           mutableNodeCache,
           wrappedParentRdoNode,
           wrappedSourceNode: wrappedSourceNodeTyped,

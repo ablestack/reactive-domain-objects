@@ -58,7 +58,7 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
                 this.views.rdoByKeyMap.set(elementKey, newRdo);
                 indexOffset++;
                 // Handle
-                changed = this.handleAddElement({ addHandler: this.onNewKey, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+                changed = this.handleAddElement({ addHandler: this.onNewKey, index, collectionKey: elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // If index is in previous source array
             }
             else {
@@ -76,7 +76,16 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
                     // Tracking
                     this.views.rdoByKeyMap.set(elementKey, lastRdo);
                     // Handle
-                    const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceKey, index, elementKey, lastRdo, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
+                    const result = this.handleReplaceOrUpdate({
+                        replaceHandler: this.onReplaceKey,
+                        index,
+                        collectionKey: elementKey,
+                        lastElementKey: elementKey,
+                        nextElementKey: elementKey,
+                        lastRdo,
+                        newSourceElement: nextSourceElement,
+                        previousSourceElement: lastSourceElement,
+                    });
                     // Add result in case element replaced
                     this.views.rdoByKeyMap.set(elementKey, result.nextRdo);
                 }
@@ -92,7 +101,7 @@ class RdoKeyCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWBas
             for (const elementKey of missingKeys) {
                 const previousSourceElement = last.sourceByKeyMap.get(elementKey);
                 const rdoToDelete = last.rdoByKeyMap.get(elementKey);
-                changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, elementKey, rdoToDelete, previousSourceElement }) && changed;
+                changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, collectionKey: elementKey, rdoToDelete, previousSourceElement }) && changed;
             }
         }
         return changed;

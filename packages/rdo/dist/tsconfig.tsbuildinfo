@@ -772,8 +772,8 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-collection-nw-base.ts": {
-        "version": "19ac5c4a88d468fe5b62e079a9883346b641cc9f7005759734188d4d0bc48cbd",
-        "signature": "2af66268d681961b0cf145e38c46ea699101a2a44c6b44c09d2551f259761bea",
+        "version": "efd72d6fc96c6a5a394be26abc95d0d45964e44a8630c69d0fec04079274250e",
+        "signature": "6ae0ac36d71f44bac96cb2a5bb82e2a99b1b9254ee55684f0399f1949359062f",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/index.ts": {
@@ -782,13 +782,13 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/base/rdo-index-collection-nw-base.ts": {
-        "version": "ecbd4eb25c699c0e89d64beaed7a7127aecf72a77f1ab9e43594cd5e362f4f70",
-        "signature": "86e8b166dea853758da5fdce430c4c68caebede58009b7995375f6667be0be54",
+        "version": "5ff168608607420aed8775575edd62d1763e18a050f814b5b2c531c8a8ed464d",
+        "signature": "c8da0289292be1920968ed38a202d5cd3d67676ad19d02ddcca72ee5dc163ab3",
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/concrete/rdo-array-nw.ts": {
-        "version": "7c9a709c09d42b170053c27e57a714d8307c281d909bf60a34be19c87fa498bb",
-        "signature": "0db7ea16e140fc52c2a17155f0147f961048fb8043eb0e6f3908dfde2928e956",
+        "version": "f23366f2de48c0e2f482bd3b7c118d15228f1a678a53888ad1e40510aa2e4661",
+        "signature": "79853d4cb635bad1cef645de1ed890d4f9c813bfa227443d55d1b0fdc1ac9ead",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/lodash/ts3.1/common/common.d.ts": {
@@ -857,7 +857,7 @@
         "affectsGlobalScope": true
       },
       "../src/rdo-node-wrappers/base/rdo-key-based-collection-nw-base.ts": {
-        "version": "e74b11821d39ca7808fe3254b4d4f6c7ed6758ced64af1b5f5bc88facdb1b3f4",
+        "version": "8748cc9d94adc2a6a0ca69812526a1f3ddc7731dde70f1af8b6bbd9af2999885",
         "signature": "719957ee3041b1870b5dff3700b69c827beec6c837f1a9986949b5cc209a2752",
         "affectsGlobalScope": false
       },
@@ -917,7 +917,7 @@
         "affectsGlobalScope": false
       },
       "../src/rdo-node-wrappers/rdo-node-wrapper-factory.ts": {
-        "version": "34df9a075fa991bad6e49286512fc69230f60e89a338cb3029d297333673891a",
+        "version": "48c6b1b87067bce0117f94a56599726785e57672172081415381173c588a2c31",
         "signature": "c040dc1d5e4156b7ab3510f96cb877ad0fd06ad47d986eae254b5f95f862c085",
         "affectsGlobalScope": false
       },

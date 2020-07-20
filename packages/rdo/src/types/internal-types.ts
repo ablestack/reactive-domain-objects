@@ -21,7 +21,7 @@ export type CollectionNodePatchOperation<K extends string | number, D> = { op: N
  * @template S The type of the contained source elements
  * @template D The type of the related RDO that the contained elements are to be transformed into
  */
-export interface ISourceNodeWrapper<K extends string | number, S, D> {
+export interface ISourceNodeWrapper<S, D> {
   readonly typeInfo: NodeTypeInfo;
   readonly value: S | Iterable<S> | null | undefined;
   readonly key: K | undefined;

@@ -31,12 +31,8 @@ export class SourceNodeWrapperFactory {
         return new SourcePrimitiveNW<K, S, D>({ value, key, sourceNodeTypePath, sourceNodeInstancePath, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
       }
       case 'Object': {
-        if (typeof key === 'string' || typeof key === 'undefined') {
-          const o = new SourceObjectNW<string, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
-          return (o as unknown) as ISourceNodeWrapper<K, S, D>;
-        } else {
-          throw new Error(`Key for SourceObjects must be of type string (or undefined in the case of the root element). Found key of type ${typeof key}`);
-        }
+        const o = new SourceObjectNW<K, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });
+        return (o as unknown) as ISourceNodeWrapper<K, S, D>;
       }
       case 'Collection': {
         return new SourceArrayNW<K, S, D>({ value, sourceNodeTypePath, sourceNodeInstancePath, key, typeInfo, matchingNodeOptions, globalNodeOptions: this._globalNodeOptions });

@@ -14,7 +14,7 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
     get views() {
         let mutableNodeCacheItem = this.mutableNodeCache.get({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase' });
         if (!mutableNodeCacheItem) {
-            mutableNodeCacheItem = { sourceArray: new Array(), keyByIndexMap: new Map(), rdoByIndexMap: new Map(), indexByKeyMap: new Map() };
+            mutableNodeCacheItem = { sourceArray: new Array(), keyByIndexMap: new Map(), rdoByIndexMap: new Map() };
             this.mutableNodeCache.set({ sourceNodeInstancePath: this.wrappedSourceNode.sourceNodeInstancePath, dataKey: 'RdoIndexCollectionNWBase', data: mutableNodeCacheItem });
         }
         return mutableNodeCacheItem;
@@ -30,12 +30,10 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
         const last = {
             sourceArray: this.views.sourceArray,
             keyByIndexMap: this.views.keyByIndexMap,
-            indexByKeyMap: this.views.indexByKeyMap,
             rdoByIndexMap: this.views.rdoByIndexMap,
         };
         this.views.sourceArray = wrappedSourceNode.elements();
         this.views.keyByIndexMap = new Map();
-        this.views.indexByKeyMap = new Map();
         this.views.rdoByIndexMap = new Map();
         //
         // Loop and execute
@@ -44,10 +42,8 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
             // SETUP
             const nextSourceElement = this.views.sourceArray[i];
             const index = i + indexOffset;
-            const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
             // Update maps
-            if (!this.views.indexByKeyMap.has(elementKey))
-                this.views.indexByKeyMap.set(elementKey, i);
+            const elementKey = wrappedSourceNode.makeCollectionKey(nextSourceElement, i);
             this.views.keyByIndexMap.set(i, elementKey);
             // ---------------------------
             // New Index - ADD
@@ -60,7 +56,7 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
                 this.views.rdoByIndexMap.set(i, newRdo);
                 indexOffset++;
                 // Handle
-                changed = this.handleAddElement({ addHandler: this.onNewIndex, index, elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+                changed = this.handleAddElement({ addHandler: this.onNewIndex, index, collectionKey: i, newRdo, newSourceElement: nextSourceElement }) && changed;
                 // If index is in previous source array
             }
             else {
@@ -77,7 +73,17 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
                     const lastRdo = last.rdoByIndexMap.get(i);
                     this.views.rdoByIndexMap.set(i, lastRdo);
                     // Handle
-                    const result = this.handleReplaceOrUpdate({ replaceHandler: this.onReplaceIndex, index, elementKey, lastRdo: lastSourceElement, newSourceElement: nextSourceElement, previousSourceElement: lastSourceElement });
+                    const lastElementKey = last.keyByIndexMap.get(i);
+                    const result = this.handleReplaceOrUpdate({
+                        replaceHandler: this.onReplaceIndex,
+                        index,
+                        collectionKey: i,
+                        lastElementKey,
+                        nextElementKey: elementKey,
+                        lastRdo: lastSourceElement,
+                        newSourceElement: nextSourceElement,
+                        previousSourceElement: lastSourceElement,
+                    });
                     // Add result in case element replaced
                     this.views.rdoByIndexMap.set(i, result.nextRdo);
                 }
@@ -90,33 +96,24 @@ class RdoIndexCollectionNWBase extends rdo_collection_nw_base_1.RdoCollectionNWB
             for (let i = this.views.sourceArray.length; i < last.sourceArray.length; i++) {
                 const index = i + indexOffset;
                 const previousSourceElement = last.sourceArray[i];
-                const elementKey = last.keyByIndexMap.get(i);
                 const rdoToDelete = last.rdoByIndexMap.get(i);
                 // Handle
-                changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, elementKey, rdoToDelete, previousSourceElement }) && changed;
+                changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, collectionKey: i, rdoToDelete, previousSourceElement }) && changed;
             }
         }
         // Update nodeInstanceCache
         last.sourceArray = this.views.sourceArray;
-        last.keyByIndexMap = this.views.keyByIndexMap;
-        last.indexByKeyMap = this.views.indexByKeyMap;
         last.rdoByIndexMap = this.views.rdoByIndexMap;
         return changed;
     }
     getSourceNodeKeys() {
-        return this.views.indexByKeyMap.keys();
+        return this.views.sourceArray.keys();
     }
     getSourceNodeItem(key) {
-        const index = this.views.indexByKeyMap.get(key);
-        if (index === undefined)
-            return;
-        return this.views.sourceArray[index];
+        return this.views.sourceArray[key];
     }
     getRdoNodeItem(key) {
-        const index = this.views.indexByKeyMap.get(key);
-        if (index === undefined)
-            return;
-        return this.views.rdoByIndexMap.get(index);
+        return this.views.rdoByIndexMap.get(key);
     }
 }
 exports.RdoIndexCollectionNWBase = RdoIndexCollectionNWBase;

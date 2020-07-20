@@ -7,7 +7,7 @@ import { RdoIndexCollectionNWBase } from '../base/rdo-index-collection-nw-base';
 
 const logger = Logger.make('RdoArrayNW');
 
-export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
+export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<S, D> {
   private _value: Array<D>;
 
   constructor({
@@ -26,13 +26,13 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
   }: {
     value: Array<D>;
     typeInfo: NodeTypeInfo;
-    key: string | undefined;
+    key: number | undefined;
     mutableNodeCache: MutableNodeCache;
-    wrappedParentRdoNode: IRdoInternalNodeWrapper<string, S, D> | undefined;
-    wrappedSourceNode: ISourceNodeWrapper<string, S, D>;
+    wrappedParentRdoNode: IRdoInternalNodeWrapper<number, S, D> | undefined;
+    wrappedSourceNode: ISourceNodeWrapper<number, S, D>;
     defaultEqualityComparer: IEqualityComparer;
     syncChildNode: ISyncChildNode;
-    matchingNodeOptions: INodeSyncOptions<string, S, D> | undefined;
+    matchingNodeOptions: INodeSyncOptions<number, S, D> | undefined;
     globalNodeOptions: IGlobalNodeOptions | undefined;
     targetedOptionMatchersArray: Array<INodeSyncOptions<any, any, any>>;
     eventEmitter: EventEmitter<NodeChange>;
@@ -66,19 +66,19 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<string, S, D> {
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onNewIndex = ({ index, key, nextRdo }: { index?: number; key: string; nextRdo: any }) => {
+  protected onNewIndex = ({ index, key, nextRdo }: { index?: number; key: number; nextRdo: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
     this.value.splice(index, 0, nextRdo);
     return true;
   };
 
-  protected onReplaceIndex = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string; lastRdo: any; nextRdo: any }) => {
+  protected onReplaceIndex = ({ index, key, lastRdo, nextRdo }: { index?: number; key: number; lastRdo: any; nextRdo: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
     this.value.splice(index, 1, nextRdo);
     return true;
   };
 
-  protected onDeleteIndex = ({ index, key, lastRdo }: { index?: number; key: string; lastRdo: any }) => {
+  protected onDeleteIndex = ({ index, key, lastRdo }: { index?: number; key: number; lastRdo: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
     this.value.splice(index, 1);
     return true;

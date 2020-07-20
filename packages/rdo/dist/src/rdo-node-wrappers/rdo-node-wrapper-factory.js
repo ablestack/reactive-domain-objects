@@ -75,7 +75,7 @@ class RdoNodeWrapperFactory {
                 const a = new _1.RdoArrayNW({
                     value: value,
                     typeInfo,
-                    key: String(key),
+                    key: key,
                     mutableNodeCache,
                     wrappedParentRdoNode,
                     wrappedSourceNode: wrappedSourceNodeTyped,
