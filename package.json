@@ -28,7 +28,7 @@
     "reactive"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "rimraf packages/rdo/dist && rimraf packages/rdo-apollo-mobx-connector/dist && lerna bootstrap",
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose",
     "pub": "npm run build && lerna publish --forcePublish",
