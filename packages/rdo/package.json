@@ -28,7 +28,10 @@
     "reactive"
   ],
   "scripts": {
-    "prepublishOnly": "rm -f dist/src/package.json dist/src/README.md && cp package.json README.md dist/src/",
+    "prepublishOnly": "shx rm -f dist/src/package.json dist/src/README.md && shx cp src/package.json src/README.md dist/src",
+    "tst1": "shx rm -f dist/src/README.md",
+    "tst2": "shx cp README.md dist/src",
+    "tst3": "shx rm -f dist/src/README.md && shx cp README.md dist/src",
     "test": "jest",
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose"
