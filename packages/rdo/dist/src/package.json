@@ -1,7 +1,7 @@
 {
-  "name": "@ablestack/rdo-apollo-mobx-connector",
+  "name": "@ablestack/rdo",
   "version": "0.6.0",
-  "description": "A library to connect Apollo GraphQL Query Results to MobX, leveraging Reactive Domain Objects",
+  "description": "A library to facilitate building and running graphs of Reactive Domain Objects - connecting JSON data sources to reactive client applications",
   "author": "jamshally <ahrndee@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/ablestack/reactive-domain-objects",
@@ -43,29 +43,19 @@
     "graphql-tag": "^2.11.0"
   },
   "dependencies": {
-    "@ablestack/rdo": "0.6.0",
-    "@apollo/client": "3.2.5",
-    "@apollo/react-hooks": "^4.0.0-beta.1",
-    "@types/lodash": "^4.14.165",
     "@wry/equality": "^0.3.0",
     "debug": "^4.2.0",
-    "graphql": "^15.4.0",
-    "mobx": "^6.0.3",
-    "mobx-react-lite": "^3.1.5",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "lodash": "^4.17.20",
+    "mobx": "^6.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
-    "@graphql-codegen/core": "^1.17.8",
-    "@graphql-codegen/plugin-helpers": "1.18.1",
-    "@graphql-codegen/typescript": "^1.17.11",
-    "@graphql-codegen/visitor-plugin-common": "1.17.17",
     "@types/jest": "^26.0.15",
-    "@types/react": "16.9.56",
+    "@types/lodash": "^4.14.165",
     "babel-jest": "^26.6.3",
+    "dotenv": "^8.2.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
     "ts-node": "~9.0.0",
@@ -73,10 +63,10 @@
     "typescript": "^4.0.5"
   },
   "sideEffects": false,
-  "main": "dist/rdo-apollo-mobx-connector/src/index.js",
-  "typings": "dist/rdo-apollo-mobx-connector/src/index.d.ts",
+  "main": "dist/rdo/src/index.js",
+  "typings": "dist/rdo/src/index.d.ts",
   "typescript": {
-    "definition": "dist/apollo-mobx-connector/src/index.d.ts"
+    "definition": "dist/rdo/src/index.d.ts"
   },
   "gitHead": "751f19a4548c130154b18d26a6631512f1487783"
 }

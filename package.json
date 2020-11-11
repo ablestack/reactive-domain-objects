@@ -28,12 +28,12 @@
     "reactive"
   ],
   "scripts": {
-    "bootstrap": "rimraf packages/rdo/dist && rimraf packages/rdo-apollo-mobx-connector/dist && lerna bootstrap",
+    "bootstrap": "lerna bootstrap",
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose",
     "pub": "npm run build && lerna publish --forcePublish",
-    "lpub": "npm run build && yalc publish packages/rdo/dist/src --force --no-script && yalc publish packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
-    "lpush": "npm run build && yalc push packages/rdo/dist/src --force --no-script && yalc push packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
+    "lpub": "npm run build  && lerna run prepublishOnly --stream && yalc publish packages/rdo/dist/src --force --no-script && yalc publish packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
+    "lpush": "npm run build  && lerna run prepublishOnly --stream && yalc push packages/rdo/dist/src --force --no-script && yalc push packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
     "test": "npm run build && jest"
   },
   "devDependencies": {
