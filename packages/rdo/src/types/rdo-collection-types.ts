@@ -52,9 +52,9 @@ export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollection
 export interface ISyncableKeyBasedCollection<S, D> extends ITryMakeCollectionKey<S> {
   readonly size: number;
   elements(): Iterable<D>;
-  add({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any });
-  replace({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any });
-  delete({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any });
+  add({ key, nextRdo }: { key: string | number; nextRdo: any });
+  replace({ key, lastRdo, nextRdo }: { key: string | number; lastRdo: any; nextRdo: any });
+  delete({ key, lastRdo }: { key: string | number; lastRdo: any });
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any> {

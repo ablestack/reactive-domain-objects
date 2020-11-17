@@ -94,7 +94,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onNewIndex, index, collectionKey: i, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: i, newRdo, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
@@ -116,7 +116,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
           const result = this.handleReplaceOrUpdate({
             replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
               this.views.rdoByIndexMap.set(i, nextRdo);
-              return this.onReplaceIndex({ index, key, lastRdo, nextRdo });
+              return this.onReplace({ index, key, lastRdo, nextRdo });
             },
             index,
             collectionKey: i,
@@ -143,7 +143,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
         const rdoToDelete = last.rdoByIndexMap.get(i);
 
         // Handle
-        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteIndex, index, collectionKey: i, rdoToDelete, previousSourceElement }) && changed;
+        changed = this.handleDeleteElement({ deleteHandler: this.onDelete, index, collectionKey: i, rdoToDelete, previousSourceElement }) && changed;
       }
     }
 
@@ -167,7 +167,7 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
   }
 
   /** */
-  protected abstract onNewIndex: NodeAddHandler;
-  protected abstract onReplaceIndex: NodeReplaceHandler;
-  protected abstract onDeleteIndex: NodeDeleteHandler;
+  protected abstract onAdd: NodeAddHandler;
+  protected abstract onReplace: NodeReplaceHandler;
+  protected abstract onDelete: NodeDeleteHandler;
 }

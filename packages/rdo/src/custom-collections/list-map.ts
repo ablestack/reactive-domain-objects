@@ -86,20 +86,20 @@ export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
     return this._map$.values();
   }
 
-  public add = ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }) => {
+  public add = ({ key, nextRdo }: { key: string | number; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this.indexByKeyMap.set(key, this._array$.length);
     this._array$.push(nextRdo);
     return true;
   };
 
-  public replace = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }) => {
+  public replace = ({ key, lastRdo, nextRdo }: { key: string | number; lastRdo: any; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1, nextRdo);
     return true;
   };
 
-  public delete = ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }) => {
+  public delete = ({ key, lastRdo }: { key: string | number; lastRdo: any }) => {
     this._map$.delete(key);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1);
     this.indexByKeyMap.delete(key);
