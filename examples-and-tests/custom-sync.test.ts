@@ -1,4 +1,4 @@
-import { GraphSynchronizer, IContinueSmartSync, ICustomSync, IMakeRdo, IRdoNodeWrapper, IGraphSyncOptions } from '@ablestack/rdo';
+import { GraphSynchronizer, IContinueSmartSync, ICustomSync, IMakeRdo, IRdoNodeWrapper, IGraphSyncOptions, comparerUtils } from '@ablestack/rdo';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 
 const logger = Logger.make('custom-sync.test.ts');
@@ -83,15 +83,16 @@ export class CustomSyncBarRDO implements ICustomSync<Bar> {
   public mapOfBazzz = new Map<string, BazRdo>();
 
   public synchronizeState({ sourceObject, continueSmartSync }: { sourceObject: Bar; continueSmartSync: IContinueSmartSync }) {
-    this.id = `custom-id-${sourceObject.id}`;
+    let changed = false;
+    changed = comparerUtils.valueGraph.updateIfNotEqual(this.id, `custom-id-${sourceObject.id}`, (val) => this.id = val) || changed;
 
     // sync bazzz
-    continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'baz', rdoNode: this, rdoNodeItemKey: 'bazzz' });
+    changed = continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'baz', rdoNode: this, rdoNodeItemKey: 'bazzz' }) || changed;
 
     // sync mapOfBazz
-    continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'mapOfBaz', rdoNode: this, rdoNodeItemKey: 'mapOfBazzz' });
+    continueSmartSync({ sourceNode: sourceObject, sourceNodeItemKey: 'mapOfBaz', rdoNode: this, rdoNodeItemKey: 'mapOfBazzz' }) || changed;
 
-    return false;
+    return changed;
   }
 }
 

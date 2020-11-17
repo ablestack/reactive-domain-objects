@@ -8,7 +8,6 @@ import {
   InternalNodeKind,
   IRdoInternalNodeWrapper,
   IRdoNodeWrapper,
-  isISourceInternalNodeWrapper,
   ISyncChildNode,
   RdoNodeTypes,
   SourceNodeWrapperFactory,
@@ -33,7 +32,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   // INTERNAL STATE
   // ------------------------------------------------------------------------------------------------------------------
   private _eventEmitter: EventEmitter<NodeChange>;
-  private _defaultEqualityComparer: IEqualityComparer;
   private _globalNodeOptions: IGlobalNodeOptions | undefined;
   private _targetedOptionNodePathsMap: Map<string, INodeSyncOptions<any, any>>;
   private _targetedOptionMatchersArray: Array<INodeSyncOptions<any, any>>;
@@ -43,15 +41,16 @@ export class GraphSynchronizer implements IGraphSynchronizer {
   private _rdoNodeWrapperFactory: RdoNodeWrapperFactory;
 
   // ------------------------------------------------------------------------------------------------------------------
-  // PRIVATE PROPERTIES
+  // PUBLIC PROPERTIES
   // ------------------------------------------------------------------------------------------------------------------
+  public readonly DefaultEqualityComparer: IEqualityComparer;
 
   // ------------------------------------------------------------------------------------------------------------------
   // CONSTRUCTOR
   // ------------------------------------------------------------------------------------------------------------------
   constructor(options?: IGraphSyncOptions) {
     this._eventEmitter = new EventEmitter<NodeChange>();
-    this._defaultEqualityComparer = options?.customEqualityComparer || comparers.apollo;
+    this.DefaultEqualityComparer = options?.customEqualityComparer || comparers.valueGraph;
     this._globalNodeOptions = options?.globalNodeOptions;
     this._targetedOptionNodePathsMap = new Map<string, INodeSyncOptions<any, any>>();
     this._targetedOptionMatchersArray = new Array<INodeSyncOptions<any, any>>();
@@ -71,7 +70,7 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       syncChildNode: this.syncChildNode,
       globalNodeOptions: this._globalNodeOptions,
       wrapRdoNode: this.wrapRdoNode,
-      defaultEqualityComparer: this._defaultEqualityComparer,
+      defaultEqualityComparer: this.DefaultEqualityComparer,
       targetedOptionMatchersArray: this._targetedOptionMatchersArray,
     });
   }

@@ -93,7 +93,7 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onNewKey, index, collectionKey: elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
@@ -115,7 +115,7 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
           const result = this.handleReplaceOrUpdate({
             replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
               this.views.rdoByKeyMap.set(key, lastRdo!);
-              return this.onReplaceKey({ index, key, lastRdo, nextRdo });
+              return this.onReplace({ index, key, lastRdo, nextRdo });
             },
             index,
             collectionKey: elementKey,
@@ -142,7 +142,7 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
       for (const elementKey of missingKeys) {
         const previousSourceElement = last.sourceByKeyMap.get(elementKey)!;
         const rdoToDelete = last.rdoByKeyMap.get(elementKey);
-        changed = this.handleDeleteElement({ deleteHandler: this.onDeleteKey, index: undefined, collectionKey: elementKey, rdoToDelete, previousSourceElement }) && changed;
+        changed = this.handleDeleteElement({ deleteHandler: this.onDelete, index: undefined, collectionKey: elementKey, rdoToDelete, previousSourceElement }) && changed;
       }
     }
 
@@ -162,7 +162,7 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
   }
 
   /** */
-  protected abstract onNewKey: NodeAddHandler;
-  protected abstract onReplaceKey: NodeReplaceHandler;
-  protected abstract onDeleteKey: NodeDeleteHandler;
+  protected abstract onAdd: NodeAddHandler;
+  protected abstract onReplace: NodeReplaceHandler;
+  protected abstract onDelete: NodeDeleteHandler;
 }

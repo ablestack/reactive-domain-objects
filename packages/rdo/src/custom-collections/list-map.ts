@@ -2,7 +2,7 @@ import { computed, observable } from 'mobx';
 import { IRdoNodeWrapper, ISyncableRDOKeyBasedCollection, MakeCollectionKeyMethod } from '..';
 import { Logger } from '../infrastructure/logger';
 
-const logger = Logger.make('SyncableCollection');
+const logger = Logger.make('ListMap');
 /**
  *
  *
@@ -12,7 +12,7 @@ const logger = Logger.make('SyncableCollection');
  * @implements {Map<string | number, D>}
  * @template S
  * @template D
- * @description: A readonly, syncable, Map-Array collection hybrid, with an built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
+ * @description: A readonly, syncable, Map-Array collection hybrid, with a built in observable array (accessed via array$). Manages the internal array in parallel with the internal map so as to only trigger observable changes when necessary
  */
 export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
   @observable.shallow private _map$: Map<string | number, D>;
@@ -86,20 +86,20 @@ export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
     return this._map$.values();
   }
 
-  public handleNewKey = ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }) => {
+  public add = ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this.indexByKeyMap.set(key, this._array$.length);
     this._array$.push(nextRdo);
     return true;
   };
 
-  public handleReplaceKey = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }) => {
+  public replace = ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }) => {
     this._map$.set(key, nextRdo);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1, nextRdo);
     return true;
   };
 
-  public handleDeleteKey = ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }) => {
+  public delete = ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }) => {
     this._map$.delete(key);
     this._array$.splice(this.indexByKeyMap.get(key)!, 1);
     this.indexByKeyMap.delete(key);

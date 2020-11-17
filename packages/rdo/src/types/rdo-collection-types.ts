@@ -40,25 +40,25 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
 }
 
 export interface IRdoKeyBasedCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D> {
-  onNewKey: NodeAddHandler;
-  onReplaceKey: NodeReplaceHandler;
-  onDeleteKey: NodeDeleteHandler;
+  onAdd: NodeAddHandler;
+  onReplace: NodeReplaceHandler;
+  onDelete: NodeDeleteHandler;
 }
 
 export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
-  return o && o.onNewKey && o.onReplaceKey && o.onDeleteKey && isIRdoCollectionNodeWrapper(o);
+  return o && o.onAdd && o.onReplace && o.onDelete && isIRdoCollectionNodeWrapper(o);
 }
 
 export interface ISyncableKeyBasedCollection<S, D> extends ITryMakeCollectionKey<S> {
   readonly size: number;
   elements(): Iterable<D>;
-  handleNewKey({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any });
-  handleReplaceKey({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any });
-  handleDeleteKey({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any });
+  add({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any });
+  replace({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any });
+  delete({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any });
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any> {
-  return o && o.size !== undefined && o.elements && o.handleNewKey && o.handleReplaceKey && o.handleDeleteKey && isITryMakeCollectionKey(o);
+  return o && o.size !== undefined && o.elements && o.add && o.replace && o.delete && isITryMakeCollectionKey(o);
 }
 
 export interface ISyncableRDOKeyBasedCollection<S, D> extends IMakeRdo<S, D>, ISyncableKeyBasedCollection<S, D> {}
