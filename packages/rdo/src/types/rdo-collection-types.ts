@@ -49,32 +49,32 @@ export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollection
   return o && o.onAdd && o.onReplace && o.onDelete && isIRdoCollectionNodeWrapper(o);
 }
 
-export interface ISyncableKeyBasedCollection<S,D> extends ITryMakeCollectionKey<S> {
+export interface ISyncableKeyBasedCollection<T> {
   readonly size: number;
-  elements(): Iterable<D>;
-  add({ index, key, newRdo }: { index?: number; key: string | number; newRdo: any });
-  replace({ index, key, origRdo, newRdo }: { index?: number; key: string | number; origRdo: any; newRdo: any });
-  delete({ index, key, origRdo }: { index?: number; key: string | number; origRdo: any });
+  elements(): Iterable<T>;
+  add({ index, key, newItem }: { index?: number; key: string | number; newItem: T });
+  replace({ index, key, origItem, newItem }: { index?: number; key: string | number; origItem: any; newItem: T });
+  delete({ index, key, origItem }: { index?: number; key: string | number; origItem: T });
 }
 
-export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any> {
+export function IsISyncableCollection<T>(o: any): o is ISyncableKeyBasedCollection<T> {
   return o && o.size !== undefined && o.elements && o.add && o.replace && o.delete && isITryMakeCollectionKey(o);
 }
 
-export interface ISyncableRDOKeyBasedCollection<S, D> extends IMakeRdo<S, D>, ISyncableKeyBasedCollection<S, D> {}
+export interface ISyncableRDOKeyBasedCollection<S, D> extends IMakeRdo<S, D>, ISyncableKeyBasedCollection<D>, ITryMakeCollectionKey<S>{}
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOKeyBasedCollection<any, any> {
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }
 
 export interface NodeAddHandler {
-  ({ index, key, newRdo }: { index?: number; key: string | number; newRdo: any }): boolean;
+  ({ index, key, newItem }: { index?: number; key: string | number; newItem: any }): boolean;
 }
 
 export interface NodeReplaceHandler {
-  ({ index, key, origRdo, newRdo }: { index?: number; key: string | number; origRdo: any; newRdo: any }): boolean;
+  ({ index, key, origItem, newItem }: { index?: number; key: string | number; origItem: any; newItem: any }): boolean;
 }
 
 export interface NodeDeleteHandler {
-  ({ index, key, origRdo }: { index?: number; key: string | number; origRdo: any }): boolean;
+  ({ index, key, origItem }: { index?: number; key: string | number; origItem: any }): boolean;
 }

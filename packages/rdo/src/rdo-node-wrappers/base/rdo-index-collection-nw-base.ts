@@ -87,14 +87,14 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
       // If rdo not in previous, add
       if (!last.rdoByIndexMap.has(i)) {
         // EXECUTE
-        const newRdo = this.makeRdoElement(nextSourceElement);
+        const newItem = this.makeRdoElement(nextSourceElement);
 
         // Tracking
-        this.views.rdoByIndexMap.set(i, newRdo);
+        this.views.rdoByIndexMap.set(i, newItem);
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: i, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: i, newItem, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
@@ -108,27 +108,27 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
           // ---------------------------
 
           // Tracking
-          const origRdo = last.rdoByIndexMap.get(i)!;
-          this.views.rdoByIndexMap.set(i, origRdo);
+          const origItem = last.rdoByIndexMap.get(i)!;
+          this.views.rdoByIndexMap.set(i, origItem);
 
           // Handle
           const lastElementKey = last.keyByIndexMap.get(i)!;
           const result = this.handleReplaceOrUpdate({
-            replaceHandler: ({ index, key, origRdo, newRdo }) => {
-              this.views.rdoByIndexMap.set(i, newRdo);
-              return this.onReplace({ index, key, origRdo, newRdo });
+            replaceHandler: ({ index, key, origItem, newItem }) => {
+              this.views.rdoByIndexMap.set(i, newItem);
+              return this.onReplace({ index, key, origItem, newItem });
             },
             index,
             collectionKey: i,
             lastElementKey,
             nextElementKey: elementKey,
-            origRdo: lastSourceElement,
+            origItem: lastSourceElement,
             newSourceElement: nextSourceElement,
             previousSourceElement: lastSourceElement,
           });
 
           // Add result in case element replaced
-          this.views.rdoByIndexMap.set(i, result.newRdo);
+          this.views.rdoByIndexMap.set(i, result.newItem);
         }
       }
     }

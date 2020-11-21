@@ -86,48 +86,48 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
       // If rdo not in previous, add
       if (!last.rdoByKeyMap.has(elementKey)) {
         // EXECUTE
-        const newRdo = this.makeRdoElement(nextSourceElement);
+        const newItem = this.makeRdoElement(nextSourceElement);
 
         // Tracking
-        this.views.rdoByKeyMap.set(elementKey, newRdo);
+        this.views.rdoByKeyMap.set(elementKey, newItem);
         indexOffset++;
 
         // Handle
-        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: elementKey, newRdo, newSourceElement: nextSourceElement }) && changed;
+        changed = this.handleAddElement({ addHandler: this.onAdd, index, collectionKey: elementKey, newItem, newSourceElement: nextSourceElement }) && changed;
 
         // If index is in previous source array
       } else {
         const lastSourceElement = last.sourceByKeyMap.get(elementKey)!;
-        const origRdo = last.rdoByKeyMap.get(elementKey);
+        const origItem = last.rdoByKeyMap.get(elementKey);
         if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
           // No change, no patch needed. Just update view
-          const origRdo = last.rdoByKeyMap.get(elementKey);
-          this.views.rdoByKeyMap.set(elementKey, origRdo!);
+          const origItem = last.rdoByKeyMap.get(elementKey);
+          this.views.rdoByKeyMap.set(elementKey, origItem!);
         } else {
           // ---------------------------
           // REPLACE or UPDATE
           // ---------------------------
 
           // Tracking
-          this.views.rdoByKeyMap.set(elementKey, origRdo!);
+          this.views.rdoByKeyMap.set(elementKey, origItem!);
 
           // Handle
           const result = this.handleReplaceOrUpdate({
-            replaceHandler: ({ index, key, origRdo, newRdo }) => {
-              this.views.rdoByKeyMap.set(key, origRdo!);
-              return this.onReplace({ index, key, origRdo, newRdo });
+            replaceHandler: ({ index, key, origItem, newItem }) => {
+              this.views.rdoByKeyMap.set(key, origItem!);
+              return this.onReplace({ index, key, origItem, newItem });
             },
             index,
             collectionKey: elementKey,
             lastElementKey: elementKey,
             nextElementKey: elementKey,
-            origRdo,
+            origItem,
             newSourceElement: nextSourceElement,
             previousSourceElement: lastSourceElement,
           });
 
           // Add result in case element replaced
-          this.views.rdoByKeyMap.set(elementKey, result.newRdo);
+          this.views.rdoByKeyMap.set(elementKey, result.newItem);
         }
       }
     }

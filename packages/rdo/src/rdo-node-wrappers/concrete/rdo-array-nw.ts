@@ -66,19 +66,19 @@ export class RdoArrayNW<S, D> extends RdoIndexCollectionNWBase<S, D> {
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onAdd = ({ index, key, newRdo }: { index?: number; key: number | string; newRdo: any }) => {
+  protected onAdd = ({ index, key, newItem }: { index?: number; key: number | string; newItem: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
-    this.value.splice(index, 0, newRdo);
+    this.value.splice(index, 0, newItem);
     return true;
   };
 
-  protected onReplace = ({ index, key, origRdo, newRdo }: { index?: number; key: number | string; origRdo: any; newRdo: any }) => {
+  protected onReplace = ({ index, key, origItem, newItem }: { index?: number; key: number | string; origItem: any; newItem: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
-    this.value.splice(index, 1, newRdo);
+    this.value.splice(index, 1, newItem);
     return true;
   };
 
-  protected onDelete = ({ index, key, origRdo }: { index?: number; key: number | string; origRdo: any }) => {
+  protected onDelete = ({ index, key, origItem }: { index?: number; key: number | string; origItem: any }) => {
     if (index === null || index === undefined) throw new Error('Index can not be null or undefined for index based collection operations');
     this.value.splice(index, 1);
     return true;

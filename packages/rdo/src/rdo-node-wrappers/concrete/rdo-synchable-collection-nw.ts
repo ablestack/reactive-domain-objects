@@ -66,18 +66,18 @@ export class RdoSyncableCollectionNW<S, D> extends RdoKeyCollectionNWBase<S, D> 
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onAdd = ({ key, newRdo }: { key: string | number; newRdo: any }) => {
-    this.value.add({ key, newRdo });
+  protected onAdd = ({ key, newItem }: { key: string | number; newItem: any }) => {
+    this.value.add({ key, newItem });
     return true;
   };
 
-  protected onReplace = ({ key, origRdo, newRdo }: { key: string | number; origRdo: any; newRdo: any }) => {
-    this.value.replace({ key, origRdo, newRdo });
+  protected onReplace = ({ key, origItem, newItem }: { key: string | number; origItem: any; newItem: any }) => {
+    this.value.replace({ key, origItem, newItem });
     return true;
   };
 
-  protected onDelete = ({ key, origRdo }: { key: string | number; origRdo: any }) => {
-    this.value.delete({ key, origRdo });
+  protected onDelete = ({ key, origItem }: { key: string | number; origItem: any }) => {
+    this.value.delete({ key, origItem });
     return true;
   };
 }
