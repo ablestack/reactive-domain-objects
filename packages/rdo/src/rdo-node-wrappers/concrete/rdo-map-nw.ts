@@ -66,17 +66,17 @@ export class RdoMapNW<S, D> extends RdoKeyCollectionNWBase<S, D> {
   //------------------------------
   // RdoIndexCollectionNWBase
   //------------------------------
-  protected onAdd = ({ key, nextRdo }: { key: string | number; nextRdo: any }) => {
-    this.value.set(key, nextRdo);
+  protected onAdd = ({ key, newRdo }: { key: string | number; newRdo: any }) => {
+    this.value.set(key, newRdo);
     return true;
   };
 
-  protected onReplace = ({ key, lastRdo, nextRdo }: { key: string | number; lastRdo: any; nextRdo: any }) => {
-    this.value.set(key, nextRdo);
+  protected onReplace = ({ key, origRdo, newRdo }: { key: string | number; origRdo: any; newRdo: any }) => {
+    this.value.set(key, newRdo);
     return true;
   };
 
-  protected onDelete = ({ key, lastRdo }: { key: string | number; lastRdo: any }) => {
+  protected onDelete = ({ key, origRdo }: { key: string | number; origRdo: any }) => {
     this.value.delete(key);
     return true;
   };

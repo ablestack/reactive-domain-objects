@@ -108,27 +108,27 @@ export abstract class RdoIndexCollectionNWBase<S, D> extends RdoCollectionNWBase
           // ---------------------------
 
           // Tracking
-          const lastRdo = last.rdoByIndexMap.get(i)!;
-          this.views.rdoByIndexMap.set(i, lastRdo);
+          const origRdo = last.rdoByIndexMap.get(i)!;
+          this.views.rdoByIndexMap.set(i, origRdo);
 
           // Handle
           const lastElementKey = last.keyByIndexMap.get(i)!;
           const result = this.handleReplaceOrUpdate({
-            replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
-              this.views.rdoByIndexMap.set(i, nextRdo);
-              return this.onReplace({ index, key, lastRdo, nextRdo });
+            replaceHandler: ({ index, key, origRdo, newRdo }) => {
+              this.views.rdoByIndexMap.set(i, newRdo);
+              return this.onReplace({ index, key, origRdo, newRdo });
             },
             index,
             collectionKey: i,
             lastElementKey,
             nextElementKey: elementKey,
-            lastRdo: lastSourceElement,
+            origRdo: lastSourceElement,
             newSourceElement: nextSourceElement,
             previousSourceElement: lastSourceElement,
           });
 
           // Add result in case element replaced
-          this.views.rdoByIndexMap.set(i, result.nextRdo);
+          this.views.rdoByIndexMap.set(i, result.newRdo);
         }
       }
     }

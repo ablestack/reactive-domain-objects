@@ -98,36 +98,36 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
         // If index is in previous source array
       } else {
         const lastSourceElement = last.sourceByKeyMap.get(elementKey)!;
-        const lastRdo = last.rdoByKeyMap.get(elementKey);
+        const origRdo = last.rdoByKeyMap.get(elementKey);
         if (this.equalityComparer(lastSourceElement, nextSourceElement)) {
           // No change, no patch needed. Just update view
-          const lastRdo = last.rdoByKeyMap.get(elementKey);
-          this.views.rdoByKeyMap.set(elementKey, lastRdo!);
+          const origRdo = last.rdoByKeyMap.get(elementKey);
+          this.views.rdoByKeyMap.set(elementKey, origRdo!);
         } else {
           // ---------------------------
           // REPLACE or UPDATE
           // ---------------------------
 
           // Tracking
-          this.views.rdoByKeyMap.set(elementKey, lastRdo!);
+          this.views.rdoByKeyMap.set(elementKey, origRdo!);
 
           // Handle
           const result = this.handleReplaceOrUpdate({
-            replaceHandler: ({ index, key, lastRdo, nextRdo }) => {
-              this.views.rdoByKeyMap.set(key, lastRdo!);
-              return this.onReplace({ index, key, lastRdo, nextRdo });
+            replaceHandler: ({ index, key, origRdo, newRdo }) => {
+              this.views.rdoByKeyMap.set(key, origRdo!);
+              return this.onReplace({ index, key, origRdo, newRdo });
             },
             index,
             collectionKey: elementKey,
             lastElementKey: elementKey,
             nextElementKey: elementKey,
-            lastRdo,
+            origRdo,
             newSourceElement: nextSourceElement,
             previousSourceElement: lastSourceElement,
           });
 
           // Add result in case element replaced
-          this.views.rdoByKeyMap.set(elementKey, result.nextRdo);
+          this.views.rdoByKeyMap.set(elementKey, result.newRdo);
         }
       }
     }

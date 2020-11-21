@@ -49,7 +49,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
 
   /** */
   protected handleAddElement({ index, collectionKey, newRdo, newSourceElement, addHandler }: { index: number; collectionKey: string | number; newRdo: any; newSourceElement: S; addHandler: NodeAddHandler }) {
-    const changed = addHandler({ index, key: collectionKey, nextRdo: newRdo });
+    const changed = addHandler({ index, key: collectionKey, newRdo: newRdo });
 
     if (changed) {
       // If not primitive, sync so child nodes are hydrated
@@ -78,7 +78,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     collectionKey,
     lastElementKey,
     nextElementKey,
-    lastRdo,
+    origRdo,
     newSourceElement,
     previousSourceElement,
   }: {
@@ -86,7 +86,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     collectionKey: string | number;
     lastElementKey: string | number;
     nextElementKey: string | number;
-    lastRdo: any;
+    origRdo: any;
     newSourceElement: S;
     replaceHandler: NodeReplaceHandler;
     previousSourceElement: S;
@@ -99,8 +99,8 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     // ---------------------------
     // If non-equal primitive with same indexes, just do a replace operation
     if (lastElementKey !== nextElementKey || isPrimitive) {
-      const nextRdo = this.makeRdoElement(newSourceElement);
-      replaceHandler({ index, key: collectionKey, lastRdo, nextRdo });
+      const newRdo = this.makeRdoElement(newSourceElement);
+      replaceHandler({ index, key: collectionKey, origRdo, newRdo });
 
       // If not primitive, step into to sync
       if (!isPrimitive) {
@@ -119,7 +119,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
         newSourceValue: newSourceElement,
       });
 
-      return { changed: true, nextRdo };
+      return { changed: true, newRdo };
     } else {
       // ---------------------------
       // UPDATE
@@ -139,13 +139,13 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
         newSourceValue: newSourceElement,
       });
 
-      return { changed, nextRdo: this.getRdoNodeItem(collectionKey) };
+      return { changed, newRdo: this.getRdoNodeItem(collectionKey) };
     }
   }
 
   /** */
   protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { index?: number; collectionKey: string | number; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler }) {
-    const changed = deleteHandler({ index, key: collectionKey, lastRdo: rdoToDelete });
+    const changed = deleteHandler({ index, key: collectionKey, origRdo: rdoToDelete });
 
     // Publish
     this.eventEmitter.publish('nodeChange', {

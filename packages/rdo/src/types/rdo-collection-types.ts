@@ -49,12 +49,12 @@ export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollection
   return o && o.onAdd && o.onReplace && o.onDelete && isIRdoCollectionNodeWrapper(o);
 }
 
-export interface ISyncableKeyBasedCollection<S, D> extends ITryMakeCollectionKey<S> {
+export interface ISyncableKeyBasedCollection<S,D> extends ITryMakeCollectionKey<S> {
   readonly size: number;
   elements(): Iterable<D>;
-  add({ key, nextRdo }: { key: string | number; nextRdo: any });
-  replace({ key, lastRdo, nextRdo }: { key: string | number; lastRdo: any; nextRdo: any });
-  delete({ key, lastRdo }: { key: string | number; lastRdo: any });
+  add({ index, key, newRdo }: { index?: number; key: string | number; newRdo: any });
+  replace({ index, key, origRdo, newRdo }: { index?: number; key: string | number; origRdo: any; newRdo: any });
+  delete({ index, key, origRdo }: { index?: number; key: string | number; origRdo: any });
 }
 
 export function IsISyncableCollection(o: any): o is ISyncableKeyBasedCollection<any, any> {
@@ -68,13 +68,13 @@ export function IsISyncableRDOCollection(o: any): o is ISyncableRDOKeyBasedColle
 }
 
 export interface NodeAddHandler {
-  ({ index, key, nextRdo }: { index?: number; key: string | number; nextRdo: any }): boolean;
+  ({ index, key, newRdo }: { index?: number; key: string | number; newRdo: any }): boolean;
 }
 
 export interface NodeReplaceHandler {
-  ({ index, key, lastRdo, nextRdo }: { index?: number; key: string | number; lastRdo: any; nextRdo: any }): boolean;
+  ({ index, key, origRdo, newRdo }: { index?: number; key: string | number; origRdo: any; newRdo: any }): boolean;
 }
 
 export interface NodeDeleteHandler {
-  ({ index, key, lastRdo }: { index?: number; key: string | number; lastRdo: any }): boolean;
+  ({ index, key, origRdo }: { index?: number; key: string | number; origRdo: any }): boolean;
 }
