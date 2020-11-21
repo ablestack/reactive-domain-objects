@@ -51,17 +51,17 @@ export abstract class RdoInternalNWBase<S, D> extends RdoNWBase<S, D> implements
   public makeRdoElement(sourceObject: any) {
     let rdo: any = undefined;
     if (this.getNodeOptions()?.makeRdo) {
-      rdo = this.getNodeOptions()!.makeRdo!(sourceObject, this);
+      rdo = this.getNodeOptions()!.makeRdo!(sourceObject);
       logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from nodeOptions`, sourceObject, rdo);
     }
 
     if (!rdo && isIMakeRdo(this.value)) {
-      rdo = this.value.makeRdo(sourceObject, this);
+      rdo = this.value.makeRdo(sourceObject);
       logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from IMakeRdo`, sourceObject, rdo);
     }
 
     if (!rdo && this.globalNodeOptions?.makeRdo) {
-      rdo = this.globalNodeOptions.makeRdo(sourceObject, this);
+      rdo = this.globalNodeOptions.makeRdo(sourceObject);
       logger.trace(`makeRdoElement - sourceNodeTypePath: ${this.wrappedSourceNode.sourceNodeTypePath} - making RDO from globalNodeOptions`, sourceObject, rdo);
     }
 

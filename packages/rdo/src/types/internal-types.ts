@@ -92,7 +92,7 @@ export function isIRdoInternalNodeWrapper(o: any): o is IRdoInternalNodeWrapper<
 }
 
 export interface IMakeRdo<S, D> {
-  makeRdo(sourceObject: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>): D | undefined;
+  makeRdo(sourceObject: S): D | undefined;
 }
 
 export function isIMakeRdo(o: any): o is IMakeRdo<any, any> {

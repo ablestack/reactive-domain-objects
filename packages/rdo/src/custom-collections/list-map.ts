@@ -114,7 +114,7 @@ export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
     return this._makeCollectionKey(item);
   }
 
-  public makeRdo(sourceItem: S, parentRdoNodeWrapper: IRdoNodeWrapper<S, D>) {
+  public makeRdo(sourceItem: S) {
     if (!this._makeRdo) return undefined;
     return this._makeRdo(sourceItem);
   }
