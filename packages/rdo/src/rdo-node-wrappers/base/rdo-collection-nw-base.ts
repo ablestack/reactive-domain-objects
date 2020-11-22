@@ -48,7 +48,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   }
 
   /** */
-  protected handleAddElement({ index, collectionKey, newItem, newSourceElement, addHandler }: { index: number; collectionKey: string | number; newItem: any; newSourceElement: S; addHandler: NodeAddHandler }) {
+  protected handleAddElement({ index, collectionKey, newItem, newSourceElement, addHandler }: { addHandler: NodeAddHandler<D>; index: number; collectionKey: string | number; newItem: any; newSourceElement: S;  }) {
     const changed = addHandler({ index, key: collectionKey, newItem: newItem });
 
     if (changed) {
@@ -82,13 +82,13 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
     newSourceElement,
     previousSourceElement,
   }: {
+    replaceHandler: NodeReplaceHandler<D>;
     index: number;
     collectionKey: string | number;
     lastElementKey: string | number;
     nextElementKey: string | number;
     origItem: any;
     newSourceElement: S;
-    replaceHandler: NodeReplaceHandler;
     previousSourceElement: S;
   }) {
     let changed = false;
@@ -144,7 +144,7 @@ export abstract class RdoCollectionNWBase<S, D> extends RdoInternalNWBase<S, D> 
   }
 
   /** */
-  protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { index?: number; collectionKey: string | number; rdoToDelete: any; previousSourceElement: S; deleteHandler: NodeDeleteHandler }) {
+  protected handleDeleteElement({ deleteHandler, index, collectionKey, rdoToDelete, previousSourceElement }: { deleteHandler: NodeDeleteHandler<D>; index?: number; collectionKey: string | number; rdoToDelete: any; previousSourceElement: S;  }) {
     const changed = deleteHandler({ index, key: collectionKey, origItem: rdoToDelete });
 
     // Publish

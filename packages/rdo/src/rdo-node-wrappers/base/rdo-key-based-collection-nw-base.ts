@@ -162,7 +162,7 @@ export abstract class RdoKeyCollectionNWBase<S, D> extends RdoCollectionNWBase<S
   }
 
   /** */
-  protected abstract onAdd: NodeAddHandler;
-  protected abstract onReplace: NodeReplaceHandler;
-  protected abstract onDelete: NodeDeleteHandler;
+  protected abstract onAdd: NodeAddHandler<D>;
+  protected abstract onReplace: NodeReplaceHandler<D>;
+  protected abstract onDelete: NodeDeleteHandler<D>;
 }

@@ -40,9 +40,9 @@ export function isIRdoCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrap
 }
 
 export interface IRdoKeyBasedCollectionNodeWrapper<S, D> extends IRdoInternalNodeWrapper<S, D> {
-  onAdd: NodeAddHandler;
-  onReplace: NodeReplaceHandler;
-  onDelete: NodeDeleteHandler;
+  onAdd: NodeAddHandler<S>;
+  onReplace: NodeReplaceHandler<S>;
+  onDelete: NodeDeleteHandler<S>;
 }
 
 export function isIRdoKeyBasedCollectionNodeWrapper(o: any): o is IRdoCollectionNodeWrapper<any, any> {
@@ -67,14 +67,14 @@ export function IsISyncableRDOCollection(o: any): o is ISyncableRDOKeyBasedColle
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
 }
 
-export interface NodeAddHandler {
-  ({ index, key, newItem }: { index?: number; key: string | number; newItem: any }): boolean;
+export interface NodeAddHandler<T> {
+  ({ index, key, newItem }: { index?: number; key: string | number; newItem: T }): boolean;
 }
 
-export interface NodeReplaceHandler {
-  ({ index, key, origItem, newItem }: { index?: number; key: string | number; origItem: any; newItem: any }): boolean;
+export interface NodeReplaceHandler<T> {
+  ({ index, key, origItem, newItem }: { index?: number; key: string | number; origItem: any; newItem: T }): boolean;
 }
 
-export interface NodeDeleteHandler {
-  ({ index, key, origItem }: { index?: number; key: string | number; origItem: any }): boolean;
+export interface NodeDeleteHandler<T> {
+  ({ index, key, origItem }: { index?: number; key: string | number; origItem: T }): boolean;
 }
