@@ -3,9 +3,9 @@ import {
   IContinueSmartSync,
   IEqualityComparer,
   IGlobalNodeOptions,
-  IsIAfterSyncIfNeeded,
+  IsIAfterSyncIfNeeded as IsIAfterSmartSync,
   IsIAfterSyncUpdate,
-  IsIBeforeSyncIfNeeded,
+  IsIBeforeSyncIfNeeded as IsIBeforeSmartSync,
   IsIBeforeSyncUpdate,
   IsICustomEqualityRDO,
   IsICustomSync,
@@ -107,10 +107,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     const isAlreadyInSync = this._equalityComparer(sourceObject, previousSourceData.sourceData);
 
     // Call lifecycle methods if found
-    if (IsIBeforeSyncIfNeeded(rdo)) rdo.beforeSyncIfNeeded({ sourceObject, isSyncNeeded: !isAlreadyInSync });
-
-    // Call lifecycle methods if found
-    if (IsIBeforeSyncUpdate(rdo)) rdo.beforeSyncUpdate({ sourceObject });
+    if (IsIBeforeSmartSync(rdo)) rdo.beforeSmartSync({ sourceObject, isSyncNeeded: !isAlreadyInSync });
 
     if (!isAlreadyInSync) {
       // Call lifecycle methods if found
@@ -133,7 +130,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
     }
 
     // Call lifecycle methods if found
-    if (IsIAfterSyncIfNeeded(rdo)) rdo.afterSyncIfNeeded({ sourceObject, syncAttempted: !isAlreadyInSync, RDOChanged: changed });
+    if (IsIAfterSmartSync(rdo)) rdo.afterSyncIfNeeded({ sourceObject, rdoUpdateAttempted: !isAlreadyInSync, rdoWasChanged: changed });
 
     // Update cache;
     previousSourceData.sourceData = sourceObject as S;

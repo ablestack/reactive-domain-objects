@@ -34,10 +34,10 @@ export function IsICustomEqualityRDO(o: any): o is ICustomEqualityRDO<any> {
 //-------------------------------------------------------
 
 export interface IBeforeSyncIfNeeded<S> {
-  beforeSyncIfNeeded: ({ sourceObject, isSyncNeeded }: { sourceObject: S; isSyncNeeded: boolean }) => void;
+  beforeSmartSync: ({ sourceObject, isSyncNeeded }: { sourceObject: S; isSyncNeeded: boolean }) => void;
 }
 
-export function IsIBeforeSyncIfNeeded(o: any): o is IBeforeSyncIfNeeded<any> {
+export function IsIBeforeSmartSync(o: any): o is IBeforeSyncIfNeeded<any> {
   return o && o.beforeSyncIfNeeded && typeof o.beforeSyncIfNeeded === 'function';
 }
 
@@ -58,9 +58,9 @@ export function IsIAfterSyncUpdate(o: any): o is IAfterSyncUpdate<any> {
 }
 
 export interface IAfterSyncIfNeeded<S> {
-  afterSyncIfNeeded: ({ sourceObject, syncAttempted, RDOChanged }: { sourceObject: S; syncAttempted: boolean; RDOChanged: boolean }) => void;
+  afterSyncIfNeeded: ({ sourceObject, rdoUpdateAttempted: syncAttempted, rdoWasChanged }: { sourceObject: S; rdoUpdateAttempted: boolean; rdoWasChanged: boolean }) => void;
 }
 
-export function IsIAfterSyncIfNeeded(o: any): o is IAfterSyncIfNeeded<any> {
+export function IsIAfterSmartSync(o: any): o is IAfterSyncIfNeeded<any> {
   return o && o.afterSyncIfNeeded && typeof o.afterSyncIfNeeded === 'function';
 }
