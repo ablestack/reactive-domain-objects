@@ -1,6 +1,6 @@
 {
   "name": "@ablestack/rdo-apollo-mobx-connector",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A library to connect Apollo GraphQL Query Results to MobX, leveraging Reactive Domain Objects",
   "author": "jamshally <ahrndee@gmail.com>",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "graphql-tag": "^2.11.0"
   },
   "dependencies": {
-    "@ablestack/rdo": "0.6.0",
+    "@ablestack/rdo": "^0.7.0",
     "@apollo/client": "3.2.5",
     "@apollo/react-hooks": "^4.0.0-beta.1",
     "@types/lodash": "^4.14.165",
