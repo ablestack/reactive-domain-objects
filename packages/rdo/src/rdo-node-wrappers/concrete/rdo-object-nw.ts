@@ -10,7 +10,6 @@ import {
   IsICustomEqualityRDO,
   IsICustomSync,
   IsIHasCustomRdoFieldNames,
-  isISourceInternalNodeWrapper,
   ISourceNodeWrapper,
   ISyncChildNode,
   IWrapRdoNode,

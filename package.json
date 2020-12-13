@@ -34,7 +34,7 @@
     "pub": "npm run build && lerna publish --forcePublish",
     "lpub": "npm run build  && lerna run prepublishOnly --stream && yalc publish packages/rdo/dist/src --force --no-script && yalc publish packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
     "lpush": "npm run build  && lerna run prepublishOnly --stream && yalc push packages/rdo/dist/src --force --no-script && yalc push packages/rdo-apollo-mobx-connector/dist/src --force --no-script",
-    "test": "npm run build && jest" 
+    "test": "npm run build && jest"
   },
   "devDependencies": {
     "@ablestack/rdo": "^0.6.0",
@@ -43,7 +43,7 @@
     "dotenv": "^8.2.0",
     "jest": "^26.6.3",
     "lerna": "^3.22.1",
-    "mobx": "^6.0.3",
+    "mobx": "^6.0.4",
     "path": "^0.12.7",
     "shx": "^0.3.3",
     "ts-jest": "^26.4.4",
