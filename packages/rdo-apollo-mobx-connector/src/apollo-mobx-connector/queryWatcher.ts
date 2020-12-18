@@ -1,12 +1,14 @@
 import { ObservableQuery, ApolloClient } from '@apollo/client';
 import uuid from 'uuid';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
+import { DeferredPromise } from '@ablestack/deferred-promise-ts';
 
 const logger = Logger.make('ViewModelSyncUtils');
 
 export class QueryWatcher<Q> {
   private _watchedQuery: ObservableQuery<Q> | undefined;
   private _watchedQuerySubscription: ZenObservable.Subscription | undefined;
+  private readonly _deferredPromiseQueue: Array<DeferredPromise<Q | null | undefined>>;
   private _active: boolean = false;
   private _name: string;
   private _makeObservableQuery: (apolloClient: ApolloClient<object>) => Promise<ObservableQuery<Q>>;
@@ -35,6 +37,7 @@ export class QueryWatcher<Q> {
     onDataChange: (queryResult: Q | null | undefined) => void;
     onAfterStop?: (apolloClient: ApolloClient<object>) => void;
   }) {
+    this._deferredPromiseQueue = new Array<DeferredPromise<Q | null | undefined>>();
     this._name = name;
     this._makeObservableQuery = makeObservableQuery;
     this._onAfterInitialized = onAfterInitialized;
@@ -54,8 +57,15 @@ export class QueryWatcher<Q> {
     }
   }
 
-  // The force parameter will trigger a refetch of data even if already available
-  public start(apolloClient: ApolloClient<object>, force: boolean = true) {
+  /**
+   *
+   *
+   * @param {ApolloClient<object>} apolloClient
+   * @param {boolean} [force=false]  the force parameter will override any existing watch, and trigger a refetch of data even if data already available
+   * @returns
+   * @memberof QueryWatcher
+   */
+  public start(apolloClient: ApolloClient<object>, force: boolean) {
     if (this.active) return;
 
     this.initiateWatch({ apolloClient, runOnce: false, force });
@@ -82,6 +92,12 @@ export class QueryWatcher<Q> {
       this._watchedQuerySubscription?.unsubscribe();
       this._active = false;
 
+      // Reject any queued promises
+      if (this._deferredPromiseQueue.length > 0) {
+        //
+        this._deferredPromiseQueue.splice(0, this._deferredPromiseQueue.length).forEach((item) => item.reject('QueryWatcher stopped before DeferredPromise containing results resolved'));
+      }
+
       logger.trace(`${this._name} - Stopped`);
 
       if (this._onAfterStop) this._onAfterStop(apolloClient);
@@ -96,13 +112,14 @@ export class QueryWatcher<Q> {
     }
     logger.info(`${this._name} - Starting`);
 
+    if (!force && this._active) throw new Error(`queryWatch already active. To override an existing queryWatch session, set the 'force' parameter of the Start method to 'true'`);
     if (force) this._watchedQuery.resetLastResults();
 
     this._watchedQuerySubscription = this._watchedQuery.subscribe(
       (next) => {
         logger.trace(`${this._name} - watchedQuerySubscription - Result`, next);
         if (next.data) {
-          this._handleDataChange(next.data);
+          this.onDataChange(next.data);
           if (runOnce) this.stop(apolloClient);
         }
       },
@@ -116,5 +133,22 @@ export class QueryWatcher<Q> {
       },
     );
     this._active = true;
+  }
+
+  public async getNextResultAsync(): Promise<Q | null | undefined> {
+    const deferredPromise = new DeferredPromise<Q | null | undefined>();
+    this._deferredPromiseQueue.push(deferredPromise);
+    return deferredPromise;
+  }
+
+  private onDataChange(queryResult: Q | null | undefined): void {
+    // Call data change handlers
+    this._handleDataChange(queryResult);
+
+    // Resolve any queued promises
+    if (this._deferredPromiseQueue.length > 0) {
+      //
+      this._deferredPromiseQueue.splice(0, this._deferredPromiseQueue.length).forEach((item) => item.resolve(queryResult));
+    }
   }
 }

@@ -33,7 +33,8 @@
     "build": "tsc --build --verbose",
     "rebuild": "tsc --build --force --verbose",
     "lpub": "yalc publish",
-    "lpush": "yalc push"
+    "lpush": "yalc push",
+    "install-safe": "npm install --legacy-peer-deps"
   },
   "publishConfig": {
     "access": "public",
@@ -44,6 +45,7 @@
   },
   "dependencies": {
     "@ablestack/rdo": "^0.8.0",
+    "@ablestack/deferred-promise-ts": "^0.4.0",
     "@apollo/client": "3.2.5",
     "@apollo/react-hooks": "^4.0.0-beta.1",
     "@types/lodash": "^4.14.165",
@@ -53,7 +55,8 @@
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "tslib": "2.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -69,7 +72,6 @@
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
     "ts-node": "~9.0.0",
-    "tslib": "2.0.3",
     "typescript": "^4.0.5"
   },
   "sideEffects": false,
