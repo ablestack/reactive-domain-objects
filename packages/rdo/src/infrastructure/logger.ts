@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 import debug from 'debug';
 import dotenv from 'dotenv';
+import { getConfigValue } from './config';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ export class DefaultLogger implements ILogger {
 
   constructor(namespace: string) {
     this._logger = debug(`rdo.${namespace}`);
-    DefaultLogger._appLogLevel = process.env.RDO_LOG_LEVEL ? parseInt(process.env.RDO_LOG_LEVEL) : 3;
+    DefaultLogger._appLogLevel = getConfigValue('RDO_LOG_LEVEL', 3);
   }
 
   private log(logLevel: number, msg: string, ...logObjects: any[]): void {
