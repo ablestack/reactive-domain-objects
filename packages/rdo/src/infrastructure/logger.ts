@@ -23,8 +23,8 @@ export class DefaultLogger implements ILogger {
   private static _appLogLevel: number;
 
   constructor(namespace: string) {
-    this._logger = debug(`apollo-mobx-connector.${namespace}`);
-    DefaultLogger._appLogLevel = process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 3;
+    this._logger = debug(`rdo.${namespace}`);
+    DefaultLogger._appLogLevel = process.env.RDO_LOG_LEVEL ? parseInt(process.env.RDO_LOG_LEVEL) : 3;
   }
 
   private log(logLevel: number, msg: string, ...logObjects: any[]): void {

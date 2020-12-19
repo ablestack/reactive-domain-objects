@@ -124,7 +124,7 @@ export class QueryWatcher<Q> {
         }
       },
       (error) => {
-        logger.error(`${this._name} - watchedQuerySubscription - ERROR`);
+        logger.error(`${this._name} - watchedQuerySubscription - ERROR`, error);
         this.stop(apolloClient);
       },
       () => {
