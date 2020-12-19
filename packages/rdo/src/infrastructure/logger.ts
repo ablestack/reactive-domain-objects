@@ -29,15 +29,12 @@ export class DefaultLogger implements ILogger {
   }
 
   private log(logLevel: number, msg: string, ...logObjects: any[]): void {
-    if (logLevel > DefaultLogger._appLogLevel) return;
-
-    if (logLevel === 1) console.error(msg, logObjects);
-    else if (logLevel === 2) console.warn(msg, logObjects);
-    else console.log(msg, logObjects);
-
-    // Debug logger not working. Need to debug at some point. Falling back to console.log
-    //if (logObjects) this._logger(msg, ...logObjects);
-    //else this._logger(msg);
+    if (DefaultLogger._appLogLevel >= logLevel) {
+      if (logObjects) this._logger(msg, ...logObjects);
+      else this._logger(msg);
+    } else {
+      // console.log(`Rdo. Level "${logLevel}" not at app log level "${DefaultLogger._appLogLevel}"`, msg, logLevel);
+    }
   }
 
   public error(msg: string, ...logObjects: any[]): void {

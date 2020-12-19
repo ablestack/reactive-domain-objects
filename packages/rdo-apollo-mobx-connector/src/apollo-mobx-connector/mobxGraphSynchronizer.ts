@@ -13,10 +13,9 @@ export class MobxGraphSynchronizer extends GraphSynchronizer {
   }
 
   public smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D }) {
-    console.log('rdo - smartSync - entering action');
     logger.trace('smartSync - entering action', { rootSourceNode, rootSyncableObject: rootRdo });
     runInAction(() => {
-      console.log('rdo - smartSync - run in action');
+      logger.trace('smartSync - entering runInAction', { rootSourceNode, rootSyncableObject: rootRdo });
       super.smartSync({ rootSourceNode, rootRdo });
     });
     logger.trace('smartSync - action completed', { rootSourceNode, rootSyncableObject: rootRdo });
