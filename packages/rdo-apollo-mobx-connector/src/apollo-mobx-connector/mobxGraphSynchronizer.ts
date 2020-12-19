@@ -9,7 +9,9 @@ export class MobxGraphSynchronizer extends GraphSynchronizer {
   // CONSTRUCTOR
   // ------------------------------------------------------------------------------------------------------------------
   constructor(options?: IGraphSyncOptions) {
-    super(options);
+    // Set '$' as commonRdoFieldnamePostfix unless alternative supplied
+    const opt = options?.globalNodeOptions?.commonRdoFieldnamePostfix ? options : { ...options, globalNodeOptions: { commonRdoFieldnamePostfix: '$' } };
+    super(opt);
   }
 
   public smartSync<S extends Record<string, any>, D extends Record<string, any>>({ rootSourceNode, rootRdo }: { rootSourceNode: S; rootRdo: D }) {
