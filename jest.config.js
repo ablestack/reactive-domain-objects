@@ -7,4 +7,7 @@ module.exports = {
   modulePathIgnorePatterns: [
     "<rootDir>/.*/dist/.*"
   ],
+  setupFiles: [
+    'dotenv/config'
+  ],
 };

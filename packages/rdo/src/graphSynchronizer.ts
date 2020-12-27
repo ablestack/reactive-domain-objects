@@ -1,17 +1,4 @@
-import {
-  comparers,
-  IEqualityComparer,
-  IGlobalNodeOptions,
-  IGraphSynchronizer,
-  IGraphSyncOptions,
-  INodeSyncOptions,
-  InternalNodeKind,
-  IRdoInternalNodeWrapper,
-  IRdoNodeWrapper,
-  ISyncChildNode,
-  RdoNodeTypes,
-  SourceNodeWrapperFactory,
-} from '.';
+import { comparers, IEqualityComparer, IGlobalNodeOptions, IGraphSynchronizer, IGraphSyncOptions, INodeSyncOptions, InternalNodeKind, IRdoInternalNodeWrapper, IRdoNodeWrapper, ISyncChildNode, RdoNodeTypes, SourceNodeWrapperFactory } from '.';
 import { EventEmitter, SubscriptionFunction } from './infrastructure/event-emitter';
 import { Logger } from './infrastructure/logger';
 import { MutableNodeCache } from './infrastructure/mutable-node-cache';
@@ -87,7 +74,6 @@ export class GraphSynchronizer implements IGraphSynchronizer {
       logger.warn('smartSync - sourceObject or RDO was null. Exiting', { rootSourceNode, rootRdo });
       return;
     }
-
     logger.trace('smartSync - sync traversal of object tree starting at root', { rootSourceNode, rootRdo });
 
     const wrappedRdoNode = this.wrapRdoNode({ sourceNodeTypePath: '', sourceNodeInstancePath: '', rdoNode: rootRdo, sourceNode: rootSourceNode });

@@ -1,7 +1,9 @@
 import { config, IGlobalNodeOptions, INodeSyncOptions, ISourceCollectionNodeWrapper, NodeTypeInfo, NodeTypeUtils } from '../..';
-import { isIMakeCollectionKey, isITryMakeCollectionKey } from '../../types';
+import { Logger } from '../../infrastructure/logger';
+import { isITryMakeCollectionKey } from '../../types';
 import { SourceBaseNW } from '../base/source-base-nw';
 
+const logger = Logger.make('RdoMapNW');
 export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCollectionNodeWrapper<S, D> {
   private _value: Array<S>;
 
@@ -96,26 +98,34 @@ export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCo
     if (item === null || item === undefined) throw new Error(`Can not make collection key from null or undefined source object`);
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
-      // Use IMakeCollectionKey provided on options if available
-      return this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
+      const key = this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
+      logger.debug(`made collection key from matchingNodeOptions (item, key)`, item, key);
+      return key;
     }
 
     if (isITryMakeCollectionKey(this.wrappedRdoNode)) {
       const key = this.wrappedRdoNode.value.tryMakeKeyFromSourceElement(item);
-      if (key !== undefined) return key;
+      if (key !== undefined) {
+        logger.debug(`made collection key from isITryMakeCollectionKey (item, key)`, item, key);
+        return key;
+      }
     }
 
-    // Last option - look for idKey
+    // Look for idKey
     if (item[config.defaultIdKey]) {
-      return item[config.defaultIdKey];
+      const key = item[config.defaultIdKey];
+      logger.debug(`made collection key from idKey (item, key)`, config.defaultIdKey, key);
+      return key;
     }
 
     // If item is primitive, use that as key
     if (NodeTypeUtils.isPrimitive(item)) {
+      logger.debug(`made collection key from primitive (key)`, item);
       return (item as unknown) as string | number;
     }
 
     // If no key here, just use index
+    logger.debug(`using index as collection key`, index);
     return index as string | number;
   };
 

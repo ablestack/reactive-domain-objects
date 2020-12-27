@@ -58,6 +58,11 @@ const config: IGraphSyncOptions = {
 };
 
 // --------------------------------------------------------------
+// SETUP
+// --------------------------------------------------------------
+beforeAll(() => {});
+
+// --------------------------------------------------------------
 // TEST
 // --------------------------------------------------------------
 test('Synchronize listmap collections', () => {
@@ -68,12 +73,16 @@ test('Synchronize listmap collections', () => {
   expect(allCollectionTypesRDO.listMapOfObjectsById.size).toEqual(0);
   expect(allCollectionTypesRDO.listMapOfObjectsByPosition.size).toEqual(0);
 
+  console.log('---------- test!');
+
   // EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: listMapCollectionsWithObjectsJSON });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.listMapOfObjectsById.size).toEqual(3);
   expect(allCollectionTypesRDO.listMapOfObjectsById.keys().next().value).toEqual('A');
+
+  console.log('---------- test1!');
 
   expect(allCollectionTypesRDO.listMapOfObjectsByPosition.size).toEqual(3);
   expect(allCollectionTypesRDO.listMapOfObjectsByPosition.keys().next().value).toEqual(1);
