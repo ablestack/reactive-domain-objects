@@ -95,6 +95,7 @@ export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCo
   //------------------------------
 
   public makeCollectionKey = (item: S, index: number): string | number => {
+    logger.trace(`makeCollectionKey`, { rdoNode: this.wrappedRdoNode, item, index });
     if (item === null || item === undefined) throw new Error(`Can not make collection key from null or undefined source object`);
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
@@ -103,11 +104,13 @@ export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCo
       return key;
     }
 
-    if (isITryMakeCollectionKey(this.wrappedRdoNode)) {
-      const key = this.wrappedRdoNode.value.tryMakeKeyFromSourceElement(item);
+    if (this.wrappedRdoNode?.value && isITryMakeCollectionKey(this.wrappedRdoNode?.value)) {
+      const key = this.wrappedRdoNode.value.tryMakeCollectionKey(item, index);
       if (key !== undefined) {
         logger.debug(`made collection key from isITryMakeCollectionKey (item, key)`, item, key);
         return key;
+      } else {
+        logger.debug(`isITryMakeCollectionKey:true, but tryMakeCollectionKey was undefined. Continuing`, item);
       }
     }
 

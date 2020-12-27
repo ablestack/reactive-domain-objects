@@ -12,7 +12,7 @@ export interface ITryMakeCollectionKey<T> {
   tryMakeCollectionKey: (item: T, index: number) => string | number | undefined;
 }
 
-export function isITryMakeCollectionKey(o: any): o is IMakeCollectionKey<any> {
+export function isITryMakeCollectionKey(o: any): o is ITryMakeCollectionKey<any> {
   return o && o.tryMakeCollectionKey;
 }
 export interface IMakeCollectionKey<T> {
@@ -61,7 +61,7 @@ export function IsISyncableCollection<T>(o: any): o is ISyncableKeyBasedCollecti
   return o && o.size !== undefined && o.elements && o.add && o.replace && o.delete && isITryMakeCollectionKey(o);
 }
 
-export interface ISyncableRDOKeyBasedCollection<S, D> extends IMakeRdo<S, D>, ISyncableKeyBasedCollection<D>, ITryMakeCollectionKey<S>{}
+export interface ISyncableRDOKeyBasedCollection<S, D> extends IMakeRdo<S, D>, ISyncableKeyBasedCollection<D>, ITryMakeCollectionKey<S> {}
 
 export function IsISyncableRDOCollection(o: any): o is ISyncableRDOKeyBasedCollection<any, any> {
   return o && isIMakeRdoElement(o) && IsISyncableCollection(o);
