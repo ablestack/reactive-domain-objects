@@ -79,13 +79,15 @@ test('Synchronize all object collection types', () => {
   const allCollectionTypesRDO = new AllCollectionTypesWithObjectsRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
 
+  console.log(' ---------------------- STAGE 1 json', allCollectionsTypesWithObjectsJSON, 'rdo', allCollectionTypesRDO);
+
   // POSTURE VERIFICATION
   expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(0);
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(0);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(0);
   expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(0);
 
-  // EXECUTE
+  // INITIAL EXECUTE
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsTypesWithObjectsJSON });
 
   // RESULTS VERIFICATION
@@ -93,4 +95,39 @@ test('Synchronize all object collection types', () => {
   expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
   expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
   expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3);
+
+  // REMOVE ONE & ADD ONE
+  allCollectionsTypesWithObjectsJSON.arrayOfObjects.pop();
+  allCollectionsTypesWithObjectsJSON.arrayOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+
+  allCollectionsTypesWithObjectsJSON.listMapOfObjects.pop();
+  allCollectionsTypesWithObjectsJSON.listMapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+
+  allCollectionsTypesWithObjectsJSON.mapOfObjects.pop();
+  allCollectionsTypesWithObjectsJSON.mapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+
+  allCollectionsTypesWithObjectsJSON.setOfObjects.pop();
+  allCollectionsTypesWithObjectsJSON.setOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+
+  // EXECUTE 2
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsTypesWithObjectsJSON });
+
+  console.log(' ---------------------- STAGE 2 json', allCollectionsTypesWithObjectsJSON, 'rdo', allCollectionTypesRDO);
+
+  // RESULTS VERIFICATION 2
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(3);
+  expect(allCollectionTypesRDO.arrayOfObjects.some((item) => item.id === '3')).toBe(false);
+  expect(allCollectionTypesRDO.arrayOfObjects.some((item) => item.id === '4')).toBe(true);
+
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3);
+  expect(Array.from(allCollectionTypesRDO.mapOfObjects.values()).some((item) => item.id === '3')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.mapOfObjects.values()).some((item) => item.id === '4')).toBe(true);
+
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3);
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).some((item) => item.id === '3')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).some((item) => item.id === '4')).toBe(true);
+
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3);
+  expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '3')).toBe(false);
+  expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '4')).toBe(true);
 });

@@ -114,18 +114,18 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
 
       // Synchronize
       if (IsICustomSync(rdo)) {
-        logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - custom state synchronizer found. Using to sync`);
+        logger.debug(`'${sourceNodeTypePath}' synchronizeObjectState - needs sync - custom state synchronizer found. Using to sync`);
         changed = rdo.synchronizeState({ sourceObject, continueSmartSync: this.makeContinueSmartSyncFunction({ originalSourceNodePath: sourceNodeTypePath }) });
       } else {
-        logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - no custom state synchronizer found. Using autoSync`, rdo);
+        logger.debug(`'${sourceNodeTypePath}' synchronizeObjectState - needs sync - no custom state synchronizer found. Using autoSync`, rdo);
         changed = this.sync();
-        logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - post autoSync`, rdo);
+        logger.debug(`'${sourceNodeTypePath}' synchronizeObjectState - needs sync - post autoSync - changed: ${changed}`);
       }
 
       // Call lifecycle methods if found
       if (IsIAfterSyncUpdate(rdo)) rdo.afterSyncUpdate({ sourceObject });
     } else {
-      logger.trace(`synchronizeObjectState - ${sourceNodeTypePath} - already in sync. Skipping`);
+      logger.debug(`'${sourceNodeTypePath}' already in sync (synchronizeObjectState). Skipping`);
     }
 
     // Call lifecycle methods if found

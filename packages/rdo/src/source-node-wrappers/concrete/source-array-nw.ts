@@ -100,35 +100,35 @@ export class SourceArrayNW<S, D> extends SourceBaseNW<S, D> implements ISourceCo
 
     if (this.matchingNodeOptions?.makeRdoCollectionKey?.fromSourceElement) {
       const key = this.matchingNodeOptions.makeRdoCollectionKey.fromSourceElement(item);
-      logger.debug(`made collection key from matchingNodeOptions (item, key)`, item, key);
+      logger.trace(`made collection key from matchingNodeOptions (item, key)`, item, key);
       return key;
     }
 
     if (this.wrappedRdoNode?.value && isITryMakeCollectionKey(this.wrappedRdoNode?.value)) {
       const key = this.wrappedRdoNode.value.tryMakeCollectionKey(item, index);
       if (key !== undefined) {
-        logger.debug(`made collection key from isITryMakeCollectionKey (item, key)`, item, key);
+        logger.trace(`made collection key from isITryMakeCollectionKey (item, key)`, item, key);
         return key;
       } else {
-        logger.debug(`isITryMakeCollectionKey:true, but tryMakeCollectionKey was undefined. Continuing`, item);
+        logger.trace(`isITryMakeCollectionKey:true, but tryMakeCollectionKey was undefined. Continuing`, item);
       }
     }
 
     // Look for idKey
     if (item[config.defaultIdKey]) {
       const key = item[config.defaultIdKey];
-      logger.debug(`made collection key from idKey (item, key)`, config.defaultIdKey, key);
+      logger.trace(`made collection key from idKey (item, key)`, config.defaultIdKey, key);
       return key;
     }
 
     // If item is primitive, use that as key
     if (NodeTypeUtils.isPrimitive(item)) {
-      logger.debug(`made collection key from primitive (key)`, item);
+      logger.trace(`made collection key from primitive (key)`, item);
       return (item as unknown) as string | number;
     }
 
     // If no key here, just use index
-    logger.debug(`using index as collection key`, index);
+    logger.trace(`using index as collection key`, index);
     return index as string | number;
   };
 
