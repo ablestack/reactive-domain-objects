@@ -32,7 +32,7 @@ export class EventEmitter<T> {
 
   /** */
   public publish(eventType: eventType, data: T) {
-    logger.info(`publish: ${eventType}`, data);
+    logger.debug(`publish: ${eventType}`, data);
     if (this.registry.has(eventType)) {
       this.registry.get(eventType)!.forEach((subscriber) => subscriber(data));
     }
