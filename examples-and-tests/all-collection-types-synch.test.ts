@@ -135,7 +135,6 @@ test('Synchronize collection removals', () => {
 test('Synchronize collection additions and removal - multiple times', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
 
   // ---------------------------------------------------------------------------------------------------------------------
   // SETUP
@@ -157,29 +156,30 @@ test('Synchronize collection additions and removal - multiple times', () => {
   // ---------------------------------------------------------------------------------------------------------------------
   // Round I - Mutate data
   // ---------------------------------------------------------------------------------------------------------------------
-  allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
-  allCollectionSourceModelWithEdits.arrayOfNumbers.push(4);
+  const allCollectionSourceModelWithEditsI = _.cloneDeep(allCollectionsJSON_Trio);
+  allCollectionSourceModelWithEditsI.arrayOfNumbers.pop();
+  allCollectionSourceModelWithEditsI.arrayOfNumbers.push(4);
 
-  allCollectionSourceModelWithEdits.mapOfNumbers.pop();
-  allCollectionSourceModelWithEdits.mapOfNumbers.push(4);
+  allCollectionSourceModelWithEditsI.mapOfNumbers.pop();
+  allCollectionSourceModelWithEditsI.mapOfNumbers.push(4);
 
-  allCollectionSourceModelWithEdits.setOfNumbers.pop();
-  allCollectionSourceModelWithEdits.setOfNumbers.push(4);
+  allCollectionSourceModelWithEditsI.setOfNumbers.pop();
+  allCollectionSourceModelWithEditsI.setOfNumbers.push(4);
 
-  allCollectionSourceModelWithEdits.arrayOfObjects.pop();
-  allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsI.arrayOfObjects.pop();
+  allCollectionSourceModelWithEditsI.arrayOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.mapOfObjects.pop();
-  allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsI.mapOfObjects.pop();
+  allCollectionSourceModelWithEditsI.mapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.setOfObjects.pop();
-  allCollectionSourceModelWithEdits.setOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsI.setOfObjects.pop();
+  allCollectionSourceModelWithEditsI.setOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.listMapOfObjects.pop();
-  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsI.listMapOfObjects.pop();
+  allCollectionSourceModelWithEditsI.listMapOfObjects.push({ id: '4', __type: 'arrayOfObjectsObject' });
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEditsI });
 
   // RESULTS VERIFICATION
   expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
@@ -213,32 +213,35 @@ test('Synchronize collection additions and removal - multiple times', () => {
   // ---------------------------------------------------------------------------------------------------------------------
   // Round II - Mutate data
   // ---------------------------------------------------------------------------------------------------------------------
-  allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
-  allCollectionSourceModelWithEdits.arrayOfNumbers.push(5);
+  const allCollectionSourceModelWithEditsII = _.cloneDeep(allCollectionSourceModelWithEditsI);
+  allCollectionSourceModelWithEditsII.arrayOfNumbers.pop();
+  allCollectionSourceModelWithEditsII.arrayOfNumbers.push(5);
 
-  allCollectionSourceModelWithEdits.mapOfNumbers.pop();
-  allCollectionSourceModelWithEdits.mapOfNumbers.push(5);
+  allCollectionSourceModelWithEditsII.mapOfNumbers.pop();
+  allCollectionSourceModelWithEditsII.mapOfNumbers.push(5);
 
-  allCollectionSourceModelWithEdits.setOfNumbers.pop();
-  allCollectionSourceModelWithEdits.setOfNumbers.push(5);
+  allCollectionSourceModelWithEditsII.setOfNumbers.pop();
+  allCollectionSourceModelWithEditsII.setOfNumbers.push(5);
 
-  allCollectionSourceModelWithEdits.arrayOfObjects.pop();
-  allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsII.arrayOfObjects.pop();
+  allCollectionSourceModelWithEditsII.arrayOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.mapOfObjects.pop();
-  allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsII.mapOfObjects.pop();
+  allCollectionSourceModelWithEditsII.mapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.setOfObjects.pop();
-  allCollectionSourceModelWithEdits.setOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsII.setOfObjects.pop();
+  allCollectionSourceModelWithEditsII.setOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
 
-  allCollectionSourceModelWithEdits.listMapOfObjects.pop();
-  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+  allCollectionSourceModelWithEditsII.listMapOfObjects.pop();
+  allCollectionSourceModelWithEditsII.listMapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+
+  console.log('allCollectionSourceModelWithEdits - II', allCollectionSourceModelWithEditsII);
 
   // EXECUTE
-  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEditsII });
 
   // RESULTS VERIFICATION
-  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(5);
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(4);
   expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 3)).toEqual(false);
   expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 4)).toEqual(false);
   expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 5)).toEqual(true);

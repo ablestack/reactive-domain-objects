@@ -28,8 +28,9 @@ export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
     return this._map$.size;
   }
 
-  @observable.shallow private _array$ = new Array<D>();
+  @observable.shallow private _array$: D[] | null = null;
   @computed public get array$(): Array<D> {
+    if (!this._array$) this._array$ = Array.from(this._map$.values());
     return this._array$;
   }
 
@@ -88,21 +89,19 @@ export class ListMap<S, D> implements ISyncableRDOKeyBasedCollection<S, D> {
 
   public add = ({ key, newItem }: { key: string | number; newItem: D }) => {
     this._map$.set(key, newItem);
-    this.indexByKeyMap.set(key, this._array$.length);
-    this._array$.push(newItem);
+    this._array$ = null;
     return true;
   };
 
   public replace = ({ key, origItem, newItem }: { key: string | number; origItem: D; newItem: D }) => {
     this._map$.set(key, newItem);
-    this._array$.splice(this.indexByKeyMap.get(key)!, 1, newItem);
+    this._array$ = null;
     return true;
   };
 
   public delete = ({ key, origItem }: { key: string | number; origItem: D }) => {
     this._map$.delete(key);
-    this._array$.splice(this.indexByKeyMap.get(key)!, 1);
-    this.indexByKeyMap.delete(key);
+    this._array$ = null;
     return true;
   };
 
