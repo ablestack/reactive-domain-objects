@@ -132,11 +132,14 @@ test('Synchronize collection removals', () => {
 // --------------------------------------------------------------
 // Addition and Removal
 // --------------------------------------------------------------
-test('Synchronize collection additions and removal', () => {
+test('Synchronize collection additions and removal - multiple times', () => {
   const allCollectionTypesRDO = new AllCollectionTypesRDO();
   const graphSynchronizer = new GraphSynchronizer(config);
+  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
 
+  // ---------------------------------------------------------------------------------------------------------------------
   // SETUP
+  // ---------------------------------------------------------------------------------------------------------------------
   graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionsJSON_Trio });
 
   // POSTURE VERIFICATION
@@ -151,8 +154,9 @@ test('Synchronize collection additions and removal', () => {
   // Make sure array of objects duplicate item has synced contents (added due to found bug)
   expect(allCollectionTypesRDO.arrayOfObjects[2].id).toEqual('2');
 
-  // Mutate data
-  const allCollectionSourceModelWithEdits = _.cloneDeep(allCollectionsJSON_Trio);
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Round I - Mutate data
+  // ---------------------------------------------------------------------------------------------------------------------
   allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
   allCollectionSourceModelWithEdits.arrayOfNumbers.push(4);
 
@@ -205,6 +209,69 @@ test('Synchronize collection additions and removal', () => {
   expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
   expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '3')).toBe(false);
   expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '4')).toBe(true);
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Round II - Mutate data
+  // ---------------------------------------------------------------------------------------------------------------------
+  allCollectionSourceModelWithEdits.arrayOfNumbers.pop();
+  allCollectionSourceModelWithEdits.arrayOfNumbers.push(5);
+
+  allCollectionSourceModelWithEdits.mapOfNumbers.pop();
+  allCollectionSourceModelWithEdits.mapOfNumbers.push(5);
+
+  allCollectionSourceModelWithEdits.setOfNumbers.pop();
+  allCollectionSourceModelWithEdits.setOfNumbers.push(5);
+
+  allCollectionSourceModelWithEdits.arrayOfObjects.pop();
+  allCollectionSourceModelWithEdits.arrayOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+
+  allCollectionSourceModelWithEdits.mapOfObjects.pop();
+  allCollectionSourceModelWithEdits.mapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+
+  allCollectionSourceModelWithEdits.setOfObjects.pop();
+  allCollectionSourceModelWithEdits.setOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+
+  allCollectionSourceModelWithEdits.listMapOfObjects.pop();
+  allCollectionSourceModelWithEdits.listMapOfObjects.push({ id: '5', __type: 'arrayOfObjectsObject' });
+
+  // EXECUTE
+  graphSynchronizer.smartSync({ rootRdo: allCollectionTypesRDO, rootSourceNode: allCollectionSourceModelWithEdits });
+
+  // RESULTS VERIFICATION
+  expect(allCollectionTypesRDO.arrayOfNumbers.length).toEqual(5);
+  expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 3)).toEqual(false);
+  expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 4)).toEqual(false);
+  expect(allCollectionTypesRDO.arrayOfNumbers.some((item) => item === 5)).toEqual(true);
+
+  expect(allCollectionTypesRDO.mapOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.mapOfNumbers.values()).some((item) => item === 3)).toBe(false); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.mapOfNumbers.values()).some((item) => item === 4)).toBe(false); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.mapOfNumbers.values()).some((item) => item === 5)).toBe(true); // one less than array, as doesn't accept duplicates
+
+  expect(allCollectionTypesRDO.setOfNumbers.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.setOfNumbers.values()).some((item) => item === 3)).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.setOfNumbers.values()).some((item) => item === 4)).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.setOfNumbers.values()).some((item) => item === 5)).toBe(true);
+
+  expect(allCollectionTypesRDO.arrayOfObjects.length).toEqual(4);
+  expect(allCollectionTypesRDO.arrayOfObjects.some((item) => item.id === '3')).toBe(false);
+  expect(allCollectionTypesRDO.arrayOfObjects.some((item) => item.id === '4')).toBe(false);
+  expect(allCollectionTypesRDO.arrayOfObjects.some((item) => item.id === '5')).toBe(true);
+
+  expect(allCollectionTypesRDO.mapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.mapOfObjects.values()).some((item) => item.id === '3')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.mapOfObjects.values()).some((item) => item.id === '4')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.mapOfObjects.values()).some((item) => item.id === '5')).toBe(true);
+
+  expect(allCollectionTypesRDO.setOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).some((item) => item.id === '3')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).some((item) => item.id === '4')).toBe(false);
+  expect(Array.from(allCollectionTypesRDO.setOfObjects.values()).some((item) => item.id === '5')).toBe(true);
+
+  expect(allCollectionTypesRDO.listMapOfObjects.size).toEqual(3); // one less than array, as doesn't accept duplicates
+  expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '3')).toBe(false);
+  expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '4')).toBe(false);
+  expect(allCollectionTypesRDO.listMapOfObjects.array$.some((item) => item.id === '5')).toBe(true);
 });
 
 // --------------------------------------------------------------

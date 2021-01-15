@@ -210,7 +210,7 @@ export class RdoObjectNW<S, D extends Record<string, any>> extends RdoInternalNW
       // Update directly if Leaf node
       // Or else step into child and sync
       if (sourceFieldVal === null || sourceFieldVal === undefined || NodeTypeUtils.isPrimitive(sourceFieldVal)) {
-        logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is undefined, null, or Primitive.`);
+        logger.trace(`Skipping child sync and updating directly. Field '${rdoFieldname}' in object is Primitive, null, or undefined.`);
         changed = this.primitiveDirectSync({ sourceKey: sourceFieldname, rdoKey: rdoFieldname, previousValue: rdoNodeItemValue, newValue: sourceFieldVal });
       } else {
         logger.trace(`Syncing Field '${rdoFieldname}' in object`);

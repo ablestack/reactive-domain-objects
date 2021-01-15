@@ -9,7 +9,7 @@ export class NodeTracker {
   private _sourceNodeTypePathStack = new Array<string>();
 
   public pushSourceNodeInstancePathOntoStack(key: string | number, sourceNodeKind: InternalNodeKind) {
-    logger.trace(`Adding SourceNode to sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
+    logger.trace(`Node traversal - pushing SourceNode onto sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} + ${key} (parent:${sourceNodeKind})`);
     this._sourceNodeInstancePathStack.push(key.toString());
     // reset locally cached dependencies
     this._sourceNodeInstancePath = undefined;
@@ -24,7 +24,7 @@ export class NodeTracker {
 
   public popSourceNodeInstancePathFromStack(sourceNodeKind: InternalNodeKind) {
     const key = this._sourceNodeInstancePathStack.pop();
-    logger.trace(`Popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
+    logger.trace(`Node traversal - popping ${key} off sourceNodeInstancePathStack: ${this.getSourceNodeInstancePath()} (${sourceNodeKind})`);
     // reset locally cached dependencies
     this._sourceNodeInstancePath = undefined;
 
