@@ -1,4 +1,4 @@
-import { ObservableQuery, ApolloClient } from '@apollo/client';
+import { ObservableQuery, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import uuid from 'uuid';
 import { Logger } from '@ablestack/rdo/infrastructure/logger';
 import { DeferredPromise } from '@ablestack/deferred-promise-ts';
@@ -11,11 +11,11 @@ export class QueryWatcher<Q> {
   private readonly _deferredPromiseQueue: Array<DeferredPromise<Q | null | undefined>>;
   private _active: boolean = false;
   private _name: string;
-  private _makeObservableQuery: (apolloClient: ApolloClient<object>) => Promise<ObservableQuery<Q>>;
+  private _makeObservableQuery: (apolloClient: ApolloClient<NormalizedCacheObject>) => Promise<ObservableQuery<Q>>;
   private _handleDataChange: (queryResult: Q | null | undefined) => void;
-  private _onAfterInitialized?: (apolloClient: ApolloClient<object>) => void;
-  private _onAfterStart?: (apolloClient: ApolloClient<object>) => void;
-  private _onAfterStop?: (apolloClient: ApolloClient<object>) => void;
+  private _onAfterInitialized?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
+  private _onAfterStart?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
+  private _onAfterStop?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
   private _uuid = uuid.v4();
 
   public get active(): boolean {
@@ -31,11 +31,11 @@ export class QueryWatcher<Q> {
     onAfterStop: onStop,
   }: {
     name: string;
-    makeObservableQuery: (apolloClient: ApolloClient<object>) => Promise<ObservableQuery<Q>>;
-    onAfterInitialized?: (apolloClient: ApolloClient<object>) => void;
-    onAfterStart?: (apolloClient: ApolloClient<object>) => void;
+    makeObservableQuery: (apolloClient: ApolloClient<NormalizedCacheObject>) => Promise<ObservableQuery<Q>>;
+    onAfterInitialized?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
+    onAfterStart?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
     onDataChange: (queryResult: Q | null | undefined) => void;
-    onAfterStop?: (apolloClient: ApolloClient<object>) => void;
+    onAfterStop?: (apolloClient: ApolloClient<NormalizedCacheObject>) => void;
   }) {
     this._deferredPromiseQueue = new Array<DeferredPromise<Q | null | undefined>>();
     this._name = name;
@@ -47,7 +47,7 @@ export class QueryWatcher<Q> {
   }
 
   //
-  public async initialize(apolloClient: ApolloClient<object>) {
+  public async initialize(apolloClient: ApolloClient<NormalizedCacheObject>) {
     if (!this._watchedQuery) {
       this._watchedQuery = await this._makeObservableQuery(apolloClient);
       logger.trace(`${this._name} - watchedQuery initialized`, this._watchedQuery);
@@ -60,12 +60,12 @@ export class QueryWatcher<Q> {
   /**
    *
    *
-   * @param {ApolloClient<object>} apolloClient
+   * @param {ApolloClient<NormalizedCacheObject>} apolloClient
    * @param {boolean} [force=false]  the force parameter will override any existing watch, and trigger a refetch of data even if data already available
    * @returns
    * @memberof QueryWatcher
    */
-  public start(apolloClient: ApolloClient<object>, force: boolean) {
+  public start(apolloClient: ApolloClient<NormalizedCacheObject>, force: boolean) {
     if (this.active) return;
 
     this.initiateWatch({ apolloClient, runOnce: false, force });
@@ -76,7 +76,7 @@ export class QueryWatcher<Q> {
   }
 
   //
-  public runOnce(apolloClient: ApolloClient<object>) {
+  public runOnce(apolloClient: ApolloClient<NormalizedCacheObject>) {
     if (this.active) return;
 
     this.initiateWatch({ apolloClient, runOnce: true, force: true });
@@ -87,7 +87,7 @@ export class QueryWatcher<Q> {
   }
 
   //
-  public stop(apolloClient: ApolloClient<object>) {
+  public stop(apolloClient: ApolloClient<NormalizedCacheObject>) {
     if (this._active) {
       this._watchedQuerySubscription?.unsubscribe();
       this._active = false;
@@ -105,7 +105,7 @@ export class QueryWatcher<Q> {
   }
 
   // The force parameter will trigger a refetch of data even if already available
-  private initiateWatch({ apolloClient, runOnce, force }: { apolloClient: ApolloClient<object>; runOnce: boolean; force: boolean }) {
+  private initiateWatch({ apolloClient, runOnce, force }: { apolloClient: ApolloClient<NormalizedCacheObject>; runOnce: boolean; force: boolean }) {
     if (!this._watchedQuery) {
       logger.error(`QueryWatcher must be initialized before use (${this._name})`, this._watchedQuery);
       return;
